@@ -168,32 +168,29 @@ const FlightHotel = () => {
       <Navbar />
       
       <main className="flex-1">
-        <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
+        {/* Hero Section with Search Form */}
+        <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
           <LazyImage
             src={bannerFlightHotel}
             alt="Forfaits Vol + Hôtel"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
-
           <div className="relative z-10 container mx-auto px-4 py-12">
             <div className="text-center mb-8 animate-fade-in">
-              <div className="flex justify-center mb-4">
-                <Package className="w-16 h-16 text-white drop-shadow-lg" />
-              </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
                 Forfaits Vol + Hôtel
               </h1>
               <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
                 Réservez votre vol et votre hébergement en un seul forfait et économisez jusqu'à 30%
               </p>
             </div>
-
-            <div className="max-w-6xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <FlightHotelSearchForm onSearch={handleSearch} />
             </div>
           </div>
-        </section>
+        </div>
 
         <div className="container mx-auto px-4 py-8">
           {loading && (

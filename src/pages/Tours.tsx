@@ -321,21 +321,23 @@ const Tours = () => {
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
       
-      {/* Hero Banner */}
+      {/* Hero Section with Search Form */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
-        <LazyImage 
+        <LazyImage
           src={bannerTours}
-          alt="Circuits & Tours" 
+          alt="Circuits & Tours"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-            <div className="flex justify-center mb-4">
-              <Map className="w-16 h-16 text-white drop-shadow-lg" />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Circuits & Tours</h1>
-            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">Découvrez des expériences inoubliables</p>
+
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg text-center">
+              Circuits & Tours
+            </h1>
+            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto text-center">
+              Découvrez des expériences inoubliables
+            </p>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <TourSearchForm />

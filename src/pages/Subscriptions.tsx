@@ -13,10 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { MajesticPlanCard } from "@/components/majestic-club/MajesticPlanCard";
 import { 
   Building2, Crown, FileCheck, Plane, Check, MessageCircle, ArrowRight,
   Star, Shield, Clock, Users, Sparkles, Briefcase, GraduationCap,
-  CalendarDays, Heart, Loader2, CreditCard, Zap
+  CalendarDays, Heart, Loader2, CreditCard, Zap, Key, Diamond, Gem,
+  Banknote, Wallet, TrendingUp, Award, Gift
 } from "lucide-react";
 
 const REQUEST_ONLY_PLANS = ["visa", "billets", "events"];
@@ -166,61 +168,757 @@ export default function Subscriptions() {
       <Navbar />
       
       <main className="pt-14 lg:pt-24">
-        {/* Hero - Clean & compact */}
-        <section className="relative py-12 sm:py-16 md:py-20 overflow-hidden bg-gradient-to-br from-primary via-primary to-primary-light">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-secondary rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-white/20 rounded-full blur-3xl" />
+        {/* Hero - Premium avec cartes de crédit */}
+        <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+          {/* Image de fond luxueuse */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url('/images/luxury-background.jpg')`
+            }}
+          >
+            {/* Overlay sombre pour lisibilité */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/75 to-primary-light/85" />
+          </div>
+          
+          {/* Background premium avec cartes de crédit */}
+          <div className="absolute inset-0">
+            {/* Cartes de crédit flottantes */}
+            <motion.div
+              className="absolute top-10 left-10 w-32 h-20 bg-gradient-to-br from-white/10 to-white/5 rounded-lg shadow-2xl shadow-white/20 border border-white/20 backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, 5, -5, 0],
+                y: [0, -10, 0],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{ 
+                duration: 6, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <div className="flex items-center justify-center h-full">
+                <CreditCard className="w-8 h-8 text-white/80" />
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="absolute top-20 right-20 w-36 h-24 bg-gradient-to-br from-white/8 to-white/3 rounded-lg shadow-2xl shadow-black/30 border border-white/10 backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, -8, 8, 0],
+                y: [0, 15, 0],
+                opacity: [0.6, 0.9, 0.6]
+              }}
+              transition={{ 
+                duration: 8, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2
+              }}
+            >
+              <div className="flex items-center justify-center h-full">
+                <CreditCard className="w-10 h-10 text-white/60" />
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="absolute bottom-20 left-1/4 w-28 h-18 bg-gradient-to-br from-white/6 to-white/2 rounded-lg shadow-2xl shadow-white/15 border border-white/15 backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                y: [0, -20, 0],
+                opacity: [0.8, 1, 0.8]
+              }}
+              transition={{ 
+                duration: 7, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1
+              }}
+            >
+              <div className="flex items-center justify-center h-full">
+                <CreditCard className="w-7 h-7 text-white/90" />
+              </div>
+            </motion.div>
+
+            {/* Éléments de luxe */}
+            <motion.div
+              className="absolute top-1/3 right-1/4 w-16 h-16 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm"
+              animate={{ 
+                scale: [1, 1.1, 1],
+                opacity: [0.5, 0.8, 0.5]
+              }}
+              transition={{ 
+                duration: 4, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Crown className="w-8 h-8 text-white" />
+            </motion.div>
+
+            <motion.div
+              className="absolute bottom-1/3 right-1/3 w-14 h-14 bg-white/8 rounded-full flex items-center justify-center border border-white/15 backdrop-blur-sm"
+              animate={{ 
+                scale: [1, 0.9, 1],
+                opacity: [0.6, 0.9, 0.6]
+              }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1.5
+              }}
+            >
+              <Shield className="w-7 h-7 text-white" />
+            </motion.div>
+
+            <motion.div
+              className="absolute top-1/4 left-1/3 w-12 h-12 bg-white/8 rounded-full flex items-center justify-center border border-white/15 backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, 180],
+                scale: [1, 1.2, 1],
+                opacity: [0.4, 0.7, 0.4]
+              }}
+              transition={{ 
+                duration: 10, 
+                repeat: Infinity,
+                ease: "linear",
+                delay: 0.5
+              }}
+            >
+              <Diamond className="w-6 h-6 text-white" />
+            </motion.div>
+
+            <motion.div
+              className="absolute top-1/2 left-1/5 w-10 h-10 bg-white/6 rounded-full flex items-center justify-center border border-white/15 backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, -180],
+                scale: [1, 0.8, 1],
+                opacity: [0.5, 0.8, 0.5]
+              }}
+              transition={{ 
+                duration: 8, 
+                repeat: Infinity,
+                ease: "linear",
+                delay: 1
+              }}
+            >
+              <Gem className="w-5 h-5 text-white" />
+            </motion.div>
+
+            <motion.div
+              className="absolute bottom-1/4 left-1/2 w-11 h-11 bg-white/8 rounded-full flex items-center justify-center border border-white/15 backdrop-blur-sm"
+              animate={{ 
+                y: [0, -15, 0],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ 
+                duration: 6, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2
+              }}
+            >
+              <Award className="w-6 h-6 text-white" />
+            </motion.div>
+
+            {/* Banknotes flottants */}
+            <motion.div
+              className="absolute top-1/6 right-1/6 w-8 h-8 bg-white/6 rounded flex items-center justify-center backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, 15, -15, 0],
+                x: [0, 20, 0],
+                opacity: [0.4, 0.7, 0.4]
+              }}
+              transition={{ 
+                duration: 7, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 1.2
+              }}
+            >
+              <Banknote className="w-5 h-5 text-white" />
+            </motion.div>
+
+            <motion.div
+              className="absolute bottom-1/5 right-1/5 w-9 h-9 bg-white/8 rounded flex items-center justify-center backdrop-blur-sm"
+              animate={{ 
+                rotate: [0, -20, 20, 0],
+                x: [0, -15, 0],
+                opacity: [0.5, 0.8, 0.5]
+              }}
+              transition={{ 
+                duration: 9, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.8
+              }}
+            >
+              <Wallet className="w-6 h-6 text-white" />
+            </motion.div>
+
+            <motion.div
+              className="absolute top-2/3 left-1/3 w-10 h-10 bg-white/6 rounded-full flex items-center justify-center border border-white/15 backdrop-blur-sm"
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2.5
+              }}
+            >
+              <TrendingUp className="w-6 h-6 text-white" />
+            </motion.div>
+
+            {/* Particules */}
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-white/60 rounded-full"
+                style={{
+                  top: `${10 + (i * 7)}%`,
+                  left: `${5 + (i * 8)}%`,
+                }}
+                animate={{ 
+                  x: [0, Math.random() * 100 - 50], 
+                  y: [0, Math.random() * 100 - 50],
+                  opacity: [0, 1, 0]
+                }}
+                transition={{ 
+                  duration: 8 + Math.random() * 4, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: Math.random() * 2
+                }}
+              />
+            ))}
+            
+            {/* Gradient overlays */}
+            <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-white/5 to-transparent rounded-full blur-3xl" />
           </div>
           
           <div className="site-container relative z-10">
             <motion.div 
-              className="text-center max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
+              className="text-center max-w-4xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.8 }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 mb-4">
-                <Zap className="w-3.5 h-3.5 text-secondary" />
-                <span className="text-xs font-medium text-white/90">{t("subscriptions.badge", "Bossiz Conciergerie")}</span>
-              </div>
+              {/* Badge premium */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-8"
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                >
+                  <Crown className="w-5 h-5 text-white" />
+                </motion.div>
+                <span className="text-sm font-semibold text-white tracking-wide">Bossiz Conciergerie</span>
+                <Sparkles className="w-4 h-4 text-white" />
+              </motion.div>
               
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
-                {t("subscriptions.heroTitle1", "Nos Abonnements")}
-              </h1>
+              {/* Titre principal premium */}
+              <motion.h1 
+                className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              >
+                Nos Abonnements
+              </motion.h1>
               
-              <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8">
-                {t("subscriptions.subtitle", "Découvrez nos formules adaptées à vos besoins.")}
-              </p>
+              {/* Description premium */}
+              <motion.p 
+                className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed mb-12"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                Choisissez le forfait qui correspond à vos besoins. 
+                <span className="text-white font-semibold"> De l'essentiel au premium </span>, 
+                trouvez l'abonnement parfait pour vous.
+              </motion.p>
               
-              <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
+              {/* Stats premium */}
+              <motion.div
+                className="flex flex-wrap justify-center gap-8 sm:gap-12 mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+              >
                 {[
-                  { icon: Shield, value: "100%", label: t("subscriptions.guaranteed", "Garanti") },
-                  { icon: Clock, value: "24/7", label: t("subscriptions.support247", "Assistance") },
-                  { icon: Users, value: "1000+", label: t("subscriptions.clients", "Clients") },
+                  { icon: Shield, value: "100%", label: "Garanti" },
+                  { icon: Clock, value: "24/7", label: "Assistance" },
+                  { icon: Users, value: "1000+", label: "Clients" },
                 ].map((stat, i) => (
                   <motion.div 
                     key={i}
-                    className="flex flex-col items-center gap-0.5"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.1 }}
+                    className="flex flex-col items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <div className="flex items-center gap-1.5 text-secondary">
-                      <stat.icon className="w-4 h-4" />
-                      <span className="text-xl font-bold text-white">{stat.value}</span>
+                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                      <stat.icon className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-[10px] sm:text-xs text-white/60">{stat.label}</span>
+                    <div className="text-2xl font-bold text-white">{stat.value}</div>
+                    <div className="text-sm text-white/60">{stat.label}</div>
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
+              
+              {/* CTA premium */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.6 }}
+              >
+                <Button
+                  size="lg"
+                  className="bg-white text-primary hover:bg-white/90 font-bold px-8 py-4 text-lg rounded-full border-2 border-white/30 shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105"
+                  onClick={() => document.getElementById('majestic-plans')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Découvrir les Plans
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </motion.div>
             </motion.div>
+          </div>
+        </section>
+
+        {/* Majestic Club VIP Section */}
+        <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+          {/* Background premium avec images */}
+          <div className="absolute inset-0">
+            {/* Image de fond principale */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0A192F]/95 via-[#1A2F4C]/90 to-[#0A192F]/95">
+              {/* Cartes de crédit flottantes */}
+              <motion.div
+                className="absolute top-10 left-10 w-32 h-20 bg-gradient-to-br from-[#D4AF37] to-[#B8941F] rounded-lg shadow-2xl shadow-[#D4AF37]/50 border border-[#D4AF37]/30"
+                animate={{ 
+                  rotate: [0, 5, -5, 0],
+                  y: [0, -10, 0],
+                  opacity: [0.7, 1, 0.7]
+                }}
+                transition={{ 
+                  duration: 6, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="flex items-center justify-center h-full">
+                  <CreditCard className="w-8 h-8 text-white/80" />
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="absolute top-20 right-20 w-36 h-24 bg-gradient-to-br from-[#4A5568] to-[#2D3748] rounded-lg shadow-2xl shadow-black/30 border border-gray-600/30"
+                animate={{ 
+                  rotate: [0, -8, 8, 0],
+                  y: [0, 15, 0],
+                  opacity: [0.6, 0.9, 0.6]
+                }}
+                transition={{ 
+                  duration: 8, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2
+                }}
+              >
+                <div className="flex items-center justify-center h-full">
+                  <CreditCard className="w-10 h-10 text-white/60" />
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-20 left-1/4 w-28 h-18 bg-gradient-to-br from-[#D4AF37]/80 to-[#B8941F]/60 rounded-lg shadow-2xl shadow-[#D4AF37]/40 border border-[#D4AF37]/20"
+                animate={{ 
+                  rotate: [0, 10, -10, 0],
+                  y: [0, -20, 0],
+                  opacity: [0.8, 1, 0.8]
+                }}
+                transition={{ 
+                  duration: 7, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1
+                }}
+              >
+                <div className="flex items-center justify-center h-full">
+                  <CreditCard className="w-7 h-7 text-white/90" />
+                </div>
+              </motion.div>
+
+              {/* Éléments de luxe flottants */}
+              <motion.div
+                className="absolute top-1/3 right-1/4 w-16 h-16 bg-[#D4AF37]/20 rounded-full flex items-center justify-center border border-[#D4AF37]/30"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  opacity: [0.5, 0.8, 0.5]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <Crown className="w-8 h-8 text-[#D4AF37]" />
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-1/3 right-1/3 w-14 h-14 bg-[#D4AF37]/15 rounded-full flex items-center justify-center border border-[#D4AF37]/25"
+                animate={{ 
+                  scale: [1, 0.9, 1],
+                  opacity: [0.6, 0.9, 0.6]
+                }}
+                transition={{ 
+                  duration: 5, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.5
+                }}
+              >
+                <Shield className="w-7 h-7 text-[#D4AF37]" />
+              </motion.div>
+
+              {/* Éléments de luxe supplémentaires */}
+              <motion.div
+                className="absolute top-1/4 left-1/3 w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center border border-[#D4AF37]/20"
+                animate={{ 
+                  rotate: [0, 180],
+                  scale: [1, 1.2, 1],
+                  opacity: [0.4, 0.7, 0.4]
+                }}
+                transition={{ 
+                  duration: 10, 
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: 0.5
+                }}
+              >
+                <Diamond className="w-6 h-6 text-[#D4AF37]" />
+              </motion.div>
+
+              <motion.div
+                className="absolute top-1/2 left-1/5 w-10 h-10 bg-[#D4AF37]/12 rounded-full flex items-center justify-center border border-[#D4AF37]/20"
+                animate={{ 
+                  rotate: [0, -180],
+                  scale: [1, 0.8, 1],
+                  opacity: [0.5, 0.8, 0.5]
+                }}
+                transition={{ 
+                  duration: 8, 
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: 1
+                }}
+              >
+                <Gem className="w-5 h-5 text-[#D4AF37]" />
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-1/4 left-1/2 w-11 h-11 bg-[#D4AF37]/10 rounded-full flex items-center justify-center border border-[#D4AF37]/20"
+                animate={{ 
+                  y: [0, -15, 0],
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{ 
+                  duration: 6, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2
+                }}
+              >
+                <Award className="w-6 h-6 text-[#D4AF37]" />
+              </motion.div>
+
+              {/* Banknotes flottants */}
+              <motion.div
+                className="absolute top-1/6 right-1/6 w-8 h-8 bg-[#D4AF37]/8 rounded flex items-center justify-center"
+                animate={{ 
+                  rotate: [0, 15, -15, 0],
+                  x: [0, 20, 0],
+                  opacity: [0.4, 0.7, 0.4]
+                }}
+                transition={{ 
+                  duration: 7, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.2
+                }}
+              >
+                <Banknote className="w-5 h-5 text-[#D4AF37]" />
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-1/5 right-1/5 w-9 h-9 bg-[#D4AF37]/10 rounded flex items-center justify-center"
+                animate={{ 
+                  rotate: [0, -20, 20, 0],
+                  x: [0, -15, 0],
+                  opacity: [0.5, 0.8, 0.5]
+                }}
+                transition={{ 
+                  duration: 9, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.8
+                }}
+              >
+                <Wallet className="w-6 h-6 text-[#D4AF37]" />
+              </motion.div>
+
+              {/* Trending Up icon */}
+              <motion.div
+                className="absolute top-2/3 left-1/3 w-10 h-10 bg-[#D4AF37]/12 rounded-full flex items-center justify-center border border-[#D4AF37]/20"
+                animate={{ 
+                  scale: [1, 1.3, 1],
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{ 
+                  duration: 5, 
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2.5
+                }}
+              >
+                <TrendingUp className="w-6 h-6 text-[#D4AF37]" />
+              </motion.div>
+
+              {/* Particules dorées */}
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-[#D4AF37]/60 rounded-full"
+                  style={{
+                    top: `${20 + (i * 10)}%`,
+                    left: `${10 + (i * 12)}%`,
+                  }}
+                  animate={{ 
+                    x: [0, Math.random() * 100 - 50], 
+                    y: [0, Math.random() * 100 - 50],
+                    opacity: [0, 1, 0]
+                  }}
+                  transition={{ 
+                    duration: 8 + Math.random() * 4, 
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: Math.random() * 2
+                  }}
+                />
+              ))}
+            </div>
+            
+            {/* Gradient overlays premium */}
+            <div className="absolute top-0 left-0 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#D4AF37]/8 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-[#D4AF37]/5 to-transparent rounded-full blur-3xl" />
+          </div>
+          
+          <div className="site-container relative z-10">
+            {/* Premium Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-20"
+            >
+              {/* Badge premium */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#D4AF37]/20 to-[#D4AF37]/10 border border-[#D4AF37]/30 backdrop-blur-sm mb-8"
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                >
+                  <Crown className="w-5 h-5 text-[#D4AF37]" />
+                </motion.div>
+                <span className="text-sm font-semibold text-[#D4AF37] tracking-wide">MAJESTIC CLUB</span>
+                <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+              </motion.div>
+              
+              {/* Titre principal avec effet */}
+              <div className="relative mb-8">
+                <motion.h2 
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5F5] via-[#D4AF37] to-[#F5F5F5] leading-tight"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                >
+                  L'Excellence
+                  <span className="block text-[#D4AF37] mt-2">Redéfinie</span>
+                </motion.h2>
+                
+                {/* Lignes décoratives */}
+                <motion.div
+                  className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "8rem" }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.8, duration: 0.8 }}
+                />
+              </div>
+              
+              {/* Description premium */}
+              <motion.p 
+                className="text-lg sm:text-xl text-[#F5F5F5]/80 max-w-3xl mx-auto leading-relaxed mb-12"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                Entrez dans un monde où le luxe n'a pas de limites. 
+                <span className="text-[#D4AF37] font-semibold"> Le Majestic Club </span>
+                vous offre des privilèges au-delà de l'imagination, 
+                transformant chaque désir en réalité.
+              </motion.p>
+              
+              {/* Stats premium */}
+              <motion.div
+                className="flex flex-wrap justify-center gap-8 sm:gap-12 mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+              >
+                {[
+                  { icon: Shield, value: "100%", label: "Exclusivité" },
+                  { icon: Clock, value: "24/7", label: "Service Premium" },
+                  { icon: Star, value: "5 étoiles", label: "Qualité" },
+                ].map((stat, i) => (
+                  <motion.div 
+                    key={i}
+                    className="flex flex-col items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37]/20 to-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center">
+                      <stat.icon className="w-6 h-6 text-[#D4AF37]" />
+                    </div>
+                    <div className="text-2xl font-bold text-[#D4AF37]">{stat.value}</div>
+                    <div className="text-sm text-[#F5F5F5]/60">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </motion.div>
+              
+              {/* CTA premium */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.9, duration: 0.6 }}
+              >
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-[#D4AF37] to-[#D4AF37]/80 hover:from-[#D4AF37]/90 hover:to-[#D4AF37]/70 text-[#0A192F] font-bold px-8 py-4 text-lg rounded-full border-2 border-[#D4AF37]/30 shadow-2xl hover:shadow-[#D4AF37]/25 transition-all duration-300 hover:scale-105"
+                  onClick={() => document.getElementById('majestic-plans')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <Crown className="w-5 h-5 mr-2" />
+                  Découvrir les Plans VIP
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            <div id="majestic-plans" className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+              <MajesticPlanCard 
+                plan={{
+                  id: 'access',
+                  name: 'Majestic Access',
+                  description: 'Accès VIP aux services exclusifs',
+                  price: '250 000 FCFA/mois',
+                  features: [
+                    'Accès au dashboard VIP',
+                    'Services de conciergerie',
+                    'Chat prioritaire 24/7',
+                    'Réservations prioritaires',
+                    'Support dédié'
+                  ],
+                  icon: <Key className="w-6 h-6" />,
+                  color: 'from-amber-500 to-amber-600',
+                  popular: false
+                }}
+                index={0}
+              />
+              
+              <MajesticPlanCard 
+                plan={{
+                  id: 'access_prive',
+                  name: 'Majestic Privé',
+                  description: 'Accès premium avec propriétés exclusives',
+                  price: '750 000 FCFA/mois',
+                  features: [
+                    'Tout ce qui est inclus dans Access',
+                    'Propriétés off-market',
+                    'Chef privé à domicile',
+                    'Chauffeur personnel',
+                    'Événements exclusifs',
+                    'Accès anticipé'
+                  ],
+                  icon: <Crown className="w-6 h-6" />,
+                  color: 'from-violet-500 to-purple-600',
+                  popular: true
+                }}
+                index={1}
+              />
+              
+              <MajesticPlanCard 
+                plan={{
+                  id: 'access_black',
+                  name: 'Majestic Black',
+                  description: 'Le summum du luxe et de l\'exclusivité',
+                  price: '2 500 000 FCFA/mois',
+                  features: [
+                    'Tout ce qui est inclus dans Privé',
+                    'Propriétés Black Card uniquement',
+                    'Jet privé disponible',
+                    'Yacht de luxe',
+                    'Équipe de sécurité dédiée',
+                    'Concierge personnel 24/7',
+                    'Événements sur mesure',
+                    'Accès mondial illimité'
+                  ],
+                  icon: <Shield className="w-6 h-6" />,
+                  color: 'from-gray-800 to-black',
+                  popular: false
+                }}
+                index={2}
+              />
+            </div>
           </div>
         </section>
 
         {/* Plans Grid - Card boxes */}
         <section className="py-8 sm:py-12 md:py-16">
           <div className="site-container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
+                {t("subscriptions.otherPlans", "Nos Autres Abonnements")}
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                {t("subscriptions.otherPlansDesc", "Découvrez nos formules standards adaptées à vos besoins.")}
+              </p>
+            </motion.div>
+
             {isLoading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />

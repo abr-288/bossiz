@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { AlertCircle } from "lucide-react";
-import { UnifiedForm, UnifiedAutocomplete, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
+import { AlertCircle, Building2, Users } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 import { staySearchSchema, type StaySearchInput } from "@/lib/validationSchemas";
@@ -10,6 +9,14 @@ import { safeValidate } from "@/lib/formHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  UnifiedForm, 
+  UnifiedAutocomplete, 
+  UnifiedDatePicker, 
+  UnifiedSubmitButton,
+  FormProgressBar
+} from "@/components/forms";
 
 export const StaySearchForm = () => {
   const { t } = useTranslation();
@@ -21,11 +28,9 @@ export const StaySearchForm = () => {
   const [propertyType, setPropertyType] = useState<"all" | "apartment" | "house" | "villa" | "guesthouse">("all");
   const [guests, setGuests] = useState(2);
 
-  // État des erreurs de validation
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Validation en temps réel
   useEffect(() => {
     if (Object.keys(touched).length === 0) return;
 
@@ -62,8 +67,6 @@ export const StaySearchForm = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Marquer tous les champs comme touchés
     setTouched({
       destination: true,
       checkIn: true,
@@ -72,7 +75,6 @@ export const StaySearchForm = () => {
       propertyType: true,
     });
 
-    // Validation complète avant soumission
     const formData: StaySearchInput = {
       destination: destination || "",
       checkIn: checkIn ? format(checkIn, "yyyy-MM-dd") : "",
@@ -90,9 +92,6 @@ export const StaySearchForm = () => {
         description: "Veuillez corriger les erreurs dans le formulaire",
         variant: "destructive",
       });
-      
-      const firstErrorField = Object.keys(validation.errors)[0];
-      document.getElementById(firstErrorField)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -108,21 +107,41 @@ export const StaySearchForm = () => {
   };
 
   const hasErrors = Object.keys(errors).length > 0;
+  const totalFields = 4;
+  const completedFields = [
+    destination,
+    checkIn,
+    checkOut,
+    guests > 0
+  ].filter(Boolean).length;
 
   return (
-    <UnifiedForm onSubmit={handleSearch} variant="search" className="w-full max-w-6xl mx-auto">
-      {/* Alert d'erreur générale */}
-      {hasErrors && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Veuillez corriger les erreurs dans le formulaire
-          </AlertDescription>
-        </Alert>
-      )}
+    <UnifiedForm onSubmit={handleSearch} variant="search" className="w-full max-w-6xl mx-auto space-y-6">
+      <FormProgressBar 
+        totalFields={totalFields} 
+        completedFields={completedFields}
+        className="mb-2"
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-        <div className="sm:col-span-2 lg:col-span-2 space-y-1 min-w-0">
+      <AnimatePresence>
+        {hasErrors && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <Alert variant="destructive" className="py-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs font-medium">
+                Veuillez corriger les erreurs dans le formulaire
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div className="md:col-span-12 lg:col-span-4 min-w-0">
           <UnifiedAutocomplete
             label={t("search.destination")}
             type="location"
@@ -133,16 +152,16 @@ export const StaySearchForm = () => {
             }}
             placeholder={t("search.location")}
             required
-            className={errors.destination && touched.destination ? "border-destructive" : ""}
+            className={cn("w-full", errors.destination && touched.destination ? "border-destructive" : "")}
           />
           {errors.destination && touched.destination && (
-            <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
+            <p className="text-[10px] text-destructive mt-1 font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-1">
               {errors.destination}
             </p>
           )}
         </div>
 
-        <div className="min-w-0 space-y-1">
+        <div className="md:col-span-6 lg:col-span-2 min-w-0">
           <UnifiedDatePicker
             label={t("search.checkIn")}
             value={checkIn}
@@ -151,15 +170,16 @@ export const StaySearchForm = () => {
               handleBlur("checkIn");
             }}
             minDate={new Date()}
+            className="w-full"
           />
           {errors.checkIn && touched.checkIn && (
-            <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
+            <p className="text-[10px] text-destructive mt-1 font-bold uppercase tracking-wider">
               {errors.checkIn}
             </p>
           )}
         </div>
 
-        <div className="min-w-0 space-y-1">
+        <div className="md:col-span-6 lg:col-span-2 min-w-0">
           <UnifiedDatePicker
             label={t("search.checkOut")}
             value={checkOut}
@@ -168,77 +188,79 @@ export const StaySearchForm = () => {
               handleBlur("checkOut");
             }}
             minDate={checkIn || new Date()}
+            className="w-full"
           />
           {errors.checkOut && touched.checkOut && (
-            <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
+            <p className="text-[10px] text-destructive mt-1 font-bold uppercase tracking-wider">
               {errors.checkOut}
             </p>
           )}
         </div>
 
-        <div className="min-w-0 space-y-2">
-          <label className="text-sm font-medium text-foreground">{t("search.guests")} *</label>
-          <Select 
-            value={guests.toString()} 
-            onValueChange={(value) => {
-              setGuests(parseInt(value));
-              handleBlur("guests");
-            }}
-          >
-            <SelectTrigger className={cn("h-11", errors.guests && touched.guests && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[1, 2, 3, 4, 5, 6, 8, 10, 12, 16].map((num) => (
-                <SelectItem key={num} value={num.toString()}>
-                  {num}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.guests && touched.guests && (
-            <p className="text-xs text-destructive animate-in slide-in-from-top-1">{errors.guests}</p>
-          )}
+        <div className="md:col-span-6 lg:col-span-2 min-w-0">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-primary" />
+              {t("search.type")}
+            </label>
+            <Select 
+              value={propertyType} 
+              onValueChange={(value) => {
+                setPropertyType(value as typeof propertyType);
+                handleBlur("propertyType");
+              }}
+            >
+              <SelectTrigger className={cn("h-12 bg-white/50 backdrop-blur-sm border-2 font-medium truncate", errors.propertyType && touched.propertyType && "border-destructive")}>
+                <SelectValue placeholder={t("search.allCategories")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("search.allCategories")}</SelectItem>
+                <SelectItem value="apartment">Appartement</SelectItem>
+                <SelectItem value="house">Maison</SelectItem>
+                <SelectItem value="villa">Villa</SelectItem>
+                <SelectItem value="guesthouse">Maison d'hôtes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="sm:col-span-2 lg:col-span-1 flex items-end">
+        <div className="md:col-span-3 lg:col-span-1 min-w-0 text-left">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              {t("search.guests")}
+            </label>
+            <Select 
+              value={guests.toString()} 
+              onValueChange={(value) => {
+                setGuests(parseInt(value));
+                handleBlur("guests");
+              }}
+            >
+              <SelectTrigger className={cn("h-12 bg-white/50 backdrop-blur-sm border-2 font-medium", errors.guests && touched.guests && "border-destructive")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[1, 2, 3, 4, 5, 6, 8, 10, 12, 16].map((num) => (
+                  <SelectItem key={num} value={num.toString()}>
+                    {num} pers.
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="md:col-span-3 lg:col-span-1 min-w-0">
           <UnifiedSubmitButton 
             fullWidth
             disabled={hasErrors}
-            className={hasErrors ? "opacity-50 cursor-not-allowed" : ""}
+            className={cn("h-12 shadow-xl shadow-primary/20 font-black", hasErrors && "opacity-50 cursor-not-allowed")}
           >
             {t("search.search")}
           </UnifiedSubmitButton>
         </div>
       </div>
-
-      <div className="mt-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">{t("search.type")}</label>
-          <Select 
-            value={propertyType} 
-            onValueChange={(value) => {
-              setPropertyType(value as typeof propertyType);
-              handleBlur("propertyType");
-            }}
-          >
-            <SelectTrigger className={cn("h-11", errors.propertyType && touched.propertyType && "border-destructive")}>
-              <SelectValue placeholder={t("search.allCategories")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("search.allCategories")}</SelectItem>
-              <SelectItem value="apartment">Appartement</SelectItem>
-              <SelectItem value="house">Maison</SelectItem>
-              <SelectItem value="villa">Villa</SelectItem>
-              <SelectItem value="guesthouse">Maison d'hôtes</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.propertyType && touched.propertyType && (
-            <p className="text-xs text-destructive animate-in slide-in-from-top-1">{errors.propertyType}</p>
-          )}
-        </div>
-      </div>
     </UnifiedForm>
   );
 };
-

@@ -10,7 +10,8 @@ import {
   Plane,
   HelpCircle,
   LogOut,
-  Building2
+  Building2,
+  Crown
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -69,6 +70,12 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       title: t('dashboardPage.sidebar.overview', 'Vue d\'ensemble'), 
       url: "/dashboard", 
       icon: LayoutDashboard 
+    },
+    { 
+      title: 'Majestic Club', 
+      url: "/majestic-club", 
+      icon: Crown,
+      premium: true
     },
     { 
       title: t('dashboardPage.sidebar.bookings', 'Mes réservations'), 
@@ -180,11 +187,11 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
                       to={item.url}
                       className={`flex items-center gap-3 ${
                         isActive(item.url) 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "hover:bg-muted"
+                          ? (item.url === "/majestic-club" ? "bg-[#D4AF37]/20 text-[#D4AF37] font-bold" : "bg-primary/10 text-primary font-medium")
+                          : (item.url === "/majestic-club" ? "text-[#D4AF37] hover:bg-[#D4AF37]/10" : "hover:bg-muted")
                       }`}
                     >
-                      <item.icon className="h-5 w-5 shrink-0" />
+                      <item.icon className={`h-5 w-5 shrink-0 ${item.url === "/majestic-club" ? "text-[#D4AF37]" : ""}`} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>

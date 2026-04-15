@@ -73,8 +73,10 @@ export const UnifiedDatePicker = ({
               "group"
             )}
           >
-            <CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-            {value ? format(value, "dd MMMM yyyy", { locale: fr }) : placeholder}
+            <CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+            <span className="truncate">
+              {value ? format(value, "dd MMMM yyyy", { locale: fr }) : placeholder}
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">

@@ -141,3 +141,44 @@ export const getAirportDisplay = (code: string, format: 'full' | 'city' | 'short
       return code;
   }
 };
+
+/**
+ * Get IATA code from city name (case-insensitive)
+ */
+export function getIataByCity(cityName: string): string | null {
+  if (!cityName) return null;
+  const normalizedSearch = cityName.toLowerCase().trim();
+  const entry = Object.entries(airportDatabase).find(([_, info]) => 
+    info.city.toLowerCase() === normalizedSearch
+  );
+  return entry ? entry[0] : null;
+}
+
+/**
+ * Basic country to flag mapping
+ */
+export function getCountryFlag(countryName: string): string {
+  if (!countryName) return '📍';
+  const flags: Record<string, string> = {
+    'France': '🇫🇷',
+    'Émirats Arabes Unis': '🇦🇪',
+    'Turquie': '🇹🇷',
+    'Ghana': '🇬🇭',
+    'Sénégal': '🇸🇳',
+    'Maroc': '🇲🇦',
+    'Afrique du Sud': '🇿🇦',
+    'Éthiopie': '🇪🇹',
+    'Côte d\'Ivoire': '🇨🇮',
+    'États-Unis': '🇺🇸',
+    'Italie': '🇮🇹',
+    'Espagne': '🇪🇸',
+    'Royaume-Uni': '🇬🇧',
+    'Allemagne': '🇩🇪',
+    'Belgique': '🇧🇪',
+    'Suisse': '🇨🇭',
+    'Canada': '🇨🇦',
+    'Japon': '🇯🇵',
+    'Chine': '🇨🇳',
+  };
+  return flags[countryName] || '📍';
+}

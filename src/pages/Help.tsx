@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +8,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { Search, HelpCircle, Plane, Hotel, Car, CreditCard, Shield, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { LazyImage } from "@/components/ui/lazy-image";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const Help = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -143,39 +148,51 @@ const Help = () => {
 
   const filteredFaqs = searchQuery
     ? faqs.map((category) => ({
-        ...category,
-        questions: category.questions.filter(
-          (q) =>
-            q.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            q.a.toLowerCase().includes(searchQuery.toLowerCase())
-        ),
-      })).filter((category) => category.questions.length > 0)
+      ...category,
+      questions: category.questions.filter(
+        (q) =>
+          q.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          q.a.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    })).filter((category) => category.questions.length > 0)
     : faqs;
 
   return (
     <div className="min-h-screen flex flex-col pt-16">
       <Navbar />
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary via-primary-dark to-primary-darker py-12 md:py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Comment pouvons-nous vous aider ?
-          </h1>
-          <p className="text-xl text-white/90 mb-8">
-            Trouvez rapidement des réponses à vos questions
-          </p>
+      {/* Hero Section Synchronized with other bannières */}
+      <div className="relative min-h-[50vh] md:min-h-[55vh] flex items-center justify-center overflow-hidden">
+        <LazyImage
+          src="https://images.unsplash.com/photo-1454165833762-0204b2816701?w=1920"
+          alt="Help Center"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background/20"></div>
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          <div className="text-center mb-8 animate-fade-in">
 
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <h1 className="text-4xl md:text-7xl font-black mb-6 text-white drop-shadow-lg tracking-tighter">
+              {t("help.title", "Comment pouvons-nous vous aider ?")}
+            </h1>
+            <p className="text-lg md:text-2xl text-white/95 drop-shadow-md max-w-2xl mx-auto font-medium">
+              {t("help.subtitle", "Recherchez dans notre base de connaissances ou parcourez les catégories")}
+            </p>
+          </div>
+
+          <div className="max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="relative group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 type="text"
                 placeholder="Rechercher dans l'aide..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-6 text-lg bg-white"
+                className="pl-16 pr-6 py-8 text-xl bg-white/95 backdrop-blur-sm border-white/20 shadow-2xl rounded-2xl focus-visible:ring-primary/20 transition-all font-medium"
               />
+              <Button className="absolute right-3 top-1/2 -translate-y-1/2 h-12 px-8 rounded-xl bg-primary text-white font-black hover:bg-primary/90 transition-all shadow-lg active:scale-95">
+                Rechercher
+              </Button>
             </div>
           </div>
         </div>

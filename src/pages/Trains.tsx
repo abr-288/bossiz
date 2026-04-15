@@ -206,7 +206,7 @@ const Trains = () => {
     <div className="min-h-screen flex flex-col pt-16">
       <Navbar />
 
-      {/* Hero Section */}
+      {/* Hero Section with Search Form */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerTrains}
@@ -214,12 +214,9 @@ const Trains = () => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
-
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-            <div className="flex justify-center mb-4">
-              <Train className="w-16 h-16 text-white drop-shadow-lg" />
-            </div>
+
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
               Voyagez en Train
             </h1>
@@ -227,7 +224,6 @@ const Trains = () => {
               Trouvez les meilleurs trajets en train pour vos voyages
             </p>
           </div>
-
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <TrainSearchForm />
           </div>

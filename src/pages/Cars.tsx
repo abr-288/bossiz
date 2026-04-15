@@ -317,17 +317,27 @@ const Cars = () => {
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
       
-      {/* Hero Banner */}
-      <div className="relative min-h-[50vh] md:min-h-[55vh] flex items-center justify-center overflow-hidden">
-        <LazyImage src={bannerCars} alt="Location de voitures" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background" />
-        <div className="relative z-10 container mx-auto px-4 py-8">
-          <div className="text-center mb-6">
-            <CarIcon className="w-12 h-12 md:w-16 md:h-16 text-white mx-auto mb-4 drop-shadow-lg" />
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">{t('cars.title')}</h1>
-            <p className="text-base md:text-lg text-white/90 max-w-xl mx-auto">{t('cars.subtitle')}</p>
+      {/* Hero Section with Search Form */}
+      <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
+        <LazyImage
+          src={bannerCars}
+          alt="Location de voitures"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          <div className="text-center mb-8 animate-fade-in">
+
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+              {t('cars.title')}
+            </h1>
+            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
+              {t('cars.subtitle')}
+            </p>
           </div>
-          <CarSearchForm />
+          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <CarSearchForm />
+          </div>
         </div>
       </div>
       

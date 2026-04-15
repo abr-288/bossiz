@@ -46,7 +46,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [userProfile, setUserProfile] = useState<{ full_name: string; email: string; id: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ full_name: string; email: string; id: string; subscription_type?: string; role?: string } | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -64,6 +64,47 @@ const Dashboard = () => {
     storageStats,
     syncPendingChanges 
   } = useOfflineBookings(userProfile?.id);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate('/auth');
+          return;
+        }
+        
+        // Check if user has majestic subscription
+        const { data: subscription } = await supabase
+          .from('active_subscriptions' as any)
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('subscription_type', 'majestic')
+          .single();
+        
+        // If user has majestic subscription, redirect to majestic dashboard
+        if (subscription) {
+          navigate('/majestic-dashboard');
+          return;
+        }
+        
+        setUserProfile({
+          full_name: user.user_metadata?.full_name || '',
+          email: user.email || '',
+          id: user.id,
+          subscription_type: user.user_metadata?.subscription_type,
+          role: user.user_metadata?.role,
+        });
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        navigate('/auth');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [navigate]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -331,27 +372,27 @@ const Dashboard = () => {
 
   if (loading || bookingsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5 pt-16">
+    <div className="min-h-screen flex flex-col bg-white pt-16">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold">{t('dashboardPage.title')}</h1>
+              <h1 className="text-4xl font-bold text-black">{t('dashboardPage.title')}</h1>
             </div>
             {userProfile && (
-              <p className="text-lg font-semibold text-primary mb-1">
-                {t('dashboardPage.welcome')}, {userProfile.full_name} 👋
+              <p className="text-lg font-semibold text-black mb-1">
+                {t('dashboardPage.welcome')}, {userProfile.full_name} &#x1f44b;
               </p>
             )}
-            <p className="text-muted-foreground">
+            <p className="text-gray-700">
               {t('dashboardPage.subtitle')}
             </p>
           </div>
@@ -370,51 +411,51 @@ const Dashboard = () => {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-2 border-gray-300 bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Package className="w-4 h-4" />
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                <Package className="w-4 h-4 text-black" />
                 {t('dashboardPage.totalBookings')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.total}</div>
+              <div className="text-3xl font-bold text-black">{stats.total}</div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-2 border-gray-300 bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-black" />
                 {t('dashboardPage.pending')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-yellow-600">{stats.pending}</div>
+              <div className="text-3xl font-bold text-black">{stats.pending}</div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-2 border-gray-300 bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-black" />
                 {t('dashboardPage.confirmed')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">{stats.confirmed}</div>
+              <div className="text-3xl font-bold text-black">{stats.confirmed}</div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-2 border-gray-300 bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-black" />
                 {t('dashboardPage.totalSpent')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold"><Price amount={stats.totalSpent} fromCurrency="EUR" showLoader /></div>
+              <div className="text-2xl font-bold text-black"><Price amount={stats.totalSpent} fromCurrency="EUR" showLoader /></div>
             </CardContent>
           </Card>
 
@@ -439,14 +480,14 @@ const Dashboard = () => {
 
           <TabsContent value="all" className="space-y-4">
             {bookings.length === 0 ? (
-              <Card>
+              <Card className="border-2 border-gray-300 bg-white">
                 <CardContent className="py-12 text-center">
-                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">{t('dashboardPage.noBookings')}</h3>
-                  <p className="text-muted-foreground mb-6">
+                  <Package className="h-12 w-12 mx-auto text-black mb-4" />
+                  <h3 className="text-lg font-semibold text-black mb-2">{t('dashboardPage.noBookings')}</h3>
+                  <p className="text-gray-700 mb-6">
                     {t('dashboardPage.startPlanning')}
                   </p>
-                  <Button onClick={() => navigate("/")}>{t('dashboardPage.explore')}</Button>
+                  <Button onClick={() => navigate("/")} className="bg-black hover:bg-gray-800 text-white">{t('dashboardPage.explore')}</Button>
                 </CardContent>
               </Card>
             ) : (

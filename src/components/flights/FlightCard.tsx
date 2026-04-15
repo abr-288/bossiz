@@ -53,15 +53,15 @@ export const FlightCard = ({
 
   // Airline logo URL - using pics.avs.io service
   const airlineLogoUrl = `https://pics.avs.io/80/80/${airlineCode}.png`;
-  
+
   return (
     <Card className="p-4 hover:shadow-md transition-shadow">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         {/* Airline Info */}
         <div className="flex items-center gap-3 min-w-[160px]">
           <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden bg-white border border-border">
-            <img 
-              src={airlineLogoUrl} 
+            <img
+              src={airlineLogoUrl}
               alt={`${airline} logo`}
               className="w-10 h-10 object-contain"
               onError={(e) => {
@@ -97,12 +97,12 @@ export const FlightCard = ({
               <Clock className="h-3.5 w-3.5" />
               <span className="text-sm font-semibold">{formatDuration(duration)}</span>
             </div>
-            
+
             {/* Flight Path Line */}
             <div className="w-full flex items-center gap-2 my-1">
               <div className="flex-1 h-[2px] bg-border relative">
                 {stops > 0 && Array.from({ length: stops }).map((_, i) => (
-                  <div 
+                  <div
                     key={i}
                     className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-background"
                     style={{ left: `${((i + 1) / (stops + 1)) * 100}%`, transform: 'translate(-50%, -50%)' }}
@@ -111,15 +111,14 @@ export const FlightCard = ({
               </div>
               <Plane className="h-4 w-4 text-secondary" />
             </div>
-            
+
             {/* Stops Badge */}
-            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium animate-fade-in ${
-              stops === 0 
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                : stops === 1 
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium animate-fade-in ${stops === 0
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                : stops === 1
                   ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
                   : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-            }`}>
+              }`}>
               {stops === 0 ? (
                 <>
                   <CircleCheck className="h-3.5 w-3.5" />
@@ -155,7 +154,7 @@ export const FlightCard = ({
               <Price amount={price} fromCurrency={currency} showLoader />
             </div>
           </div>
-          <Button 
+          <Button
             onClick={onSelect}
             className="w-full bg-secondary hover:bg-secondary/90 text-primary font-semibold"
           >

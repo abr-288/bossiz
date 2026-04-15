@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, AlertCircle, Smartphone, CheckCircle2 } from "lucide-react";
+import { Loader2, AlertCircle, Smartphone, CheckCircle2, Wallet } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { paymentSchema, type PaymentInput } from "@/lib/validationSchemas";
@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import ErrorBoundary, { ErrorFallback } from "@/components/ErrorBoundary";
 import PaymentMethodSelector from "@/components/PaymentMethodSelector";
 import { Price } from "@/components/ui/price";
+import CinetPayService from "@/services/cinetpay";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,7 +36,7 @@ export default function Payment() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [booking, setBooking] = useState<any>(null);
-  const [paymentMethod, setPaymentMethod] = useState("wave");
+  const [paymentMethod, setPaymentMethod] = useState("cinetpay");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);

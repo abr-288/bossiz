@@ -387,9 +387,7 @@ const Hotels = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-            <div className="flex justify-center mb-4">
-              <Hotel className="w-16 h-16 text-white drop-shadow-lg" />
-            </div>
+
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Hôtels & Hébergements</h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">Des hébergements de qualité partout dans le monde</p>
           </div>

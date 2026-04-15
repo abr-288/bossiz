@@ -66,6 +66,18 @@ All colors MUST be HSL.
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Eden Circle - Luxury Design Tokens */
+    --eden-midnight: 234 66% 30%; /* #1A237E */
+    --eden-gold: 46 65% 52%; /* #D4AF37 */
+    --eden-gold-light: 46 65% 72%;
+    --eden-gold-dark: 46 65% 32%;
+    --eden-bg: 234 66% 12%;
+    --eden-card: 234 66% 18%;
+    --eden-glass: 234 66% 25% / 0.4;
+    
+    --font-luxury-serif: "Playfair Display", serif;
+    --font-luxury-sans: "Montserrat", sans-serif;
   }
 
   .dark {

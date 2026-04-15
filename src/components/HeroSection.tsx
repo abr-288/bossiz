@@ -41,14 +41,14 @@ const HeroSection = () => {
 
   return (
     <section className="relative w-full overflow-hidden">
-      {/* Background - Compact with image */}
-      <div className="relative h-[200px] sm:h-[240px] md:h-[280px]">
+      {/* Background - Tall & Immersive */}
+      <div className="relative min-h-[60vh] md:min-h-[75vh] flex items-center justify-center">
         {heroSlides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-1500 ${
+              index === currentSlide ? "opacity-100 scale-105" : "opacity-0 scale-100"
+            } transition-transform duration-[5s] ease-out`}
           >
             <img
               src={slide}
@@ -58,29 +58,30 @@ const HeroSection = () => {
             />
           </div>
         ))}
-        {/* Clean gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/50 via-primary/40 to-background" />
+        {/* Deep, Premium Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-background/20" />
+        <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
         
-        {/* Hero text */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2 drop-shadow-lg leading-tight">
+        {/* Hero text - Larger & More Impactful */}
+        <div className="relative z-10 container mx-auto px-4 text-center mt-[-10vh]">
+          <h1 className="text-4xl md:text-7xl font-black text-white mb-6 drop-shadow-2xl tracking-tighter animate-slide-up-fade">
             {config.hero.title || t('hero.title')}
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-white/90 max-w-xl drop-shadow">
+          <p className="text-lg md:text-2xl text-white/90 max-w-2xl mx-auto drop-shadow-lg font-medium leading-relaxed animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
             {config.hero.subtitle || t('hero.subtitle')}
           </p>
         </div>
 
-        {/* Slide indicators */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+        {/* Slide indicators - More subtle */}
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10 flex gap-2">
           {heroSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              className={`h-1 rounded-full transition-all duration-500 ${
                 index === currentSlide 
-                  ? 'w-6 bg-secondary' 
-                  : 'w-1.5 bg-white/50 hover:bg-white/70'
+                  ? 'w-10 bg-secondary shadow-lg shadow-secondary/50' 
+                  : 'w-2 bg-white/30 hover:bg-white/60'
               }`}
               aria-label={`Slide ${index + 1}`}
             />
@@ -88,9 +89,9 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Search Card - Floating over the background transition */}
-      <div className="site-container relative z-20 -mt-10 sm:-mt-12 md:-mt-14 pb-4">
-        <div className="max-w-4xl mx-auto bg-card rounded-xl sm:rounded-2xl shadow-lg border border-border overflow-hidden">
+      {/* Search Card - Beautifully Floating */}
+      <div className="container relative z-20 -mt-28 sm:-mt-32 md:-mt-40 pb-8 px-4">
+        <div className="max-w-4xl mx-auto bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 overflow-hidden scale-[1.02] transition-transform">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full h-auto p-0 bg-muted/50 flex justify-start overflow-x-auto rounded-none gap-0 scroll-snap-x border-b border-border">
               <TabsTrigger 

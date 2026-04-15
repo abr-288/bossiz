@@ -104,7 +104,7 @@ const Events = () => {
       <Navbar />
       
       <main className="flex-1">
-        {/* Hero Section with Background */}
+        {/* Hero Section with Search Form */}
         <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
           <LazyImage 
             src={bannerEvents}
@@ -115,9 +115,7 @@ const Events = () => {
 
           <div className="relative z-10 container mx-auto px-4 py-12">
             <div className="text-center mb-8 animate-fade-in">
-              <div className="flex justify-center mb-4">
-                <Calendar className="w-16 h-16 text-white drop-shadow-lg" />
-              </div>
+
               <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
                 {t("events.title", "Découvrez les événements")}
               </h1>

@@ -271,55 +271,40 @@ const Destinations = () => {
     <div className="min-h-screen flex flex-col pt-16">
       <Navbar />
 
-      {/* Hero Section */}
-      <div className="relative h-[400px] md:h-[500px] overflow-hidden">
+      {/* Hero Section with Search Form */}
+      <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920"
           alt="Destinations"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
-        <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4"
-          >
-            <Globe className="w-16 h-16 text-white drop-shadow-lg mx-auto" />
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
-          >
-            {t("destinations.title", "Explorez le Monde")}
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-white/90 mb-8 max-w-2xl"
-          >
-            {t("destinations.subtitle", "Découvrez des destinations incroyables et créez des souvenirs inoubliables")}
-          </motion.p>
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          <div className="text-center mb-8 animate-fade-in">
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="w-full max-w-2xl"
-          >
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg tracking-tighter">
+              {t("destinations.title", "Explorez le Monde")}
+            </h1>
+            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto font-medium">
+              {t("destinations.subtitle", "Découvrez des destinations incroyables adaptées à vos envies")}
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
                 type="text"
                 placeholder={t("destinations.searchPlaceholder", "Rechercher une destination...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-6 text-lg bg-white"
+                className="pl-12 py-7 text-lg bg-white/95 backdrop-blur-sm border-white/20 shadow-2xl rounded-2xl focus-visible:ring-primary/20 transition-all"
               />
+              <Button className="absolute right-2 top-1/2 -translate-y-1/2 h-11 px-6 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all">
+                Rechercher
+              </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -47,6 +47,7 @@ const AdminPayments = lazy(() => import("@/pages/admin/AdminPayments"));
 const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
 const AdminNewsletter = lazy(() => import("@/pages/admin/AdminNewsletter"));
 const AdminDestinations = lazy(() => import("@/pages/admin/AdminDestinations"));
+const AdminContentManager = lazy(() => import("@/pages/AdminContentManager"));
 const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
 const AgencyActivities = lazy(() => import("@/pages/agency/AgencyActivities"));
@@ -57,19 +58,34 @@ const Help = lazy(() => import("@/pages/Help"));
 const Support = lazy(() => import("@/pages/Support"));
 const Install = lazy(() => import("@/pages/Install"));
 const PriceAlerts = lazy(() => import("@/pages/PriceAlerts"));
-const Subscriptions = lazy(() => import("@/pages/Subscriptions"));
-const SubscriptionPayment = lazy(() => import("@/pages/SubscriptionPayment"));
+const Subscriptions = lazy(() => import("@/pages/NewSubscriptions"));
+const SubscriptionPaymentComponent = lazy(() => import("@/components/ModernSubscriptionPayment"));
 const PaymentTest = lazy(() => import("@/pages/PaymentTest"));
+const CinetPayTest = lazy(() => import("@/pages/ModernCinetPayTest"));
+const PlansDebug = lazy(() => import("@/pages/PlansDebug"));
+const SubscriptionsDebug = lazy(() => import("@/debug/subscriptions-debug"));
+const MajesticPlansDebug = lazy(() => import("@/debug/majestic-plans-debug"));
+const SupabaseAuthDebug = lazy(() => import("@/debug/supabase-auth-debug"));
 const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("@/pages/TermsOfService"));
+const MajesticClub = lazy(() => import("@/pages/MajesticClub"));
+const MajesticDashboard = lazy(() => import("@/pages/MajesticDashboard"));
+const MajesticSubscriptionPage = lazy(() => import("@/pages/MajesticSubscriptionPage"));
+const MajesticSubscriptionSuccess = lazy(() => import("@/pages/MajesticSubscriptionSuccess"));
+const Documentation = lazy(() => import("@/pages/Documentation"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="flex flex-col items-center gap-4">
-      <Loader2 className="w-12 h-12 animate-spin text-primary" />
-      <p className="text-muted-foreground">Chargement...</p>
+  <div className="loader-container">
+    <div className="loader-logo-wrapper">
+      <div className="loader-ring"></div>
+      <div className="loader-ring"></div>
+      <img src="https://storage.googleapis.com/gpt-engineer-file-uploads/eELbhqThzPVCUnExIw7dfxcDOAj2/uploads/1761678567741-new_logo_bossizG.png" alt="B-Reserve Logo" className="loader-logo" />
+    </div>
+    <div className="loader-text">B-RESERVE</div>
+    <div className="loader-bar-bg">
+      <div className="loader-bar"></div>
     </div>
   </div>
 );
@@ -128,6 +144,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/reviews" element={<PageTransition><AdminReviews /></PageTransition>} />
           <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
           <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
+          <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
           <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
           <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
           <Route path="/agency/activities" element={<PageTransition><AgencyActivities /></PageTransition>} />
@@ -139,10 +156,20 @@ const AnimatedRoutes = () => {
           <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
           <Route path="/price-alerts" element={<PageTransition><PriceAlerts /></PageTransition>} />
           <Route path="/subscriptions" element={<PageTransition><Subscriptions /></PageTransition>} />
-          <Route path="/subscription-payment" element={<PageTransition><SubscriptionPayment /></PageTransition>} />
+          <Route path="/subscription-payment" element={<PageTransition><SubscriptionPaymentComponent /></PageTransition>} />
           <Route path="/payment-test" element={<PageTransition><PaymentTest /></PageTransition>} />
+          <Route path="/cinetpay-test" element={<PageTransition><CinetPayTest /></PageTransition>} />
+          <Route path="/plans-debug" element={<PageTransition><PlansDebug /></PageTransition>} />
+          <Route path="/subscriptions-debug" element={<PageTransition><SubscriptionsDebug /></PageTransition>} />
+          <Route path="/majestic-plans-debug" element={<PageTransition><MajesticPlansDebug /></PageTransition>} />
+          <Route path="/supabase-auth-debug" element={<PageTransition><SupabaseAuthDebug /></PageTransition>} />
           <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
           <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
+          <Route path="/majestic-club" element={<PageTransition><MajesticClub /></PageTransition>} />
+          <Route path="/majestic-dashboard" element={<PageTransition><MajesticDashboard /></PageTransition>} />
+          <Route path="/majestic-subscription" element={<PageTransition><MajesticSubscriptionPage /></PageTransition>} />
+          <Route path="/majestic-subscription-success" element={<PageTransition><MajesticSubscriptionSuccess /></PageTransition>} />
+          <Route path="/documentation" element={<PageTransition><Documentation /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </Suspense>

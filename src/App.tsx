@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
+import ChatWidget from "@/components/ChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
               <NotificationPrompt />
               <BrowserRouter>
                 <AnimatedRoutes />
+                <ChatWidget />
               </BrowserRouter>
             </TooltipProvider>
           </CurrencyProvider>
