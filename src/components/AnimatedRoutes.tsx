@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import PageTransition from "./PageTransition";
 
 // Lazy load route components for code splitting
+const BossizConciergerieCI = lazy(() => import("@/pages/BossizConciergerieCI"));
 const Index = lazy(() => import("@/pages/Index"));
 const Flights = lazy(() => import("@/pages/Flights"));
 const Hotels = lazy(() => import("@/pages/Hotels"));
@@ -103,6 +104,7 @@ const AnimatedRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Index /></PageTransition>} />
           <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-ci" element={<PageTransition><BossizConciergerieCI /></PageTransition>} />
           <Route path="/flights" element={<PageTransition><Flights /></PageTransition>} />
           <Route path="/hotels" element={<PageTransition><Hotels /></PageTransition>} />
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
