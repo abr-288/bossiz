@@ -5,7 +5,9 @@ import { Loader2 } from "lucide-react";
 import PageTransition from "./PageTransition";
 
 // Lazy load route components for code splitting
+const BossizPortal = lazy(() => import("@/pages/BossizPortal"));
 const BossizConciergerieCI = lazy(() => import("@/pages/BossizConciergerieCI"));
+const BossizConciergerieSN = lazy(() => import("@/pages/BossizConciergerieSN"));
 const Index = lazy(() => import("@/pages/Index"));
 const Flights = lazy(() => import("@/pages/Flights"));
 const Hotels = lazy(() => import("@/pages/Hotels"));
@@ -49,6 +51,8 @@ const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
 const AdminNewsletter = lazy(() => import("@/pages/admin/AdminNewsletter"));
 const AdminDestinations = lazy(() => import("@/pages/admin/AdminDestinations"));
 const AdminContentManager = lazy(() => import("@/pages/AdminContentManager"));
+const AdminBossizSites = lazy(() => import("@/pages/admin/AdminBossizSites"));
+const AdminHomepageConfig = lazy(() => import("@/pages/admin/AdminHomepageConfig"));
 const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
 const AgencyActivities = lazy(() => import("@/pages/agency/AgencyActivities"));
@@ -104,7 +108,9 @@ const AnimatedRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Index /></PageTransition>} />
           <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
+          <Route path="/bossiz-portal" element={<PageTransition><BossizPortal /></PageTransition>} />
           <Route path="/bossiz-conciergerie-ci" element={<PageTransition><BossizConciergerieCI /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-sn" element={<PageTransition><BossizConciergerieSN /></PageTransition>} />
           <Route path="/flights" element={<PageTransition><Flights /></PageTransition>} />
           <Route path="/hotels" element={<PageTransition><Hotels /></PageTransition>} />
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
@@ -147,6 +153,8 @@ const AnimatedRoutes = () => {
           <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
           <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
           <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
+          <Route path="/admin/bossiz-sites" element={<PageTransition><AdminBossizSites /></PageTransition>} />
+          <Route path="/admin/homepage-config" element={<PageTransition><AdminHomepageConfig /></PageTransition>} />
           <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
           <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
           <Route path="/agency/activities" element={<PageTransition><AgencyActivities /></PageTransition>} />

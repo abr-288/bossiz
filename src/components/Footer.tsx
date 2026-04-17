@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Facebook, Twitter, Instagram, Youtube, Mail, Linkedin } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Mail, Linkedin, Download } from "lucide-react";
 import logoDark from "@/assets/logo-dark.png";
 import logoLight from "@/assets/logo-light.png";
 import { useState } from "react";
@@ -15,6 +15,21 @@ const Footer = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const { subscribe, loading } = useNewsletterSubscribe();
+
+  // Fonction pour installer l'app iOS depuis le footer
+  const handleAppInstall = () => {
+    const appStoreUrl = "https://apps.apple.com/app/b-reserve/id123456789";
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      window.open(appStoreUrl, '_blank');
+      setTimeout(() => {
+        alert('Redirection vers l\'App Store en cours...');
+      }, 500);
+    } else {
+      alert('Cette application est réservée aux appareils iOS (iPhone/iPad).');
+    }
+  };
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,9 +186,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/install" className="text-secondary hover:text-secondary/80 transition-smooth font-semibold">
-                  📱 {t("common.install")}
-                </Link>
+                <Button 
+                  onClick={handleAppInstall}
+                  className="bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-bold py-3 px-4 border-2 border-white hover:border-gray-200 rounded-lg animate-pulse hover:animate-none text-sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  {t("common.install")}
+                </Button>
               </li>
             </ul>
           </div>

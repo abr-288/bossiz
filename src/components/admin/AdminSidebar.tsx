@@ -28,6 +28,7 @@ const menuItems = [
   { title: "Avis Clients", url: "/admin/reviews", icon: Star },
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
+  { title: "Bossiz Sites", url: "/admin/bossiz-sites", icon: Globe },
   { title: "Utilisateurs", url: "/admin/users", icon: Users },
   { title: "Templates Email", url: "/admin/email-templates", icon: Mail },
   { title: "Configuration", url: "/admin/configuration", icon: Cog },

@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { SiteConfigProvider } from "@/contexts/SiteConfigContext";
+import { BossizConfigProvider } from "@/contexts/BossizConfigContext";
+import { HomepageConfigProvider } from "@/contexts/HomepageConfigContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
@@ -18,17 +20,21 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <SiteConfigProvider>
-          <CurrencyProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <NotificationPrompt />
-              <BrowserRouter>
-                <AnimatedRoutes />
-                <ChatWidget />
-              </BrowserRouter>
-            </TooltipProvider>
-          </CurrencyProvider>
+          <BossizConfigProvider>
+            <HomepageConfigProvider>
+              <CurrencyProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <NotificationPrompt />
+                  <BrowserRouter>
+                    <AnimatedRoutes />
+                    <ChatWidget />
+                  </BrowserRouter>
+                </TooltipProvider>
+              </CurrencyProvider>
+            </HomepageConfigProvider>
+          </BossizConfigProvider>
         </SiteConfigProvider>
       </ThemeProvider>
     </QueryClientProvider>
