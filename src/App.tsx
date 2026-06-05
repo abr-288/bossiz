@@ -1,3 +1,5 @@
+// Composant principal de l'application
+// Configure tous les providers et les composants globaux
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,8 +15,10 @@ import { NotificationPrompt } from "@/components/NotificationPrompt";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
 import ChatWidget from "@/components/ChatWidget";
 
+// Client React Query pour la gestion des requêtes API et du cache
 const queryClient = new QueryClient();
 
+// Composant App qui enveloppe l'application avec tous les providers nécessaires
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Search, HelpCircle, Plane, Hotel, Car, CreditCard, Shield, Mail } from "lucide-react";
+import { Search, HelpCircle, Plane, Hotel, Car, CreditCard, Shield, Mail, Phone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { cn } from "@/lib/utils";
@@ -294,8 +294,5 @@ const Help = () => {
     </div>
   );
 };
-
-// Missing import
-import { Phone } from "lucide-react";
 
 export default Help;

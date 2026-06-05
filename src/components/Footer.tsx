@@ -16,18 +16,26 @@ const Footer = () => {
   const [email, setEmail] = useState("");
   const { subscribe, loading } = useNewsletterSubscribe();
 
-  // Fonction pour installer l'app iOS depuis le footer
+  // Fonction pour installer l'app depuis le footer (compatible tous appareils)
   const handleAppInstall = () => {
     const appStoreUrl = "https://apps.apple.com/app/b-reserve/id123456789";
+    const playStoreUrl = "https://play.google.com/store/apps/details?id=com.breserve.app";
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
     
     if (isIOS) {
       window.open(appStoreUrl, '_blank');
       setTimeout(() => {
         alert('Redirection vers l\'App Store en cours...');
       }, 500);
+    } else if (isAndroid) {
+      window.open(playStoreUrl, '_blank');
+      setTimeout(() => {
+        alert('Redirection vers Google Play en cours...');
+      }, 500);
     } else {
-      alert('Cette application est réservée aux appareils iOS (iPhone/iPad).');
+      // Pour desktop, rediriger vers la page d'installation
+      window.location.href = '/install';
     }
   };
 
@@ -183,6 +191,11 @@ const Footer = () => {
               <li>
                 <Link to="/dashboard" className="text-white/80 hover:text-secondary transition-smooth">
                   Tableau de bord
+                </Link>
+              </li>
+              <li>
+                <Link to="/compatibility" className="text-white/80 hover:text-secondary transition-smooth">
+                  Compatibilité
                 </Link>
               </li>
               <li>

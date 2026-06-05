@@ -10,7 +10,8 @@ import {
   CheckCircle,
   ExternalLink,
   Shield,
-  Zap
+  Zap,
+  Monitor
 } from "lucide-react";
 
 const iOSDownloadSection = () => {
@@ -19,13 +20,50 @@ const iOSDownloadSection = () => {
     ios: 0,
     android: 0
   });
+  const [detectedOS, setDetectedOS] = useState<string>('');
 
-  // Simuler des stats de téléchargement
+  // Fonction pour détecter le système d'exploitation
+  const detectOS = () => {
+    const userAgent = navigator.userAgent;
+    
+    // Détection iOS
+    if (/iPad|iPhone|iPod/.test(userAgent)) {
+      return 'ios';
+    }
+    
+    // Détection Android
+    if (/Android/.test(userAgent)) {
+      return 'android';
+    }
+    
+    // Détection Windows
+    if (/Win/.test(userAgent)) {
+      return 'windows';
+    }
+    
+    // Détection macOS
+    if (/Mac/.test(userAgent)) && !(/iPad|iPhone|iPod/.test(userAgent)) {
+      return 'mac';
+    }
+    
+    // Détection Linux
+    if (/Linux/.test(userAgent) && !(/Android/.test(userAgent))) {
+      return 'linux';
+    }
+    
+    return 'unknown';
+  };
+
+  // Simuler des stats de téléchargement et détecter le système
   useEffect(() => {
     const stats = localStorage.getItem('downloadStats');
     if (stats) {
       setDownloadStats(JSON.parse(stats));
     }
+    
+    // Détecter le système au chargement
+    const os = detectOS();
+    setDetectedOS(os);
   }, []);
 
   const handleDownloadClick = (platform: 'ios' | 'android') => {
@@ -38,24 +76,98 @@ const iOSDownloadSection = () => {
   };
 
   const appStoreUrl = "https://apps.apple.com/app/b-reserve/id123456789";
+  const playStoreUrl = "https://play.google.com/store/apps/details?id=com.breserve.app";
   const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(appStoreUrl);
 
-  // Fonction pour installer l'app depuis l'App Store
+  // Fonction pour installer l'app selon le système détecté
+  const handleUniversalInstall = () => {
+    const os = detectOS();
+    
+    switch (os) {
+      case 'ios':
+        // Rediriger vers l'App Store
+        window.open(appStoreUrl, '_blank');
+        setTimeout(() => {
+          alert('Redirection vers l\'App Store en cours...\nL\'installation commencera automatiquement !');
+        }, 500);
+        handleDownloadClick('ios');
+        break;
+        
+      case 'android':
+        // Rediriger vers Google Play
+        window.open(playStoreUrl, '_blank');
+        setTimeout(() => {
+          alert('Redirection vers Google Play en cours...\nL\'installation commencera automatiquement !');
+        }, 500);
+        handleDownloadClick('android');
+        break;
+        
+      case 'windows':
+      case 'mac':
+      case 'linux':
+        // Afficher les options pour desktop
+        showDesktopOptions();
+        break;
+        
+      default:
+        // Afficher les options pour système inconnu
+        showDesktopOptions();
+        break;
+    }
+  };
+
+  // Fonction pour afficher les options desktop
+  const showDesktopOptions = () => {
+    const message = `
+Choisissez votre plateforme mobile :
+
+1. iOS (iPhone/iPad)
+2. Android
+
+Ou scannez le QR Code correspondant !
+    `;
+    
+    if (confirm(message + '\n\nCliquez sur OK pour voir iOS, ou Annuler pour Android.')) {
+      window.open(appStoreUrl, '_blank');
+      handleDownloadClick('ios');
+    } else {
+      window.open(playStoreUrl, '_blank');
+      handleDownloadClick('android');
+    }
+  };
+
+  // Fonction pour installer l'app depuis l'App Store (spécifique iOS)
   const handleAppInstall = () => {
-    // Vérifier si l'utilisateur est sur iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     
     if (isIOS) {
-      // Ouvrir l'App Store avec une expérience native
       window.open(appStoreUrl, '_blank');
-      
-      // Afficher une notification de succès
       setTimeout(() => {
-        alert('📱 Redirection vers l\'App Store en cours...\nL\'installation commencera automatiquement !');
+        alert('Redirection vers l\'App Store en cours...\nL\'installation commencera automatiquement !');
       }, 500);
     } else {
-      // Afficher un message pour les utilisateurs non-iOS
-      alert('📱 Cette application est réservée aux appareils iOS (iPhone/iPad).\nVeuillez utiliser un appareil iOS pour installer cette application.');
+      alert('Cette application est réservée aux appareils iOS (iPhone/iPad).\nVeuillez utiliser un appareil iOS pour installer cette application.');
+    }
+  };
+
+  // Fonction pour obtenir le texte du système détecté
+  const getDetectedOSText = () => {
+    switch (detectedOS) {
+      case 'ios': return 'iOS détecté';
+      case 'android': return 'Android détecté';
+      case 'windows': return 'Windows détecté';
+      case 'mac': return 'macOS détecté';
+      case 'linux': return 'Linux détecté';
+      default: return 'Système inconnu';
+    }
+  };
+
+  // Fonction pour obtenir l'icône du système détecté
+  const getDetectedOSIcon = () => {
+    switch (detectedOS) {
+      case 'ios': return <Apple className="w-4 h-4" />;
+      case 'android': return <Smartphone className="w-4 h-4" />;
+      default: return <Monitor className="w-4 h-4" />;
     }
   };
 
@@ -90,6 +202,49 @@ const iOSDownloadSection = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Accédez à tous nos services de réservation directement depuis votre smartphone
           </p>
+          
+          {/* Système détecté */}
+          {detectedOS && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-md border border-gray-200">
+              {getDetectedOSIcon()}
+              <span className="text-sm font-medium text-gray-700">{getDetectedOSText()}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Bouton Universel de Téléchargement */}
+        <div className="max-w-md mx-auto mb-12">
+          <Card className="border-2 border-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 hover:shadow-2xl hover:scale-105 group bg-white shadow-lg">
+            <CardContent className="p-8 text-center">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Download className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Téléchargement Intelligent</h3>
+                <p className="text-gray-600">Détecte automatiquement votre système</p>
+              </div>
+              
+              <Button 
+                size="lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl animate-pulse hover:animate-none relative overflow-hidden group"
+                onClick={handleUniversalInstall}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                <div className="relative z-10 flex items-center justify-center">
+                  <Download className="w-6 h-6 mr-3" />
+                  {detectedOS === 'ios' ? 'Installer sur iOS' : 
+                   detectedOS === 'android' ? 'Installer sur Android' : 
+                   'Télécharger l\'App'}
+                </div>
+              </Button>
+              
+              <p className="text-sm text-gray-500 mt-4">
+                {detectedOS === 'ios' ? 'Redirection vers l\'App Store' :
+                 detectedOS === 'android' ? 'Redirection vers Google Play' :
+                 'Choisissez votre plateforme ci-dessous'}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -116,7 +271,7 @@ const iOSDownloadSection = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                   <div className="relative z-10 flex items-center justify-center">
                     <Download className="w-6 h-6 mr-3" />
-                    📱 Installer l'App
+                    Installer sur iOS
                   </div>
                 </Button>
                 
@@ -167,7 +322,10 @@ const iOSDownloadSection = () => {
                 <Button 
                   size="lg"
                   className="w-full bg-green-600 text-white hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-bold py-6 text-lg"
-                  onClick={() => handleDownloadClick('android')}
+                  onClick={() => {
+                    handleDownloadClick('android');
+                    window.open(playStoreUrl, '_blank');
+                  }}
                 >
                   <Download className="w-6 h-6 mr-3" />
                   Télécharger sur Google Play
@@ -176,7 +334,7 @@ const iOSDownloadSection = () => {
                 <Button 
                   variant="outline"
                   className="w-full border-2 border-gray-300 hover:border-green-300 hover:text-green-600 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 font-bold py-6 text-lg"
-                  onClick={() => window.open('https://play.google.com/store/apps/details?id=com.breserve.app', '_blank')}
+                  onClick={() => window.open(playStoreUrl, '_blank')}
                 >
                   <ExternalLink className="w-6 h-6 mr-3" />
                   Voir sur Google Play

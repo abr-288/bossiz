@@ -318,11 +318,11 @@ export default function NewSubscriptions() {
               </Badge>
               
               <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                Transformez Votre Expérience de Voyage
+                Nos Abonnements
               </h1>
               
               <p className="text-xl md:text-2xl mb-12 text-blue-100">
-                Plus de 1000 clients nous font déjà confiance. Rejoignez l'élite qui accède à un monde d'opportunités illimitées.
+                Découvrez nos formules adaptées à vos besoins. Rejoignez l'élite qui accède à un monde d'opportunités illimitées.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -360,10 +360,10 @@ export default function NewSubscriptions() {
               className="text-center mb-16"
             >
               <h2 className="text-4xl font-bold text-black mb-4">
-                Choisissez Votre Plan Voyage
+                Nos Abonnements
               </h2>
               <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Des solutions adaptées à chaque type de voyageur et chaque budget. Changez ou annulez à tout moment.
+                Découvrez nos formules adaptées à vos besoins. Changez ou annulez à tout moment.
               </p>
             </motion.div>
 

@@ -14,35 +14,60 @@ interface PriceCalendarProps {
   onDateSelect: (date: string) => void;
   lowestPrice?: number;
   viewMode?: "week" | "month";
+  onPriceFilterChange?: (filters: { low: boolean; medium: boolean; high: boolean }) => void;
 }
 
 /**
- * Génère un prix simulé basé sur des règles réalistes
+ * Génère un prix simulé basé sur des règles réalistes avec graine fixe
  */
 const generatePrice = (date: Date, basePrice: number): number => {
   const dayOfWeek = getDay(date);
   const isWeekendDay = isWeekend(date);
   
+  // Créer une graine fixe basée sur la date pour éviter les variations aléatoires
+  const dateSeed = format(date, 'yyyy-MM-dd');
+  let hash = 0;
+  for (let i = 0; i < dateSeed.length; i++) {
+    hash = ((hash << 5) - hash) + dateSeed.charCodeAt(i);
+    hash = hash & hash; // Convertir en entier 32-bit
+  }
+  const randomSeed = (hash % 1000) / 1000; // Valeur entre 0 et 1
+  
   // Prix de base
   let price = basePrice;
   
-  // Week-end + 20-30%
+  // Week-end + 25-35% (plus cher pour aller-retour)
   if (isWeekendDay) {
-    price *= 1.2 + Math.random() * 0.1;
+    price *= 1.25 + randomSeed * 0.1;
   }
   
-  // Vendredi + 15%
+  // Vendredi + 20%
   if (dayOfWeek === 5) {
-    price *= 1.15;
+    price *= 1.2;
   }
   
-  // Mardi/Mercredi -10% (jours les moins chers)
+  // Mardi/Mercredi -5% (jours moins chers mais pas trop)
   if (dayOfWeek === 2 || dayOfWeek === 3) {
-    price *= 0.9;
+    price *= 0.95;
   }
   
-  // Variation aléatoire ±10%
-  price *= 0.9 + Math.random() * 0.2;
+  // Lundi/Jeudi + 10% (jours modérés)
+  if (dayOfWeek === 1 || dayOfWeek === 4) {
+    price *= 1.1;
+  }
+  
+  // Samedi + 30% (jour de week-end cher)
+  if (dayOfWeek === 6) {
+    price *= 1.3;
+  }
+  
+  // Dimanche + 35% (jour le plus cher)
+  if (dayOfWeek === 0) {
+    price *= 1.35;
+  }
+  
+  // Variation fixe basée sur la graine ±5% (moins de variation)
+  price *= 0.95 + randomSeed * 0.1;
   
   return Math.round(price);
 };
@@ -53,11 +78,19 @@ export const PriceCalendar = ({
   currency = "€", 
   onDateSelect, 
   lowestPrice = 250,
-  viewMode: initialViewMode = "week"
+  viewMode: initialViewMode = "week",
+  onPriceFilterChange
 }: PriceCalendarProps) => {
   const baseDate = parseISO(departureDate);
   const [currentMonth, setCurrentMonth] = useState(baseDate);
   const [viewMode, setViewMode] = useState<"week" | "month">(initialViewMode);
+  
+  // États pour les filtres de prix
+  const [priceFilters, setPriceFilters] = useState({
+    low: false,
+    medium: false,
+    high: false
+  });
 
   // Génération des prix avec cache
   const pricesWithDefaults = useMemo(() => {
@@ -87,7 +120,44 @@ export const PriceCalendar = ({
     return result;
   }, [viewMode, baseDate, currentMonth, prices, lowestPrice]);
 
-  // Calcul du meilleur prix et prix moyen
+  // Gestion des filtres de prix
+  const handlePriceFilterChange = (filterType: 'low' | 'medium' | 'high') => {
+    const newFilters = {
+      ...priceFilters,
+      [filterType]: !priceFilters[filterType]
+    };
+    setPriceFilters(newFilters);
+    onPriceFilterChange?.(newFilters);
+  };
+  
+  // Filtrage des prix selon les filtres sélectionnés
+  const filteredPrices = useMemo(() => {
+    const result: Record<string, number> = {};
+    
+    // D'abord calculer les statistiques originales
+    const priceValues = Object.values(pricesWithDefaults);
+    const min = Math.min(...priceValues);
+    const max = Math.max(...priceValues);
+    
+    Object.entries(pricesWithDefaults).forEach(([date, price]) => {
+      const range = max - min;
+      const position = (price - min) / range;
+      
+      let includePrice = true;
+      
+      if (priceFilters.low && position >= 0.66) includePrice = false;
+      if (priceFilters.medium && (position < 0.33 || position >= 0.66)) includePrice = false;
+      if (priceFilters.high && position < 0.33) includePrice = false;
+      
+      if (includePrice) {
+        result[date] = price;
+      }
+    });
+    
+    return result;
+  }, [pricesWithDefaults, priceFilters]);
+  
+  // Calcul du meilleur prix et prix moyen (original)
   const priceStats = useMemo(() => {
     const priceValues = Object.values(pricesWithDefaults);
     const min = Math.min(...priceValues);
@@ -95,10 +165,24 @@ export const PriceCalendar = ({
     const avg = priceValues.reduce((a, b) => a + b, 0) / priceValues.length;
     return { min, max, avg };
   }, [pricesWithDefaults]);
+  
+  // Recalculer les statistiques avec les prix filtrés
+  const filteredPriceStats = useMemo(() => {
+    const priceValues = Object.values(filteredPrices);
+    if (priceValues.length === 0) return { min: 0, max: 0, avg: 0 };
+    
+    const min = Math.min(...priceValues);
+    const max = Math.max(...priceValues);
+    const avg = priceValues.reduce((a, b) => a + b, 0) / priceValues.length;
+    return { min, max, avg };
+  }, [filteredPrices]);
 
-  // Fonction pour obtenir la couleur selon le prix
+  // Fonction pour obtenir la couleur selon le prix et les filtres
   const getPriceColor = (price: number) => {
-    const { min, max } = priceStats;
+    // Utiliser les statistiques originales pour le coloriage
+    const priceValues = Object.values(pricesWithDefaults);
+    const min = Math.min(...priceValues);
+    const max = Math.max(...priceValues);
     const range = max - min;
     const position = (price - min) / range;
     
@@ -143,7 +227,15 @@ export const PriceCalendar = ({
               {dates.map((date) => {
                 const dateStr = format(date, "yyyy-MM-dd");
                 const isSelected = dateStr === departureDate;
-                const price = pricesWithDefaults[dateStr];
+                const price = filteredPrices[dateStr];
+                
+                // Si le prix est filtré, ne pas afficher cette date
+                if (!price && pricesWithDefaults[dateStr]) {
+                  return (
+                    <div key={dateStr} className="flex-shrink-0 flex flex-col items-center px-4 py-2.5 rounded-xl border-2 border-dashed border-gray-300 min-w-[100px] opacity-50" />
+                  );
+                }
+                
                 const colorClass = getPriceColor(price);
                 
                 return (
@@ -212,7 +304,13 @@ export const PriceCalendar = ({
             <div className="flex items-center gap-2 text-sm">
               <TrendingDown className="h-4 w-4 text-green-600" />
               <span className="font-medium">
-                Min: <Price amount={priceStats.min} fromCurrency={currency} />
+                Min: <Price amount={filteredPriceStats.min} fromCurrency={currency} />
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <TrendingUp className="h-4 w-4 text-red-600" />
+              <span className="font-medium">
+                Max: <Price amount={filteredPriceStats.max} fromCurrency={currency} />
               </span>
             </div>
             <Button 
@@ -279,19 +377,37 @@ export const PriceCalendar = ({
           </AnimatePresence>
         </div>
 
-        {/* Légende */}
+        {/* Légende interactive */}
         <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-border">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800" />
-            <span className="text-xs text-muted-foreground">Prix bas</span>
+            <input
+              type="checkbox"
+              id="price-low"
+              checked={priceFilters.low}
+              onChange={() => handlePriceFilterChange('low')}
+              className="w-4 h-4 text-green-600 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 rounded focus:ring-green-500"
+            />
+            <label htmlFor="price-low" className="text-xs text-muted-foreground cursor-pointer">Prix bas</label>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800" />
-            <span className="text-xs text-muted-foreground">Prix moyen</span>
+            <input
+              type="checkbox"
+              id="price-medium"
+              checked={priceFilters.medium}
+              onChange={() => handlePriceFilterChange('medium')}
+              className="w-4 h-4 text-orange-600 bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800 rounded focus:ring-orange-500"
+            />
+            <label htmlFor="price-medium" className="text-xs text-muted-foreground cursor-pointer">Prix moyen</label>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800" />
-            <span className="text-xs text-muted-foreground">Prix élevé</span>
+            <input
+              type="checkbox"
+              id="price-high"
+              checked={priceFilters.high}
+              onChange={() => handlePriceFilterChange('high')}
+              className="w-4 h-4 text-red-600 bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 rounded focus:ring-red-500"
+            />
+            <label htmlFor="price-high" className="text-xs text-muted-foreground cursor-pointer">Prix élevé</label>
           </div>
         </div>
       </div>

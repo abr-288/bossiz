@@ -1,94 +1,96 @@
+// Schémas de validation pour les formulaires de l'application
+// Utilise Zod pour la validation des données
 import { z } from "zod";
 
-// Booking validation schema
+// Schéma de validation pour les réservations de base
 export const bookingSchema = z.object({
   customerName: z.string()
     .trim()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name must be less than 100 characters")
-    .regex(/^[a-zA-Z\s\-']+$/, "Name can only contain letters, spaces, hyphens and apostrophes"),
+    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .max(100, "Le nom doit contenir moins de 100 caractères")
+    .regex(/^[a-zA-Z\s\-']+$/, "Le nom ne peut contenir que des lettres, espaces, tirets et apostrophes"),
   customerEmail: z.string()
     .trim()
-    .email("Invalid email address")
-    .max(255, "Email must be less than 255 characters"),
+    .email("Adresse email invalide")
+    .max(255, "L'email doit contenir moins de 255 caractères"),
   customerPhone: z.string()
     .trim()
-    .regex(/^\+?[0-9]{8,15}$/, "Phone must be 8-15 digits, optionally starting with +"),
+    .regex(/^\+?[0-9]{8,15}$/, "Le téléphone doit contenir 8-15 chiffres, optionnellement précédés de +"),
   notes: z.string()
-    .max(1000, "Notes must be less than 1000 characters")
+    .max(1000, "Les notes doivent contenir moins de 1000 caractères")
     .optional()
     .nullable(),
 });
 
-// Flight booking validation schema
+// Schéma de validation pour les réservations de vols
 export const flightBookingSchema = bookingSchema.extend({
   passportNumber: z.string()
     .trim()
-    .min(6, "Passport number must be at least 6 characters")
-    .max(20, "Passport number must be less than 20 characters")
-    .regex(/^[A-Z0-9]+$/, "Passport number can only contain uppercase letters and numbers"),
+    .min(6, "Le numéro de passeport doit contenir au moins 6 caractères")
+    .max(20, "Le numéro de passeport doit contenir moins de 20 caractères")
+    .regex(/^[A-Z0-9]+$/, "Le numéro de passeport ne peut contenir que des lettres majuscules et des chiffres"),
   nationality: z.string()
     .trim()
-    .min(2, "Nationality must be at least 2 characters")
-    .max(50, "Nationality must be less than 50 characters"),
+    .min(2, "La nationalité doit contenir au moins 2 caractères")
+    .max(50, "La nationalité doit contenir moins de 50 caractères"),
   dateOfBirth: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "La date doit être au format YYYY-MM-DD"),
   specialRequests: z.string()
-    .max(500, "Special requests must be less than 500 characters")
+    .max(500, "Les demandes spéciales doivent contenir moins de 500 caractères")
     .optional()
     .nullable(),
 });
 
-// Car booking validation schema
+// Schéma de validation pour les réservations de voitures
 export const carBookingSchema = bookingSchema.extend({
   driverLicense: z.string()
     .trim()
-    .min(5, "License number must be at least 5 characters")
-    .max(30, "License number must be less than 30 characters")
-    .regex(/^[A-Z0-9\-]+$/, "License can only contain uppercase letters, numbers and hyphens"),
+    .min(5, "Le numéro de permis doit contenir au moins 5 caractères")
+    .max(30, "Le numéro de permis doit contenir moins de 30 caractères")
+    .regex(/^[A-Z0-9\-]+$/, "Le permis ne peut contenir que des lettres majuscules, des chiffres et des tirets"),
   pickupLocation: z.string()
     .trim()
-    .min(3, "Pickup location must be at least 3 characters")
-    .max(200, "Pickup location must be less than 200 characters"),
+    .min(3, "Le lieu de récupération doit contenir au moins 3 caractères")
+    .max(200, "Le lieu de récupération doit contenir moins de 200 caractères"),
   dropoffLocation: z.string()
     .trim()
-    .min(3, "Dropoff location must be at least 3 characters")
-    .max(200, "Dropoff location must be less than 200 characters"),
+    .min(3, "Le lieu de dépôt doit contenir au moins 3 caractères")
+    .max(200, "Le lieu de dépôt doit contenir moins de 200 caractères"),
 });
 
-// Hotel booking validation schema
+// Schéma de validation pour les réservations d'hôtels
 export const hotelBookingSchema = bookingSchema.extend({
   specialRequests: z.string()
-    .max(500, "Special requests must be less than 500 characters")
+    .max(500, "Les demandes spéciales doivent contenir moins de 500 caractères")
     .optional()
     .nullable(),
 });
 
-// Support message validation schema
+// Schéma de validation pour les messages de support
 export const supportMessageSchema = z.object({
   name: z.string()
     .trim()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name must be less than 100 characters"),
+    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .max(100, "Le nom doit contenir moins de 100 caractères"),
   email: z.string()
     .trim()
-    .email("Invalid email address")
-    .max(255, "Email must be less than 255 characters"),
+    .email("Adresse email invalide")
+    .max(255, "L'email doit contenir moins de 255 caractères"),
   bookingReference: z.string()
     .trim()
-    .max(50, "Booking reference must be less than 50 characters")
+    .max(50, "La référence de réservation doit contenir moins de 50 caractères")
     .optional(),
   subject: z.string()
     .trim()
-    .min(3, "Subject must be at least 3 characters")
-    .max(200, "Subject must be less than 200 characters"),
+    .min(3, "Le sujet doit contenir au moins 3 caractères")
+    .max(200, "Le sujet doit contenir moins de 200 caractères"),
   message: z.string()
     .trim()
-    .min(10, "Message must be at least 10 characters")
-    .max(2000, "Message must be less than 2000 characters"),
+    .min(10, "Le message doit contenir au moins 10 caractères")
+    .max(2000, "Le message doit contenir moins de 2000 caractères"),
 });
 
-// Passenger validation schema
+// Schéma de validation pour les passagers
 export const passengerSchema = z.object({
   firstName: z.string()
     .trim()
@@ -121,7 +123,7 @@ export const passengerSchema = z.object({
     .regex(/^[A-Z0-9\-]+$/i, "Le numéro ne peut contenir que des lettres, chiffres et tirets"),
 });
 
-// Multi-passenger form validation schema
+// Schéma de validation pour le formulaire multi-passagers
 export const passengersFormSchema = z.object({
   passengers: z.array(passengerSchema).min(1, "Au moins un passager est requis"),
   termsAccepted: z.boolean().refine((val) => val === true, {
@@ -129,10 +131,10 @@ export const passengersFormSchema = z.object({
   }),
 });
 
-// Payment validation schema
+// Schéma de validation pour les paiements
 export const paymentSchema = z.object({
-  bookingId: z.string().uuid("Invalid booking ID"),
-  amount: z.number().positive("Amount must be positive").max(10000000, "Amount too large"),
+  bookingId: z.string().uuid("ID de réservation invalide"),
+  amount: z.number().positive("Le montant doit être positif").max(10000000, "Montant trop élevé"),
   currency: z.string().trim().min(3).max(3),
   paymentMethod: z.enum(["card", "mobile_money", "bank_transfer"]),
   customerInfo: z.object({

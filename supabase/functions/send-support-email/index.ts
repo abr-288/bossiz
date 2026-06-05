@@ -1,184 +1,123 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-import { validateSupportMessage, sanitizeString } from "../_shared/validation.ts";
-
-const smtpClient = new SMTPClient({
-  connection: {
-    hostname: Deno.env.get("SMTP_HOST")!,
-    port: Number(Deno.env.get("SMTP_PORT")),
-    tls: true,
-    auth: {
-      username: Deno.env.get("SMTP_USERNAME")!,
-      password: Deno.env.get("SMTP_PASSWORD")!,
-    },
-  },
-});
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface SupportMessageRequest {
-  name: string;
-  email: string;
-  bookingReference?: string;
-  subject: string;
-  message: string;
-}
-
-const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const requestData: SupportMessageRequest = await req.json();
-    const { name, email, bookingReference, subject, message } = requestData;
+    const { name, email, bookingReference, subject, message } = await req.json();
+    
+    const smtpHost = Deno.env.get('SMTP_HOST');
+    const smtpPort = Deno.env.get('SMTP_PORT');
+    const smtpUser = Deno.env.get('SMTP_USER');
+    const smtpPassword = Deno.env.get('SMTP_PASSWORD');
+    const smtpFrom = Deno.env.get('SMTP_FROM');
 
-    // Validate input
-    const validationErrors = validateSupportMessage({
-      name,
-      email,
-      subject,
-      message,
-      bookingReference,
-    });
-
-    if (validationErrors.length > 0) {
+    if (!smtpHost || !smtpUser || !smtpPassword || !smtpFrom) {
+      console.log('SMTP configuration not complete, skipping email');
       return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Validation failed",
-          details: validationErrors,
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
+        JSON.stringify({ success: true, message: 'Message received (email not configured)' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Sanitize inputs
-    const sanitizedData = {
-      name: sanitizeString(name, 100),
-      email: sanitizeString(email, 255),
-      bookingReference: bookingReference ? sanitizeString(bookingReference, 50) : undefined,
-      subject: sanitizeString(subject, 200),
-      message: sanitizeString(message, 2000),
-    };
+    console.log('Sending support email from:', email);
 
-    console.log("Support message received");
+    // Send support email via SMTP relay
+    const emailHtml = generateSupportEmailHtml(name, email, bookingReference, subject, message);
 
-    // Send email to support team
-    const emailHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; }
-            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .field { margin: 15px 0; padding: 10px; background: white; border-radius: 5px; }
-            .label { font-weight: bold; color: #667eea; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>📧 Nouveau message du support</h1>
-            </div>
-            <div class="content">
-              <div class="field">
-                <span class="label">Nom :</span> ${sanitizedData.name}
-              </div>
-              <div class="field">
-                <span class="label">Email :</span> ${sanitizedData.email}
-              </div>
-              ${sanitizedData.bookingReference ? `
-                <div class="field">
-                  <span class="label">Référence de réservation :</span> ${sanitizedData.bookingReference}
-                </div>
-              ` : ''}
-              <div class="field">
-                <span class="label">Sujet :</span> ${sanitizedData.subject}
-              </div>
-              <div class="field">
-                <span class="label">Message :</span><br>
-                ${sanitizedData.message.replace(/\n/g, '<br>')}
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    // Send to support team via SMTP
-    await smtpClient.send({
-      from: "B-Reserve Support <support@bossiz.com>",
-      to: "support@bossiz.com",
-      replyTo: sanitizedData.email,
-      subject: `[Support] ${sanitizedData.subject}`,
-      html: emailHtml,
+    const response = await fetch('https://api.smtprelay.com/v1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${smtpPassword}`,
+      },
+      body: JSON.stringify({
+        from: smtpFrom,
+        to: ['support@b-reserve.com'],
+        subject: `Support Request: ${subject}`,
+        html: emailHtml,
+        replyTo: email,
+      }),
     });
 
-    // Send confirmation to customer
-    const confirmationHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
-            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>✅ Message bien reçu</h1>
-            </div>
-            <div class="content">
-              <p>Bonjour ${sanitizedData.name},</p>
-              <p>Nous avons bien reçu votre message concernant : <strong>${sanitizedData.subject}</strong></p>
-              <p>Notre équipe vous répondra dans les plus brefs délais.</p>
-              ${sanitizedData.bookingReference ? `<p>Référence de réservation : <strong>${sanitizedData.bookingReference}</strong></p>` : ''}
-              <p>Cordialement,<br>L'équipe B-Reserve</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('SMTP API error:', response.status, errorText);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Failed to send email' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
 
-    // Send confirmation to customer via SMTP
-    await smtpClient.send({
-      from: "B-Reserve <noreply@bossiz.com>",
-      to: sanitizedData.email,
-      subject: "Confirmation de réception de votre message",
-      html: confirmationHtml,
-    });
+    console.log('Support email sent successfully');
 
-    console.log("Support emails sent successfully via SMTP");
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
-  } catch (error: any) {
-    // Security: Only log error type, not full error details
-    console.error("Error in send-support-email function:", error instanceof Error ? error.constructor.name : "Unknown");
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      JSON.stringify({ 
+        success: true, 
+        message: 'Support message sent successfully' 
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error('Error in send-support-email:', error);
+    return new Response(
+      JSON.stringify({ success: false, error: 'Internal server error' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
-};
+});
 
-serve(handler);
+function generateSupportEmailHtml(name: string, email: string, bookingReference: string | undefined, subject: string, message: string) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #dc2626; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9fafb; }
+        .message-details { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>New Support Request</h1>
+        </div>
+        <div class="content">
+          <div class="message-details">
+            <h3>Contact Information</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            ${bookingReference ? `<p><strong>Booking Reference:</strong> ${bookingReference}</p>` : ''}
+          </div>
+
+          <div class="message-details">
+            <h3>Subject</h3>
+            <p>${subject}</p>
+          </div>
+
+          <div class="message-details">
+            <h3>Message</h3>
+            <p>${message}</p>
+          </div>
+
+          <p>Please respond to this support request as soon as possible.</p>
+        </div>
+        <div class="footer">
+          <p>&copy; 2025 B-Reserve Support System</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}

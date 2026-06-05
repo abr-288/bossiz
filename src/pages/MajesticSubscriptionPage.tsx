@@ -430,10 +430,10 @@ const MajesticSubscriptionPage = () => {
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-8 text-center">
           <h1 className="text-5xl font-bold mb-4">
-            Choisissez votre plan
+            Nos Abonnements
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Des plans flexibles pour répondre à vos besoins. Changez ou annulez à tout moment.
+            Découvrez nos formules adaptées à vos besoins. Changez ou annulez à tout moment.
           </p>
         </div>
       </div>

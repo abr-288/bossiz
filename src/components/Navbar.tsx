@@ -1,3 +1,5 @@
+// Barre de navigation principale de l'application
+// Gère la navigation, l'authentification et les menus responsive
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -34,18 +36,20 @@ import {
 } from "@/components/ui/sheet";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { isAdmin, loading: roleLoading } = useUserRole();
-  const { isInstallable, isInstalled, install } = usePWA();
-  const { config } = useSiteConfigContext();
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // État du menu mobile
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // État de connexion utilisateur
+  const [isScrolled, setIsScrolled] = useState(false); // État du scroll pour l'effet d'ombre
+  const { isAdmin, loading: roleLoading } = useUserRole(); // Rôle de l'utilisateur
+  const { isInstallable, isInstalled, install } = usePWA(); // État PWA
+  const { config } = useSiteConfigContext(); // Configuration du site
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
 
+  // Vérifie si le chemin actuel correspond au chemin donné
   const isActive = (path: string) => location.pathname === path;
 
+  // Liens vers les services de l'application
   const serviceLinks = [
     { to: "/flights", icon: Plane, label: t("nav.flights") },
     { to: "/hotels", icon: Hotel, label: t("nav.hotels") },
@@ -57,16 +61,19 @@ const Navbar = () => {
     { to: "/stays", icon: Compass, label: t("nav.stays") },
   ];
 
+  // Effet pour détecter le scroll et ajouter l'ombre
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fermer le menu mobile lors de la navigation
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Vérifier l'état de connexion utilisateur
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
@@ -77,6 +84,7 @@ const Navbar = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Gérer la déconnexion de l'utilisateur
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success(t("nav.logoutSuccess"));

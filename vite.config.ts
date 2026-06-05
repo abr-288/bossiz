@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   build: {
+    target: 'es2015',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -30,9 +31,15 @@ export default defineConfig(({ mode }) => ({
     terserOptions: {
       compress: {
         drop_console: mode === 'production',
-        drop_debugger: mode === 'production'
+        drop_debugger: mode === 'production',
+        ecma: 5
+      },
+      format: {
+        ecma: 5
       }
-    }
+    },
+    cssCodeSplit: true,
+    sourcemap: mode === 'development'
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'framer-motion'],

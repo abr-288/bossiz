@@ -34,6 +34,14 @@ export const FlightSearchForm = () => {
   const [to, setTo] = useState("");
   const [departureDate, setDepartureDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
+
+  // Validation pour que la date de départ soit au minimum demain
+  const getMinDepartureDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  };
+
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -131,6 +139,13 @@ export const FlightSearchForm = () => {
       return;
     }
 
+    // Afficher un indicateur de chargement
+    toast({
+      title: "Recherche en cours",
+      description: "Nous recherchons les meilleurs vols pour vous...",
+    });
+
+    // Construire les paramètres de recherche
     const params = new URLSearchParams({
       from: validation.data.origin,
       to: validation.data.destination,
@@ -140,9 +155,13 @@ export const FlightSearchForm = () => {
       children: validation.data.children.toString(),
       infants: validation.data.infants.toString(),
       class: validation.data.travelClass,
+      tripType: validation.data.tripType,
     });
 
-    navigate(`/flights?${params.toString()}`);
+    // Rediriger vers la page des résultats avec animation
+    setTimeout(() => {
+      navigate(`/flights?${params.toString()}`);
+    }, 300);
   };
 
   const hasErrors = Object.keys(errors).length > 0;
@@ -267,7 +286,7 @@ export const FlightSearchForm = () => {
               setDepartureDate(date);
               handleBlur("departureDate");
             }}
-            minDate={new Date()}
+            minDate={getMinDepartureDate()}
             required
           />
           {errors.departureDate && touched.departureDate && (

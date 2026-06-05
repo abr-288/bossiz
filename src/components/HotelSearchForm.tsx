@@ -38,6 +38,16 @@ export const HotelSearchForm = () => {
   });
   const [showPriceCalendar, setShowPriceCalendar] = useState(false);
 
+  // Validation pour que la date de départ soit au minimum le lendemain de la date d'arrivée
+  const getMinCheckOutDate = () => {
+    if (checkIn) {
+      const nextDay = new Date(checkIn);
+      nextDay.setDate(nextDay.getDate() + 1);
+      return nextDay;
+    }
+    return new Date();
+  };
+
   // État des erreurs de validation
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -216,7 +226,7 @@ export const HotelSearchForm = () => {
                 setCheckOut(date);
                 handleBlur("checkOut");
               }}
-              minDate={checkIn || new Date()}
+              minDate={getMinCheckOutDate()}
               placeholder="Choisir date"
               required
             />

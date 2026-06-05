@@ -247,7 +247,7 @@ const BossizPortal = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
-            {bossizSites.map((site) => (
+            {sites.map((site) => (
               <Card key={site.id} className={`border-0 shadow-3xl hover:shadow-4xl transition-all duration-700 overflow-hidden ${site.bgColor} group hover:scale-105 relative`}>
                 {/* Premium Badge */}
                 <div className="absolute top-6 right-6 z-10">
@@ -517,15 +517,15 @@ const BossizPortal = () => {
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                     <Phone className="w-6 h-6 text-orange-600" />
-                    <span className="text-gray-700 font-medium text-lg">{bossizSites[0].contact.phone}</span>
+                    <span className="text-gray-700 font-medium text-lg">{sites[0].contact.phone}</span>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                     <Mail className="w-6 h-6 text-orange-600" />
-                    <span className="text-gray-700 font-medium text-lg">{bossizSites[0].contact.email}</span>
+                    <span className="text-gray-700 font-medium text-lg">{sites[0].contact.email}</span>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                     <MapPin className="w-6 h-6 text-orange-600" />
-                    <span className="text-gray-700 font-medium text-lg">{bossizSites[0].contact.address}</span>
+                    <span className="text-gray-700 font-medium text-lg">{sites[0].contact.address}</span>
                   </div>
                 </div>
                 
@@ -555,15 +555,15 @@ const BossizPortal = () => {
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                     <Phone className="w-6 h-6 text-green-600" />
-                    <span className="text-gray-700 font-medium text-lg">{bossizSites[1].contact.phone}</span>
+                    <span className="text-gray-700 font-medium text-lg">{sites[1].contact.phone}</span>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                     <Mail className="w-6 h-6 text-green-600" />
-                    <span className="text-gray-700 font-medium text-lg">{bossizSites[1].contact.email}</span>
+                    <span className="text-gray-700 font-medium text-lg">{sites[1].contact.email}</span>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                     <MapPin className="w-6 h-6 text-green-600" />
-                    <span className="text-gray-700 font-medium text-lg">{bossizSites[1].contact.address}</span>
+                    <span className="text-gray-700 font-medium text-lg">{sites[1].contact.address}</span>
                   </div>
                 </div>
                 

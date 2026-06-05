@@ -7,31 +7,33 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
-  Crown, 
-  Check, 
-  CreditCard, 
-  Calendar, 
-  Percent, 
-  Gift,
+  Crown,
   Shield,
-  Clock,
+  CheckCircle,
   Star,
   Zap,
-  Smartphone,
-  Wallet,
-  Sparkles,
-  Rocket,
   Globe,
-  Lock,
-  TrendingUp,
-  Cpu,
-  Wifi,
-  Database,
-  Cloud,
+  Clock,
+  Users,
+  Headphones,
+  Gift,
+  Calendar,
+  Wallet,
   ChevronRight,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  FileText,
+  Receipt,
+  Calculator,
+  TrendingUp,
+  Smartphone,
+  CreditCard,
+  Database,
+  Sparkles,
+  Percent,
+  Lock
 } from "lucide-react";
 import CinetPayService from "@/services/cinetpay";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,22 +41,26 @@ import { autoConvertAndFormat } from "@/utils/currencyConverter";
 
 // Fonctions utilitaires pour les prix par défaut (en XOF/FCFA pour le marché africain)
 const getDefaultPrice = (planId: string): number => {
+  // Prix réalistes pour le marché africain en XOF
   const prices: Record<string, number> = {
-    'majestic_access': 327000, // 499 EUR * 655.957
-    'majestic_prive': 655000, // 999 EUR * 655.957
-    'majestic_black': 1310000, // 1999 EUR * 655.957
-    'basic': 51800, // 79 EUR * 655.957
-    'premium': 97700, // 149 EUR * 655.957
-    'business': 196000, // 299 EUR * 655.957
-    'enterprise': 393000 // 599 EUR * 655.957
+    'basic': 15000, // 15 000 XOF mensuel
+    'premium': 25000, // 25 000 XOF mensuel
+    'business': 50000, // 50 000 XOF mensuel
+    'corporate': 100000, // 100 000 XOF mensuel
+    'majestic_access': 100000, // 100 000 XOF mensuel
+    'majestic_prive': 200000, // 200 000 XOF mensuel
+    'majestic_black': 500000 // 500 000 XOF mensuel
   };
-  return prices[planId] || 65000;
+  return prices[planId] || 15000;
 };
 
 const getDefaultTrialDays = (planId: string, billingCycle: string): number => {
-  if (!planId.startsWith('majestic_')) return 0;
-  
+  // Jours d'essai par défaut selon le type de plan
   const trials: Record<string, Record<string, number>> = {
+    'basic': { monthly: 0, yearly: 7 },
+    'premium': { monthly: 0, yearly: 14 },
+    'business': { monthly: 0, yearly: 30 },
+    'corporate': { monthly: 0, yearly: 60 },
     'majestic_access': { monthly: 7, yearly: 14 },
     'majestic_prive': { monthly: 14, yearly: 30 },
     'majestic_black': { monthly: 30, yearly: 60 }
@@ -94,13 +100,11 @@ const ModernSubscriptionPayment = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const [testAmount, setTestAmount] = useState('327000');
-  const [testCurrency, setTestCurrency] = useState('XOF');
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [planData, setPlanData] = useState<PaymentData | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [isHovered, setIsHovered] = useState(false);
+  const [selectedOperator, setSelectedOperator] = useState<string>('');
 
   const planId = searchParams.get('planId');
 
@@ -158,9 +162,9 @@ const ModernSubscriptionPayment = () => {
             const defaultMonthlyPricing = {
               id: 'default-monthly',
               plan_id: planId,
-              billing_cycle: 'monthly',
+              billing_cycle: 'monthly' as 'monthly' | 'yearly',
               price: getDefaultPrice(planId),
-              currency: 'EUR',
+              currency: 'XOF',
               discount_percentage: 0,
               trial_days: getDefaultTrialDays(planId, 'monthly'),
               setup_fee: 0,
@@ -169,7 +173,7 @@ const ModernSubscriptionPayment = () => {
             };
 
             setPlanData({
-              plan,
+              plan: plan as any,
               pricing: defaultMonthlyPricing,
               billingCycle: 'monthly'
             });
@@ -177,11 +181,10 @@ const ModernSubscriptionPayment = () => {
             // Utiliser les tarifications par défaut de la fonction SQL
             const monthlyPricing = (defaultPricing as any[])[0];
             setPlanData({
-              plan,
+              plan: plan as any,
               pricing: {
-                id: 'default-monthly',
                 plan_id: planId,
-                billing_cycle: 'monthly',
+                billing_cycle: 'monthly' as 'monthly' | 'yearly',
                 price: monthlyPricing.price,
                 currency: monthlyPricing.currency,
                 discount_percentage: monthlyPricing.discount_percentage,
@@ -200,7 +203,7 @@ const ModernSubscriptionPayment = () => {
         const defaultPricing = (pricing as any[]).find((p: any) => p.billing_cycle === 'monthly') || (pricing as any[])[0];
 
         setPlanData({
-          plan,
+          plan: plan as any,
           pricing: defaultPricing,
           billingCycle: 'monthly'
         });
@@ -233,14 +236,36 @@ const ModernSubscriptionPayment = () => {
         .single();
 
       if (error || !pricing) {
-        throw new Error(`Tarif ${cycle} non disponible`);
-      }
+        // Si aucun tarif n'existe, calculer le tarif annuel automatiquement
+        const yearlyPrice = cycle === 'yearly' 
+          ? getDefaultPrice(planId) * 12 * 0.83 // 17% de réduction annuelle
+          : getDefaultPrice(planId);
+        
+        const defaultPricing = {
+          id: `default-${cycle}`,
+          plan_id: planId,
+          billing_cycle: cycle,
+          price: yearlyPrice,
+          currency: 'XOF',
+          discount_percentage: cycle === 'yearly' ? 17 : 0,
+          trial_days: getDefaultTrialDays(planId, cycle),
+          setup_fee: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
 
-      setBillingCycle(cycle);
-      setPlanData({
-        ...planData,
-        pricing
-      });
+        setBillingCycle(cycle);
+        setPlanData({
+          ...planData,
+          pricing: defaultPricing
+        });
+      } else {
+        setBillingCycle(cycle);
+        setPlanData({
+          ...planData,
+          pricing: pricing as any
+        });
+      }
 
     } catch (error: any) {
       console.error('Error changing billing cycle:', error);
@@ -313,9 +338,9 @@ const ModernSubscriptionPayment = () => {
         customer_name: (profile as any)?.full_name || user.email?.split('@')[0] || 'Client',
         customer_email: user.email || '',
         customer_phone: (profile as any)?.phone || '+225000000000',
-        return_url: `${window.location.origin}/payment-success?subscription_id=${(subscription as any).id}`,
-        notify_url: `${window.location.origin}/api/cinetpay/notify`,
-        channels: cinetPayService.getAvailableChannels()
+        return_url: `http://localhost:8083/payment-success?subscription_id=${(subscription as any).id}`,
+        notify_url: `http://localhost:8083/api/cinetpay/notify`,
+        channels: selectedOperator ? [selectedOperator] : cinetPayService.getAvailableChannels()
       };
 
       // Validate payment data
@@ -350,14 +375,10 @@ const ModernSubscriptionPayment = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4"
-          />
-          <div className="text-cyan-400 text-lg font-medium">Chargement du plan...</div>
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-xl text-gray-700 font-medium">Chargement de votre abonnement...</p>
         </div>
       </div>
     );
@@ -365,12 +386,12 @@ const ModernSubscriptionPayment = () => {
 
   if (!planData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Plan non trouvé</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Plan non trouvé</h2>
           <Button 
             onClick={() => navigate('/subscriptions')}
-            className="bg-cyan-500 hover:bg-cyan-600 text-white"
+            className="bg-indigo-500 hover:bg-indigo-600 text-white"
           >
             Retour aux abonnements
           </Button>
@@ -390,32 +411,13 @@ const ModernSubscriptionPayment = () => {
   const displayYearlyPrice = autoConvertAndFormat(yearlyPrice, planData.pricing.currency);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{ 
-            x: [0, 100, 0],
-            y: [0, -100, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity }}
-          className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ 
-            x: [0, -100, 0],
-            y: [0, 100, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity }}
-          className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ 
-            scale: [1, 1.2, 1],
-          }}
-          transition={{ duration: 15, repeat: Infinity }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden relative">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{ 
+          backgroundImage: 'radial-gradient(circle at 25px 25px, #4f46e5 2px, transparent 0)',
+          backgroundSize: '50px 50px'
+        }} />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
@@ -425,223 +427,376 @@ const ModernSubscriptionPayment = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Rocket className="w-8 h-8 text-cyan-400" />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Finaliser Votre Abonnement
-            </h1>
-            <Sparkles className="w-8 h-8 text-purple-400" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
+            <Crown className="w-10 h-10 text-white" />
           </div>
-          <p className="text-xl text-gray-300">
-            Rejoignez l'ère numérique avec Bossiz Conciergerie
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Finaliser Votre Abonnement
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Rejoignez l'excellence avec Bossiz Conciergerie et accédez à des services premium
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Plan Details - Modern Card */}
+          {/* Plan Details - Premium Card */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-3xl blur-xl"></div>
-              
-              <div className="relative bg-slate-800/50 backdrop-blur-xl border border-cyan-500/20 rounded-3xl p-8">
-                {/* Plan Header */}
-                <div className="flex items-center gap-4 mb-6">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
-                      isMajestic ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gradient-to-br from-cyan-400 to-blue-500'
-                    }`}
-                  >
+            <Card className="shadow-xl border-0 bg-white">
+              <CardHeader className="pb-6">
+                <div className="flex items-center gap-4">
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                    isMajestic ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gradient-to-br from-indigo-500 to-purple-600'
+                  } shadow-lg`}>
                     <Crown className="w-8 h-8 text-white" />
-                  </motion.div>
+                  </div>
                   <div>
-                    <h2 className="text-3xl font-bold text-white">{planData.plan.name}</h2>
+                    <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
+                      {planData.plan.name}
+                    </CardTitle>
                     {planData.plan.subtitle && (
-                      <p className="text-gray-400">{planData.plan.subtitle}</p>
+                      <CardDescription className="text-gray-600 text-lg">
+                        {planData.plan.subtitle}
+                      </CardDescription>
                     )}
                   </div>
                 </div>
 
                 {isMajestic && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-6"
-                  >
-                    <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 text-sm font-bold">
+                  <div className="mt-4">
+                    <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 text-sm font-semibold shadow-md">
                       <Sparkles className="w-4 h-4 mr-2" />
                       Premium VIP Access
                     </Badge>
-                  </motion.div>
+                  </div>
                 )}
+              </CardHeader>
 
+              <CardContent className="pt-0">
                 {/* Features */}
                 <div className="space-y-4 mb-6">
                   {planData.plan.features?.slice(0, 6).map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center gap-3"
-                    >
-                      <motion.div
-                        whileHover={{ scale: 1.2, rotate: 360 }}
-                        transition={{ duration: 0.3 }}
-                        className="w-6 h-6 bg-cyan-500/20 rounded-full flex items-center justify-center"
-                      >
-                        <Check className="w-3 h-3 text-cyan-400" />
-                      </motion.div>
-                      <span className="text-gray-300">{feature}</span>
-                    </motion.div>
+                    <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-3 h-3 text-green-600" />
+                      </div>
+                      <span className="text-gray-700 font-medium">{feature}</span>
+                    </div>
                   ))}
                 </div>
 
-                <Separator className="bg-cyan-500/20" />
+                <Separator className="my-6" />
 
-                {/* Tech Features */}
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-cyan-400">
-                    <Cpu className="w-5 h-5" />
-                    <span className="text-sm">AI-Powered</span>
+                {/* Premium Features */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2 text-indigo-600">
+                    <Shield className="w-5 h-5" />
+                    <span className="text-sm font-medium">Sécurité Maximale</span>
                   </div>
-                  <div className="flex items-center gap-2 text-purple-400">
-                    <Cloud className="w-5 h-5" />
-                    <span className="text-sm">Cloud Sync</span>
+                  <div className="flex items-center gap-2 text-purple-600">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="text-sm font-medium">Performance</span>
                   </div>
-                  <div className="flex items-center gap-2 text-green-400">
-                    <Wifi className="w-5 h-5" />
-                    <span className="text-sm">Real-time</span>
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Clock className="w-5 h-5" />
+                    <span className="text-sm font-medium">Support 24/7</span>
                   </div>
-                  <div className="flex items-center gap-2 text-orange-400">
-                    <Database className="w-5 h-5" />
-                    <span className="text-sm">Secure Storage</span>
+                  <div className="flex items-center gap-2 text-orange-600">
+                    <Globe className="w-5 h-5" />
+                    <span className="text-sm font-medium">Accès Global</span>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
 
-          {/* Payment Form - Modern Interface */}
+          {/* Payment Form - Premium Design */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-xl"></div>
-              
-              <div className="relative bg-slate-800/50 backdrop-blur-xl border border-purple-500/20 rounded-3xl p-8">
-                {/* Billing Cycle Selection */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-purple-400" />
-                    Cycle de Facturation
-                  </h3>
+            <Card className="shadow-xl border-0 bg-white">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-indigo-600" />
+                  Cycle de Facturation
+                </CardTitle>
+                <CardDescription className="text-gray-600">
+                  Choisissez la périodicité qui vous convient
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="pt-0">
+                <RadioGroup 
+                  value={billingCycle} 
+                  onValueChange={(value: 'monthly' | 'yearly') => setBillingCycle(value)}
+                  className="space-y-4"
+                >
+                  <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
+                    <RadioGroupItem value="monthly" id="monthly" className="border-indigo-500 text-indigo-500" />
+                    <Label htmlFor="monthly" className="cursor-pointer flex-1">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-gray-900">Mensuel</div>
+                          <div className="text-sm text-gray-500">Facturation mensuelle</div>
+                        </div>
+                        <span className="text-xl font-bold text-indigo-600">{displayMonthlyPrice}</span>
+                      </div>
+                    </Label>
+                  </div>
                   
-                  <RadioGroup 
-                    value={billingCycle} 
-                    onValueChange={(value) => handleBillingCycleChange(value as 'monthly' | 'yearly')}
-                    className="space-y-3"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className={`p-4 rounded-2xl border-2 transition-all ${
-                        billingCycle === 'monthly' 
-                          ? 'border-cyan-500 bg-cyan-500/10' 
-                          : 'border-gray-600 bg-gray-800/50'
-                      }`}>
-                        <RadioGroupItem value="monthly" id="monthly" className="sr-only" />
-                        <Label htmlFor="monthly" className="flex items-center justify-between cursor-pointer">
+                  {yearlyPricing && (
+                    <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
+                      <RadioGroupItem value="yearly" id="yearly" className="border-indigo-500 text-indigo-500" />
+                      <Label htmlFor="yearly" className="cursor-pointer flex-1">
+                        <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-white">Mensuel</div>
-                            <div className="text-sm text-gray-400">Facturation mensuelle</div>
+                            <div className="font-semibold text-gray-900">Annuel</div>
+                            <div className="text-sm text-gray-500">Économisez {savings}%</div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-cyan-400">{displayMonthlyPrice}</div>
-                            <div className="text-sm text-gray-400">/mois</div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl font-bold text-indigo-600">{displayYearlyPrice}</span>
+                            {savings > 0 && (
+                              <Badge className="bg-green-100 text-green-800 text-sm font-medium">
+                                <Percent className="w-3 h-3 mr-1" />
+                                -{savings}%
+                              </Badge>
+                            )}
                           </div>
-                        </Label>
-                      </div>
-                    </motion.div>
-                    
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className={`p-4 rounded-2xl border-2 transition-all relative ${
-                        billingCycle === 'yearly' 
-                          ? 'border-purple-500 bg-purple-500/10' 
-                          : 'border-gray-600 bg-gray-800/50'
-                      }`}>
-                        <RadioGroupItem value="yearly" id="yearly" className="sr-only" />
-                        <Label htmlFor="yearly" className="flex items-center justify-between cursor-pointer">
-                          <div>
-                            <div className="font-medium text-white">Annuel</div>
-                            <div className="text-sm text-gray-400">Économisez 17%</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-purple-400">{displayYearlyPrice}</div>
-                            <div className="text-sm text-gray-400">/an</div>
-                          </div>
-                        </Label>
-                        {savings > 0 && (
-                          <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white">
-                            <Percent className="w-3 h-3 mr-1" />
-                            Économie {savings}%
-                          </Badge>
-                        )}
-                      </div>
-                    </motion.div>
-                  </RadioGroup>
-                </div>
+                        </div>
+                      </Label>
+                    </div>
+                  )}
+                </RadioGroup>
 
                 {/* Trial Information */}
                 {planData.pricing.trial_days > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-8 p-4 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-2xl"
-                  >
-                    <div className="flex items-center gap-3 text-cyan-400">
+                  <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-3 text-green-800">
                       <Gift className="w-5 h-5" />
                       <span className="font-medium">
                         {planData.pricing.trial_days} jours d'essai gratuits
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
 
-                {/* Payment Method - CinetPay Modern */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Wallet className="w-5 h-5 text-orange-400" />
+                {/* Invoice Summary Section */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-indigo-600" />
+                    Récapitulatif de Commande
+                  </h3>
+                  
+                  <Card className="border-2 border-indigo-200 shadow-lg">
+                    <CardHeader className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white">
+                      <CardTitle className="text-lg font-bold flex items-center gap-2">
+                        <Receipt className="w-5 h-5" />
+                        Facture
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      {/* Order Information */}
+                      <div className="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">Informations de la commande</h4>
+                          <div className="space-y-2 text-sm">
+                            <p><span className="font-medium">Numéro:</span> BOSSIZ_{Math.floor(Date.now() / 1000)}</p>
+                            <p><span className="font-medium">Date:</span> {new Date(Date.now()).toLocaleDateString('fr-FR')}</p>
+                            <p><span className="font-medium">Statut:</span> 
+                              <Badge className="ml-2 bg-yellow-100 text-yellow-800">En attente de paiement</Badge>
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">Méthode de paiement</h4>
+                          <div className="space-y-2 text-sm">
+                            <p><span className="font-medium">Prestataire:</span> CinetPay</p>
+                            <p><span className="font-medium">Devise:</span> {planData.pricing.currency}</p>
+                            <p><span className="font-medium">Sécurité:</span> Paiement sécurisé SSL</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Plan Details */}
+                      <div className="border rounded-lg p-6 bg-gray-50 mb-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">{planData.plan.name}</h4>
+                            <p className="text-gray-600 mt-1">{planData.plan.subtitle || 'Services premium Bossiz'}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-indigo-600">
+                              {autoConvertAndFormat(planData.pricing.price, planData.pricing.currency)}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {planData.pricing.trial_days > 0 && (
+                          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center gap-2 text-green-800">
+                              <Clock className="w-4 h-4" />
+                              <span className="font-medium">
+                                {planData.pricing.trial_days} jours d'essai gratuits
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        <div>
+                          <h5 className="font-semibold text-gray-900 mb-3">Fonctionnalités incluses:</h5>
+                          <div className="grid md:grid-cols-2 gap-3">
+                            {planData.plan.features && planData.plan.features.slice(0, 6).map((feature, index) => (
+                              <div key={index} className="flex items-center gap-2 text-sm">
+                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <span>{feature}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {planData.pricing.discount_percentage > 0 && (
+                          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <p className="text-yellow-800 font-medium">
+                              Réduction spéciale de {planData.pricing.discount_percentage}% pour l'abonnement annuel
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Financial Summary */}
+                      <div className="border-2 border-green-200 rounded-lg">
+                        <div className="p-4 bg-gradient-to-r from-green-600 to-green-700 text-white">
+                          <h4 className="font-bold flex items-center gap-2">
+                            <Calculator className="w-5 h-5" />
+                            Récapitulatif financier
+                          </h4>
+                        </div>
+                        <div className="p-4">
+                          <div className="space-y-3">
+                            <div className="flex justify-between text-lg">
+                              <span>Sous-total:</span>
+                              <span className="font-medium">
+                                {autoConvertAndFormat(planData.pricing.price, planData.pricing.currency)}
+                              </span>
+                            </div>
+                            
+                            {planData.pricing.discount_percentage > 0 && (
+                              <div className="flex justify-between text-lg text-green-600">
+                                <span>Réduction:</span>
+                                <span className="font-medium">
+                                  -{autoConvertAndFormat(
+                                    (planData.pricing.price / (1 - planData.pricing.discount_percentage/100)) - planData.pricing.price, 
+                                    planData.pricing.currency
+                                  )}
+                                </span>
+                              </div>
+                            )}
+                            
+                            <Separator />
+                            
+                            <div className="flex justify-between text-2xl font-bold text-gray-900">
+                              <span>Total à payer:</span>
+                              <span className="text-indigo-600">
+                                {autoConvertAndFormat(planData.pricing.price, planData.pricing.currency)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Customer Information */}
+                      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h5 className="font-semibold text-gray-900 mb-3">Informations du client</h5>
+                        <div className="grid md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <label className="text-xs font-medium text-gray-700">Nom complet</label>
+                            <p className="mt-1 font-semibold">Client Bossiz</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-700">Email</label>
+                            <p className="mt-1">client@bossiz.com</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-gray-700">Téléphone</label>
+                            <p className="mt-1">+225000000000</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Payment Method */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Wallet className="w-6 h-6 text-indigo-600" />
                     Méthode de Paiement
                   </h3>
                   
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="p-6 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl"
-                  >
+                  {/* Operator Selection */}
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Smartphone className="w-5 h-5 text-indigo-600" />
+                      Choisissez votre opérateur de paiement
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { name: 'Orange Money', id: 'CM_OM', color: 'text-orange-600' },
+                        { name: 'MTN Money', id: 'CM_TMO', color: 'text-yellow-600' },
+                        { name: 'Moov Money', id: 'CM_MOOV', color: 'text-green-600' },
+                        { name: 'Carte bancaire', id: 'CARD', color: 'text-blue-600' }
+                      ].map((operator) => (
+                        <button
+                          key={operator.id}
+                          onClick={() => setSelectedOperator(operator.id)}
+                          className={`p-4 border-2 rounded-lg transition-all duration-200 ${
+                            selectedOperator === operator.id 
+                              ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
+                              : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Smartphone className={`w-6 h-6 ${operator.color}`} />
+                            <div className="text-left">
+                              <div className="font-semibold text-gray-900">{operator.name}</div>
+                              <div className="text-sm text-gray-500">
+                                {operator.id === 'CM_OM' && 'Paiement par Orange Money'}
+                                {operator.id === 'CM_TMO' && 'Paiement par MTN Mobile Money'}
+                                {operator.id === 'CM_MOOV' && 'Paiement par Moov Money'}
+                                {operator.id === 'CARD' && 'Paiement par Carte Bancaire'}
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-md">
                           <Wallet className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <div className="font-bold text-white">CinetPay</div>
-                          <div className="text-sm text-gray-300">Plateforme de paiement africaine</div>
+                          <div className="font-bold text-gray-900">CinetPay</div>
+                          <div className="text-sm text-gray-600">Plateforme de paiement sécurisée</div>
+                          {selectedOperator && (
+                            <div className="text-xs text-indigo-600 font-medium mt-1">
+                              Opérateur sélectionné: {selectedOperator}
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-white">
+                      <Badge className="bg-green-100 text-green-800 font-medium">
                         <Lock className="w-3 h-3 mr-1" />
                         Sécurisé
                       </Badge>
@@ -649,124 +804,89 @@ const ModernSubscriptionPayment = () => {
                     
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { name: 'Orange Money', icon: Smartphone, color: 'text-orange-400' },
-                        { name: 'MTN Money', icon: Smartphone, color: 'text-yellow-400' },
-                        { name: 'Moov Money', icon: Smartphone, color: 'text-green-400' },
-                        { name: 'Carte bancaire', icon: CreditCard, color: 'text-blue-400' }
+                        { name: 'Orange Money', icon: Smartphone, color: 'text-orange-600' },
+                        { name: 'MTN Money', icon: Smartphone, color: 'text-yellow-600' },
+                        { name: 'Moov Money', icon: Smartphone, color: 'text-green-600' },
+                        { name: 'Carte bancaire', icon: CreditCard, color: 'text-blue-600' }
                       ].map((method, index) => (
-                        <motion.div
-                          key={index}
-                          whileHover={{ scale: 1.05 }}
-                          className="flex items-center gap-2 p-3 bg-slate-800/50 rounded-xl"
-                        >
+                        <div key={index} className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-100">
                           <method.icon className={`w-4 h-4 ${method.color}`} />
-                          <span className="text-sm text-gray-300">{method.name}</span>
-                        </motion.div>
+                          <span className="text-sm text-gray-700 font-medium">{method.name}</span>
+                        </div>
                       ))}
                     </div>
-                  </motion.div>
+                  </div>
                 </div>
 
                 {/* Order Summary */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-8 p-6 bg-slate-900/50 border border-gray-700 rounded-2xl"
-                >
-                  <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                    <Database className="w-5 h-5 text-gray-400" />
-                    Récapitulatif
+                <div className="mt-8 p-6 bg-gray-50 rounded-lg">
+                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Database className="w-5 h-5 text-gray-600" />
+                    Récapitulatif de Commande
                   </h3>
                   
                   <div className="space-y-3">
-                    <div className="flex justify-between text-gray-300">
+                    <div className="flex justify-between text-gray-700">
                       <span>{planData.plan.name} - {billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}</span>
-                      <span className="text-white font-medium">
+                      <span className="font-semibold text-gray-900">
                         {billingCycle === 'monthly' ? monthlyPrice : yearlyPrice} EUR
                       </span>
                     </div>
                     
                     {planData.pricing.setup_fee > 0 && (
-                      <div className="flex justify-between text-gray-300">
+                      <div className="flex justify-between text-gray-700">
                         <span>Frais d'installation</span>
-                        <span className="text-white font-medium">
+                        <span className="font-semibold text-gray-900">
                           {planData.pricing.setup_fee} EUR
                         </span>
                       </div>
                     )}
                     
                     {yearlyPricing && savings > 0 && (
-                      <div className="flex justify-between text-green-400">
+                      <div className="flex justify-between text-green-700">
                         <span>Économies annuelles</span>
                         <span className="font-medium">
                           -{Math.round(monthlyPrice * 12 * savings / 100)} EUR
                         </span>
                       </div>
                     )}
-                    
-                    <Separator className="bg-gray-700" />
-                    
-                    <div className="flex justify-between text-xl font-bold text-white">
-                      <span>Total</span>
-                      <span className="text-cyan-400">
-                        {(billingCycle === 'monthly' ? monthlyPrice : yearlyPrice) + planData.pricing.setup_fee} EUR
-                      </span>
-                    </div>
                   </div>
-                </motion.div>
+                
+                  <Separator className="my-4" />
+                  
+                  <div className="flex justify-between text-xl font-bold text-gray-900">
+                    <span>Total</span>
+                    <span className="text-indigo-600">
+                      {(billingCycle === 'monthly' ? monthlyPrice : yearlyPrice) + planData.pricing.setup_fee} EUR
+                    </span>
+                  </div>
+                </div>
 
                 {/* Payment Button */}
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+                <div className="mt-8">
                   <Button 
                     onClick={handlePayment}
                     disabled={processing}
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                    className="w-full h-14 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold text-lg rounded-2xl transition-all duration-300 shadow-lg"
+                    className="w-full h-14 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-lg rounded-xl transition-all duration-300 shadow-lg"
                   >
                     {processing ? (
                       <div className="flex items-center gap-3">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                        />
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Traitement en cours...</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-3">
-                        <AnimatePresence mode="wait">
-                          {isHovered ? (
-                            <motion.div
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: 10 }}
-                            >
-                              <Rocket className="w-5 h-5" />
-                            </motion.div>
-                          ) : (
-                            <motion.div
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: 10 }}
-                            >
-                              <CreditCard className="w-5 h-5" />
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        <CreditCard className="w-5 h-5" />
                         <span>Payer Maintenant</span>
                         <ArrowRight className="w-5 h-5" />
                       </div>
                     )}
                   </Button>
-                </motion.div>
+                </div>
 
                 {/* Security Info */}
                 <div className="mt-6 text-center">
-                  <div className="flex items-center justify-center gap-2 text-gray-400 text-sm mb-2">
+                  <div className="flex items-center justify-center gap-2 text-gray-600 text-sm mb-2">
                     <Shield className="w-4 h-4" />
                     <span>Paiement sécurisé via CinetPay</span>
                   </div>
@@ -775,33 +895,28 @@ const ModernSubscriptionPayment = () => {
                     <span>SSL 256 bits | Partenaire officiel Afrique</span>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
 
-        {/* Bottom Tech Elements */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mt-12 text-center"
-        >
-          <div className="flex items-center justify-center gap-8 text-gray-400">
+        {/* Trust Indicators */}
+        <div className="mt-12 text-center">
+          <div className="flex items-center justify-center gap-8 text-gray-600">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-green-400" />
-              <span className="text-sm">Croissance garantie</span>
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-medium">Croissance garantie</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-400" />
-              <span className="text-sm">Activation instantanée</span>
+              <Clock className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium">Activation instantanée</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-purple-400" />
-              <span className="text-sm">Satisfaction 100%</span>
+              <CheckCircle2 className="w-5 h-5 text-purple-600" />
+              <span className="text-sm font-medium">Satisfaction 100%</span>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

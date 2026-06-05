@@ -1,22 +1,28 @@
+// Hook pour la recherche de locations de voitures
+// Gère la recherche et la réservation de véhicules via Supabase
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+// Interface pour les paramètres de recherche de location de voiture
 export interface CarRentalParams {
-  pickupLocation: string;
-  dropoffLocation?: string;
-  pickupDate: string;
-  dropoffDate: string;
+  pickupLocation: string; // Lieu de récupération du véhicule
+  dropoffLocation?: string; // Lieu de dépôt du véhicule (optionnel)
+  pickupDate: string; // Date de récupération (format ISO)
+  dropoffDate: string; // Date de dépôt (format ISO)
 }
 
+// Hook personnalisé pour gérer les locations de voitures
 export const useCarRental = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // État de chargement
+  const [error, setError] = useState<string | null>(null); // Erreur de recherche
 
+  // Fonction pour rechercher des locations de voitures
   const searchCarRentals = async (params: CarRentalParams) => {
     setLoading(true);
     setError(null);
 
     try {
+      // Appel de la fonction Supabase pour rechercher les locations
       const { data, error: functionError } = await supabase.functions.invoke('car-rental', {
         body: params
       });

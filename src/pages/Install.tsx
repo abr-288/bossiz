@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Download, Smartphone, Check, Wifi, Zap, Bell, Apple, Chrome, Share2, MoreVertical, Plus, ArrowDown, Shield, Clock, Globe } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InstallDropdown from "@/components/InstallDropdown";
 import { usePWA } from "@/hooks/usePWA";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { motion } from "framer-motion";
@@ -119,30 +120,16 @@ const Install = () => {
                 <Check className="w-5 h-5 text-green-300" />
                 <span className="font-medium">Application installée</span>
               </motion.div>
-            ) : isInstallable ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Button 
-                  onClick={handleInstallClick} 
-                  size="lg" 
-                  className="bg-white text-primary hover:bg-white/90 shadow-lg h-14 px-8 text-lg font-semibold"
-                >
-                  <Download className="mr-2 h-5 w-5" />
-                  Installer maintenant
-                </Button>
-              </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="flex flex-col items-center gap-2"
               >
-                <ArrowDown className="w-6 h-6 animate-bounce" />
-                <span className="text-white/80">Suivez les instructions ci-dessous</span>
+                <InstallDropdown 
+                  size="lg"
+                  className="bg-white text-primary hover:bg-white/90 shadow-lg h-14 px-6 text-lg font-semibold"
+                />
               </motion.div>
             )}
           </motion.div>

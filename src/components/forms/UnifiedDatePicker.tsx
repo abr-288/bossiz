@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,16 @@ export const UnifiedDatePicker = ({
 }: UnifiedDatePickerProps) => {
   const [open, setOpen] = useState(false);
 
+  const handleClear = () => {
+    onChange(undefined);
+    setOpen(false);
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    onChange(date);
+    setOpen(false);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -74,19 +84,27 @@ export const UnifiedDatePicker = ({
             )}
           >
             <CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-            <span className="truncate">
+            <span className="truncate flex-1">
               {value ? format(value, "dd MMMM yyyy", { locale: fr }) : placeholder}
             </span>
+            {value && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleClear}
+                className="ml-2 h-8 w-8 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
           <Calendar
             mode="single"
             selected={value}
-            onSelect={(date) => {
-              onChange(date);
-              setOpen(false);
-            }}
+            onSelect={handleDateSelect}
             disabled={(date) => {
               if (minDate && date < minDate) return true;
               if (maxDate && date > maxDate) return true;

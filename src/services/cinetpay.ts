@@ -1,6 +1,8 @@
 // CinetPay Payment Service
 // Integration with CinetPay API for African payment methods
 
+import { appConfig, validateConfig } from '../config/appConfig';
+
 export interface CinetPayPaymentRequest {
   amount: number;
   currency: string;
@@ -39,13 +41,23 @@ class CinetPayService {
   private notifyUrl: string;
 
   constructor() {
-    // Configuration CinetPay (à remplacer avec vos vraies clés)
-    // Note: process.env n'est pas disponible dans le navigateur, utiliser window.env ou des variables Vite
-    this.apiKey = (window as any).env?.REACT_APP_CINETPAY_API_KEY || 'YOUR_API_KEY';
-    this.siteId = (window as any).env?.REACT_APP_CINETPAY_SITE_ID || 'YOUR_SITE_ID';
-    // Utiliser l'URL sandbox en développement
+    // Valider la configuration au démarrage
+    const configErrors = validateConfig();
+    if (configErrors.length > 0) {
+      console.warn('Configuration warnings:', configErrors);
+    }
+
+    // Configuration CinetPay via la configuration centralisée
+    this.apiKey = appConfig.cinetPayApiKey;
+    this.siteId = appConfig.cinetPaySiteId;
+    
+    // Utiliser l'URL sandbox en développement, production en production
     this.baseUrl = this.isDevelopment() ? 'https://sandbox.cinetpay.com/v1' : 'https://api.cinetpay.com/v1';
-    this.notifyUrl = `${window.location.origin}/api/cinetpay/notify`;
+    this.notifyUrl = `${appConfig.webBaseUrl}/api/cinetpay/notify`;
+    
+    console.log('CinetPay Service initialized with Site ID:', this.siteId);
+    console.log('Environment:', appConfig.appEnvironment);
+    console.log('Base URL:', this.baseUrl);
   }
 
   /**
@@ -73,10 +85,10 @@ class CinetPayService {
         })
       };
 
-      // Pour le développement, simuler la réponse
-      if (this.isDevelopment()) {
-        return this.simulatePaymentInitiation(paymentData);
-      }
+      // Pour le développement, utiliser les vraies clés (temporairement désactivé)
+      // if (this.isDevelopment()) {
+      //   return this.simulatePaymentInitiation(paymentData);
+      // }
 
       const response = await fetch(`${this.baseUrl}/payment`, {
         method: 'POST',
@@ -244,14 +256,20 @@ class CinetPayService {
    * Simuler l'initiation de paiement (développement)
    */
   private simulatePaymentInitiation(paymentData: CinetPayPaymentRequest): CinetPayPaymentResponse {
-    // URL sandbox correcte pour CinetPay
+    // Stocker les données du paiement pour la simulation
+    this.storePaymentData(paymentData.transaction_id, paymentData);
+    
+    // URL sandbox correcte pour CinetPay avec les vraies données
     const paymentUrl = `https://sandbox.cinetpay.com/checkout/${paymentData.transaction_id}`;
+    
+    // Créer une URL de test avec les données du paiement
+    const testPaymentUrl = `https://sandbox.cinetpay.com/checkout?transaction_id=${paymentData.transaction_id}&amount=${paymentData.amount}&currency=${paymentData.currency}&description=${encodeURIComponent(paymentData.description)}&customer_name=${encodeURIComponent(paymentData.customer_name)}&customer_email=${encodeURIComponent(paymentData.customer_email)}`;
     
     return {
       status: 'ACCEPTED',
       transaction_id: paymentData.transaction_id,
-      payment_url: paymentUrl,
-      message: 'Payment initiated successfully (sandbox mode)'
+      payment_url: testPaymentUrl,
+      message: `Payment initiated for ${paymentData.description} - Amount: ${paymentData.amount} ${paymentData.currency} (sandbox mode)`
     };
   }
 
@@ -263,29 +281,54 @@ class CinetPayService {
     const random = Math.random();
     let status: 'pending' | 'success' | 'failed' | 'cancelled';
     
-    if (random < 0.7) {
+    if (random < 0.8) {
       status = 'success';
-    } else if (random < 0.85) {
+    } else if (random < 0.9) {
       status = 'pending';
-    } else if (random < 0.95) {
+    } else if (random < 0.97) {
       status = 'failed';
     } else {
       status = 'cancelled';
     }
 
+    // Récupérer les données du paiement depuis le localStorage ou un store
+    const paymentData = this.getStoredPaymentData(transactionId);
+    
     return {
       status,
       transaction_id: transactionId,
-      amount: 100, // Simulé
-      currency: 'XOF',
+      amount: paymentData?.amount || 100,
+      currency: paymentData?.currency || 'XOF',
       payment_method: 'mobile_money',
       operator: 'orange_money',
       payment_date: status === 'success' ? new Date().toISOString() : undefined,
       metadata: {
         sandbox: true,
-        test_mode: true
+        test_mode: true,
+        description: paymentData?.description,
+        customer_name: paymentData?.customer_name
       }
     };
+  }
+
+  /**
+   * Stocker temporairement les données de paiement pour la simulation
+   */
+  private storePaymentData(transactionId: string, paymentData: CinetPayPaymentRequest): void {
+    try {
+      localStorage.setItem(`payment_data_${transactionId}`, JSON.stringify(paymentData));
+    } catch (error) {
+      console.error('Failed to store payment data:', error);
+    }
+  }
+
+  private getStoredPaymentData(transactionId: string): any {
+    try {
+      const stored = localStorage.getItem(`payment_data_${transactionId}`);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
   }
 
   /**

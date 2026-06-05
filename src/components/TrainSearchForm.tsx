@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Train, AlertCircle } from "lucide-react";
+import { Train, AlertCircle, ArrowRightLeft } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import { trainSearchSchema, type TrainSearchInput } from "@/lib/validationSchema
 import { safeValidate } from "@/lib/formHelpers";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const TrainSearchForm = () => {
   const { t } = useTranslation();
@@ -64,6 +65,12 @@ export const TrainSearchForm = () => {
 
   const handleBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
+  };
+
+  const handleSwap = () => {
+    const temp = origin;
+    setOrigin(destination);
+    setDestination(temp);
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -142,8 +149,8 @@ export const TrainSearchForm = () => {
         )}
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-start">
+            <div className="md:col-span-5 space-y-1">
               <UnifiedAutocomplete
                 label={t('search.from')}
                 value={origin}
@@ -163,7 +170,19 @@ export const TrainSearchForm = () => {
               )}
             </div>
 
-            <div className="space-y-1">
+            <div className="md:col-span-1 flex justify-center items-center pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSwap}
+                className="h-10 w-10 rounded-full border-2 hover:border-primary hover:bg-primary/5 transition-all"
+              >
+                <ArrowRightLeft className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="md:col-span-5 space-y-1">
               <UnifiedAutocomplete
                 label={t('search.to')}
                 value={destination}

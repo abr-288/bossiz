@@ -443,7 +443,7 @@ export default function Subscriptions() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               >
-                Choisissez le forfait qui correspond à vos besoins. 
+                Découvrez nos formules adaptées à vos besoins. 
                 <span className="text-white font-semibold"> De l'essentiel au premium </span>, 
                 trouvez l'abonnement parfait pour vous.
               </motion.p>
