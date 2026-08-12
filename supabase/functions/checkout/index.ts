@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getClientIP, checkRateLimit, createRateLimitResponse, RATE_LIMITS } from "../_shared/rate-limiter.ts";
 
 // ============================================================
 // EDGE FUNCTION: checkout
@@ -27,9 +28,10 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-// Verify HMAC signature
+// Verify HMAC signature. Utilise PRICE_SIGNING_SECRET (dédié), jamais la clé
+// service_role : cette dernière contourne aussi les RLS de toute la base.
 async function verifyPriceSignature(data: object, signature: string): Promise<boolean> {
-  const secretKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const secretKey = Deno.env.get('PRICE_SIGNING_SECRET') || '';
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secretKey);
   const messageData = encoder.encode(JSON.stringify(data));
@@ -52,7 +54,7 @@ async function verifyPriceSignature(data: object, signature: string): Promise<bo
 
 // Generate checkout signature
 async function generateCheckoutSignature(data: object): Promise<string> {
-  const secretKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const secretKey = Deno.env.get('PRICE_SIGNING_SECRET') || '';
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secretKey);
   const messageData = encoder.encode(JSON.stringify(data));
@@ -86,6 +88,12 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const clientIP = getClientIP(req);
+  const rateLimitResult = checkRateLimit(clientIP, { ...RATE_LIMITS.PAYMENT, keyPrefix: 'checkout' });
+  if (!rateLimitResult.allowed) {
+    return createRateLimitResponse(rateLimitResult, RATE_LIMITS.PAYMENT, corsHeaders);
+  }
+
   console.log('');
   console.log('╔════════════════════════════════════════════════════════════╗');
   console.log('║                    CHECKOUT                                 ║');
@@ -108,6 +116,11 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
     if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      return errorResponse('Server configuration incomplete', 'CONFIG_ERROR', 500);
+    }
+
+    if (!Deno.env.get('PRICE_SIGNING_SECRET')) {
+      console.error('❌ PRICE_SIGNING_SECRET non configuré');
       return errorResponse('Server configuration incomplete', 'CONFIG_ERROR', 500);
     }
 

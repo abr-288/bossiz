@@ -63,8 +63,9 @@ export function AgencySidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
+                      aria-label={item.title}
                       className={`flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
                         isActive(item.url) ? "bg-accent text-accent-foreground font-medium" : ""
                       }`}
@@ -80,10 +81,11 @@ export function AgencySidebar() {
         </SidebarGroup>
 
         <div className="mt-auto p-3 md:p-4 border-t flex-shrink-0">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="w-full justify-start gap-2 text-sm"
             onClick={handleLogout}
+            aria-label="Déconnexion"
           >
             <LogOut className="h-4 w-4 flex-shrink-0" />
             {!collapsed && <span className="truncate">Déconnexion</span>}

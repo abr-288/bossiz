@@ -48,6 +48,8 @@ export interface CarData {
   year?: number;
   pickupLocation?: string;
   features?: string[];
+  offerSignature?: string;
+  offerExpiresAt?: string;
 }
 
 interface CarCardProps {
@@ -211,7 +213,7 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
           {car.deposit && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 p-2 bg-muted/50 rounded-lg">
               <Shield className="w-4 h-4" />
-              <span>Caution: <Price amount={car.deposit} fromCurrency="EUR" className="font-medium text-foreground" /></span>
+              <span>{t('carCard.deposit')}: <Price amount={car.deposit} fromCurrency="EUR" className="font-medium text-foreground" /></span>
             </div>
           )}
 
@@ -221,7 +223,7 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
           {/* Price & Actions */}
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Prix total</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('carCard.totalPrice')}</p>
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl md:text-3xl font-bold text-primary">
                   <Price amount={car.price} fromCurrency="EUR" showLoader />

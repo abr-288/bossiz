@@ -1,15 +1,22 @@
 // Composant de routage avec animations
 // Gère toutes les routes de l'application avec lazy loading et transitions
 import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import PageTransition from "./PageTransition";
+import Logo from "./Logo";
 
 // Lazy loading des composants de route pour le code splitting
 const BossizPortal = lazy(() => import("@/pages/BossizPortal"));
-const BossizConciergerieCI = lazy(() => import("@/pages/BossizConciergerieCI"));
-const BossizConciergerieSN = lazy(() => import("@/pages/BossizConciergerieSN"));
+const BossizCIAccueil = lazy(() => import("@/pages/bossiz/ci/Accueil"));
+const BossizCIServices = lazy(() => import("@/pages/bossiz/ci/Services"));
+const BossizCIAPropos = lazy(() => import("@/pages/bossiz/ci/APropos"));
+const BossizCIFormules = lazy(() => import("@/pages/bossiz/ci/Formules"));
+const BossizSNAccueil = lazy(() => import("@/pages/bossiz/sn/Accueil"));
+const BossizSNServices = lazy(() => import("@/pages/bossiz/sn/Services"));
+const BossizSNAPropos = lazy(() => import("@/pages/bossiz/sn/APropos"));
+const BossizSNFormules = lazy(() => import("@/pages/bossiz/sn/Formules"));
 const Index = lazy(() => import("@/pages/Index"));
 const Flights = lazy(() => import("@/pages/Flights"));
 const Hotels = lazy(() => import("@/pages/Hotels"));
@@ -52,9 +59,10 @@ const AdminAdvertisements = lazy(() => import("@/pages/admin/AdminAdvertisements
 const AdminPayments = lazy(() => import("@/pages/admin/AdminPayments"));
 const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
 const AdminNewsletter = lazy(() => import("@/pages/admin/AdminNewsletter"));
+const AdminIntegrations = lazy(() => import("@/pages/admin/AdminIntegrations"));
 const AdminDestinations = lazy(() => import("@/pages/admin/AdminDestinations"));
 const AdminContentManager = lazy(() => import("@/pages/AdminContentManager"));
-const AdminBossizSites = lazy(() => import("@/pages/admin/AdminBossizSites"));
+const AdminBossizMicrosites = lazy(() => import("@/pages/admin/AdminBossizMicrosites"));
 const AdminHomepageConfig = lazy(() => import("@/pages/admin/AdminHomepageConfig"));
 const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
@@ -63,25 +71,17 @@ const AgencyStays = lazy(() => import("@/pages/agency/AgencyStays"));
 const AgencyPromotions = lazy(() => import("@/pages/agency/AgencyPromotions"));
 const AgencySettings = lazy(() => import("@/pages/agency/AgencySettings"));
 const Help = lazy(() => import("@/pages/Help"));
+const Contact = lazy(() => import("@/pages/Contact"));
 const Support = lazy(() => import("@/pages/Support"));
+const SupportCategory = lazy(() => import("@/pages/SupportCategory"));
 const Install = lazy(() => import("@/pages/Install"));
 const InstallAndroid = lazy(() => import("@/pages/InstallAndroid"));
 const InstalliOS = lazy(() => import("@/pages/InstalliOS"));
 const PriceAlerts = lazy(() => import("@/pages/PriceAlerts"));
-const UnifiedSubscriptions = lazy(() => import("@/pages/UnifiedSubscriptions"));
 const SubscriptionPaymentComponent = lazy(() => import("@/components/ModernSubscriptionPayment"));
-const PaymentTest = lazy(() => import("@/pages/PaymentTest"));
-const CinetPayTest = lazy(() => import("@/pages/ModernCinetPayTest"));
-const PlansDebug = lazy(() => import("@/pages/PlansDebug"));
-const SubscriptionsDebug = lazy(() => import("@/debug/subscriptions-debug"));
-const MajesticPlansDebug = lazy(() => import("@/debug/majestic-plans-debug"));
-const SupabaseAuthDebug = lazy(() => import("@/debug/supabase-auth-debug"));
 const OrderSummary = lazy(() => import("@/pages/OrderSummary"));
 const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("@/pages/TermsOfService"));
-const MajesticClub = lazy(() => import("@/pages/MajesticClub"));
-const MajesticDashboard = lazy(() => import("@/pages/MajesticDashboard"));
-const MajesticSubscriptionSuccess = lazy(() => import("@/pages/MajesticSubscriptionSuccess"));
 const Documentation = lazy(() => import("@/pages/Documentation"));
 const Compatibility = lazy(() => import("@/pages/Compatibility"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -92,7 +92,7 @@ const PageLoader = () => (
     <div className="loader-logo-wrapper">
       <div className="loader-ring"></div>
       <div className="loader-ring"></div>
-      <img src="https://storage.googleapis.com/gpt-engineer-file-uploads/eELbhqThzPVCUnExIw7dfxcDOAj2/uploads/1761678567741-new_logo_bossizG.png" alt="B-Reserve Logo" className="loader-logo" />
+      <Logo variant="light" showWordmark={false} className="loader-logo !w-20 !h-20" />
     </div>
     <div className="loader-text">B-RESERVE</div>
     <div className="loader-bar-bg">
@@ -115,8 +115,14 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<PageTransition><Index /></PageTransition>} />
           <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
           <Route path="/bossiz-portal" element={<PageTransition><BossizPortal /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-ci" element={<PageTransition><BossizConciergerieCI /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-sn" element={<PageTransition><BossizConciergerieSN /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-ci" element={<PageTransition><BossizCIAccueil /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-ci/services" element={<PageTransition><BossizCIServices /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-ci/a-propos" element={<PageTransition><BossizCIAPropos /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-ci/formules" element={<PageTransition><BossizCIFormules /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-sn" element={<PageTransition><BossizSNAccueil /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-sn/services" element={<PageTransition><BossizSNServices /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-sn/a-propos" element={<PageTransition><BossizSNAPropos /></PageTransition>} />
+          <Route path="/bossiz-conciergerie-sn/formules" element={<PageTransition><BossizSNFormules /></PageTransition>} />
           <Route path="/flights" element={<PageTransition><Flights /></PageTransition>} />
           <Route path="/hotels" element={<PageTransition><Hotels /></PageTransition>} />
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
@@ -135,6 +141,7 @@ const AnimatedRoutes = () => {
           <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
           <Route path="/booking-history" element={<PageTransition><BookingHistory /></PageTransition>} />
           <Route path="/account" element={<PageTransition><Account /></PageTransition>} />
+          <Route path="/price-alerts" element={<PageTransition><PriceAlerts /></PageTransition>} />
           <Route path="/payment" element={<PageTransition><Payment /></PageTransition>} />
           <Route path="/confirmation" element={<PageTransition><Confirmation /></PageTransition>} />
           <Route path="/flight-comparison" element={<PageTransition><FlightComparison /></PageTransition>} />
@@ -160,7 +167,9 @@ const AnimatedRoutes = () => {
           <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
           <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
           <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
-          <Route path="/admin/bossiz-sites" element={<PageTransition><AdminBossizSites /></PageTransition>} />
+          <Route path="/admin/bossiz-sites" element={<Navigate to="/admin/bossiz-microsites" replace />} />
+          <Route path="/admin/bossiz-microsites" element={<PageTransition><AdminBossizMicrosites /></PageTransition>} />
+          <Route path="/admin/integrations" element={<PageTransition><AdminIntegrations /></PageTransition>} />
           <Route path="/admin/homepage-config" element={<PageTransition><AdminHomepageConfig /></PageTransition>} />
           <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
           <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
@@ -169,22 +178,18 @@ const AnimatedRoutes = () => {
           <Route path="/agency/promotions" element={<PageTransition><AgencyPromotions /></PageTransition>} />
           <Route path="/agency/settings" element={<PageTransition><AgencySettings /></PageTransition>} />
           <Route path="/help" element={<PageTransition><Help /></PageTransition>} />
+          <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
           <Route path="/support" element={<PageTransition><Support /></PageTransition>} />
+          <Route path="/support/:categoryId" element={<PageTransition><SupportCategory /></PageTransition>} />
+          <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
+          <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
           <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
           <Route path="/install/android" element={<PageTransition><InstallAndroid /></PageTransition>} />
           <Route path="/install/ios" element={<PageTransition><InstalliOS /></PageTransition>} />
           <Route path="/subscription-payment" element={<PageTransition><SubscriptionPaymentComponent /></PageTransition>} />
           <Route path="/order-summary" element={<PageTransition><OrderSummary /></PageTransition>} />
-          <Route path="/payment-test" element={<PageTransition><PaymentTest /></PageTransition>} />
-          <Route path="/cinetpay-test" element={<PageTransition><CinetPayTest /></PageTransition>} />
-          <Route path="/plans-debug" element={<PageTransition><PlansDebug /></PageTransition>} />
-          <Route path="/subscriptions-debug" element={<PageTransition><SubscriptionsDebug /></PageTransition>} />
-          <Route path="/majestic-plans-debug" element={<PageTransition><MajesticPlansDebug /></PageTransition>} />
-          <Route path="/supabase-auth-debug" element={<PageTransition><SupabaseAuthDebug /></PageTransition>} />
           <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
           <Route path="/terms-of-service" element={<PageTransition><TermsOfService /></PageTransition>} />
-          <Route path="/majestic-club" element={<PageTransition><MajesticClub /></PageTransition>} />
-          <Route path="/majestic-dashboard" element={<PageTransition><MajesticDashboard /></PageTransition>} />
           <Route path="/documentation" element={<PageTransition><Documentation /></PageTransition>} />
           <Route path="/compatibility" element={<PageTransition><Compatibility /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />

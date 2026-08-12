@@ -46,7 +46,6 @@ interface FooterSettings {
 
 export default function FooterCustomization() {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);

@@ -51,9 +51,9 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
 
   const getFuelPolicyLabel = (policy: string) => {
     switch (policy) {
-      case 'full-to-full': return 'Plein à plein';
-      case 'same-to-same': return 'Identique à identique';
-      case 'full-to-empty': return 'Plein à vide (carburant prépayé)';
+      case 'full-to-full': return t('carDetails.fuelPolicyFullToFull');
+      case 'same-to-same': return t('carDetails.fuelPolicySameToSame');
+      case 'full-to-empty': return t('carDetails.fuelPolicyFullToEmpty');
       default: return policy;
     }
   };
@@ -78,7 +78,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
             {car.freeCancellation && (
               <Badge className="bg-green-500 text-white">
                 <Check className="w-3 h-3 mr-1" />
-                Annulation gratuite
+                {t('pages.hotels.badges.freeCancellation')}
               </Badge>
             )}
           </div>
@@ -102,7 +102,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                 <Star className="w-4 h-4 fill-current" />
                 <span className="font-semibold">{car.rating.toFixed(1)}</span>
               </div>
-              <span className="text-white/90 text-sm">{car.reviews.toLocaleString()} avis</span>
+              <span className="text-white/90 text-sm">{car.reviews.toLocaleString()} {t('pages.hotels.results.reviews')}</span>
               {car.year && (
                 <span className="text-white/90 text-sm">• {car.year}</span>
               )}
@@ -116,22 +116,22 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
             <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl">
               <Users className="w-6 h-6 text-primary mb-2" />
               <span className="text-lg font-bold">{car.seats}</span>
-              <span className="text-xs text-muted-foreground">Passagers</span>
+              <span className="text-xs text-muted-foreground">{t('carDetails.passengers')}</span>
             </div>
             <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl">
               <Briefcase className="w-6 h-6 text-primary mb-2" />
               <span className="text-lg font-bold">{car.luggage}</span>
-              <span className="text-xs text-muted-foreground">Bagages</span>
+              <span className="text-xs text-muted-foreground">{t('carDetails.luggage')}</span>
             </div>
             <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl">
               <Settings className="w-6 h-6 text-primary mb-2" />
               <span className="text-lg font-bold text-center">{car.transmission}</span>
-              <span className="text-xs text-muted-foreground">Transmission</span>
+              <span className="text-xs text-muted-foreground">{t('cars.transmission')}</span>
             </div>
             <div className="flex flex-col items-center p-4 bg-muted/50 rounded-xl">
               <DoorOpen className="w-6 h-6 text-primary mb-2" />
               <span className="text-lg font-bold">{car.doors || 4}</span>
-              <span className="text-xs text-muted-foreground">Portes</span>
+              <span className="text-xs text-muted-foreground">{t('carDetails.doors')}</span>
             </div>
           </div>
 
@@ -142,27 +142,27 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Car className="w-5 h-5 text-primary" />
-                Caractéristiques du véhicule
+                {t('carDetails.vehicleSpecs')}
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-muted-foreground">Marque</span>
+                  <span className="text-muted-foreground">{t('carDetails.brand')}</span>
                   <span className="font-medium">{car.brand || car.name.split(' ')[0]}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-muted-foreground">Modèle</span>
+                  <span className="text-muted-foreground">{t('carDetails.model')}</span>
                   <span className="font-medium">{car.model || car.name.split(' ').slice(1).join(' ')}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-muted-foreground">Carburant</span>
+                  <span className="text-muted-foreground">{t('cars.fuel')}</span>
                   <span className="font-medium">{car.fuel}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-muted-foreground">Moteur</span>
+                  <span className="text-muted-foreground">{t('carDetails.engine')}</span>
                   <span className="font-medium">{car.engineSize || 'N/A'}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-muted-foreground">Climatisation</span>
+                  <span className="text-muted-foreground">{t('carDetails.airConditioning')}</span>
                   <span className="font-medium">
                     {car.airConditioning ? (
                       <Check className="w-5 h-5 text-green-500" />
@@ -172,7 +172,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-muted-foreground">Année</span>
+                  <span className="text-muted-foreground">{t('carDetails.year')}</span>
                   <span className="font-medium">{car.year || 2024}</span>
                 </div>
               </div>
@@ -184,15 +184,15 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Info className="w-5 h-5 text-primary" />
-                Conditions de location
+                {t('carDetails.rentalConditions')}
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                   <Gauge className={`w-5 h-5 ${car.unlimitedMileage ? 'text-green-500' : 'text-amber-500'}`} />
                   <div className="flex-1">
-                    <span className="font-medium">Kilométrage</span>
+                    <span className="font-medium">{t('carDetails.mileage')}</span>
                     <p className="text-sm text-muted-foreground">
-                      {car.unlimitedMileage ? 'Illimité' : 'Limité (vérifier les conditions)'}
+                      {car.unlimitedMileage ? t('carDetails.unlimited') : t('carDetails.limited')}
                     </p>
                   </div>
                   {car.unlimitedMileage && <Check className="w-5 h-5 text-green-500" />}
@@ -201,7 +201,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                   <Fuel className="w-5 h-5 text-primary" />
                   <div className="flex-1">
-                    <span className="font-medium">Politique carburant</span>
+                    <span className="font-medium">{t('carDetails.fuelPolicy')}</span>
                     <p className="text-sm text-muted-foreground">
                       {getFuelPolicyLabel(car.fuelPolicy || 'full-to-full')}
                     </p>
@@ -211,9 +211,9 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                   <Clock className={`w-5 h-5 ${car.freeCancellation ? 'text-green-500' : 'text-amber-500'}`} />
                   <div className="flex-1">
-                    <span className="font-medium">Annulation</span>
+                    <span className="font-medium">{t('carDetails.cancellation')}</span>
                     <p className="text-sm text-muted-foreground">
-                      {car.freeCancellation ? 'Annulation gratuite jusqu\'à 48h avant' : 'Conditions d\'annulation applicables'}
+                      {car.freeCancellation ? t('carDetails.freeCancellationUntil48h') : t('carDetails.cancellationTermsApply')}
                     </p>
                   </div>
                   {car.freeCancellation && <Check className="w-5 h-5 text-green-500" />}
@@ -223,9 +223,9 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                   <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                     <CreditCard className="w-5 h-5 text-amber-500" />
                     <div className="flex-1">
-                      <span className="font-medium">Caution requise</span>
+                      <span className="font-medium">{t('carDetails.depositRequired')}</span>
                       <p className="text-sm text-muted-foreground">
-                        <Price amount={car.deposit} fromCurrency="EUR" /> bloqués sur votre carte
+                        <Price amount={car.deposit} fromCurrency="EUR" /> {t('carDetails.blockedOnCard')}
                       </p>
                     </div>
                   </div>
@@ -240,7 +240,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-primary" />
-                    Équipements et services inclus
+                    {t('carDetails.featuresIncluded')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {car.features.map((feature, index) => (
@@ -261,7 +261,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                 <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-xl border border-primary/10">
                   <MapPin className="w-6 h-6 text-primary" />
                   <div>
-                    <span className="font-medium">Lieu de prise en charge</span>
+                    <span className="font-medium">{t('cars.pickupLocation')}</span>
                     <p className="text-sm text-muted-foreground">{car.pickupLocation}</p>
                   </div>
                 </div>
@@ -274,14 +274,14 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
           {/* Price & Book */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-muted/50 rounded-xl">
             <div>
-              <p className="text-sm text-muted-foreground">Prix total par jour</p>
+              <p className="text-sm text-muted-foreground">{t('carDetails.totalPricePerDay')}</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl md:text-4xl font-bold text-primary">
                   <Price amount={car.price} fromCurrency="EUR" showLoader />
                 </span>
-                <span className="text-muted-foreground">/jour</span>
+                <span className="text-muted-foreground">/{t('carDetails.day')}</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Taxes et frais inclus</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('carDetails.taxesIncluded')}</p>
             </div>
             <Button 
               size="lg"
@@ -291,7 +291,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
               }}
               className="w-full sm:w-auto px-8 py-6 text-lg"
             >
-              Réserver maintenant
+              {t('carDetails.bookNow')}
             </Button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 interface Nationality {
   code: string;
@@ -54,10 +55,11 @@ interface NationalitySelectProps {
 }
 
 export const NationalitySelect = ({ value, onValueChange }: NationalitySelectProps) => {
+  const { t } = useTranslation();
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className="h-12 border-2">
-        <SelectValue placeholder="Sélectionner une nationalité" />
+        <SelectValue placeholder={t('nationalitySelect.placeholder')} />
       </SelectTrigger>
       <SelectContent className="max-h-[300px]">
         {nationalities.map((nat) => (

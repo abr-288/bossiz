@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AdminLayout } from "@/features/admin";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -410,6 +410,7 @@ export default function AdminAdvertisements() {
                               src={ad.image_url}
                               alt={ad.title}
                               className="w-16 h-10 object-cover rounded"
+                              loading="lazy"
                             />
                           )}
                           <div>

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { carBookingSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
+import { useCreateBooking } from "@/hooks/useCreateBooking";
+import { splitFullName } from "@/utils/splitFullName";
 
 interface CarBookingDialogProps {
   open: boolean;
@@ -17,17 +19,33 @@ interface CarBookingDialogProps {
     price: number;
     transmission?: string;
     seats?: number;
+    offerSignature?: string;
+    offerExpiresAt?: string;
   };
 }
 
 export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogProps) => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { createBooking, loading } = useCreateBooking();
+
+  // Checked as soon as the dialog opens, not after the user has filled out
+  // the whole form - avoids sending someone through 9+ fields only to tell
+  // them at submit time that they needed to be logged in.
+  useEffect(() => {
+    if (!open) return;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        onOpenChange(false);
+        toast.error(t('booking.validation.mustBeLoggedIn'));
+        navigate("/auth");
+      }
+    })();
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const pickupDate = formData.get("pickupDate") as string;
@@ -55,7 +73,6 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
       });
     } catch (error: any) {
       toast.error(error.errors?.[0]?.message || t('booking.validation.checkInfo'));
-      setLoading(false);
       return;
     }
 
@@ -63,7 +80,12 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
 
     if (!user) {
       toast.error(t('booking.validation.mustBeLoggedIn'));
-      setLoading(false);
+      navigate("/auth");
+      return;
+    }
+
+    if (!car.offerSignature || !car.offerExpiresAt) {
+      toast.error(t('booking.validation.offerExpired', "Cette offre n'est plus valide, veuillez relancer une recherche."));
       return;
     }
 
@@ -71,80 +93,57 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     const start = new Date(`${pickupDate}T${pickupTime}`);
     const end = new Date(`${dropoffDate}T${dropoffTime}`);
     const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
-    
+
     if (days < 1) {
       toast.error(t('booking.validation.dropoffAfterPickup'));
-      setLoading(false);
-      return;
-    }
-
-    // Create service
-    const { data: newService, error: serviceError } = await supabase
-      .from("services")
-      .insert({
-        name: car.name,
-        type: "car",
-        price_per_unit: car.price,
-        currency: "EUR",
-        location: pickupLocation,
-        available: true,
-        description: `${car.category} - ${car.transmission || 'Automatique'} - ${car.seats || 5} places`
-      } as any)
-      .select()
-      .single();
-
-    if (serviceError) {
-      toast.error(t('booking.error.createService'));
-      setLoading(false);
       return;
     }
 
     const totalPrice = car.price * days;
+    const { first_name, last_name } = splitFullName(customerName);
 
-    const { data: booking, error } = await supabase.from("bookings").insert({
-      user_id: user.id,
-      service_id: newService.id,
+    const bookingId = await createBooking({
+      service_type: "car",
+      service_name: car.name,
+      service_description: `${car.category} - ${car.transmission || 'Automatique'} - ${car.seats || 5} places`,
+      location: pickupLocation,
       start_date: pickupDate,
       end_date: dropoffDate,
       guests: 1,
       total_price: totalPrice,
+      currency: "EUR",
+      unit_price: car.price,
+      offer_signature: car.offerSignature,
+      offer_expires_at: car.offerExpiresAt,
       customer_name: customerName,
       customer_email: customerEmail,
       customer_phone: customerPhone,
-      notes: notes || null,
-      currency: "EUR",
-      status: "pending",
-      payment_status: "pending",
+      notes: notes || undefined,
+      passengers: [{ first_name, last_name }],
       booking_details: {
         pickupTime,
         dropoffTime,
         pickupLocation,
         dropoffLocation,
         driverLicense,
-      }
-    }).select().single();
+      },
+    });
 
-    if (error) {
-      console.error("Booking error:", error);
-      toast.error("Erreur lors de la création de la réservation: " + error.message);
-      setLoading(false);
-      return;
-    }
+    if (!bookingId) return;
 
-    toast.success("Réservation créée avec succès");
     onOpenChange(false);
-    navigate(`/payment?bookingId=${booking.id}`);
+    navigate(`/payment?bookingId=${bookingId}`);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Réserver {car.name}</DialogTitle>
-          <DialogDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Réserver {car.name}</SheetTitle>
+          <SheetDescription>
             {car.category} - {car.transmission || 'Automatique'} - {car.seats || 5} places
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
         <UnifiedForm onSubmit={handleSubmit} variant="booking" loading={loading}>
           <div className="space-y-6">
@@ -154,7 +153,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
               <UnifiedFormField
                 label="Lieu de prise en charge"
                 name="pickupLocation"
-                placeholder="Abidjan - Aéroport"
+                placeholder={t('booking.dialog.car.locationPlaceholder')}
                 required
               />
               <div className="grid grid-cols-2 gap-4">
@@ -180,7 +179,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
               <UnifiedFormField
                 label="Lieu de retour"
                 name="dropoffLocation"
-                placeholder="Abidjan - Aéroport"
+                placeholder={t('booking.dialog.car.locationPlaceholder')}
                 required
               />
               <div className="grid grid-cols-2 gap-4">
@@ -239,16 +238,16 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
                 label="Informations supplémentaires"
                 name="notes"
                 type="textarea"
-                placeholder="Demandes spéciales, équipements additionnels..."
+                placeholder={t('booking.dialog.car.specialRequestsPlaceholder')}
               />
             </div>
 
             <UnifiedSubmitButton variant="booking" loading={loading} fullWidth>
-              Confirmer la réservation
+              {t('booking.summary.confirm')}
             </UnifiedSubmitButton>
           </div>
         </UnifiedForm>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };

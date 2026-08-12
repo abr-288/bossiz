@@ -9,6 +9,7 @@ import { TrainSearchForm } from "./TrainSearchForm";
 import { EventSearchForm } from "./EventSearchForm";
 import { TourSearchForm } from "./TourSearchForm";
 import { StaySearchForm } from "./StaySearchForm";
+import { useTranslation } from "react-i18next";
 
 interface PageBannerProps {
   title: string;
@@ -29,6 +30,7 @@ export const PageBanner = ({
   backgroundImage,
   showAllTabs = true 
 }: PageBannerProps) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   return (
@@ -69,59 +71,59 @@ export const PageBanner = ({
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Plane className="w-5 h-5" />
-                <span className="text-sm">Vols</span>
+                <span className="text-sm">{t('nav.flights')}</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="hotel" 
+              <TabsTrigger
+                value="hotel"
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Hotel className="w-5 h-5" />
-                <span className="text-sm">Hôtels</span>
+                <span className="text-sm">{t('nav.hotels')}</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="flight-hotel" 
+              <TabsTrigger
+                value="flight-hotel"
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Plane className="w-4 h-4" />
                 <Hotel className="w-4 h-4" />
-                <span className="text-sm">Vol+Hôtel</span>
+                <span className="text-sm">{t('nav.flightHotel')}</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="car" 
+              <TabsTrigger
+                value="car"
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Car className="w-5 h-5" />
-                <span className="text-sm">Voitures</span>
+                <span className="text-sm">{t('nav.carRental')}</span>
               </TabsTrigger>
               {showAllTabs && (
                 <>
-                  <TabsTrigger 
-                    value="train" 
+                  <TabsTrigger
+                    value="train"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Train className="w-5 h-5" />
-                    <span className="text-sm">Trains</span>
+                    <span className="text-sm">{t('nav.trains')}</span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="event" 
+                  <TabsTrigger
+                    value="event"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Calendar className="w-5 h-5" />
-                    <span className="text-sm">Événements</span>
+                    <span className="text-sm">{t('nav.events')}</span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="tour" 
+                  <TabsTrigger
+                    value="tour"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Map className="w-5 h-5" />
-                    <span className="text-sm">Tours</span>
+                    <span className="text-sm">{t('nav.tours')}</span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="stay" 
+                  <TabsTrigger
+                    value="stay"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Hotel className="w-5 h-5" />
-                    <span className="text-sm">Séjours</span>
+                    <span className="text-sm">{t('nav.stays')}</span>
                   </TabsTrigger>
                 </>
               )}

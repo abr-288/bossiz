@@ -232,7 +232,7 @@ const DestinationDetail = () => {
                       selectedImage === idx ? "ring-4 ring-primary" : "opacity-60 hover:opacity-100"
                     }`}
                   >
-                    <img src={img} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img src={img} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>

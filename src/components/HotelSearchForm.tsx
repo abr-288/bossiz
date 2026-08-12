@@ -116,8 +116,8 @@ export const HotelSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
@@ -205,7 +205,7 @@ export const HotelSearchForm = () => {
                 handleBlur("checkIn");
               }}
               minDate={new Date()}
-              placeholder="Choisir date"
+              placeholder={t("search.chooseDate")}
               required
             />
             {errors.checkIn && touched.checkIn && (
@@ -227,7 +227,7 @@ export const HotelSearchForm = () => {
                 handleBlur("checkOut");
               }}
               minDate={getMinCheckOutDate()}
-              placeholder="Choisir date"
+              placeholder={t("search.chooseDate")}
               required
             />
             {errors.checkOut && touched.checkOut && (

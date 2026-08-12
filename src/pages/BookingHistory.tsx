@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { UserDashboardLayout } from "@/components/dashboard/UserDashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -12,6 +11,7 @@ import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { Price } from "@/components/ui/price";
+import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 
 interface Booking {
   id: string;
@@ -89,28 +89,6 @@ const BookingHistory = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, { variant: any; label: string }> = {
-      pending: { variant: "secondary", label: t('booking.status.pending') },
-      confirmed: { variant: "default", label: t('booking.status.confirmed') },
-      cancelled: { variant: "destructive", label: t('booking.status.cancelled') },
-      completed: { variant: "outline", label: t('booking.status.completed') }
-    };
-    const config = variants[status] || variants.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
-
-  const getPaymentBadge = (status: string) => {
-    const variants: Record<string, { variant: any; label: string }> = {
-      pending: { variant: "secondary", label: t('booking.payment.pending') },
-      paid: { variant: "default", label: t('booking.payment.paid') },
-      failed: { variant: "destructive", label: t('booking.payment.failed') },
-      refunded: { variant: "outline", label: t('booking.payment.refunded') }
-    };
-    const config = variants[status] || variants.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const getServiceIcon = (type: string) => {
@@ -214,8 +192,8 @@ const BookingHistory = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          {getStatusBadge(booking.status)}
-                          {getPaymentBadge(booking.payment_status)}
+                          <BookingStatusBadge status={booking.status} />
+                          <PaymentStatusBadge status={booking.payment_status} />
                         </div>
                       </div>
                     </CardHeader>
@@ -289,7 +267,13 @@ const BookingHistory = () => {
                           {t('bookingHistory.downloadTicket')}
                         </Button>
                         {booking.status === "confirmed" && booking.payment_status === "paid" && (
-                          <Button variant="outline">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              toast.info(t('bookingHistory.modifyNotAvailable'));
+                              navigate('/support');
+                            }}
+                          >
                             {t('bookingHistory.modifyBooking')}
                           </Button>
                         )}

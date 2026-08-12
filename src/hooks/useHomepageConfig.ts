@@ -144,7 +144,7 @@ export const useHomepageConfig = () => {
       const { data: featuresData, error: featuresError } = await supabase
         .from("homepage_features")
         .select("*")
-        .order('order', { ascending: true });
+        .order('order_num', { ascending: true });
 
       if (featuresError) throw featuresError;
 
@@ -152,7 +152,7 @@ export const useHomepageConfig = () => {
       const { data: sectionsData, error: sectionsError } = await supabase
         .from("homepage_sections")
         .select("*")
-        .order('order', { ascending: true });
+        .order('order_num', { ascending: true });
 
       if (sectionsError) throw sectionsError;
 
@@ -178,7 +178,7 @@ export const useHomepageConfig = () => {
               title: section.title,
               subtitle: section.subtitle || '',
               visible: section.visible,
-              order: section.order
+              order: section.order_num
             };
           }
         });

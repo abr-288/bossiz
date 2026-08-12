@@ -8,6 +8,7 @@ import { CheckCircle2, Clock, Shield, Star, ArrowLeft, ArrowRight, Download } fr
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { autoConvertAndFormat } from '@/utils/currencyConverter';
+import { useTranslation } from 'react-i18next';
 
 interface OrderItem {
   id: string;
@@ -41,6 +42,7 @@ const OrderSummary = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [orderData, setOrderData] = useState<OrderSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -74,7 +76,7 @@ const OrderSummary = () => {
           description: 'Impossible de charger les détails de la commande',
           variant: 'destructive',
         });
-        navigate('/subscriptions');
+        navigate('/');
       } finally {
         setLoading(false);
       }
@@ -148,24 +150,6 @@ const OrderSummary = () => {
         ],
         discount: billingCycle === 'yearly' ? 17 : 0
       },
-      'majestic_access': {
-        id: 'majestic_access',
-        name: 'Majestic Access',
-        description: 'Accès Premium exclusif',
-        price: 100000,
-        currency: 'XOF',
-        billingCycle,
-        trialDays: billingCycle === 'yearly' ? 14 : 7,
-        features: [
-          'Assistance prioritaire 24/7',
-          'Conciergerie personnelle',
-          'Réservations prioritaires',
-          'Accès lounges VIP',
-          'Transport premium',
-          'Support multilingue'
-        ],
-        discount: billingCycle === 'yearly' ? 17 : 0
-      }
     };
 
     const selectedPlan = plans[planId || 'premium'] || plans['premium'];
@@ -315,7 +299,7 @@ Merci de votre confiance dans Bossiz Conciergerie
   };
 
   const handleBackToSubscriptions = () => {
-    navigate('/subscriptions');
+    navigate('/');
   };
 
   const handleProceedToPayment = () => {
@@ -378,7 +362,7 @@ Merci de votre confiance dans Bossiz Conciergerie
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
               >
                 <Download className="w-4 h-4" />
-                Télécharger PDF
+                {t('pages.orderSummary.downloadPdf')}
               </Button>
             </div>
           </div>
@@ -394,7 +378,7 @@ Merci de votre confiance dans Bossiz Conciergerie
             <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
               <CardTitle className="text-2xl font-bold flex items-center gap-3">
                 <Shield className="w-8 h-8" />
-                Récapitulatif de Commande
+                {t('pages.orderSummary.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -529,7 +513,7 @@ Merci de votre confiance dans Bossiz Conciergerie
             <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white">
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="w-6 h-6" />
-                Récapitulatif financier
+                {t('pages.orderSummary.financialSummary')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -581,7 +565,7 @@ Merci de votre confiance dans Bossiz Conciergerie
             onClick={handleProceedToPayment}
             className="px-8 py-3 text-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 flex items-center gap-2"
           >
-            Procéder au paiement
+            {t('booking.summary.proceedToPayment')}
             <ArrowRight className="w-5 h-5" />
           </Button>
         </motion.div>

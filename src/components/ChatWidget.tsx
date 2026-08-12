@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  MessageCircle, X, Send, Paperclip, Smile, 
-  MoreHorizontal, User, ShieldCheck, CheckCheck, 
-  Sparkles, Headphones, Info, Settings 
+import {
+  MessageCircle, X, Send, Paperclip, Smile,
+  MoreHorizontal, User, ShieldCheck, CheckCheck,
+  Headphones, Info, Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,7 +136,7 @@ const ChatWidget = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[10000] flex flex-col items-end pointer-events-none">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000] flex flex-col items-end pointer-events-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -144,7 +144,7 @@ const ChatWidget = () => {
             animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, scale: 0.85, y: 30, filter: "blur(10px)" }}
             transition={{ type: "spring", damping: 20, stiffness: 200 }}
-            className="w-[380px] sm:w-[420px] h-[580px] sm:h-[620px] bg-white/80 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 overflow-hidden flex flex-col pointer-events-auto mb-6 mr-1"
+            className="w-[calc(100vw-2rem)] max-w-[340px] sm:w-[340px] md:w-[380px] h-[min(72vh,480px)] sm:h-[500px] md:h-[540px] bg-white/80 backdrop-blur-2xl rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 overflow-hidden flex flex-col pointer-events-auto mb-4 sm:mb-6 sm:mr-1"
           >
             {/* Header */}
             <div className="bg-gradient-to-br from-primary/95 via-primary to-primary-dark p-6 text-white pb-8 relative">
@@ -167,10 +167,11 @@ const ChatWidget = () => {
                     </div>
                   </div>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setIsOpen(false)}
+                  aria-label="Fermer le chat"
                   className="hover:bg-white/10 text-white rounded-2xl h-10 w-10 border border-white/10 transition-colors"
                 >
                   <X className="w-5 h-5" />
@@ -181,7 +182,7 @@ const ChatWidget = () => {
             {/* Quick Actions */}
             <div className="flex gap-2 px-6 -mt-4 relative z-20 overflow-x-auto scrollbar-none pb-2">
               <Badge variant="secondary" className="bg-white/90 backdrop-blur-md border border-primary/10 shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors py-1.5 px-3 rounded-full text-[10px] font-black uppercase tracking-widest flex-shrink-0">
-                <Sparkles className="w-3 h-3 mr-1" /> Aide AI
+                Aide AI
               </Badge>
               <Badge variant="secondary" className="bg-white/90 backdrop-blur-md border border-primary/10 shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors py-1.5 px-3 rounded-full text-[10px] font-black uppercase tracking-widest flex-shrink-0">
                 <Info className="w-3 h-3 mr-1" /> Destinations
@@ -245,19 +246,21 @@ const ChatWidget = () => {
                     className="bg-white/80 border-white/60 h-14 pl-5 pr-12 rounded-2xl shadow-inner focus-visible:ring-1 focus-visible:ring-primary/20 transition-all text-sm font-medium"
                     disabled={aiLoading}
                   />
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Insérer un émoji"
                     className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-primary rounded-xl transition-transform active:scale-90"
                     disabled={aiLoading}
                   >
                     <Smile className="w-6 h-6" />
                   </Button>
                 </div>
-                <Button 
-                  type="submit" 
-                  size="icon" 
+                <Button
+                  type="submit"
+                  size="icon"
+                  aria-label="Envoyer le message"
                   className="h-14 w-14 rounded-2xl bg-secondary text-primary hover:bg-secondary/90 shadow-lg shadow-secondary/30 transition-all active:scale-90 flex-shrink-0"
                   disabled={!inputValue.trim() || aiLoading}
                 >
@@ -278,6 +281,7 @@ const ChatWidget = () => {
 
       <motion.button
         onClick={toggleChat}
+        aria-label={isOpen ? "Fermer le chat" : "Ouvrir le chat"}
         className={cn(
           "h-16 w-16 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 transition-all pointer-events-auto border overflow-hidden relative group",
           isOpen 
@@ -287,7 +291,7 @@ const ChatWidget = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-dark over to-primary-darker opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-dark to-primary-darker opacity-0 group-hover:opacity-100 transition-opacity" />
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>

@@ -21,20 +21,31 @@ interface ThemeConfig {
   };
 }
 
+// Ces valeurs reprennent exactement les tokens définis dans src/index.css.
+// Elles ne doivent JAMAIS diverger de index.css : ce contexte applique ses
+// couleurs par-dessus les variables CSS via des styles inline, donc le moindre
+// écart écrase silencieusement le thème (clair ou sombre) défini en CSS et
+// peut rendre du texte illisible (ex: primary sombre sur fond sombre).
 const DEFAULT_THEME: ThemeConfig = {
-  primaryColor: "220 54% 18%",
-  secondaryColor: "220 45% 30%",
-  accentColor: "38 92% 50%",
+  primaryColor: "225 45% 18%",
+  secondaryColor: "158 100% 48%",
+  accentColor: "190 100% 95%",
   backgroundColor: "0 0% 100%",
-  foregroundColor: "220 54% 18%",
-  mutedColor: "220 20% 96%",
-  borderRadius: "0.5rem",
+  foregroundColor: "210 24% 16%",
+  mutedColor: "210 20% 96%",
+  borderRadius: "0.75rem",
   fontHeading: "Poppins",
   fontBody: "Inter",
   darkMode: {
-    backgroundColor: "220 54% 8%",
-    foregroundColor: "220 20% 98%",
-    mutedColor: "220 30% 15%",
+    backgroundColor: "222 47% 6%",
+    foregroundColor: "210 40% 98%",
+    mutedColor: "222 40% 16%",
+    // Une couleur primaire/secondaire/accent dédiée est indispensable ici :
+    // sans elle, le fallback `darkMode.xColor || xColor` réutilise la teinte
+    // du mode clair (très sombre) en mode sombre, la rendant invisible.
+    primaryColor: "158 100% 45%",
+    secondaryColor: "222 47% 18%",
+    accentColor: "222 47% 20%",
   },
 };
 

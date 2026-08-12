@@ -1,0 +1,1477 @@
+[
+  {
+    "file": "src\\components\\admin\\AdminLayout.tsx",
+    "line": 76,
+    "text": "<Button variant=\"ghost\" size=\"icon\" className=\"h-8 w-8\" aria-label=\"Retour à l'accueil\" title=\"Retou"
+  },
+  {
+    "file": "src\\components\\admin\\BookingsByServiceChart.tsx",
+    "line": 26,
+    "text": "Aucune donnée disponible"
+  },
+  {
+    "file": "src\\components\\admin\\DashboardCustomizer.tsx",
+    "line": 168,
+    "text": "placeholder=\"Ex: Vue Complète, Vue Essentielle...\""
+  },
+  {
+    "file": "src\\components\\admin\\GeographicDistributionChart.tsx",
+    "line": 17,
+    "text": "Aucune donnée disponible"
+  },
+  {
+    "file": "src\\components\\admin\\ImageUpload.tsx",
+    "line": 147,
+    "text": "placeholder=\"URL de l'image ou télécharger\""
+  },
+  {
+    "file": "src\\components\\admin\\ThemeConfig.tsx",
+    "line": 173,
+    "text": "Thèmes prédéfinis"
+  },
+  {
+    "file": "src\\components\\admin\\ThemeConfig.tsx",
+    "line": 428,
+    "text": "Aperçu: Titre exemple"
+  },
+  {
+    "file": "src\\components\\admin\\ThemeConfig.tsx",
+    "line": 450,
+    "text": "Aperçu: Texte de paragraphe exemple"
+  },
+  {
+    "file": "src\\components\\admin\\ThemeConfig.tsx",
+    "line": 562,
+    "text": "Sauvegarder le thème"
+  },
+  {
+    "file": "src\\components\\agency\\AgencyLayout.tsx",
+    "line": 93,
+    "text": "<Button variant=\"ghost\" size=\"icon\" className=\"h-8 w-8 flex-shrink-0\" aria-label=\"Retour à l'accueil"
+  },
+  {
+    "file": "src\\components\\agency\\AgencySidebar.tsx",
+    "line": 88,
+    "text": "aria-label=\"Déconnexion\""
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 397,
+    "text": "Vérifiez vos informations avant de procéder au paiement"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 549,
+    "text": "Options sélectionnées"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 569,
+    "text": "Sièges sélectionnés"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 587,
+    "text": "Détails du prix"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 652,
+    "text": "Prix calculé par le serveur • Garanti jusqu'à expiration"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 723,
+    "text": "Procéder au paiement"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 735,
+    "text": "Procéder au paiement"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 753,
+    "text": "Connexion requise"
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 756,
+    "text": "Vous devez être connecté pour procéder au paiement de votre réservation."
+  },
+  {
+    "file": "src\\components\\booking-steps\\SummaryStep.tsx",
+    "line": 761,
+    "text": "En vous connectant, vous pourrez :"
+  },
+  {
+    "file": "src\\components\\bossiz\\BossizSiteLayout.tsx",
+    "line": 133,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\components\\cars\\CarCard.tsx",
+    "line": 127,
+    "text": "Kilométrage illimité"
+  },
+  {
+    "file": "src\\components\\cars\\CarCard.tsx",
+    "line": 242,
+    "text": "Détails"
+  },
+  {
+    "file": "src\\components\\cars\\CarCard.tsx",
+    "line": 248,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\components\\cars\\CarFilters.tsx",
+    "line": 123,
+    "text": "Réinitialiser"
+  },
+  {
+    "file": "src\\components\\cars\\CarFilters.tsx",
+    "line": 149,
+    "text": "Type de véhicule"
+  },
+  {
+    "file": "src\\components\\cars\\CarFilters.tsx",
+    "line": 261,
+    "text": "Kilométrage illimité"
+  },
+  {
+    "file": "src\\components\\CarSearchForm.tsx",
+    "line": 194,
+    "text": "Restituer à un autre endroit"
+  },
+  {
+    "file": "src\\components\\CarSearchForm.tsx",
+    "line": 359,
+    "text": "Âge du conducteur"
+  },
+  {
+    "file": "src\\components\\CarSearchForm.tsx",
+    "line": 384,
+    "text": "Restrictions d'âge possibles"
+  },
+  {
+    "file": "src\\components\\ChatWidget.tsx",
+    "line": 253,
+    "text": "aria-label=\"Insérer un émoji\""
+  },
+  {
+    "file": "src\\components\\CompatibilityDetector.tsx",
+    "line": 130,
+    "text": "Vérifier la compatibilité"
+  },
+  {
+    "file": "src\\components\\CompatibilityDetector.tsx",
+    "line": 162,
+    "text": "Votre appareil ou navigateur n'est pas compatible avec B-Reserve."
+  },
+  {
+    "file": "src\\components\\CompatibilityDetector.tsx",
+    "line": 163,
+    "text": "Vous allez être redirigé vers la page de compatibilité."
+  },
+  {
+    "file": "src\\components\\CreatePriceAlert.tsx",
+    "line": 76,
+    "text": "Créer une Alerte de Prix"
+  },
+  {
+    "file": "src\\components\\CreatePriceAlert.tsx",
+    "line": 79,
+    "text": "Soyez notifié quand les prix baissent pour cette recherche"
+  },
+  {
+    "file": "src\\components\\CreatePriceAlert.tsx",
+    "line": 153,
+    "text": "placeholder=\"Prix souhaité\""
+  },
+  {
+    "file": "src\\components\\CreatePriceAlert.tsx",
+    "line": 170,
+    "text": "Vous serez notifié si le prix baisse de ce pourcentage"
+  },
+  {
+    "file": "src\\components\\dashboard\\BookingCalendar.tsx",
+    "line": 179,
+    "text": "Réinitialiser"
+  },
+  {
+    "file": "src\\components\\dashboard\\BookingCalendar.tsx",
+    "line": 191,
+    "text": "Calendrier des réservations"
+  },
+  {
+    "file": "src\\components\\dashboard\\BookingCalendar.tsx",
+    "line": 221,
+    "text": "Aucune réservation pour cette date"
+  },
+  {
+    "file": "src\\components\\dashboard\\UpcomingReminders.tsx",
+    "line": 50,
+    "text": "Prochains départs"
+  },
+  {
+    "file": "src\\components\\destinations\\DestinationGrid.tsx",
+    "line": 57,
+    "text": "Réessayer"
+  },
+  {
+    "file": "src\\components\\destinations\\DestinationGrid.tsx",
+    "line": 78,
+    "text": "Essayez une autre recherche ou catégorie"
+  },
+  {
+    "file": "src\\components\\DestinationsSection.tsx",
+    "line": 138,
+    "text": "Équipements"
+  },
+  {
+    "file": "src\\components\\DestinationsSection.tsx",
+    "line": 197,
+    "text": "Voir détails"
+  },
+  {
+    "file": "src\\components\\ErrorBoundary.tsx",
+    "line": 86,
+    "text": "Nous nous excusons pour ce désagrément"
+  },
+  {
+    "file": "src\\components\\ErrorBoundary.tsx",
+    "line": 94,
+    "text": "Détails de l'erreur:"
+  },
+  {
+    "file": "src\\components\\ErrorBoundary.tsx",
+    "line": 104,
+    "text": "Stack trace (développement uniquement)"
+  },
+  {
+    "file": "src\\components\\ErrorBoundary.tsx",
+    "line": 119,
+    "text": "Réessayer"
+  },
+  {
+    "file": "src\\components\\ErrorBoundary.tsx",
+    "line": 127,
+    "text": "Retour à l'accueil"
+  },
+  {
+    "file": "src\\components\\ErrorBoundary.tsx",
+    "line": 192,
+    "text": "Réessayer"
+  },
+  {
+    "file": "src\\components\\EventResults.tsx",
+    "line": 96,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\components\\EventResults.tsx",
+    "line": 102,
+    "text": "Détails"
+  },
+  {
+    "file": "src\\components\\FeaturedServices.tsx",
+    "line": 56,
+    "text": "Découvrez nos meilleures offres sélectionnées pour vous"
+  },
+  {
+    "file": "src\\components\\flights\\PriceCalendar.tsx",
+    "line": 211,
+    "text": "Meilleur prix: <Price amount={priceStats.min} fromCurrency={currency} />"
+  },
+  {
+    "file": "src\\components\\flights\\PriceCalendar.tsx",
+    "line": 265,
+    "text": "Meilleur prix"
+  },
+  {
+    "file": "src\\components\\Footer.tsx",
+    "line": 201,
+    "text": "Compatibilité"
+  },
+  {
+    "file": "src\\components\\HotelAutocomplete.tsx",
+    "line": 183,
+    "text": "Prix moyen/nuit"
+  },
+  {
+    "file": "src\\components\\HotelComparisonDialog.tsx",
+    "line": 133,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\components\\HotelRoomDetailsDialog.tsx",
+    "line": 34,
+    "text": "Détails de l’établissement et aperçu des chambres disponibles."
+  },
+  {
+    "file": "src\\components\\hotels\\HotelPriceCalendar.tsx",
+    "line": 146,
+    "text": "Prix par nuit - Meilleur: <Price amount={priceStats.min} fromCurrency={currency} />"
+  },
+  {
+    "file": "src\\components\\hotels\\HotelPriceCalendar.tsx",
+    "line": 200,
+    "text": "Meilleur prix"
+  },
+  {
+    "file": "src\\components\\majestic-club\\NotificationsSystem.tsx",
+    "line": 285,
+    "text": "Restez informé de toutes vos activités Majestic Club"
+  },
+  {
+    "file": "src\\components\\majestic-club\\NotificationsSystem.tsx",
+    "line": 392,
+    "text": "Paramètres"
+  },
+  {
+    "file": "src\\components\\majestic-club\\NotificationsSystem.tsx",
+    "line": 419,
+    "text": "Vous serez notifié des nouvelles activités"
+  },
+  {
+    "file": "src\\components\\majestic-club\\NotificationsSystem.tsx",
+    "line": 558,
+    "text": "Accéder à la page"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 239,
+    "text": "Accès à des biens immobiliers non visibles publiquement"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 244,
+    "text": "Votre niveau d'accès"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 374,
+    "text": "Demander l'Accès"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 451,
+    "text": "Révéler"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 460,
+    "text": "Télécharger"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 470,
+    "text": "Demander l'Accès"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 512,
+    "text": "Demande d'Accès Confidentiel"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 542,
+    "text": "placeholder=\"Précisez votre intérêt pour cette propriété...\""
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 553,
+    "text": "Processus de vérification confidentiel"
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 556,
+    "text": "Votre demande sera examinée par notre équipe de sécurité."
+  },
+  {
+    "file": "src\\components\\majestic-club\\OffMarketProperties.tsx",
+    "line": 557,
+    "text": "Une vérification d'identité peut être requise pour les propriétés Black Card."
+  },
+  {
+    "file": "src\\components\\majestic-club\\PaymentSystem.tsx",
+    "line": 290,
+    "text": "Gérez vos paiements et transactions en toute sécurité"
+  },
+  {
+    "file": "src\\components\\majestic-club\\PaymentSystem.tsx",
+    "line": 546,
+    "text": "placeholder=\"Entrez le montant à ajouter\""
+  },
+  {
+    "file": "src\\components\\majestic-club\\PaymentSystem.tsx",
+    "line": 560,
+    "text": "Vos informations de paiement sont protégées par un chiffrement de bout en bout"
+  },
+  {
+    "file": "src\\components\\majestic-club\\StayManagement.tsx",
+    "line": 335,
+    "text": "Suivez votre itinéraire et accédez à vos documents sécurisés"
+  },
+  {
+    "file": "src\\components\\majestic-club\\StayManagement.tsx",
+    "line": 547,
+    "text": "Sélectionnez une réservation pour voir son timeline"
+  },
+  {
+    "file": "src\\components\\majestic-club\\StayManagement.tsx",
+    "line": 559,
+    "text": "Documents Sécurisés"
+  },
+  {
+    "file": "src\\components\\majestic-club\\StayManagement.tsx",
+    "line": 598,
+    "text": "Révéler"
+  },
+  {
+    "file": "src\\components\\majestic-club\\StayManagement.tsx",
+    "line": 607,
+    "text": "Télécharger"
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 326,
+    "text": "placeholder=\"Rechercher un service de voyage...\""
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 352,
+    "text": "<SelectValue placeholder=\"Gamme de prix\" />"
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 384,
+    "text": "Hébergement"
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 461,
+    "text": "Prix de base"
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 469,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 487,
+    "text": "Essayez d'ajuster vos filtres ou votre recherche"
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 523,
+    "text": "placeholder=\"Ville ou aéroport\""
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 533,
+    "text": "placeholder=\"Ville ou aéroport\""
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 596,
+    "text": "placeholder=\"Précisez vos besoins spécifiques...\""
+  },
+  {
+    "file": "src\\components\\majestic-club\\TravelBooking.tsx",
+    "line": 633,
+    "text": "Confirmer la Réservation"
+  },
+  {
+    "file": "src\\components\\majestic-club\\VIPChat.tsx",
+    "line": 257,
+    "text": "Réponse en 2-5 min"
+  },
+  {
+    "file": "src\\components\\majestic-club\\VIPChat.tsx",
+    "line": 278,
+    "text": "Vidéo"
+  },
+  {
+    "file": "src\\components\\majestic-club\\VIPChat.tsx",
+    "line": 314,
+    "text": "Chiffé de bout en bout"
+  },
+  {
+    "file": "src\\components\\majestic-club\\VIPChat.tsx",
+    "line": 431,
+    "text": "placeholder=\"Tapez votre message...\""
+  },
+  {
+    "file": "src\\components\\MFAVerification.tsx",
+    "line": 157,
+    "text": "Entrez le code de votre application d'authentification"
+  },
+  {
+    "file": "src\\components\\MFAVerification.tsx",
+    "line": 205,
+    "text": "Vérifier"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 413,
+    "text": "Finaliser Votre Abonnement"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 416,
+    "text": "Rejoignez l'excellence avec Bossiz Conciergerie et accédez à des services premium"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 508,
+    "text": "Choisissez la périodicité qui vous convient"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 571,
+    "text": "Récapitulatif de Commande"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 658,
+    "text": "Récapitulatif financier"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 720,
+    "text": "Méthode de Paiement"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 727,
+    "text": "Choisissez votre opérateur de paiement"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 780,
+    "text": "Sécurisé"
+  },
+  {
+    "file": "src\\components\\ModernSubscriptionPayment.tsx",
+    "line": 804,
+    "text": "Récapitulatif de Commande"
+  },
+  {
+    "file": "src\\components\\Navbar.tsx",
+    "line": 284,
+    "text": "Nos Services"
+  },
+  {
+    "file": "src\\components\\NotificationPrompt.tsx",
+    "line": 61,
+    "text": "Recevez des notifications pour vos réservations et offres spéciales"
+  },
+  {
+    "file": "src\\components\\Pagination.tsx",
+    "line": 58,
+    "text": "Précédent"
+  },
+  {
+    "file": "src\\components\\PriceAlertManager.tsx",
+    "line": 70,
+    "text": "Mes Alertes de Prix"
+  },
+  {
+    "file": "src\\components\\PriceAlertManager.tsx",
+    "line": 73,
+    "text": "Recevez des notifications quand les prix baissent pour vos destinations favorites"
+  },
+  {
+    "file": "src\\components\\PriceAlertManager.tsx",
+    "line": 82,
+    "text": "Créez des alertes pour être notifié des baisses de prix"
+  },
+  {
+    "file": "src\\components\\PriceAlertManager.tsx",
+    "line": 116,
+    "text": "Prix actuel: <span className=\"font-semibold\">{formatPrice(alert.current_price, alert.currency)}</spa"
+  },
+  {
+    "file": "src\\components\\PriceAlertManager.tsx",
+    "line": 122,
+    "text": "Prix cible: <span className=\"font-semibold\">{formatPrice(alert.target_price, alert.currency)}</span>"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 112,
+    "text": "Authentification à Deux Facteurs (2FA)"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 115,
+    "text": "Renforcez la sécurité de votre compte avec une application d'authentification"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 135,
+    "text": "Votre compte est protégé par l'authentification à deux facteurs"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 149,
+    "text": "Activez le 2FA pour une sécurité renforcée"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 193,
+    "text": "Cette action va désactiver l'authentification à deux facteurs sur votre compte."
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 194,
+    "text": "Vous devrez la reconfigurer pour la réactiver."
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 203,
+    "text": "Désactiver"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 247,
+    "text": "Ou entrez cette clé manuellement :"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 267,
+    "text": "Entrez le code à 6 chiffres de votre application"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 312,
+    "text": "Vérifier et Activer"
+  },
+  {
+    "file": "src\\components\\TwoFactorAuth.tsx",
+    "line": 334,
+    "text": "Configurer l'authentification à deux facteurs"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 347,
+    "text": "Gérez vos informations personnelles et de contact"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 370,
+    "text": "L'email ne peut pas être modifié pour des raisons de sécurité"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 385,
+    "text": "placeholder=\"Votre nom complet\""
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 471,
+    "text": "Modifiez votre mot de passe pour sécuriser votre compte"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 694,
+    "text": "Préférences de Communication"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 697,
+    "text": "Gérez comment vous souhaitez recevoir nos communications"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 752,
+    "text": "Créez et gérez vos alertes de baisse de prix par destination"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 766,
+    "text": "Enregistrer les préférences"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 784,
+    "text": "Moyens de Paiement"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 787,
+    "text": "Gérez vos méthodes de paiement enregistrées"
+  },
+  {
+    "file": "src\\pages\\Account.tsx",
+    "line": 807,
+    "text": "Pour votre sécurité, nous ne stockons aucune carte bancaire. Vous la"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminActivities.tsx",
+    "line": 155,
+    "text": "Nouvelle Activité"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminActivities.tsx",
+    "line": 259,
+    "text": "placeholder=\"Rechercher une activité...\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAdvertisements.tsx",
+    "line": 195,
+    "text": "Gérez les bannières publicitaires affichées sur le site"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAdvertisements.tsx",
+    "line": 202,
+    "text": "Nouvelle publicité"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAdvertisements.tsx",
+    "line": 217,
+    "text": "placeholder=\"Titre de la publicité\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAdvertisements.tsx",
+    "line": 378,
+    "text": "Aucune publicité. Créez-en une !"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAgencies.tsx",
+    "line": 311,
+    "text": "Gérez les sous-agences partenaires et leurs accès"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAgencies.tsx",
+    "line": 350,
+    "text": "<SelectValue placeholder=\"Sélectionner un utilisateur\" />"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminAgencies.tsx",
+    "line": 478,
+    "text": "Aucune agence trouvée"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminBookings.tsx",
+    "line": 246,
+    "text": "<SelectValue placeholder=\"Paiement\" />"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminBookings.tsx",
+    "line": 459,
+    "text": "Relancer l'émission du billet (PNR)"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminBossizSites.tsx",
+    "line": 226,
+    "text": "Modifiez les informations des sites Bossiz Côte d'Ivoire et Sénégal"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminBossizSites.tsx",
+    "line": 239,
+    "text": "Bossiz Côte d'Ivoire"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminBossizSites.tsx",
+    "line": 243,
+    "text": "Bossiz Sénégal"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminBossizSites.tsx",
+    "line": 518,
+    "text": "Aperçu du site"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminCommissions.tsx",
+    "line": 170,
+    "text": "Suivez et gérez les commissions des sous-agences"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminCommissions.tsx",
+    "line": 252,
+    "text": "Aucune commission trouvée"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminCommissions.tsx",
+    "line": 279,
+    "text": "Marquer payée"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminConfiguration.tsx",
+    "line": 110,
+    "text": "Gérez tous les paramètres du site depuis cette interface"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminConfiguration.tsx",
+    "line": 505,
+    "text": "placeholder=\"Ex: Découvrez Paris\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminConfiguration.tsx",
+    "line": 515,
+    "text": "Aucun slide configuré. Les images par défaut seront utilisées."
+  },
+  {
+    "file": "src\\pages\\admin\\AdminConfiguration.tsx",
+    "line": 583,
+    "text": "placeholder=\"Icône (Shield, Clock, Star...)\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminDestinations.tsx",
+    "line": 107,
+    "text": "Aucune entrée en cache"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminHomepageConfig.tsx",
+    "line": 123,
+    "text": "Gérez le contenu et l'apparence de la page d'accueil"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminHomepageConfig.tsx",
+    "line": 140,
+    "text": "Fonctionnalités"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminHomepageConfig.tsx",
+    "line": 231,
+    "text": "Fonctionnalités Principales"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminNewsletter.tsx",
+    "line": 142,
+    "text": "Aucun abonné trouvé"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminOverview.tsx",
+    "line": 46,
+    "text": "Temps réel"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminPayments.tsx",
+    "line": 140,
+    "text": "Aucun paiement trouvé"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminPromotions.tsx",
+    "line": 302,
+    "text": "placeholder=\"Hôtel Sofitel Abidjan\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminPromotions.tsx",
+    "line": 322,
+    "text": "placeholder=\"Abidjan, Côte d'Ivoire\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminStays.tsx",
+    "line": 155,
+    "text": "Nouveau Séjour"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminStays.tsx",
+    "line": 260,
+    "text": "placeholder=\"Rechercher un séjour...\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminSubscriptionPlans.tsx",
+    "line": 354,
+    "text": "placeholder=\"Gestion complète des réservations&#10;Support prioritaire 7j/7\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminSubscriptions.tsx",
+    "line": 223,
+    "text": "placeholder=\"Rechercher par nom, email, téléphone...\""
+  },
+  {
+    "file": "src\\pages\\admin\\AdminSubscriptions.tsx",
+    "line": 269,
+    "text": "Aucune demande trouvée"
+  },
+  {
+    "file": "src\\pages\\admin\\AdminSubscriptions.tsx",
+    "line": 392,
+    "text": "Marquer contacté"
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 223,
+    "text": "Personnalisez l'apparence et le contenu du footer de manière indépendante"
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 385,
+    "text": "placeholder=\"© 2024 Bossiz Conciergerie. Tous droits réservés.\""
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 394,
+    "text": "placeholder=\"Abonnez-vous à notre newsletter pour recevoir les dernières actualités\""
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 492,
+    "text": "placeholder=\"Abidjan, Côte d'Ivoire\""
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 518,
+    "text": "placeholder=\"À propos\""
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 534,
+    "text": "placeholder=\"Carrières\""
+  },
+  {
+    "file": "src\\pages\\admin\\FooterCustomization.tsx",
+    "line": 553,
+    "text": "placeholder=\"Politique de confidentialité\""
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 336,
+    "text": "Gérez tous les aspects de vos plans d'abonnement"
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 491,
+    "text": "Ajouter une fonctionnalité"
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 533,
+    "text": "Ajouter un témoignage"
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 579,
+    "text": "Choisissez un plan d'abonnement pour voir et modifier ses détails"
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 625,
+    "text": "placeholder=\"Accès Premium aux services exclusifs\""
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 635,
+    "text": "placeholder=\"Description détaillée du plan...\""
+  },
+  {
+    "file": "src\\pages\\admin\\SubscriptionManagement.tsx",
+    "line": 767,
+    "text": "Ajouter une fonctionnalité"
+  },
+  {
+    "file": "src\\pages\\AdminContentManager.tsx",
+    "line": 398,
+    "text": "placeholder=\"Caractéristique 1&#10;Caractéristique 2&#10;Caractéristique 3\""
+  },
+  {
+    "file": "src\\pages\\AdminDashboard.tsx",
+    "line": 209,
+    "text": "Réservations"
+  },
+  {
+    "file": "src\\pages\\AdminDashboard.tsx",
+    "line": 389,
+    "text": "<SelectValue placeholder=\"Sélectionner\" />"
+  },
+  {
+    "file": "src\\pages\\AdminEmailTemplates.tsx",
+    "line": 141,
+    "text": "<SelectValue placeholder=\"Sélectionner un type\" />"
+  },
+  {
+    "file": "src\\pages\\AdminUsers.tsx",
+    "line": 122,
+    "text": "Rechercher par email, nom ou téléphone"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyActivities.tsx",
+    "line": 358,
+    "text": "Aucune activité"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 151,
+    "text": "Bienvenue dans votre espace agence"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 263,
+    "text": "Guide de démarrage"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 266,
+    "text": "Commencez à ajouter vos offres pour les rendre visibles aux clients"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 274,
+    "text": "Créez des services de voyage (vols, hôtels, voitures) avec vos propres prix."
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 280,
+    "text": "Proposez des activités touristiques et excursions locales."
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 286,
+    "text": "Offrez des packages de séjours complets à vos clients."
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyDashboard.tsx",
+    "line": 292,
+    "text": "Créez des offres spéciales pour attirer plus de clients."
+  },
+  {
+    "file": "src\\pages\\agency\\AgencySettings.tsx",
+    "line": 118,
+    "text": "Gérez les informations de votre agence"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencySettings.tsx",
+    "line": 127,
+    "text": "Informations générales"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencySettings.tsx",
+    "line": 130,
+    "text": "Ces informations peuvent être affichées aux clients si la visibilité est activée"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencySettings.tsx",
+    "line": 151,
+    "text": "placeholder=\"Décrivez votre agence...\""
+  },
+  {
+    "file": "src\\pages\\agency\\AgencySettings.tsx",
+    "line": 201,
+    "text": "Si activé, votre nom et logo seront affichés sur vos offres"
+  },
+  {
+    "file": "src\\pages\\agency\\AgencyStays.tsx",
+    "line": 358,
+    "text": "Aucun séjour"
+  },
+  {
+    "file": "src\\pages\\Auth.tsx",
+    "line": 373,
+    "text": "Connexion"
+  },
+  {
+    "file": "src\\pages\\Auth.tsx",
+    "line": 379,
+    "text": "Inscription"
+  },
+  {
+    "file": "src\\pages\\Auth.tsx",
+    "line": 424,
+    "text": "Mot de passe oublié ?"
+  },
+  {
+    "file": "src\\pages\\Auth.tsx",
+    "line": 556,
+    "text": "Conditions Générales"
+  },
+  {
+    "file": "src\\pages\\Auth.tsx",
+    "line": 560,
+    "text": "Politique de Confidentialité"
+  },
+  {
+    "file": "src\\pages\\BossizPortal.tsx",
+    "line": 148,
+    "text": "Réservations"
+  },
+  {
+    "file": "src\\pages\\BossizPortal.tsx",
+    "line": 200,
+    "text": "Bossiz Côte d'Ivoire"
+  },
+  {
+    "file": "src\\pages\\BossizPortal.tsx",
+    "line": 210,
+    "text": "Bossiz Sénégal"
+  },
+  {
+    "file": "src\\pages\\Cars.tsx",
+    "line": 361,
+    "text": "Véhicules disponibles"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 215,
+    "text": "Page de Compatibilité"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 219,
+    "text": "Vérification de la compatibilité de votre appareil avec B-Reserve"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 230,
+    "text": "Votre appareil est compatible"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 235,
+    "text": "Problèmes de compatibilité détectés"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 279,
+    "text": "Informations sur votre appareil"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 282,
+    "text": "Détails techniques de votre configuration actuelle"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 329,
+    "text": "Pour une expérience optimale, utilisez l'un de ces navigateurs"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 353,
+    "text": "Télécharger"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 366,
+    "text": "Solutions aux problèmes courants"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 390,
+    "text": "Si vous rencontrez toujours des problèmes, vous pouvez :"
+  },
+  {
+    "file": "src\\pages\\Compatibility.tsx",
+    "line": 406,
+    "text": "Retour à l'accueil"
+  },
+  {
+    "file": "src\\pages\\DestinationDetail.tsx",
+    "line": 309,
+    "text": "Réserver maintenant"
+  },
+  {
+    "file": "src\\pages\\DestinationDetail.tsx",
+    "line": 396,
+    "text": "Limité"
+  },
+  {
+    "file": "src\\pages\\DestinationDetail.tsx",
+    "line": 447,
+    "text": "Profitez d'une large gamme d'activités pour enrichir votre séjour"
+  },
+  {
+    "file": "src\\pages\\DestinationDetail.tsx",
+    "line": 470,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\pages\\DestinationDetail.tsx",
+    "line": 557,
+    "text": "Séjour vérifié"
+  },
+  {
+    "file": "src\\pages\\DestinationDetail.tsx",
+    "line": 569,
+    "text": "Répondre"
+  },
+  {
+    "file": "src\\pages\\Documentation.tsx",
+    "line": 468,
+    "text": "<input type=\"text\" placeholder=\"Numéro de carte\" className=\"w-full p-2 border rounded\" />"
+  },
+  {
+    "file": "src\\pages\\Documentation.tsx",
+    "line": 564,
+    "text": "placeholder=\"Décrivez votre problème...\""
+  },
+  {
+    "file": "src\\pages\\Documentation.tsx",
+    "line": 738,
+    "text": "Explorez notre plateforme à travers une démo interactive immersive"
+  },
+  {
+    "file": "src\\pages\\Documentation.tsx",
+    "line": 930,
+    "text": "Précédent"
+  },
+  {
+    "file": "src\\pages\\Documentation.tsx",
+    "line": 965,
+    "text": "Accéder"
+  },
+  {
+    "file": "src\\pages\\FlightBookingProcess.tsx",
+    "line": 113,
+    "text": "Retour aux résultats"
+  },
+  {
+    "file": "src\\pages\\FlightBookingProcess.tsx",
+    "line": 119,
+    "text": "Réservation de vol"
+  },
+  {
+    "file": "src\\pages\\FlightBookingProcess.tsx",
+    "line": 140,
+    "text": "Détails du vol"
+  },
+  {
+    "file": "src\\pages\\FlightComparison.tsx",
+    "line": 232,
+    "text": "Comparaison de Prix des Vols"
+  },
+  {
+    "file": "src\\pages\\FlightComparison.tsx",
+    "line": 235,
+    "text": "Comparez les tarifs de toutes les compagnies aériennes en un coup d'œil"
+  },
+  {
+    "file": "src\\pages\\FlightComparison.tsx",
+    "line": 250,
+    "text": "Sélectionnez une plage de dates pour analyser l'évolution des prix"
+  },
+  {
+    "file": "src\\pages\\FlightComparison.tsx",
+    "line": 477,
+    "text": "Utilisez le filtre de dates ci-dessus pour analyser l'évolution des prix"
+  },
+  {
+    "file": "src\\pages\\FlightComparison.tsx",
+    "line": 627,
+    "text": "Utilisez le formulaire ci-dessus pour comparer les prix des vols"
+  },
+  {
+    "file": "src\\pages\\Flights.tsx",
+    "line": 477,
+    "text": "Le forfait de voyage ultime"
+  },
+  {
+    "file": "src\\pages\\ForgotPassword.tsx",
+    "line": 71,
+    "text": "Récupérez votre"
+  },
+  {
+    "file": "src\\pages\\ForgotPassword.tsx",
+    "line": 107,
+    "text": "Entrez votre email pour recevoir un lien de réinitialisation"
+  },
+  {
+    "file": "src\\pages\\ForgotPassword.tsx",
+    "line": 117,
+    "text": "placeholder=\"votre@email.com\""
+  },
+  {
+    "file": "src\\pages\\ForgotPassword.tsx",
+    "line": 148,
+    "text": "Réessayer"
+  },
+  {
+    "file": "src\\pages\\ForgotPassword.tsx",
+    "line": 157,
+    "text": "Retour à la connexion"
+  },
+  {
+    "file": "src\\pages\\Hotels.tsx",
+    "line": 487,
+    "text": "Réinitialiser les filtres"
+  },
+  {
+    "file": "src\\pages\\Install.tsx",
+    "line": 111,
+    "text": "Accédez à vos voyages en un clic depuis votre écran d'accueil"
+  },
+  {
+    "file": "src\\pages\\Install.tsx",
+    "line": 166,
+    "text": "Votre appareil"
+  },
+  {
+    "file": "src\\pages\\Install.tsx",
+    "line": 200,
+    "text": "Sur l'écran d'accueil"
+  },
+  {
+    "file": "src\\pages\\Install.tsx",
+    "line": 235,
+    "text": "Votre appareil"
+  },
+  {
+    "file": "src\\pages\\Install.tsx",
+    "line": 331,
+    "text": "Restez informé de vos réservations et offres spéciales"
+  },
+  {
+    "file": "src\\pages\\Install.tsx",
+    "line": 355,
+    "text": "Rappels de voyage"
+  },
+  {
+    "file": "src\\pages\\InstallAndroid.tsx",
+    "line": 108,
+    "text": "Vérification de la compatibilité de votre appareil..."
+  },
+  {
+    "file": "src\\pages\\InstallAndroid.tsx",
+    "line": 177,
+    "text": "Fonctionnalités Exclusives"
+  },
+  {
+    "file": "src\\pages\\InstallAndroid.tsx",
+    "line": 180,
+    "text": "Profitez de toutes les fonctionnalités premium"
+  },
+  {
+    "file": "src\\pages\\InstallAndroid.tsx",
+    "line": 210,
+    "text": "Suivez ces étapes simples pour installer l'application"
+  },
+  {
+    "file": "src\\pages\\InstallAndroid.tsx",
+    "line": 271,
+    "text": "Besoin d'aide ? Contactez notre support technique"
+  },
+  {
+    "file": "src\\pages\\InstalliOS.tsx",
+    "line": 122,
+    "text": "Vérification de la compatibilité de votre appareil..."
+  },
+  {
+    "file": "src\\pages\\InstalliOS.tsx",
+    "line": 157,
+    "text": "Installation PWA optimisée pour iOS"
+  },
+  {
+    "file": "src\\pages\\InstalliOS.tsx",
+    "line": 191,
+    "text": "Fonctionnalités Premium"
+  },
+  {
+    "file": "src\\pages\\InstalliOS.tsx",
+    "line": 194,
+    "text": "Profitez d'une expérience iOS exclusive"
+  },
+  {
+    "file": "src\\pages\\InstalliOS.tsx",
+    "line": 224,
+    "text": "Suivez ces étapes simples pour installer l'application"
+  },
+  {
+    "file": "src\\pages\\InstalliOS.tsx",
+    "line": 288,
+    "text": "Besoin d'aide ? Contactez notre support technique dédié iOS"
+  },
+  {
+    "file": "src\\pages\\MajesticDashboard.tsx",
+    "line": 364,
+    "text": "placeholder=\"Décrivez votre demande en détail...\""
+  },
+  {
+    "file": "src\\pages\\MajesticDashboard.tsx",
+    "line": 385,
+    "text": "Demandes Récentes"
+  },
+  {
+    "file": "src\\pages\\OrderSummary.tsx",
+    "line": 258,
+    "text": "RÉCAPITULATIF DE COMMANDE"
+  },
+  {
+    "file": "src\\pages\\OrderSummary.tsx",
+    "line": 272,
+    "text": "DÉTAIL DE LA COMMANDE"
+  },
+  {
+    "file": "src\\pages\\OrderSummary.tsx",
+    "line": 284,
+    "text": "FONCTIONNALITÉS:"
+  },
+  {
+    "file": "src\\pages\\OrderSummary.tsx",
+    "line": 289,
+    "text": "RÉCAPITULATIF FINANCIER"
+  },
+  {
+    "file": "src\\pages\\OrderSummary.tsx",
+    "line": 299,
+    "text": "Merci de votre confiance dans Bossiz Conciergerie"
+  },
+  {
+    "file": "src\\pages\\PrivacyPolicy.tsx",
+    "line": 136,
+    "text": "Politique de Confidentialité"
+  },
+  {
+    "file": "src\\pages\\ResetPassword.tsx",
+    "line": 105,
+    "text": "Choisissez un mot de passe sécurisé pour protéger votre compte."
+  },
+  {
+    "file": "src\\pages\\ResetPassword.tsx",
+    "line": 143,
+    "text": "Entrez votre nouveau mot de passe ci-dessous"
+  },
+  {
+    "file": "src\\pages\\ResetPassword.tsx",
+    "line": 190,
+    "text": "Vous allez être redirigé vers la page de connexion..."
+  },
+  {
+    "file": "src\\pages\\Stays.tsx",
+    "line": 105,
+    "text": "Tous les séjours"
+  },
+  {
+    "file": "src\\pages\\Stays.tsx",
+    "line": 145,
+    "text": "Tous les séjours"
+  },
+  {
+    "file": "src\\pages\\Stays.tsx",
+    "line": 208,
+    "text": "Voir tous les séjours"
+  },
+  {
+    "file": "src\\pages\\TermsOfService.tsx",
+    "line": 196,
+    "text": "Conditions Générales d'Utilisation"
+  },
+  {
+    "file": "src\\pages\\Tours.tsx",
+    "line": 339,
+    "text": "Découvrez des expériences inoubliables"
+  },
+  {
+    "file": "src\\pages\\Tours.tsx",
+    "line": 379,
+    "text": "Prix: <Price amount={priceRange[0]} fromCurrency=\"XOF\" /> - <Price amount={priceRange[1]} fromCurren"
+  },
+  {
+    "file": "src\\pages\\Tours.tsx",
+    "line": 498,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\pages\\Trains.tsx",
+    "line": 472,
+    "text": "Réserver"
+  },
+  {
+    "file": "src\\pages\\UserDashboard.tsx",
+    "line": 363,
+    "text": "Hôtels"
+  }
+]

@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 interface Passenger {
   firstName: string;
@@ -47,6 +48,7 @@ interface SummaryStepProps {
     fare: string;
   } | null;
   serviceType: string;
+  serviceId?: string;
   serviceName: string;
   servicePrice: number;
   serviceLocation: string;
@@ -63,6 +65,7 @@ interface SummaryStepProps {
 export const SummaryStep = ({
   flightData,
   serviceType,
+  serviceId,
   serviceName,
   servicePrice,
   serviceLocation,
@@ -75,6 +78,7 @@ export const SummaryStep = ({
   childrenCount,
   onBack,
 }: SummaryStepProps) => {
+  const { t } = useTranslation();
   const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile");
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -239,6 +243,7 @@ export const SummaryStep = ({
           end_date: endDate || startDate,
           guests: adultsCount + childrenCount,
           total_price: serverPrice, // CRITICAL: Use server price
+          supplier_cost: checkoutResult.checkout!.price_breakdown.base_fare,
           currency: "XOF",
           customer_name: `${passengers[0].firstName} ${passengers[0].lastName}`,
           customer_email: user.email || "client@example.com",
@@ -263,8 +268,14 @@ export const SummaryStep = ({
       } else {
         // Non-flight services - use existing flow
         const totalPrice = getTotalPrice();
-        
+        // Only 'stay' and 'activity' have a real catalog row create-booking can
+        // verify the price against; other types (event, tour, ...) don't have
+        // one yet, so service_id is omitted rather than pointing at a row that
+        // doesn't exist in the services table.
+        const verifiableServiceId = (serviceType === 'stay' || serviceType === 'activity') ? serviceId : undefined;
+
         const bookingId = await createBooking({
+          service_id: verifiableServiceId,
           service_type: serviceType as any,
           service_name: serviceName,
           service_description: serviceLocation,
@@ -344,8 +355,18 @@ export const SummaryStep = ({
     return selectedSeats.length * 7500;
   };
 
+  // flightData.price comes straight from search-flights, always in EUR (see
+  // supabase/functions/search-flights); servicePrice (non-flight verticals)
+  // is already XOF. Converted to XOF right here (same rate as <Price>) so
+  // this stays in the same currency as getOptionsPrice/getPreferencesPrice
+  // when they're summed together in getTotalPrice() below - summing a raw
+  // EUR number with XOF numbers would silently produce a meaningless total.
+  // This pre-checkout total is DISPLAY ONLY - the real, authoritative amount
+  // is server-computed in prebook/checkout - but it must still show the
+  // right order of magnitude before the user gets there.
+  const EUR_TO_XOF_RATE = 656;
   const getBasePrice = () => {
-    const basePrice = flightData ? parseFloat(flightData.price) : servicePrice;
+    const basePrice = flightData ? parseFloat(flightData.price) * EUR_TO_XOF_RATE : servicePrice;
     return basePrice * (adultsCount + childrenCount);
   };
 
@@ -593,14 +614,14 @@ export const SummaryStep = ({
                   <div className="flex justify-between text-sm">
                     <span>Service ({adultsCount + childrenCount} participants)</span>
                     <span className="font-medium">
-                      <Price amount={getBasePrice()} fromCurrency="EUR" />
+                      <Price amount={getBasePrice()} />
                     </span>
                   </div>
                   {getOptionsPrice() > 0 && (
                     <div className="flex justify-between text-sm">
                       <span>Options</span>
                       <span className="font-medium">
-                        <Price amount={getOptionsPrice()} fromCurrency="EUR" />
+                        <Price amount={getOptionsPrice()} />
                       </span>
                     </div>
                   )}
@@ -608,7 +629,7 @@ export const SummaryStep = ({
                     <div className="flex justify-between text-sm">
                       <span>Sièges</span>
                       <span className="font-medium">
-                        <Price amount={getPreferencesPrice()} fromCurrency="EUR" />
+                        <Price amount={getPreferencesPrice()} />
                       </span>
                     </div>
                   )}
@@ -619,10 +640,9 @@ export const SummaryStep = ({
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-lg">Total</span>
                 <span className="font-bold text-2xl text-primary">
-                  <Price 
-                    amount={getTotalPrice()} 
-                    fromCurrency={displayPriceBreakdown ? undefined : "EUR"} 
-                    showLoader 
+                  <Price
+                    amount={getTotalPrice()}
+                    showLoader
                   />
                 </span>
               </div>

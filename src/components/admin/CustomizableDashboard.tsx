@@ -32,6 +32,8 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
           <div key={widget.id} className="col-span-full">
             <StatsCards
               totalRevenue={stats.totalRevenue}
+              totalMargin={stats.totalMargin}
+              bookingsWithKnownCost={stats.bookingsWithKnownCost}
               totalBookings={stats.totalBookings}
               pendingBookings={stats.pendingBookings}
               totalUsers={stats.totalUsers}

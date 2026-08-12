@@ -152,7 +152,7 @@ export default function ForgotPassword() {
           )}
 
           <p className="text-center text-sm text-muted-foreground">
-            <Link to="/login" className="hover:text-primary transition-colors inline-flex items-center gap-2">
+            <Link to="/auth" className="hover:text-primary transition-colors inline-flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Retour à la connexion
             </Link>

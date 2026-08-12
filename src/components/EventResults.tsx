@@ -23,9 +23,10 @@ interface Event {
 
 interface EventResultsProps {
   events: Event[];
+  onBook?: (event: Event) => void;
 }
 
-export const EventResults = ({ events }: EventResultsProps) => {
+export const EventResults = ({ events, onBook }: EventResultsProps) => {
   if (!events || events.length === 0) {
     return (
       <div className="text-center py-8">
@@ -49,6 +50,7 @@ export const EventResults = ({ events }: EventResultsProps) => {
                   src={event.image}
                   alt={event.name}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
             )}
@@ -88,14 +90,21 @@ export const EventResults = ({ events }: EventResultsProps) => {
                     <Price amount={parseFloat(event.price) || 0} fromCurrency={event.currency || 'EUR'} showLoader />
                   </p>
                 </div>
-                {event.link && (
-                  <Button asChild size="sm">
-                    <a href={event.link} target="_blank" rel="noopener noreferrer">
-                      Détails
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </a>
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {onBook && (
+                    <Button size="sm" onClick={() => onBook(event)}>
+                      Réserver
+                    </Button>
+                  )}
+                  {event.link && (
+                    <Button asChild size="sm" variant={onBook ? "outline" : "default"}>
+                      <a href={event.link} target="_blank" rel="noopener noreferrer">
+                        Détails
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </a>
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

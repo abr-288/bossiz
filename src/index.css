@@ -78,6 +78,24 @@ All colors MUST be HSL.
     
     --font-luxury-serif: "Playfair Display", serif;
     --font-luxury-sans: "Montserrat", sans-serif;
+
+    /* Bossiz Conciergerie - palette réelle extraite de bossiz.com (voir tailwind.config.ts) */
+    --bossiz-teal: 182 55% 27%; /* #1F686A */
+    --bossiz-teal-dark: 174 49% 15%; /* #143A36 */
+    --bossiz-teal-light: 182 37% 35%; /* #38787A */
+    --bossiz-navy: 205 52% 31%; /* #265577 */
+    --bossiz-navy-dark: 201 98% 20%; /* #014163 */
+    --bossiz-gold: 39 48% 56%; /* #C5A059 */
+    --bossiz-gold-light: 46 65% 52%; /* #D4AF37 */
+    --bossiz-gold-dark: 41 59% 42%; /* #A9822B */
+    /* Bossiz Conciergerie CI - identité vert fort + blanc + or (distincte du reste du groupe) */
+    --bossiz-ci-green: 142 62% 20%; /* #0F4A28 - vert fort */
+    --bossiz-ci-green-light: 142 45% 32%; /* #2C6B45 */
+    --bossiz-ci-green-pale: 140 35% 94%; /* #EAF5EE */
+    --bossiz-cream: 180 40% 96%; /* #F1F9F9 */
+    --bossiz-cream-warm: 29 42% 85%; /* #E8D7C7 */
+    --bossiz-cream-mint: 180 24% 89%; /* #DBE9E9 */
+    --bossiz-cream-taupe: 32 21% 72%; /* #C7B9A9 */
   }
 
   .dark {
@@ -131,18 +149,68 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    min-width: 320px;
+    overflow-x: hidden;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
   }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  button, input, select, textarea {
+    font: inherit;
+  }
 }
 
 @layer utilities {
+  .safe-area-padding {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   /* Layout System - Opodo Style */
   .site-container {
     max-width: 1200px;

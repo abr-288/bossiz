@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/integrations.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,38 +15,31 @@ serve(async (req) => {
   try {
     const { name, email, subject, message } = await req.json();
     
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-
-    if (!resendApiKey) {
-      console.log('RESEND_API_KEY not configured, skipping email');
-      return new Response(
-        JSON.stringify({ success: true, message: 'Message received (email not configured)' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
     console.log('Sending contact message from:', email);
 
     const emailHtml = generateContactEmailHtml(name, email, subject, message);
 
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: 'B-Reserve Contact <contact@b-reserve.com>',
-        to: ['info@b-reserve.com'],
-        subject: `Contact Form: ${subject}`,
-        html: emailHtml,
-        replyTo: email,
-      }),
+    const result = await sendEmail(supabase, {
+      from: 'B-Reserve Contact <contact@b-reserve.com>',
+      to: ['info@b-reserve.com'],
+      subject: `Contact Form: ${subject}`,
+      html: emailHtml,
+      replyTo: email,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Resend API error:', response.status, errorText);
+    if (!result.ok) {
+      if (result.error === 'RESEND_API_KEY not configured') {
+        console.log('Aucun prestataire email configuré, envoi ignoré');
+        return new Response(
+          JSON.stringify({ success: true, message: 'Message received (email not configured)' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.error('Email send error:', result.error);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to send email' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

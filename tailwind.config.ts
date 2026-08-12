@@ -49,9 +49,38 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        /* Bossiz Conciergerie — palette réelle extraite de bossiz.com (valeurs HSL dans src/index.css) */
+        bossiz: {
+          teal: {
+            DEFAULT: "hsl(var(--bossiz-teal))",
+            dark: "hsl(var(--bossiz-teal-dark))",
+            light: "hsl(var(--bossiz-teal-light))",
+          },
+          navy: {
+            DEFAULT: "hsl(var(--bossiz-navy))",
+            dark: "hsl(var(--bossiz-navy-dark))",
+          },
+          gold: {
+            DEFAULT: "hsl(var(--bossiz-gold))",
+            light: "hsl(var(--bossiz-gold-light))",
+            dark: "hsl(var(--bossiz-gold-dark))",
+          },
+          "ci-green": {
+            DEFAULT: "hsl(var(--bossiz-ci-green))",
+            light: "hsl(var(--bossiz-ci-green-light))",
+            pale: "hsl(var(--bossiz-ci-green-pale))",
+          },
+          cream: {
+            DEFAULT: "hsl(var(--bossiz-cream))",
+            warm: "hsl(var(--bossiz-cream-warm))",
+            mint: "hsl(var(--bossiz-cream-mint))",
+            taupe: "hsl(var(--bossiz-cream-taupe))",
+          },
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
       },
       boxShadow: {
         'sm': 'var(--shadow-sm)',

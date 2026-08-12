@@ -3,10 +3,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { EventSearchForm } from "@/components/EventSearchForm";
 import { EventResults } from "@/components/EventResults";
+import { BookingDialog } from "@/components/BookingDialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Music, Trophy, Theater, Sparkles, MapPin, Star, Users, Loader2, TrendingUp } from "lucide-react";
+import { Calendar, Music, Trophy, Theater, PartyPopper, MapPin, Star, Users, Loader2, TrendingUp } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { Price } from "@/components/ui/price";
@@ -82,22 +83,37 @@ const popularEvents = [
   },
 ];
 
-const categories = [
-  { id: "concert", name: "Concerts", icon: Music, color: "bg-pink-500" },
-  { id: "sport", name: "Sports", icon: Trophy, color: "bg-green-500" },
-  { id: "theater", name: "Théâtre", icon: Theater, color: "bg-purple-500" },
-  { id: "festival", name: "Festivals", icon: Sparkles, color: "bg-orange-500" },
+const CATEGORY_ICONS = [
+  { id: "concert", icon: Music, color: "bg-pink-500" },
+  { id: "sport", icon: Trophy, color: "bg-green-500" },
+  { id: "theater", icon: Theater, color: "bg-purple-500" },
+  { id: "festival", icon: PartyPopper, color: "bg-orange-500" },
 ];
 
 const Events = () => {
   const { t } = useTranslation();
+  const categories = CATEGORY_ICONS.map((c) => ({ ...c, name: t(`events.categoryNames.${c.id}`) }));
   const [searchResults, setSearchResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const filteredEvents = selectedCategory
     ? popularEvents.filter(e => e.category.toLowerCase() === selectedCategory)
     : popularEvents;
+
+  const handleBookEvent = (event: { id: string; name: string; price: string; currency?: string; location: string }) => {
+    setSelectedEvent({
+      id: event.id,
+      name: event.name,
+      price_per_unit: parseFloat(event.price) || 0,
+      currency: event.currency || 'EUR',
+      type: 'event',
+      location: event.location,
+    });
+    setDialogOpen(true);
+  };
 
   return (
     <div className="min-h-screen flex flex-col pt-16">
@@ -108,7 +124,7 @@ const Events = () => {
         <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
           <LazyImage 
             src={bannerEvents}
-            alt="Événements" 
+            alt={t("events.title", "Découvrez les événements")}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
@@ -160,7 +176,7 @@ const Events = () => {
         {/* Results Section */}
         {searchResults ? (
           <div className="container mx-auto px-4 py-12">
-            <EventResults events={searchResults.events} />
+            <EventResults events={searchResults.events} onBook={handleBookEvent} />
           </div>
         ) : (
           /* Popular Events Section */
@@ -179,7 +195,7 @@ const Events = () => {
                 </div>
                 {selectedCategory && (
                   <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-                    Voir tout
+                    {t("events.viewAll")}
                   </Button>
                 )}
               </div>
@@ -210,15 +226,15 @@ const Events = () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs text-muted-foreground">À partir de</p>
+                          <p className="text-xs text-muted-foreground">{t("common.from")}</p>
                           <Price 
                             amount={parseFloat(event.price)} 
                             fromCurrency={event.currency}
                             className="text-2xl font-bold text-primary"
                           />
                         </div>
-                        <Button className="bg-primary text-primary-foreground">
-                          Réserver
+                        <Button className="bg-primary text-primary-foreground" onClick={() => handleBookEvent(event)}>
+                          {t("common.book")}
                         </Button>
                       </div>
                     </CardContent>
@@ -239,27 +255,27 @@ const Events = () => {
               <Card className="text-center p-6">
                 <CardContent className="pt-4">
                   <Star className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="font-bold text-lg mb-2">Meilleurs prix garantis</h3>
+                  <h3 className="font-bold text-lg mb-2">{t("events.bestPrices.title")}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Nous garantissons les meilleurs tarifs pour tous les événements
+                    {t("events.bestPrices.description")}
                   </p>
                 </CardContent>
               </Card>
               <Card className="text-center p-6">
                 <CardContent className="pt-4">
                   <Users className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="font-bold text-lg mb-2">Support 24/7</h3>
+                  <h3 className="font-bold text-lg mb-2">{t("homepage.features.support-247.title")}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Notre équipe est disponible pour vous aider à tout moment
+                    {t("events.support.description")}
                   </p>
                 </CardContent>
               </Card>
               <Card className="text-center p-6">
                 <CardContent className="pt-4">
                   <TrendingUp className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="font-bold text-lg mb-2">Billets authentiques</h3>
+                  <h3 className="font-bold text-lg mb-2">{t("events.authenticTickets.title")}</h3>
                   <p className="text-muted-foreground text-sm">
-                    Tous nos billets sont 100% authentiques et vérifiés
+                    {t("events.authenticTickets.description")}
                   </p>
                 </CardContent>
               </Card>
@@ -267,7 +283,15 @@ const Events = () => {
           </div>
         </section>
       </main>
-      
+
+      {selectedEvent && (
+        <BookingDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          service={selectedEvent}
+        />
+      )}
+
       <Footer />
     </div>
   );

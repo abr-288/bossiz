@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { convertToXOF } from "../_shared/pricing.ts";
 
 // ============================================================
 // EDGE FUNCTION: prebook
@@ -67,9 +68,13 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-// Generate HMAC signature for price integrity
+// Generate HMAC signature for price integrity.
+// Uses a secret dedicated to price signing (PRICE_SIGNING_SECRET) rather than
+// SUPABASE_SERVICE_ROLE_KEY: that key also bypasses RLS on the whole database,
+// so reusing it here would mean any leak of the signing secret compromises far
+// more than just price integrity.
 async function generatePriceSignature(data: object): Promise<string> {
-  const secretKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const secretKey = Deno.env.get('PRICE_SIGNING_SECRET') || '';
   const encoder = new TextEncoder();
   const keyData = encoder.encode(secretKey);
   const messageData = encoder.encode(JSON.stringify(data));
@@ -151,8 +156,13 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
+
     if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      return errorResponse('Server configuration incomplete', 500);
+    }
+
+    if (!Deno.env.get('PRICE_SIGNING_SECRET')) {
+      console.error('❌ PRICE_SIGNING_SECRET non configuré');
       return errorResponse('Server configuration incomplete', 500);
     }
 
@@ -228,10 +238,15 @@ serve(async (req) => {
     // STEP 4: Calculate price breakdown (SERVER-SIDE ONLY)
     // ================================================================
     console.log('\n📋 Step 4: Calculating price breakdown...');
-    
-    // CRITICAL: Price comes from flight_data but we recalculate server-side
-    const baseFarePerPerson = requestData.flight_data.price;
-    const priceBreakdown = calculatePriceBreakdown(baseFarePerPerson, totalPassengers);
+
+    // CRITICAL: Price comes from flight_data but we recalculate server-side.
+    // search-flights always quotes fares in EUR (see supabase/functions/
+    // search-flights/index.ts) - convert to XOF here, BEFORE any arithmetic,
+    // since everything downstream (signature, payment) treats this as XOF.
+    // Skipping this conversion was previously charging e.g. "250" XOF for a
+    // flight actually quoted at 250 EUR - a ~656x undercharge.
+    const baseFarePerPersonXOF = convertToXOF(requestData.flight_data.price, 'EUR');
+    const priceBreakdown = calculatePriceBreakdown(baseFarePerPersonXOF, totalPassengers);
     
     console.log('   - Base fare:', priceBreakdown.base_fare, 'XOF');
     console.log('   - Taxes:', priceBreakdown.taxes, 'XOF');

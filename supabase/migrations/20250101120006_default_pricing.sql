@@ -22,11 +22,12 @@ VALUES
   ('premium', 'yearly', 977000.00, 'XOF', 17, 0, 0, NOW(), NOW()),
   
   ('business', 'monthly', 196000.00, 'XOF', 0, 0, 0, NOW(), NOW()),
-  ('business', 'yearly', 1960000.00, 'XOF', 17, 0, 0, NOW(), NOW()),
-  
-  ('enterprise', 'monthly', 393000.00, 'XOF', 0, 0, 0, NOW(), NOW()),
-  ('enterprise', 'yearly', 3930000.00, 'XOF', 17, 0, 0, NOW(), NOW())
-ON CONFLICT (plan_id, billing_cycle) 
+  ('business', 'yearly', 1960000.00, 'XOF', 17, 0, 0, NOW(), NOW())
+  -- NOTE (correctif) : la ligne 'enterprise' a été retirée. subscription_pricing.plan_id
+  -- est une FK vers subscription_plans(plan_id), et aucun plan 'enterprise' n'y est jamais
+  -- inséré (seul 'business' existe, avec assistance_level='enterprise') ; l'insertion
+  -- provoquait une violation de contrainte de clé étrangère.
+ON CONFLICT (plan_id, billing_cycle)
 DO UPDATE SET 
   price = EXCLUDED.price,
   currency = EXCLUDED.currency,

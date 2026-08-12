@@ -488,6 +488,7 @@ export default function AdminAgencies() {
                             src={agency.logo_url}
                             alt={agency.name}
                             className="h-10 w-10 rounded-lg object-cover"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">

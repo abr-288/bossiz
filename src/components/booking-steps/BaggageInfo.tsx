@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Price } from "@/components/ui/price";
 import { getBaggageAllowance, isLowCostCarrier, formatBaggageInfo } from "@/utils/baggageUtils";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface ApiBaggageData {
   cabin: {
@@ -37,6 +38,7 @@ export function BaggageInfo({
   compact = false,
   apiBaggageData
 }: BaggageInfoProps) {
+  const { t } = useTranslation();
   // Use API data if available, otherwise fall back to static policies
   const staticAllowance = getBaggageAllowance(airline, fareType, cabinClass);
   
@@ -102,7 +104,7 @@ export function BaggageInfo({
         <h4 className="font-semibold text-sm">Bagages inclus</h4>
         {isRealTimeData && (
           <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-green-600 border-green-300">
-            Données réelles
+            {t('baggageInfo.realDataBadge')}
           </Badge>
         )}
         {isLowCost && (
@@ -178,7 +180,7 @@ export function BaggageInfo({
           <div className="flex items-start gap-2 p-2 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
             <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
             <p className="text-[10px] text-amber-700 dark:text-amber-400">
-              Compagnie low-cost : aucun bagage en soute inclus par défaut
+              {t('baggageInfo.lowCostWarning')}
             </p>
           </div>
         )}
@@ -211,7 +213,7 @@ export function BaggageInfo({
               <p className="text-xs">
                 Franchise basée sur le tarif {fareType === "benefits" ? "Benefits" : "Basic"} 
                 en classe {cabinClass === "ECONOMY" ? "Économique" : cabinClass}. 
-                Vérifiez les conditions exactes lors de la confirmation.
+                {t('baggageInfo.confirmationNote')}
               </p>
             </TooltipContent>
           </Tooltip>

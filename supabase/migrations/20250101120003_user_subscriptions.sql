@@ -25,6 +25,12 @@ CREATE TABLE IF NOT EXISTS user_subscriptions (
 ALTER TABLE subscription_plans ADD COLUMN IF NOT EXISTS assigned_role TEXT;
 ALTER TABLE subscription_plans ADD COLUMN IF NOT EXISTS subscription_type TEXT DEFAULT 'standard';
 ALTER TABLE subscription_plans ADD COLUMN IF NOT EXISTS assistance_level TEXT DEFAULT 'standard'; -- 'standard', 'priority', 'vip', '24/7'
+-- NOTE (correctif) : "price" est utilisé plus bas par la vue active_subscriptions
+-- (sp.price) ainsi que par 20250101120006_default_pricing.sql, mais aucune migration
+-- ne créait cette colonne avant celle, bien plus tardive, qui recrée entièrement
+-- subscription_plans (20251130115544). On l'ajoute ici, au premier endroit où elle
+-- est réellement nécessaire.
+ALTER TABLE subscription_plans ADD COLUMN IF NOT EXISTS price TEXT;
 
 -- Update existing plans with proper values
 UPDATE subscription_plans SET 
@@ -111,6 +117,12 @@ CREATE TRIGGER update_role_on_new_subscription
 CREATE OR REPLACE FUNCTION remove_subscription_role()
 RETURNS TRIGGER AS $$
 BEGIN
+    -- On UPDATE, only act when the subscription actually left the 'active' state.
+    -- (NEW is NULL on DELETE, so this check is skipped for that case.)
+    IF TG_OP = 'UPDATE' AND NEW.status = 'active' THEN
+        RETURN NEW;
+    END IF;
+
     -- Check if user has other active majestic subscriptions
     IF NOT EXISTS (
         SELECT 1 FROM user_subscriptions us
@@ -140,14 +152,13 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER remove_role_on_subscription_end
     AFTER UPDATE OR DELETE ON user_subscriptions
     FOR EACH ROW
-    WHEN (OLD.status = 'active' AND (NEW.status IS NULL OR NEW.status != 'active' OR TG_OP = 'DELETE'))
+    WHEN (OLD.status = 'active')
     EXECUTE FUNCTION remove_subscription_role();
 
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_plan_id ON user_subscriptions(plan_id);
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_status ON user_subscriptions(status);
-CREATE INDEX IF NOT EXISTS idx_user_subscriptions_type ON user_subscriptions(subscription_type);
 CREATE INDEX IF NOT EXISTS idx_subscription_plans_type ON subscription_plans(subscription_type);
 CREATE INDEX IF NOT EXISTS idx_subscription_plans_role ON subscription_plans(assigned_role);
 
@@ -167,31 +178,34 @@ CREATE POLICY "Admins can manage all subscriptions" ON user_subscriptions
     );
 
 -- Create view for active subscriptions with user info
+-- NOTE (correctif) : user_subscriptions est en réalité la table créée par
+-- 20240419_create_user_subscriptions.sql (le CREATE TABLE IF NOT EXISTS ci-dessus
+-- ne fait rien puisqu'elle existe déjà), laquelle a déjà ses propres colonnes
+-- "plan_name" et "price" (valeurs figées au moment de la souscription). "us.*"
+-- les inclut donc déjà : on aliase les colonnes équivalentes de subscription_plans
+-- (valeurs actuelles du plan) sous des noms distincts pour éviter les doublons.
+-- NOTE (correctif) : Postgres ne permet pas d'activer RLS ni de créer des policies
+-- sur une vue ("ALTER action ENABLE ROW SECURITY cannot be performed on relation
+-- ... This operation is not supported for views"). Sans cela, la vue serait
+-- interrogeable par n'importe quel utilisateur authentifié et exposerait l'email
+-- et les données d'abonnement de TOUS les utilisateurs. La restriction d'accès
+-- (propriétaire de la ligne ou admin) est donc appliquée directement dans le
+-- WHERE de la vue, à la place des policies RLS prévues initialement.
 CREATE OR REPLACE VIEW active_subscriptions AS
-SELECT 
+SELECT
     us.*,
     u.email,
     u.raw_user_meta_data,
-    sp.name as plan_name,
+    sp.name as plan_display_name,
     sp.subscription_type,
     sp.assigned_role,
     sp.assistance_level,
-    sp.price
+    sp.price as plan_current_price
 FROM user_subscriptions us
 JOIN auth.users u ON us.user_id = u.id
 JOIN subscription_plans sp ON us.plan_id = sp.plan_id
-WHERE us.status = 'active';
-
--- Enable RLS on view
-ALTER TABLE active_subscriptions ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view their own active subscriptions" ON active_subscriptions
-    FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Admins can view all active subscriptions" ON active_subscriptions
-    FOR SELECT USING (
-        auth.jwt() ->> 'role' = 'admin'
-    );
+WHERE us.status = 'active'
+  AND (auth.uid() = us.user_id OR auth.jwt() ->> 'role' = 'admin');
 
 -- Insert sample majestic subscriptions for testing (remove in production)
 -- This would normally be done through the subscription process

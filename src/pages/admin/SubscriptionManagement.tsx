@@ -87,7 +87,6 @@ interface SubscriptionFAQ {
 
 export default function SubscriptionManagement() {
   const { t } = useTranslation();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
@@ -603,7 +602,7 @@ export default function SubscriptionManagement() {
                   id="plan_id"
                   value={formData.plan_id}
                   onChange={(e) => setFormData(prev => ({ ...prev, plan_id: e.target.value }))}
-                  placeholder="majestic_access"
+                  placeholder="premium"
                 />
               </div>
               <div>
@@ -612,7 +611,7 @@ export default function SubscriptionManagement() {
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Majestic Access"
+                  placeholder="Premium"
                 />
               </div>
             </div>

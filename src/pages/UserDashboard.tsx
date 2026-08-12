@@ -158,11 +158,21 @@ const UserDashboard = () => {
           title: t('dashboardPage.notifications.confirmSuccess'),
           description: t('dashboardPage.notifications.redirectPayment'),
         });
+        addNotification({
+          type: "info",
+          title: t('dashboardPage.notifications.confirmSuccess'),
+          message: t('dashboardPage.notifications.redirectPayment'),
+        });
         setTimeout(() => navigate(`/payment?bookingId=${id}`), 1000);
         return;
       }
 
       toast({ title: t('common.success'), description: t('dashboardPage.notifications.emailSent') });
+      addNotification({
+        type: "success",
+        title: t('common.success'),
+        message: t('dashboardPage.notifications.emailSent'),
+      });
     } catch (error: any) {
       toast({ title: t('common.error'), description: error.message, variant: "destructive" });
     }
@@ -173,15 +183,26 @@ const UserDashboard = () => {
       const booking = bookings.find((b) => b.id === id);
       if (!booking) throw new Error(t('dashboardPage.errors.notFound'));
 
-      const updateData: any = { status: "cancelled", updated_at: new Date().toISOString() };
-      if (booking.payment_status === "paid") updateData.payment_status = "refunded";
+      // Delegates to the refund-payment edge function, which actually calls
+      // CinetPay to refund the charge (not just flipping a status flag) when
+      // the booking was paid.
+      const { data, error } = await supabase.functions.invoke('refund-payment', {
+        body: { booking_id: id },
+      });
 
-      const { error } = await supabase.from("bookings").update(updateData).eq("id", id);
       if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || t('dashboardPage.errors.notFound'));
 
       toast({
         title: t('dashboardPage.notifications.cancelSuccess'),
-        description: booking.payment_status === "paid" 
+        description: data.refunded
+          ? t('dashboardPage.notifications.cancelledRefund')
+          : t('dashboardPage.notifications.cancelled'),
+      });
+      addNotification({
+        type: "info",
+        title: t('dashboardPage.notifications.cancelSuccess'),
+        message: data.refunded
           ? t('dashboardPage.notifications.cancelledRefund')
           : t('dashboardPage.notifications.cancelled'),
       });
@@ -195,6 +216,7 @@ const UserDashboard = () => {
       title: t('dashboardPage.notifications.comingSoon'),
       description: t('dashboardPage.notifications.editSoon'),
     });
+    navigate('/support');
   };
 
   const handleDeleteBooking = async (id: string) => {
@@ -215,6 +237,11 @@ const UserDashboard = () => {
       if (error) throw error;
 
       toast({ title: t('dashboardPage.notifications.deleteSuccess'), description: t('dashboardPage.notifications.deleted') });
+      addNotification({
+        type: "warning",
+        title: t('dashboardPage.notifications.deleteSuccess'),
+        message: t('dashboardPage.notifications.deleted'),
+      });
     } catch (error: any) {
       toast({ title: t('common.error'), description: error.message, variant: "destructive" });
     }
@@ -313,7 +340,7 @@ const UserDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-xl font-bold"><Price amount={stats.totalSpent} fromCurrency="EUR" showLoader /></div>
+              <div className="text-xl font-bold"><Price amount={stats.totalSpent} showLoader /></div>
             </CardContent>
           </Card>
 

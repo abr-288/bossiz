@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Car as CarIcon, SlidersHorizontal, Grid3X3, List } from "lucide-react";
+import { Car as CarIcon, SlidersHorizontal, Grid3X3, List } from "lucide-react";
 import { CarBookingDialog } from "@/components/CarBookingDialog";
 import { CarSearchForm } from "@/components/CarSearchForm";
 import { Pagination } from "@/components/Pagination";
@@ -13,6 +13,7 @@ import { CarFilters } from "@/components/cars/CarFilters";
 import { CarDetailsDialog } from "@/components/cars/CarDetailsDialog";
 import { useCarRental } from "@/hooks/useCarRental";
 import { toast } from "sonner";
+import { CarCardSkeleton } from "@/components/ui/search-result-skeletons";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerCars from "@/assets/banner-cars.jpg";
 import { useTranslation } from "react-i18next";
@@ -123,6 +124,8 @@ const Cars = () => {
               year: car.year,
               pickupLocation: car.pickupLocation || DEFAULT_CAR_LOCATIONS[index],
               features: car.features || [],
+              offerSignature: car.offer_signature,
+              offerExpiresAt: car.offer_expires_at,
             });
           });
         }
@@ -176,11 +179,13 @@ const Cars = () => {
         year: car.year,
         pickupLocation: car.pickupLocation || pickupLocation,
         features: car.features || [],
+        offerSignature: car.offer_signature,
+        offerExpiresAt: car.offer_expires_at,
       })));
-      toast.success(`${carsArray.length} véhicules trouvés`);
+      toast.success(t('cars.vehiclesFoundToast', { count: carsArray.length }));
     } else {
       setApiCars([]);
-      toast.info("Utilisez le formulaire pour rechercher des véhicules");
+      toast.info(t('cars.useFormToSearch'));
     }
   };
 
@@ -321,7 +326,7 @@ const Cars = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerCars}
-          alt="Location de voitures"
+          alt={t('cars.title')}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
@@ -379,10 +384,10 @@ const Cars = () => {
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-full sm:w-[180px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="price-asc">Prix croissant</SelectItem>
-                    <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                    <SelectItem value="rating">Meilleures notes</SelectItem>
-                    <SelectItem value="popular">Popularité</SelectItem>
+                    <SelectItem value="price-asc">{t('cars.sortBy.priceAsc')}</SelectItem>
+                    <SelectItem value="price-desc">{t('cars.sortBy.priceDesc')}</SelectItem>
+                    <SelectItem value="rating">{t('cars.sortBy.rating')}</SelectItem>
+                    <SelectItem value="popular">{t('cars.sortBy.popular')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -390,9 +395,15 @@ const Cars = () => {
 
             {/* Loading */}
             {(loading || loadingDefault) && (
-              <div className="flex justify-center items-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <span className="ml-3">{loadingDefault ? 'Chargement des véhicules disponibles...' : 'Recherche en cours...'}</span>
+              <div className="space-y-4">
+                <p className="text-center text-muted-foreground">
+                  {loadingDefault ? 'Chargement des véhicules disponibles...' : 'Recherche en cours...'}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <CarCardSkeleton key={i} />
+                  ))}
+                </div>
               </div>
             )}
 
@@ -400,9 +411,9 @@ const Cars = () => {
             {!loading && !loadingDefault && filteredAndSortedCars.length === 0 && (
               <div className="text-center py-16 bg-card rounded-xl border">
                 <CarIcon className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Aucun véhicule trouvé</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('cars.noVehicles')}</h3>
                 <p className="text-muted-foreground mb-4">Utilisez le formulaire de recherche ci-dessus</p>
-                {activeFiltersCount > 0 && <Button variant="outline" onClick={resetFilters}>Réinitialiser les filtres</Button>}
+                {activeFiltersCount > 0 && <Button variant="outline" onClick={resetFilters}>{t('cars.resetFilters')}</Button>}
               </div>
             )}
 

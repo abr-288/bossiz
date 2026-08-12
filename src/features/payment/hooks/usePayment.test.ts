@@ -213,6 +213,21 @@ describe('usePayment', () => {
       },
     });
 
+    (supabase.from as any).mockReturnValue({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: vi.fn(() => Promise.resolve({
+            data: { payment_status: 'pending', status: 'pending' },
+            error: null,
+          })),
+        })),
+      })),
+    });
+    (supabase.functions.invoke as any).mockResolvedValue({
+      data: { success: true, payment_url: 'https://cinetpay.com/payment/123' },
+      error: null,
+    });
+
     const { result } = renderHook(() => usePayment());
 
     // Note: This test would require access to internal state or a different approach

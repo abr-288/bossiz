@@ -14,8 +14,14 @@ dist-ssr
 
 # Environment variables
 .env
+.env-old
 .env.local
 .env.*.local
+.env.deploy
+*.env.bak
+
+# Artefacts PWA générés (service worker de dev)
+dev-dist/
 
 # Vite temporary files
 vite.config.ts.timestamp-*
@@ -37,3 +43,6 @@ bun.lockb
 
 # Local Netlify folder
 .netlify
+
+# Exports de données (peuvent contenir des données utilisateur)
+deploy-vps/backups/

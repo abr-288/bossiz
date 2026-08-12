@@ -1,6 +1,51 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { hotelSearchSchema, validateData, createValidationErrorResponse } from "../_shared/zodValidation.ts";
 import { getClientIP, checkRateLimit, createRateLimitResponse, getRateLimitHeaders, RATE_LIMITS } from "../_shared/rate-limiter.ts";
+import { signOffer } from "../_shared/priceSignature.ts";
+import { applyMarkup } from "../_shared/pricing.ts";
+
+const OFFER_VALIDITY_MINUTES = 30;
+
+// Extract a plain numeric price regardless of the provider's price shape
+// (number, or { grandTotal|total }), apply the retail markup on top of the
+// raw supplier price, then attach a server-signed offer so create-booking
+// can verify at checkout time that this exact price/name/location bundle
+// really came out of this search — never out of the client. The displayed
+// hotel.price is overwritten with the marked-up value so what the customer
+// sees is exactly what they'll be charged.
+async function signHotelResults(results: Record<string, any[]>, fallbackLocation: string) {
+  const expiresAt = new Date(Date.now() + OFFER_VALIDITY_MINUTES * 60 * 1000).toISOString();
+
+  for (const providerHotels of Object.values(results)) {
+    for (const hotel of providerHotels) {
+      const rawPrice = hotel.price;
+      const supplierPrice = typeof rawPrice === 'object' && rawPrice !== null
+        ? parseFloat(rawPrice.grandTotal ?? rawPrice.total ?? '0')
+        : typeof rawPrice === 'number'
+        ? rawPrice
+        : parseFloat(rawPrice || '0');
+
+      const unitPrice = applyMarkup(supplierPrice);
+      hotel.price = typeof rawPrice === 'object' && rawPrice !== null
+        ? { ...rawPrice, grandTotal: unitPrice }
+        : unitPrice;
+
+      const payload = {
+        service_type: 'hotel',
+        service_name: String(hotel.name || 'Hôtel'),
+        location: String(hotel.location || fallbackLocation),
+        unit_price: unitPrice,
+        currency: hotel.currency || 'EUR',
+        expires_at: expiresAt,
+      };
+
+      hotel.offer_expires_at = expiresAt;
+      hotel.offer_signature = await signOffer(payload);
+    }
+  }
+
+  return results;
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -457,7 +502,10 @@ serve(async (req) => {
     console.log('Search hotels for:', { location, checkIn, checkOut, adults, children, rooms });
 
     const RAPIDAPI_KEY = Deno.env.get('RAPIDAPI_KEY');
+    const KAYAK_RAPIDAPI_KEY = Deno.env.get('KAYAK_RAPIDAPI_KEY') || RAPIDAPI_KEY;
+    const KAYAK_RAPIDAPI_HOST = Deno.env.get('KAYAK_RAPIDAPI_HOST') || 'kayak-api.p.rapidapi.com';
     console.log('RAPIDAPI_KEY configured:', RAPIDAPI_KEY ? 'YES' : 'NO');
+
 
 const results: {
       booking: any[];
@@ -471,7 +519,9 @@ const results: {
       tripadvisor: [],
       amadeus: [],
       priceline: [],
+      kayak: [],
     };
+
 
     let apiSuccess = false;
     
@@ -1120,36 +1170,137 @@ const results: {
       console.log('✅ REAL API DATA - Returning results from', totalResults, 'hotels');
     }
 
+    await signHotelResults(results, location);
+
     return new Response(
       JSON.stringify({
         success: true,
         data: results,
-        count: results.booking.length + results.xotelo.length + 
+        count: results.booking.length + results.xotelo.length +
                results.tripadvisor.length + results.amadeus.length + results.priceline.length,
         mock: !apiSuccess || totalResults === 0,
-        sources: {
-          amadeus: results.amadeus.length,
-          booking: results.booking.length,
-          xotelo: results.xotelo.length,
-          tripadvisor: results.tripadvisor.length,
-          priceline: results.priceline.length,
-        }
+        source: !apiSuccess || totalResults === 0 ? 'mock' : 'api'
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error in search-hotels:', error);
+    console.error('Error in search-hotels function:', error);
     return new Response(
       JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error'
       }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
+
+// Kayak Hotels API implementation
+async function searchKayakHotels(
+  location: string,
+  checkIn: string,
+  checkOut: string,
+  adults: number,
+  rooms: number,
+  apiKey: string,
+  apiHost: string
+): Promise<any[]> {
+  try {
+    console.log(`Resolving Kayak location ID for: ${location}`);
+    
+    // Step 1: Resolve location name to numeric ID
+    const locResponse = await fetch(
+      `https://${apiHost}/search-locations?query=${encodeURIComponent(location)}&type=hotelonly`,
+      {
+        headers: {
+          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Host': apiHost
+        }
+      }
+    );
+
+    let locationId = "59560"; // Default (Miami) fallback
+    if (locResponse.ok) {
+      const locData = await locResponse.json();
+      if (locData.data && locData.data[0]) {
+        // Find a suitable ID - some Kayak APIs return 'cty-id' or 'id'
+        locationId = locData.data[0].ctyId || locData.data[0].id || locationId;
+        console.log(`Resolved Kayak location ID: ${locationId}`);
+      }
+    }
+
+    // Step 2: Search hotels using the ID
+    const payload = {
+      location: locationId.toString(),
+      checkin: checkIn,
+      checkout: checkOut,
+      adults: adults.toString(),
+      rooms: rooms,
+      childAges: [],
+      searchMetaData: {
+        pageNumber: 1,
+        priceMode: "total"
+      },
+      sortParams: {
+        sortMode: "price_a"
+      }
+    };
+
+    const response = await fetch(
+      `https://${apiHost}/search-hotels`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Host': apiHost
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Kayak Hotels API error:', response.status, errorText.substring(0, 300));
+      return [];
+    }
+
+    const data = await response.json();
+    const hotels = data.data || data.results || data.hotels || [];
+
+    if (Array.isArray(hotels) && hotels.length > 0) {
+      return hotels.map((hotel: any) => {
+        const hotelName = hotel.hotelName || hotel.name || 'Hôtel';
+        const rating = hotel.rating || 4.0;
+        let imageUrl = hotel.image || hotel.thumbnail || hotel.imageUrl || null;
+        if (!isValidImageUrl(imageUrl)) {
+          imageUrl = getCityPlaceholder(location);
+        }
+
+        return {
+          id: hotel.hotelId || hotel.id || Math.random().toString(36),
+          name: hotelName,
+          location: hotel.city || hotel.location || location,
+          address: hotel.address || '',
+          price: { grandTotal: Math.round(hotel.price || 100) },
+          currency: 'EUR',
+          rating: rating <= 5 ? rating * 2 : rating,
+          stars: hotel.stars || 4,
+          reviews: hotel.reviewCount || 0,
+          image: imageUrl,
+          images: [imageUrl],
+          description: hotel.description || `${hotelName} à ${location}`,
+          amenities: ['Wifi', 'Restaurant', 'Service de Chambre'],
+          freeCancellation: true,
+          breakfast: false,
+          source: 'kayak',
+          deepLink: hotel.deepLink || hotel.url
+        };
+      });
+    }
+    return [];
+  } catch (error) {
+    console.error('Kayak Hotels API exception:', error);
+    return [];
+  }
+}

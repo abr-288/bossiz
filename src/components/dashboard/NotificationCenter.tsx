@@ -48,7 +48,7 @@ export const NotificationCenter = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge
@@ -96,6 +96,7 @@ export const NotificationCenter = ({
                         <Button
                           variant="ghost"
                           size="icon"
+                          aria-label="Marquer comme lu"
                           className="h-6 w-6"
                           onClick={() => onMarkAsRead(notification.id)}
                         >

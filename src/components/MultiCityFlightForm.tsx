@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
 import { UnifiedForm, UnifiedAutocomplete, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
+import { useTranslation } from "react-i18next";
 
 interface FlightLeg {
   id: string;
@@ -15,6 +16,7 @@ interface MultiCityFlightFormProps {
 }
 
 export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
+  const { t } = useTranslation();
   const [legs, setLegs] = useState<FlightLeg[]>([
     { id: "1", from: "", to: "", date: undefined },
     { id: "2", from: "", to: "", date: undefined }
@@ -56,7 +58,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
                     label="Départ"
                     value={leg.from}
                     onChange={(value) => updateLeg(leg.id, "from", value)}
-                    placeholder="Ville de départ"
+                    placeholder={t('search.departureCityPlaceholder')}
                     type="airport"
                   />
                 </div>
@@ -99,7 +101,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
             type="button"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Ajouter un vol (max 5)
+            {t('multiCityFlightForm.addFlight')}
           </Button>
         )}
         

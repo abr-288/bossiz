@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Price } from "@/components/ui/price";
+import { PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 import { toast } from "sonner";
 import { CreditCard, TrendingUp, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
@@ -44,17 +44,7 @@ const AdminPayments = () => {
   const totalPending = payments.filter(p => p.status === "pending").reduce((s, p) => s + Number(p.amount), 0);
   const totalFailed = payments.filter(p => p.status === "failed").reduce((s, p) => s + Number(p.amount), 0);
 
-  const statusBadge = (status: string) => {
-    const map: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; label: string }> = {
-      completed: { variant: "default", label: "Complété" },
-      paid: { variant: "default", label: "Payé" },
-      pending: { variant: "secondary", label: "En attente" },
-      failed: { variant: "destructive", label: "Échoué" },
-      refunded: { variant: "outline", label: "Remboursé" },
-    };
-    const s = map[status] || { variant: "secondary" as const, label: status };
-    return <Badge variant={s.variant}>{s.label}</Badge>;
-  };
+  const statusBadge = (status: string) => <PaymentStatusBadge status={status} />;
 
   if (loading) {
     return (
@@ -123,6 +113,7 @@ const AdminPayments = () => {
                   <SelectItem value="all">Tous</SelectItem>
                   <SelectItem value="paid">Payé</SelectItem>
                   <SelectItem value="pending">En attente</SelectItem>
+                  <SelectItem value="processing">En traitement</SelectItem>
                   <SelectItem value="failed">Échoué</SelectItem>
                   <SelectItem value="refunded">Remboursé</SelectItem>
                 </SelectContent>
@@ -137,6 +128,7 @@ const AdminPayments = () => {
                   <TableHead>Montant</TableHead>
                   <TableHead>Méthode</TableHead>
                   <TableHead>Fournisseur</TableHead>
+                  <TableHead>IP</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead>Date</TableHead>
                 </TableRow>
@@ -144,7 +136,7 @@ const AdminPayments = () => {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground">
                       Aucun paiement trouvé
                     </TableCell>
                   </TableRow>
@@ -155,6 +147,7 @@ const AdminPayments = () => {
                       <TableCell className="font-semibold"><Price amount={Number(p.amount)} fromCurrency={p.currency || "XOF"} /></TableCell>
                       <TableCell>{p.payment_method}</TableCell>
                       <TableCell>{p.payment_provider}</TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">{p.ip_address || "-"}</TableCell>
                       <TableCell>{statusBadge(p.status)}</TableCell>
                       <TableCell>{format(new Date(p.created_at), "dd MMM yyyy HH:mm", { locale: fr })}</TableCell>
                     </TableRow>

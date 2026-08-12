@@ -1,11 +1,43 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { carRentalSchema, validateData, createValidationErrorResponse } from "../_shared/zodValidation.ts";
 import { getClientIP, checkRateLimit, createRateLimitResponse, getRateLimitHeaders, RATE_LIMITS } from "../_shared/rate-limiter.ts";
+import { signOffer } from "../_shared/priceSignature.ts";
+import { applyMarkup } from "../_shared/pricing.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const OFFER_VALIDITY_MINUTES = 30;
+
+// Apply the retail markup on top of the raw supplier daily price, overwrite
+// car.price with it so the customer sees exactly what they'll be charged,
+// then attach a server-signed offer so create-booking can verify at checkout
+// time that this exact price/name/location bundle really came out of this
+// search — never out of the client.
+async function signCarResults(cars: any[], fallbackLocation: string) {
+  const expiresAt = new Date(Date.now() + OFFER_VALIDITY_MINUTES * 60 * 1000).toISOString();
+
+  for (const car of cars) {
+    const unitPrice = applyMarkup(Number(car.price) || 0);
+    car.price = unitPrice;
+
+    const payload = {
+      service_type: 'car',
+      service_name: String(car.name || 'Véhicule'),
+      location: String(car.pickupLocation || fallbackLocation),
+      unit_price: unitPrice,
+      currency: car.currency || 'EUR',
+      expires_at: expiresAt,
+    };
+
+    car.offer_expires_at = expiresAt;
+    car.offer_signature = await signOffer(payload);
+  }
+
+  return cars;
+}
 
 interface CarResult {
   id: string;
@@ -813,29 +845,37 @@ serve(async (req) => {
       );
     }
 
+    const kayakRapidApiKey = Deno.env.get('KAYAK_RAPIDAPI_KEY') || rapidApiKey;
+    const kayakRapidApiHost = Deno.env.get('KAYAK_RAPIDAPI_HOST') || 'kayak-api.p.rapidapi.com';
+
     // Search all available car rental APIs in parallel
-    const [bookingResults, pricelineResults, skyscannerResults, carsRentalResults] = await Promise.all([
+    const [bookingResults, pricelineResults, skyscannerResults, carsRentalResults, kayakResults] = await Promise.all([
       searchBookingCars(pickupLocation, pickupDate, dropoffDate, pickupTime, dropoffTime, rapidApiKey),
       searchPricelineCars(pickupLocation, pickupDate, dropoffDate, pickupTime, dropoffTime, rapidApiKey),
       searchSkyscannerCars(pickupLocation, pickupDate, dropoffDate, pickupTime, dropoffTime, rapidApiKey),
       searchCarsRentalAPI(pickupLocation, pickupDate, dropoffDate, pickupTime, dropoffTime, rapidApiKey),
+      searchKayakCars(pickupLocation, pickupDate, dropoffDate, pickupTime, dropoffTime, kayakRapidApiKey, kayakRapidApiHost),
     ]);
 
-    const allCars = [...bookingResults, ...pricelineResults, ...skyscannerResults, ...carsRentalResults];
+    const allCars = [...bookingResults, ...pricelineResults, ...skyscannerResults, ...carsRentalResults, ...kayakResults];
     
-    console.log(`Total cars found: ${allCars.length} (Booking: ${bookingResults.length}, Priceline: ${pricelineResults.length}, Skyscanner: ${skyscannerResults.length}, CarsRental: ${carsRentalResults.length})`);
+    console.log(`Total cars found: ${allCars.length} (Booking: ${bookingResults.length}, Priceline: ${pricelineResults.length}, Skyscanner: ${skyscannerResults.length}, CarsRental: ${carsRentalResults.length}, Kayak: ${kayakResults.length})`);
+
 
     // If no API results, return mock data
     if (allCars.length === 0) {
       console.log('No car rental results from APIs, returning mock data');
+      const mockCars = getMockCarRentals(pickupLocation);
+      await signCarResults(mockCars, pickupLocation);
       return new Response(
-        JSON.stringify({ success: true, data: getMockCarRentals(pickupLocation), source: 'mock' }),
+        JSON.stringify({ success: true, data: mockCars, source: 'mock' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Sort by price
     allCars.sort((a, b) => a.price - b.price);
+    await signCarResults(allCars, pickupLocation);
 
     return new Response(
       JSON.stringify({ success: true, data: allCars, source: 'api' }),
@@ -853,3 +893,122 @@ serve(async (req) => {
     );
   }
 });
+
+// Search cars using Kayak API via RapidAPI
+async function searchKayakCars(
+  pickupLocation: string,
+  pickupDate: string,
+  dropoffDate: string,
+  pickupTime: string,
+  dropoffTime: string,
+  rapidApiKey: string,
+  rapidApiHost: string
+): Promise<CarResult[]> {
+  try {
+    console.log(`Resolving Kayak car location ID for: ${pickupLocation}`);
+    
+    // Step 1: Resolve location
+    const locResponse = await fetch(
+      `https://${rapidApiHost}/search-locations?query=${encodeURIComponent(pickupLocation)}&type=caronly`,
+      {
+        headers: {
+          'X-RapidAPI-Key': rapidApiKey,
+          'X-RapidAPI-Host': rapidApiHost
+        }
+      }
+    );
+
+    let locationId = "16078"; // Default fallback
+    if (locResponse.ok) {
+      const locData = await locResponse.json();
+      if (locData.data && locData.data[0]) {
+        locationId = locData.data[0].ctyId || locData.data[0].id || locationId;
+      }
+    }
+
+    // Step 2: Search cars
+    const pickupHour = parseInt(pickupTime.split(':')[0]) || 10;
+    const dropoffHour = parseInt(dropoffTime.split(':')[0]) || 10;
+
+    const payload = {
+      pickup_location: locationId.toString(),
+      pickup_date: pickupDate,
+      dropoff_date: dropoffDate,
+      pickup_hour: pickupHour,
+      dropoff_hour: dropoffHour,
+      searchMetaData: {
+        pageNumber: 0,
+        pageSize: 20,
+        priceMode: "total"
+      },
+      carSearchParams: {
+        sortMode: "price_a"
+      }
+    };
+
+    const response = await fetch(
+      `https://${rapidApiHost}/search-cars`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RapidAPI-Key': rapidApiKey,
+          'X-RapidAPI-Host': rapidApiHost
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Kayak Cars API error:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    const carList = data.data || data.results || data.cars || [];
+
+    if (Array.isArray(carList) && carList.length > 0) {
+      return carList.map((car: any, index: number) => {
+        const brand = car.brand || car.make || 'Unknown';
+        const model = car.model || 'Véhicule';
+        const category = car.category || car.carClass || 'Standard';
+        const price = car.price?.total || car.price || 50;
+
+        return {
+          id: `kayak-car-${index}`,
+          name: `${brand} ${model}`,
+          brand,
+          model,
+          category,
+          price: parseFloat(price.toString()),
+          currency: 'EUR',
+          rating: car.rating || 4.2,
+          reviews: car.reviews || 100,
+          image: car.image || getCarImage(category, brand, model),
+          seats: car.seats || 5,
+          transmission: car.transmission || 'Automatique',
+          fuel: car.fuel || 'Essence',
+          luggage: car.luggage || 3,
+          airConditioning: true,
+          provider: car.provider || 'Kayak',
+          source: 'kayak',
+          unlimitedMileage: true,
+          freeCancellation: true,
+          fuelPolicy: 'full-to-full',
+          deposit: null,
+          doors: 4,
+          engineSize: '1.6L',
+          year: 2024,
+          pickupLocation,
+          features: ['Climatisation', 'Kilométrage illimité'],
+        };
+      });
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Kayak Cars exception:', error);
+    return [];
+  }
+}
+

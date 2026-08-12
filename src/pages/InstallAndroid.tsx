@@ -4,21 +4,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Smartphone, 
-  Download, 
-  CheckCircle2, 
-  AlertCircle, 
-  Shield, 
+import { usePWA } from '@/hooks/usePWA';
+import {
+  Smartphone,
+  Download,
+  CheckCircle2,
+  AlertCircle,
+  Shield,
   Zap,
   Star,
   ArrowLeft,
-  ExternalLink
+  ExternalLink,
+  Settings
 } from 'lucide-react';
+
+const APK_DOWNLOAD_URL = '/downloads/bossiz.apk';
 
 const InstallAndroid = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isInstallable, isInstalled, install } = usePWA();
   const [isAndroid, setIsAndroid] = useState(false);
   const [isChrome, setIsChrome] = useState(false);
   const [installStatus, setInstallStatus] = useState<'checking' | 'compatible' | 'incompatible'>('checking');
@@ -28,10 +33,10 @@ const InstallAndroid = () => {
     const userAgent = navigator.userAgent.toLowerCase();
     const isAndroidDevice = /android/.test(userAgent);
     const isChromeBrowser = /chrome/.test(userAgent) && !/edg/.test(userAgent);
-    
+
     setIsAndroid(isAndroidDevice);
     setIsChrome(isChromeBrowser);
-    
+
     if (isAndroidDevice && isChromeBrowser) {
       setInstallStatus('compatible');
     } else {
@@ -39,13 +44,14 @@ const InstallAndroid = () => {
     }
   }, []);
 
-  const handleInstall = () => {
-    if (installStatus === 'compatible') {
-      // Installation PWA pour Android
-      window.open('/install-android-pwa', '_blank');
+  const handleInstall = async () => {
+    if (isInstallable) {
+      // Déclenche le vrai prompt d'installation PWA natif du navigateur
+      await install();
     } else {
-      // Redirection vers le Play Store
-      window.open('https://play.google.com/store/apps/details?id=com.bossiz.conciergerie', '_blank');
+      // Pas de prompt disponible (déjà installée, ou navigateur non compatible) :
+      // on renvoie vers les instructions manuelles détaillées.
+      navigate('/install');
     }
   };
 
@@ -123,24 +129,65 @@ const InstallAndroid = () => {
               <Alert className="border-orange-200 bg-orange-50">
                 <AlertCircle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
-                  Utilisez Google Chrome pour une installation optimale ou visitez le Play Store.
+                  Utilisez Google Chrome pour une installation optimale, ou téléchargez directement l'APK ci-dessous.
                 </AlertDescription>
               </Alert>
             )}
           </div>
 
+          {/* Téléchargement direct de l'APK */}
+          <Card className="shadow-xl border-0 mb-8 border-2 border-green-500/30">
+            <CardHeader className="text-center pb-6">
+              <Badge className="mx-auto mb-3 bg-green-600 hover:bg-green-600">Recommandé</Badge>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mb-4">
+                <Download className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
+                Télécharger l'APK
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                L'application n'est pas encore sur le Play Store — téléchargez directement le fichier d'installation depuis ce site.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <Button
+                asChild
+                className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg mb-6"
+                size="lg"
+              >
+                <a href={APK_DOWNLOAD_URL} download>
+                  <Download className="w-5 h-5 mr-2" />
+                  Télécharger le fichier APK
+                </a>
+              </Button>
+
+              <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-blue-600" />
+                  Avant d'installer
+                </h4>
+                <ol className="space-y-1.5 text-sm text-gray-700 list-decimal list-inside">
+                  <li>Ouvrez le fichier téléchargé depuis vos notifications ou "Téléchargements"</li>
+                  <li>Android affichera un avertissement "source inconnue" — c'est normal pour toute app installée hors Play Store</li>
+                  <li>Appuyez sur "Paramètres" dans l'avertissement, puis autorisez l'installation depuis cette source</li>
+                  <li>Revenez en arrière et confirmez l'installation</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Carte d'installation */}
+            {/* Carte d'installation PWA (alternative) */}
             <Card className="shadow-xl border-0">
               <CardHeader className="text-center pb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mb-4">
-                  <Download className="w-8 h-8 text-white" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl mb-4">
+                  <Smartphone className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
-                  Installation Directe
+                  Alternative : Installation PWA
                 </CardTitle>
                 <CardDescription className="text-gray-600">
-                  Installation PWA native pour Android
+                  Depuis votre navigateur, sans télécharger de fichier
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
@@ -158,14 +205,16 @@ const InstallAndroid = () => {
                     <span className="text-gray-700">Espace de stockage optimisé</span>
                   </div>
                 </div>
-                
+
                 <Button
                   onClick={handleInstall}
-                  className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg"
+                  disabled={isInstalled}
+                  variant="outline"
+                  className="w-full py-4 text-lg font-semibold border-2"
                   size="lg"
                 >
                   <Download className="w-5 h-5 mr-2" />
-                  {installStatus === 'compatible' ? 'Installer Maintenant' : 'Visiter Play Store'}
+                  {isInstalled ? 'Déjà installée' : isInstallable ? 'Installer Maintenant' : 'Voir les instructions'}
                 </Button>
               </CardContent>
             </Card>
@@ -227,13 +276,13 @@ const InstallAndroid = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <Badge variant="secondary">2</Badge>
-                    Alternative Play Store
+                    Installation manuelle
                   </h4>
                   <ol className="space-y-2 text-sm text-gray-600">
-                    <li>1. Ouvrez Google Play Store</li>
-                    <li>2. Recherchez "Bossiz Conciergerie"</li>
-                    <li>3. Cliquez sur "Installer"</li>
-                    <li>4. Attendez la fin de l'installation</li>
+                    <li>1. Ouvrez le menu Chrome (⋮ en haut à droite)</li>
+                    <li>2. Sélectionnez "Installer l'application"</li>
+                    <li>3. Ou "Ajouter à l'écran d'accueil"</li>
+                    <li>4. Confirmez pour terminer</li>
                   </ol>
                 </div>
               </div>
@@ -255,7 +304,7 @@ const InstallAndroid = () => {
                 </div>
                 <div className="text-center p-4 rounded-lg bg-gray-50">
                   <h4 className="font-semibold text-gray-900 mb-2">Espace</h4>
-                  <p className="text-sm text-gray-600">50 MB disponibles</p>
+                  <p className="text-sm text-gray-600">~20 MB disponibles</p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-gray-50">
                   <h4 className="font-semibold text-gray-900 mb-2">Réseau</h4>

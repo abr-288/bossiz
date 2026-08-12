@@ -73,7 +73,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex items-center gap-2">
               <SidebarTrigger className="touch-target" />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8" title="Retour à l'accueil">
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Retour à l'accueil" title="Retour à l'accueil">
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>

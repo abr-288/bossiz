@@ -4,9 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plane, Hotel, Car, Calendar, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
+import { useTranslation } from "react-i18next";
 
 const QuickSearch = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("flights");
 
   const searchTypes = [
@@ -29,7 +31,7 @@ const QuickSearch = () => {
             Recherche Rapide
           </h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            Trouvez rapidement ce que vous cherchez
+            {t('quickSearch.subtitle')}
           </p>
         </div>
 
@@ -57,13 +59,13 @@ const QuickSearch = () => {
                         <UnifiedFormField
                           label="Départ"
                           name="departure"
-                          placeholder="Ville de départ"
+                          placeholder={t('search.departureCityPlaceholder')}
                           icon={MapPin}
                         />
                         <UnifiedFormField
                           label="Destination"
                           name="destination"
-                          placeholder="Ville d'arrivée"
+                          placeholder={t('search.arrivalCityPlaceholder')}
                           icon={MapPin}
                         />
                       </div>

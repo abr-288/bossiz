@@ -164,11 +164,9 @@ CREATE INDEX IF NOT EXISTS idx_majestic_subscriptions_user_id ON majestic_subscr
 CREATE INDEX IF NOT EXISTS idx_majestic_subscriptions_status ON majestic_subscriptions(status);
 CREATE INDEX IF NOT EXISTS idx_majestic_bookings_user_id ON majestic_bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_majestic_bookings_status ON majestic_bookings(status);
-CREATE INDEX IF NOT EXISTS idx_majestic_services_user_id ON majestic_services(user_id);
 CREATE INDEX IF NOT EXISTS idx_majestic_services_active ON majestic_services(is_active);
 CREATE INDEX IF NOT EXISTS idx_majestic_service_requests_user_id ON majestic_service_requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_majestic_service_requests_status ON majestic_service_requests(status);
-CREATE INDEX IF NOT EXISTS idx_majestic_properties_user_id ON majestic_properties(user_id);
 CREATE INDEX IF NOT EXISTS idx_majestic_properties_available ON majestic_properties(is_available);
 CREATE INDEX IF NOT EXISTS idx_majestic_properties_access_level ON majestic_properties(access_level);
 CREATE INDEX IF NOT EXISTS idx_majestic_messages_user_id ON majestic_messages(user_id);
@@ -202,13 +200,13 @@ CREATE POLICY "Users can view own majestic_bookings" ON majestic_bookings
     FOR ALL USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can view own majestic_services" ON majestic_services
-    FOR ALL USING (auth.uid() = user_id);
+    FOR SELECT USING (is_active = true);
 
 CREATE POLICY "Users can view own majestic_service_requests" ON majestic_service_requests
     FOR ALL USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can view own majestic_properties" ON majestic_properties
-    FOR ALL USING (auth.uid() = user_id);
+    FOR SELECT USING (is_available = true);
 
 CREATE POLICY "Users can view own majestic_messages" ON majestic_messages
     FOR ALL USING (auth.uid() = user_id);
@@ -232,7 +230,8 @@ INSERT INTO majestic_services (name, category, description, base_price, metadata
 ('Concierge Service', 'concierge', 'Service de conciergerie personnalisé 24/7', 50000, '{"features": ["réservations", "recommandations", "assistance"]}', true),
 ('Sécurité Privée', 'security', 'Équipe de sécurité pour événements et protection', 200000, '{"team_size": 2, "equipment": "professionnel"}', true);
 
-INSERT INTO majestic_properties (title, description, location, price, property_type, bedrooms, bathrooms, area_sqm, images, access_level, metadata, is_available, is_featured) VALUES
-('Villa de Luxe - Saint-Tropez', 'Villa privée avec piscine et vue mer méditerranéenne', 2500000, 'villa', 6, 4, 350, '{"piscine": "infinie", "vue": "mer"}', 'black', true),
-('Suite Présidentielle - Paris', 'Suite présidentielle avec vue Tour Eiffel', 1500000, 'apartment', 3, 2, 200, '{"hotel": "Crillon", "etage": "penthouse"}', 'black', true),
-('Penthouse Exclusif - Monaco', 'Penthouse avec terrasse panoramique sur Monaco', 3000000, 'penthouse', 4, 3, 280, '{"vue": "port", "terrasse": "100m²"}', 'black', false);
+-- NOTE (correctif): l'INSERT de données d'exemple précédemment présent ici avait un
+-- nombre de valeurs incohérent avec la liste de colonnes déclarée (13 colonnes pour
+-- 9 valeurs par ligne), ce qui provoquait une erreur SQL bloquant l'application de
+-- cette migration sur tout environnement neuf. Il a été retiré : il ne s'agissait que
+-- de données de démonstration, non requises pour le fonctionnement de l'application.

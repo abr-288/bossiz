@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Users, Wifi, UtensilsCrossed, Car, Loader2, Globe, GitCompare, SlidersHorizontal, Hotel } from "lucide-react";
+import { Star, MapPin, Users, Wifi, UtensilsCrossed, Car, Globe, GitCompare, SlidersHorizontal, Hotel } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -18,6 +18,7 @@ import hotelPullman from "@/assets/hotel-pullman.jpg";
 import hotelSeen from "@/assets/hotel-seen.jpg";
 import hotelOnomo from "@/assets/hotel-onomo.jpg";
 import { HotelBookingDialog } from "@/components/HotelBookingDialog";
+import { HotelRoomDetailsDialog } from "@/components/HotelRoomDetailsDialog";
 import { HotelSearchForm } from "@/components/HotelSearchForm";
 import { HotelComparisonDialog } from "@/components/HotelComparisonDialog";
 import { Pagination } from "@/components/Pagination";
@@ -26,6 +27,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerHotels from "@/assets/banner-hotels.jpg";
+import { HotelCardSkeleton } from "@/components/ui/search-result-skeletons";
 
 const Hotels = () => {
   const { t } = useTranslation();
@@ -34,6 +36,7 @@ const Hotels = () => {
   const [priceRange, setPriceRange] = useState([0, 500000]);
   const [selectedHotel, setSelectedHotel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [roomDetailsOpen, setRoomDetailsOpen] = useState(false);
   const [apiHotels, setApiHotels] = useState<any[]>([]);
   
   // Filter states
@@ -185,7 +188,9 @@ const Hotels = () => {
           description: hotel.description || '',
           freeCancellation: hotel.freeCancellation || false,
           breakfast: hotel.breakfast || false,
-          source: sourceName
+          source: sourceName,
+          offerSignature: hotel.offer_signature,
+          offerExpiresAt: hotel.offer_expires_at,
         };
       };
 
@@ -381,15 +386,15 @@ const Hotels = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage 
           src={bannerHotels}
-          alt="Hôtels & Hébergements" 
+          alt={t('pages.hotels.title')}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
 
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Hôtels & Hébergements</h1>
-            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">Des hébergements de qualité partout dans le monde</p>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">{t('pages.hotels.title')}</h1>
+            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">{t('pages.hotels.subtitle')}</p>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <HotelSearchForm />
@@ -403,36 +408,36 @@ const Hotels = () => {
           {/* Filtres Desktop */}
           <aside className="hidden lg:block lg:col-span-1 space-y-6">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Filtres</h2>
+              <h2 className="text-xl font-semibold mb-4">{t('pages.hotels.filters.title')}</h2>
               
               <div className="space-y-6">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Destination</label>
-                  <Input 
-                    placeholder="Rechercher une ville..." 
+                  <label className="text-sm font-medium mb-2 block">{t('pages.hotels.filters.destination')}</label>
+                  <Input
+                    placeholder={t('pages.hotels.destinationPlaceholder')}
                     value={filterDestination}
                     onChange={(e) => setFilterDestination(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Étoiles</label>
+                  <label className="text-sm font-medium mb-2 block">{t('pages.hotels.filters.stars')}</label>
                   <Select value={filterStars} onValueChange={setFilterStars}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Toutes" />
+                      <SelectValue placeholder={t('pages.hotels.filters.allStars')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Toutes</SelectItem>
-                      <SelectItem value="5">5 étoiles</SelectItem>
-                      <SelectItem value="4">4 étoiles</SelectItem>
-                      <SelectItem value="3">3 étoiles</SelectItem>
+                      <SelectItem value="all">{t('pages.hotels.filters.allStars')}</SelectItem>
+                      <SelectItem value="5">5 {t('pages.hotels.filters.stars').toLowerCase()}</SelectItem>
+                      <SelectItem value="4">4 {t('pages.hotels.filters.stars').toLowerCase()}</SelectItem>
+                      <SelectItem value="3">3 {t('pages.hotels.filters.stars').toLowerCase()}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Prix par nuit: {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()} EUR
+                    {t('pages.hotels.filters.price')}: {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()} EUR
                   </label>
                   <Slider
                     min={0}
@@ -446,7 +451,7 @@ const Hotels = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Équipements ({selectedAmenities.length > 0 ? selectedAmenities.length : 'Tous'})
+                    {t('pages.hotels.filters.amenities')} ({selectedAmenities.length > 0 ? selectedAmenities.length : t('pages.hotels.filters.allAmenities')})
                   </label>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {availableAmenities.map((amenity) => (
@@ -498,36 +503,36 @@ const Hotels = () => {
                 </SheetTrigger>
                 <SheetContent side="left" className="w-full sm:w-[400px] overflow-y-auto">
                   <SheetHeader>
-                    <SheetTitle>Filtres</SheetTitle>
+                    <SheetTitle>{t('pages.hotels.filters.title')}</SheetTitle>
                   </SheetHeader>
                   <div className="space-y-6 mt-6">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Destination</label>
-                      <Input 
-                        placeholder="Rechercher une ville..." 
+                      <label className="text-sm font-medium mb-2 block">{t('pages.hotels.filters.destination')}</label>
+                      <Input
+                        placeholder={t('pages.hotels.destinationPlaceholder')}
                         value={filterDestination}
                         onChange={(e) => setFilterDestination(e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Étoiles</label>
+                      <label className="text-sm font-medium mb-2 block">{t('pages.hotels.filters.stars')}</label>
                       <Select value={filterStars} onValueChange={setFilterStars}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Toutes" />
+                          <SelectValue placeholder={t('pages.hotels.filters.allStars')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Toutes</SelectItem>
-                          <SelectItem value="5">5 étoiles</SelectItem>
-                          <SelectItem value="4">4 étoiles</SelectItem>
-                          <SelectItem value="3">3 étoiles</SelectItem>
+                          <SelectItem value="all">{t('pages.hotels.filters.allStars')}</SelectItem>
+                          <SelectItem value="5">5 {t('pages.hotels.filters.stars').toLowerCase()}</SelectItem>
+                          <SelectItem value="4">4 {t('pages.hotels.filters.stars').toLowerCase()}</SelectItem>
+                          <SelectItem value="3">3 {t('pages.hotels.filters.stars').toLowerCase()}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium mb-2 block">
-                        Prix par nuit: {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()} EUR
+                        {t('pages.hotels.filters.price')}: {priceRange[0].toLocaleString()} - {priceRange[1].toLocaleString()} EUR
                       </label>
                       <Slider
                         min={0}
@@ -540,7 +545,7 @@ const Hotels = () => {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Équipements</label>
+                      <label className="text-sm font-medium mb-2 block">{t('pages.hotels.filters.amenities')}</label>
                       <div className="space-y-2">
                         {availableAmenities.map(amenity => (
                           <div key={amenity} className="flex items-center space-x-2">
@@ -567,21 +572,25 @@ const Hotels = () => {
               </Sheet>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Trier" />
+                  <SelectValue placeholder={t('pages.hotels.filters.sortBy')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="popular">Plus populaires</SelectItem>
-                  <SelectItem value="price-asc">Prix croissant</SelectItem>
-                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                  <SelectItem value="rating">Mieux notés</SelectItem>
+                  <SelectItem value="popular">{t('cars.sortBy.popular')}</SelectItem>
+                  <SelectItem value="price-asc">{t('pages.hotels.filters.priceLow')}</SelectItem>
+                  <SelectItem value="price-desc">{t('pages.hotels.filters.priceHigh')}</SelectItem>
+                  <SelectItem value="rating">{t('pages.hotels.filters.rating')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             {loading && (
-              <div className="flex justify-center items-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <span className="ml-3 text-lg">Recherche en cours...</span>
+              <div className="space-y-6">
+                <p className="text-center text-lg text-muted-foreground">{t('search.searching')}</p>
+                <div className="grid gap-6">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <HotelCardSkeleton key={i} />
+                  ))}
+                </div>
               </div>
             )}
             
@@ -590,10 +599,10 @@ const Hotels = () => {
               <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
                 <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
                   <Hotel className="w-5 h-5" />
-                  <span className="font-medium">Suggestions d'hébergements à Abidjan</span>
+                  <span className="font-medium">{t('pages.hotels.suggestionsTitle')}</span>
                 </div>
                 <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                  Utilisez le formulaire de recherche ci-dessus pour voir les prix réels et la disponibilité en temps réel.
+                  {t('pages.hotels.suggestionsHint')}
                 </p>
               </div>
             )}
@@ -602,12 +611,12 @@ const Hotels = () => {
               <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
                 <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                   <Globe className="w-5 h-5" />
-                  <span className="font-medium">{hasSearched ? 'Données réelles en temps réel' : 'Hôtels réels du monde entier'}</span>
+                  <span className="font-medium">{hasSearched ? t('pages.hotels.realTimeData') : t('pages.hotels.realHotelsWorldwide')}</span>
                 </div>
                 <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                  {hasSearched 
-                    ? `Prix et disponibilité actualisés depuis ${new Set(apiHotels.map((h: any) => h.source)).size} source(s): ${Array.from(new Set(apiHotels.map((h: any) => h.source))).join(', ')}`
-                    : `${apiHotels.length} hôtels chargés depuis plusieurs destinations populaires avec prix et détails réels`
+                  {hasSearched
+                    ? t('pages.hotels.pricesUpdatedFrom', { count: new Set(apiHotels.map((h: any) => h.source)).size, sources: Array.from(new Set(apiHotels.map((h: any) => h.source))).join(', ') })
+                    : t('pages.hotels.hotelsLoadedFrom', { count: apiHotels.length })
                   }
                 </p>
               </div>
@@ -616,25 +625,25 @@ const Hotels = () => {
             {/* Desktop Header */}
             <div className="hidden lg:flex justify-between items-center">
               <p className="text-muted-foreground">
-                {filteredAndSortedHotels.length} hôtel{filteredAndSortedHotels.length > 1 ? 's' : ''} trouvé{filteredAndSortedHotels.length > 1 ? 's' : ''}
+                {t('pages.hotels.results.foundCount', { count: filteredAndSortedHotels.length })}
               </p>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="popular">Plus populaires</SelectItem>
-                  <SelectItem value="price-asc">Prix croissant</SelectItem>
-                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                  <SelectItem value="rating">Mieux notés</SelectItem>
+                  <SelectItem value="popular">{t('cars.sortBy.popular')}</SelectItem>
+                  <SelectItem value="price-asc">{t('pages.hotels.filters.priceLow')}</SelectItem>
+                  <SelectItem value="price-desc">{t('pages.hotels.filters.priceHigh')}</SelectItem>
+                  <SelectItem value="rating">{t('pages.hotels.filters.rating')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {filteredAndSortedHotels.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-lg text-muted-foreground">Aucun hôtel ne correspond à vos critères</p>
-                <p className="text-sm text-muted-foreground mt-2">Essayez de modifier vos filtres ou votre recherche</p>
+                <p className="text-lg text-muted-foreground">{t('pages.hotels.results.noResults')}</p>
+                <p className="text-sm text-muted-foreground mt-2">{t('pages.hotels.results.noResultsDesc')}</p>
               </div>
             ) : (
               <>
@@ -649,11 +658,11 @@ const Hotels = () => {
                   
                   // Rating qualifier based on 10 scale
                   const getRatingQualifier = (rating: number) => {
-                    if (rating >= 9) return { text: 'Exceptionnel', color: 'text-emerald-600 dark:text-emerald-400' };
-                    if (rating >= 8) return { text: 'Excellent', color: 'text-green-600 dark:text-green-400' };
-                    if (rating >= 7) return { text: 'Très bien', color: 'text-blue-600 dark:text-blue-400' };
-                    if (rating >= 6) return { text: 'Bien', color: 'text-sky-600 dark:text-sky-400' };
-                    return { text: 'Correct', color: 'text-gray-600 dark:text-gray-400' };
+                    if (rating >= 9) return { text: t('pages.hotels.qualifiers.exceptional'), color: 'text-emerald-600 dark:text-emerald-400' };
+                    if (rating >= 8) return { text: t('pages.hotels.qualifiers.excellent'), color: 'text-green-600 dark:text-green-400' };
+                    if (rating >= 7) return { text: t('pages.hotels.qualifiers.veryGood'), color: 'text-blue-600 dark:text-blue-400' };
+                    if (rating >= 6) return { text: t('pages.hotels.qualifiers.good'), color: 'text-sky-600 dark:text-sky-400' };
+                    return { text: t('pages.hotels.qualifiers.fair'), color: 'text-gray-600 dark:text-gray-400' };
                   };
                   const qualifier = getRatingQualifier(ratingOn10);
                   
@@ -677,22 +686,22 @@ const Hotels = () => {
                         {ratingOn10 >= 9 && (
                           <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-0">
                             <Star className="w-3 h-3 mr-1 fill-white" />
-                            Top noté
+                            {t('pages.hotels.badges.topRated')}
                           </Badge>
                         )}
                         {hotel.reviews > 200 && (
                           <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-0">
-                            Populaire
+                            {t('pages.hotels.badges.popular')}
                           </Badge>
                         )}
                         {(hotel as any).freeCancellation && (
                           <Badge className="bg-green-500 hover:bg-green-600 text-white border-0">
-                            Annulation gratuite
+                            {t('pages.hotels.badges.freeCancellation')}
                           </Badge>
                         )}
                         {(hotel as any).breakfast && (
                           <Badge className="bg-orange-500 hover:bg-orange-600 text-white border-0">
-                            Petit-déj inclus
+                            {t('pages.hotels.badges.breakfastIncluded')}
                           </Badge>
                         )}
                         {(hotel as any).source && (
@@ -740,7 +749,7 @@ const Hotels = () => {
                               {qualifier.text}
                             </span>
                             <span className="text-sm text-muted-foreground">
-                              ({hotel.reviews.toLocaleString()} avis)
+                              ({hotel.reviews.toLocaleString()} {t('pages.hotels.results.reviews')})
                             </span>
                           </div>
                         </div>
@@ -761,32 +770,39 @@ const Hotels = () => {
                         ))}
                         {hotel.amenities.length > 6 && (
                           <Badge variant="outline" className="px-3 py-1 text-xs">
-                            +{hotel.amenities.length - 6} autres
+                            +{hotel.amenities.length - 6} {t('pages.hotels.badges.othersAmenities')}
                           </Badge>
                         )}
                       </div>
 
                       <div className="flex justify-between items-end mt-auto pt-4 border-t">
                         <div>
-                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">À partir de</p>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t('pages.hotels.startingFrom')}</p>
                           <div className="flex items-baseline gap-2">
                             <p className="text-3xl font-bold text-primary">
                               {hotel.price.toLocaleString()}
                             </p>
                             <span className="text-lg font-semibold text-muted-foreground">{(hotel as any).currency || 'EUR'}</span>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">par nuit • Taxes incluses</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t('pages.hotels.perNightTaxesIncluded')}</p>
                         </div>
                         <Button size="lg" className="font-semibold" onClick={() => {
                           setSelectedHotel({
                             id: hotel.id.toString(),
                             name: hotel.name,
                             location: hotel.location,
-                            price: hotel.price
+                            price: hotel.price,
+                            image: hotel.image,
+                            rating: hotel.rating,
+                            reviews: hotel.reviews,
+                            amenities: hotel.amenities,
+                            source: hotel.source,
+                            offerSignature: (hotel as any).offerSignature,
+                            offerExpiresAt: (hotel as any).offerExpiresAt,
                           });
-                          setDialogOpen(true);
+                          setRoomDetailsOpen(true);
                         }}>
-                          Voir les chambres
+                          {t('pages.hotels.viewRooms')}
                         </Button>
                       </div>
                     </CardContent>
@@ -809,11 +825,22 @@ const Hotels = () => {
       </main>
 
       {selectedHotel && (
-        <HotelBookingDialog 
-          open={dialogOpen} 
-          onOpenChange={setDialogOpen}
-          hotel={selectedHotel}
-        />
+        <>
+          <HotelRoomDetailsDialog
+            open={roomDetailsOpen}
+            onOpenChange={setRoomDetailsOpen}
+            hotel={selectedHotel}
+            onBookNow={() => {
+              setRoomDetailsOpen(false);
+              setDialogOpen(true);
+            }}
+          />
+          <HotelBookingDialog 
+            open={dialogOpen} 
+            onOpenChange={setDialogOpen}
+            hotel={selectedHotel}
+          />
+        </>
       )}
 
       <HotelComparisonDialog
@@ -826,7 +853,9 @@ const Hotels = () => {
             id: hotel.id.toString(),
             name: hotel.name,
             location: hotel.location,
-            price: hotel.price
+            price: hotel.price,
+            offerSignature: (hotel as any).offerSignature,
+            offerExpiresAt: (hotel as any).offerExpiresAt,
           });
           setDialogOpen(true);
         }}
@@ -834,7 +863,7 @@ const Hotels = () => {
 
       {/* Floating comparison button */}
       {selectedHotels.length > 0 && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-6 left-6 z-50">
           <Button
             size="lg"
             className="shadow-lg hover:shadow-xl transition-shadow"

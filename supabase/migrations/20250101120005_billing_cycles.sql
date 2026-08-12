@@ -86,32 +86,29 @@ ADD COLUMN IF NOT EXISTS cancel_at_period_end BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS payment_method_id UUID REFERENCES payment_methods(id);
 
 -- Insert pricing data for existing plans
+-- NOTE (correctif) : subscription_pricing.plan_id est une FK vers subscription_plans(plan_id).
+-- Les identifiants utilisés ici doivent correspondre à ceux réellement créés par
+-- 20240420_create_subscription_plans.sql (majestic_access/majestic_prive/majestic_black),
+-- pas à ceux de majestic_subscriptions.plan (access/access_prive/access_black) qui est une
+-- table différente. 'visa'/'billets'/'events' n'existent pas comme plans dans ce schéma
+-- (ils appartiennent à un schéma "corporate" distinct créé bien plus tard avec un modèle
+-- de prix différent) : les insérer ici violerait la contrainte de clé étrangère.
 INSERT INTO subscription_pricing (plan_id, billing_cycle, price, currency, discount_percentage, trial_days) VALUES
 -- Majestic Access pricing
-('access', 'monthly', 499.00, 'EUR', 0.00, 7),
-('access', 'yearly', 4990.00, 'EUR', 17.00, 14), -- 17% discount (2 months free)
+('majestic_access', 'monthly', 499.00, 'EUR', 0.00, 7),
+('majestic_access', 'yearly', 4990.00, 'EUR', 17.00, 14), -- 17% discount (2 months free)
 
--- Majestic Privé pricing  
-('access_prive', 'monthly', 999.00, 'EUR', 0.00, 14),
-('access_prive', 'yearly', 9990.00, 'EUR', 17.00, 30), -- 17% discount (2 months free)
+-- Majestic Privé pricing
+('majestic_prive', 'monthly', 999.00, 'EUR', 0.00, 14),
+('majestic_prive', 'yearly', 9990.00, 'EUR', 17.00, 30), -- 17% discount (2 months free)
 
 -- Majestic Black pricing
-('access_black', 'monthly', 1999.00, 'EUR', 0.00, 30),
-('access_black', 'yearly', 19990.00, 'EUR', 17.00, 60), -- 17% discount (2 months free)
-
--- Standard plans pricing
-('visa', 'monthly', 99.00, 'EUR', 0.00, 0),
-('visa', 'yearly', 990.00, 'EUR', 17.00, 0),
-
-('billets', 'monthly', 79.00, 'EUR', 0.00, 0),
-('billets', 'yearly', 790.00, 'EUR', 17.00, 0),
-
-('events', 'monthly', 149.00, 'EUR', 0.00, 0),
-('events', 'yearly', 1490.00, 'EUR', 17.00, 0)
+('majestic_black', 'monthly', 1999.00, 'EUR', 0.00, 30),
+('majestic_black', 'yearly', 19990.00, 'EUR', 17.00, 60) -- 17% discount (2 months free)
 ON CONFLICT (plan_id, billing_cycle) DO NOTHING;
 
 -- Update subscription_plans with default pricing data
-UPDATE subscription_plans SET 
+UPDATE subscription_plans SET
     billing_cycles = jsonb_build_object(
         'monthly', jsonb_build_object(
             'price', (SELECT price FROM subscription_pricing sp WHERE sp.plan_id = subscription_plans.plan_id AND sp.billing_cycle = 'monthly'),
@@ -125,20 +122,20 @@ UPDATE subscription_plans SET
             'trial_days', (SELECT trial_days FROM subscription_pricing sp WHERE sp.plan_id = subscription_plans.plan_id AND sp.billing_cycle = 'yearly')
         )
     )
-WHERE plan_id IN ('access', 'access_prive', 'access_black', 'visa', 'billets', 'events');
+WHERE plan_id IN ('majestic_access', 'majestic_prive', 'majestic_black');
 
 -- Create function to calculate next billing date
 CREATE OR REPLACE FUNCTION calculate_next_billing_date(
-    current_date TIMESTAMP WITH TIME ZONE,
+    p_current_date TIMESTAMP WITH TIME ZONE,
     billing_cycle TEXT
 ) RETURNS TIMESTAMP WITH TIME ZONE AS $$
 BEGIN
     IF billing_cycle = 'monthly' THEN
-        RETURN current_date + INTERVAL '1 month';
+        RETURN p_current_date + INTERVAL '1 month';
     ELSIF billing_cycle = 'yearly' THEN
-        RETURN current_date + INTERVAL '1 year';
+        RETURN p_current_date + INTERVAL '1 year';
     ELSE
-        RETURN current_date + INTERVAL '1 month'; -- default to monthly
+        RETURN p_current_date + INTERVAL '1 month'; -- default to monthly
     END IF;
 END;
 $$ LANGUAGE plpgsql;

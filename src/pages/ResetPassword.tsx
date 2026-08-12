@@ -60,7 +60,7 @@ export default function ResetPassword() {
       // Sign out and redirect to login after 3 seconds
       setTimeout(async () => {
         await supabase.auth.signOut();
-        navigate("/login");
+        navigate("/auth");
       }, 3000);
     } catch (error: any) {
       if (error instanceof z.ZodError) {

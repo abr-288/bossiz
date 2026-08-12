@@ -54,13 +54,10 @@ const InstalliOS = () => {
   }, []);
 
   const handleInstall = () => {
-    if (installStatus === 'compatible') {
-      // Installation PWA pour iOS
-      window.open('/install-ios-pwa', '_blank');
-    } else {
-      // Redirection vers l'App Store
-      window.open('https://apps.apple.com/app/bossiz-conciergerie/id123456789', '_blank');
-    }
+    // iOS/Safari ne déclenche jamais beforeinstallprompt : l'installation se
+    // fait uniquement via Partager > Sur l'écran d'accueil. On renvoie donc
+    // vers les instructions détaillées plutôt qu'un App Store inexistant.
+    navigate('/install');
   };
 
   const features = [
@@ -137,7 +134,8 @@ const InstalliOS = () => {
               <Alert className="border-orange-200 bg-orange-50">
                 <AlertCircle className="h-4 w-4 text-orange-600" />
                 <AlertDescription className="text-orange-800">
-                  Utilisez Safari pour une installation optimale ou visitez l'App Store.
+                  Ouvrez ce lien dans Safari sur votre iPhone ou iPad pour installer l'application
+                  (Chrome et les autres navigateurs iOS ne permettent pas l'installation).
                 </AlertDescription>
               </Alert>
             )}
@@ -179,7 +177,7 @@ const InstalliOS = () => {
                   size="lg"
                 >
                   <Download className="w-5 h-5 mr-2" />
-                  {installStatus === 'compatible' ? 'Installer Maintenant' : 'Visiter App Store'}
+                  Voir les instructions d'installation
                 </Button>
               </CardContent>
             </Card>
@@ -233,7 +231,7 @@ const InstalliOS = () => {
                   </h4>
                   <ol className="space-y-2 text-sm text-gray-600">
                     <li>1. Ouvrez Safari sur votre iPhone/iPad</li>
-                    <li>2. Allez sur bossiz.netlify.app</li>
+                    <li>2. Allez sur app.bossiz.com</li>
                     <li>3. Cliquez sur "Partager" (icône carré avec flèche)</li>
                     <li>4. Faites défiler et cliquez "Sur l'écran d'accueil"</li>
                     <li>5. Confirmez avec "Ajouter"</li>
@@ -242,16 +240,14 @@ const InstalliOS = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Badge variant="secondary">2</Badge>
-                    Alternative App Store
+                    <Badge variant="secondary">?</Badge>
+                    Ça ne marche pas ?
                   </h4>
-                  <ol className="space-y-2 text-sm text-gray-600">
-                    <li>1. Ouvrez l'App Store</li>
-                    <li>2. Recherchez "Bossiz Conciergerie"</li>
-                    <li>3. Cliquez sur "Obtenir"</li>
-                    <li>4. Confirmez avec Face ID/Touch ID</li>
-                    <li>5. Attendez la fin de l'installation</li>
-                  </ol>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li>• Le bouton "Sur l'écran d'accueil" n'apparaît pas : vérifiez que vous êtes bien dans Safari, pas dans Chrome ou l'appli d'une autre appli (WhatsApp, etc.)</li>
+                    <li>• L'icône est absente après l'ajout : elle peut se trouver sur une page d'accueil suivante, faites glisser vers la gauche</li>
+                    <li>• Besoin d'aide : contactez le support ci-dessous</li>
+                  </ul>
                 </div>
               </div>
             </CardContent>
@@ -268,11 +264,11 @@ const InstalliOS = () => {
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center p-4 rounded-lg bg-gray-50">
                   <h4 className="font-semibold text-gray-900 mb-2">Système</h4>
-                  <p className="text-sm text-gray-600">iOS 13.0 ou supérieur</p>
+                  <p className="text-sm text-gray-600">iOS 12 ou supérieur, navigateur Safari</p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-gray-50">
                   <h4 className="font-semibold text-gray-900 mb-2">Espace</h4>
-                  <p className="text-sm text-gray-600">100 MB disponibles</p>
+                  <p className="text-sm text-gray-600">Quelques Mo seulement</p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-gray-50">
                   <h4 className="font-semibold text-gray-900 mb-2">Réseau</h4>

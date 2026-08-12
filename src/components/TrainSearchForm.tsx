@@ -103,8 +103,8 @@ export const TrainSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       

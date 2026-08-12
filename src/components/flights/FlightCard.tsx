@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { getCityName, getAirportName } from "@/utils/airportNames";
+import { useTranslation } from "react-i18next";
 
 const formatDuration = (duration: string): string => {
   if (!duration) return '';
@@ -42,6 +43,7 @@ export const FlightCard = ({
   currency,
   onSelect,
 }: FlightCardProps) => {
+  const { t } = useTranslation();
   const formatTime = (isoString: string) => {
     try {
       const date = new Date(isoString);
@@ -122,12 +124,12 @@ export const FlightCard = ({
               {stops === 0 ? (
                 <>
                   <CircleCheck className="h-3.5 w-3.5" />
-                  <span>Vol direct</span>
+                  <span>{t('flightCard.directFlight')}</span>
                 </>
               ) : (
                 <>
                   <Circle className="h-3.5 w-3.5" />
-                  <span>{stops} escale{stops > 1 ? "s" : ""}</span>
+                  <span>{stops} {t('pages.flights.results.stops')}</span>
                 </>
               )}
             </div>
@@ -148,7 +150,7 @@ export const FlightCard = ({
         <div className="flex flex-col items-end gap-2 min-w-[150px]">
           <div className="text-right">
             <div className="text-xs text-green-600 font-medium">
-              Places disponibles
+              {t('flightCard.seatsAvailable')}
             </div>
             <div className="text-2xl lg:text-3xl font-bold text-primary">
               <Price amount={price} fromCurrency={currency} showLoader />
@@ -158,7 +160,7 @@ export const FlightCard = ({
             onClick={onSelect}
             className="w-full bg-secondary hover:bg-secondary/90 text-primary font-semibold"
           >
-            Réserver
+            {t('search.book')}
           </Button>
         </div>
       </div>

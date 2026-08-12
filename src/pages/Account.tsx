@@ -9,10 +9,21 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { User, Mail, Phone, Lock, Bell, CreditCard, Heart, MapPin, Calendar, Eye, EyeOff, Check, X, Loader2, Shield, Save, ShieldCheck } from "lucide-react";
+import { User, Mail, Phone, Lock, Bell, CreditCard, Heart, MapPin, Calendar, Eye, EyeOff, Check, X, Loader2, Shield, Save, ShieldCheck, Trash2, ChevronRight, TrendingDown } from "lucide-react";
 import { TwoFactorAuth } from "@/components/TwoFactorAuth";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { z } from "zod";
 
 // Validation schemas
@@ -54,7 +65,6 @@ const Account = () => {
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
     smsNotifications: false,
-    priceAlerts: true,
     newsletter: true,
   });
   const [passwords, setPasswords] = useState({
@@ -172,6 +182,25 @@ const Account = () => {
     } else {
       toast.success("Mot de passe mis à jour avec succès");
       setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    }
+  };
+
+  const [deletingAccount, setDeletingAccount] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-account', { body: {} });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Échec de la suppression du compte");
+
+      toast.success("Votre compte a été supprimé");
+      await supabase.auth.signOut();
+      navigate('/');
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors de la suppression du compte");
+    } finally {
+      setDeletingAccount(false);
     }
   };
 
@@ -591,7 +620,7 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
                           >
-                            <Button 
+                            <Button
                               onClick={handleChangePassword}
                               className="w-full"
                               disabled={saving}
@@ -604,6 +633,49 @@ const Account = () => {
                               Changer le mot de passe
                             </Button>
                           </motion.div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Danger Zone - RGPD account deletion */}
+                      <Card className="backdrop-blur-sm bg-card/80 border-destructive/30 shadow-xl">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2 text-destructive">
+                            <Trash2 className="h-5 w-5" />
+                            Supprimer mon compte
+                          </CardTitle>
+                          <CardDescription>
+                            Supprime définitivement vos données personnelles (nom, email, téléphone, documents de voyage).
+                            Vos réservations passées sont conservées de façon anonymisée pour nos obligations comptables et légales.
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" disabled={deletingAccount}>
+                                {deletingAccount ? (
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                )}
+                                Supprimer mon compte
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Cette action est irréversible. Votre profil et vos données personnelles seront définitivement
+                                  anonymisés et vous serez déconnecté. Cette action ne peut pas être annulée.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                  Confirmer la suppression
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -638,11 +710,6 @@ const Account = () => {
                               description: "Recevoir les alertes importantes par SMS",
                             },
                             {
-                              key: "priceAlerts",
-                              label: "Alertes de prix",
-                              description: "Être notifié des baisses de prix",
-                            },
-                            {
                               key: "newsletter",
                               label: "Newsletter",
                               description: "Recevoir les offres spéciales et nouveautés",
@@ -669,6 +736,25 @@ const Account = () => {
                               />
                             </motion.div>
                           ))}
+
+                          <motion.div
+                            className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                            onClick={() => navigate("/price-alerts")}
+                          >
+                            <div className="flex items-center gap-3">
+                              <TrendingDown className="h-5 w-5 text-primary" />
+                              <div className="space-y-1">
+                                <Label className="cursor-pointer">Alertes de prix</Label>
+                                <p className="text-sm text-muted-foreground">
+                                  Créez et gérez vos alertes de baisse de prix par destination
+                                </p>
+                              </div>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          </motion.div>
 
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -717,13 +803,10 @@ const Account = () => {
                               <CreditCard className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                             </motion.div>
                             <p className="text-lg font-medium mb-2">Aucun moyen de paiement enregistré</p>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Ajoutez une carte pour des réservations plus rapides
+                            <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+                              Pour votre sécurité, nous ne stockons aucune carte bancaire. Vous la
+                              renseignez directement, de façon sécurisée, au moment du paiement.
                             </p>
-                            <Button>
-                              <CreditCard className="mr-2 h-4 w-4" />
-                              Ajouter une carte
-                            </Button>
                           </motion.div>
                         </CardContent>
                       </Card>
@@ -740,25 +823,27 @@ const Account = () => {
               transition={{ delay: 0.4 }}
             >
               {[
-                { icon: Calendar, title: "Mes Réservations", subtitle: "Voir l'historique", href: "/booking-history" },
-                { icon: Heart, title: "Mes Favoris", subtitle: "0 destinations", href: "#" },
-                { icon: MapPin, title: "Mes Destinations", subtitle: "0 voyages", href: "#" },
+                { icon: Calendar, title: "Mes Réservations", subtitle: "Voir l'historique", href: "/booking-history", comingSoon: false },
+                { icon: Heart, title: "Mes Favoris", subtitle: "Bientôt disponible", href: "#", comingSoon: true },
+                { icon: MapPin, title: "Mes Destinations", subtitle: "Bientôt disponible", href: "#", comingSoon: true },
               ].map((item, index) => (
                 <motion.div
                   key={item.title}
-                  whileHover={{ scale: 1.02, y: -5 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={item.comingSoon ? undefined : { scale: 1.02, y: -5 }}
+                  whileTap={item.comingSoon ? undefined : { scale: 0.98 }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                 >
-                  <Card 
-                    className="cursor-pointer hover:shadow-xl transition-all backdrop-blur-sm bg-card/80 border-primary/10"
-                    onClick={() => item.href !== "#" && navigate(item.href)}
+                  <Card
+                    className={`transition-all backdrop-blur-sm bg-card/80 border-primary/10 ${
+                      item.comingSoon ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:shadow-xl"
+                    }`}
+                    onClick={() => !item.comingSoon && navigate(item.href)}
                   >
                     <CardContent className="pt-6 text-center">
                       <motion.div
-                        whileHover={{ rotate: [0, -10, 10, 0] }}
+                        whileHover={item.comingSoon ? undefined : { rotate: [0, -10, 10, 0] }}
                         transition={{ duration: 0.5 }}
                       >
                         <item.icon className="h-8 w-8 mx-auto mb-2 text-primary" />

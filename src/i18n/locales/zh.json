@@ -18,12 +18,20 @@
     "profile": "个人资料",
     "others": "其他",
     "destinations": "目的地",
-    "stays": "住宿"
+    "stays": "住宿",
+    "help": "帮助中心",
+    "register": "注册",
+    "tours": "旅游团",
+    "chooseLanguage": "选择您的语言",
+    "chooseLanguageDescription": "选择网站显示语言",
+    "searchLanguage": "搜索语言...",
+    "noLanguageFound": "未找到语言"
   },
   "hero": {
     "title": "随时随地旅行，一键预订",
     "subtitle": "为您的航班、酒店、火车等找到最优惠的价格",
-    "search": "搜索"
+    "search": "搜索",
+    "searchPlaceholder": "搜索航班、酒店、目的地..."
   },
   "flights": {
     "from": "从哪里出发？",
@@ -74,16 +82,22 @@
     "category": "类别",
     "allCategories": "所有类别",
     "cityOrAirport": "城市或机场",
+    "departureCityPlaceholder": "出发城市",
+    "arrivalCityPlaceholder": "到达城市",
     "cityRegionCountry": "城市、地区或国家",
     "guests": "旅客",
     "duration": "时长",
     "days": "天",
     "type": "类型",
-    "searching": "搜索中..."
+    "searching": "搜索中...",
+    "chooseDate": "选择日期"
   },
   "features": {
     "title": "为什么选择B-Reserve？",
-    "bestPrices": "最优价格",
+    "bestPrices": {
+      "title": "价格保证最优",
+      "description": "我们保证为您提供市场上最优惠的价格"
+    },
     "bestPricesDesc": "保证最低价格",
     "support": "24/7客服",
     "supportDesc": "随时提供帮助",
@@ -94,10 +108,6 @@
     "secureBooking": {
       "title": "安全预订",
       "description": "100%安全支付，数据保护"
-    },
-    "bestPrices": {
-      "title": "价格保证最优",
-      "description": "我们保证为您提供市场上最优惠的价格"
     },
     "support247": {
       "title": "全天候支持",
@@ -111,7 +121,16 @@
     "book": "预订",
     "perNight": "每晚",
     "reviews": "条评价",
-    "viewAll": "查看所有目的地"
+    "viewAll": "查看所有目的地",
+    "searchPlaceholder": "搜索目的地...",
+    "stats": {
+      "destinations": "目的地",
+      "countries": "国家",
+      "travelers": "旅客",
+      "avgRating": "平均评分"
+    },
+    "newsletter": "获取我们的最新优惠信息",
+    "newsletterSubtitle": "直接在您的邮箱中收取我们的专属优惠。"
   },
   "testimonials": {
     "title": "客户评价",
@@ -159,6 +178,7 @@
     "privacy": "隐私",
     "terms": "条款",
     "rights": "版权所有",
+    "bossizGroup": "Bossiz 集团",
     "newsletter": {
       "title": "新闻通讯",
       "description": "获取我们的最新优惠和资讯",
@@ -216,7 +236,8 @@
       "paid": "已支付",
       "pending": "待支付",
       "failed": "失败",
-      "refunded": "已退款"
+      "refunded": "已退款",
+      "processing": "处理中"
     },
     "actions": {
       "confirm": "确认",
@@ -251,6 +272,131 @@
       "totalPrice": "总金额",
       "paymentStatus": "支付状态",
       "serviceType": "服务类型"
+    },
+    "dialog": {
+      "flight": {
+        "title": "预订此航班",
+        "description": "填写以下信息以完成您的预订",
+        "tripType": "旅行类型",
+        "oneWay": "单程",
+        "roundTrip": "往返",
+        "summary": "预订摘要",
+        "flightDetails": "航班详情",
+        "passengerInfo": "乘客信息",
+        "confirmBooking": "确认预订",
+        "backToForm": "返回"
+      },
+      "hotel": {
+        "title": "预订",
+        "description": "填写以下信息以完成您的预订",
+        "rooms": "房间数",
+        "adults": "成人",
+        "children": "儿童",
+        "specialRequestsPlaceholder": "偏好、过敏、特殊要求..."
+      },
+      "car": {
+        "title": "预订",
+        "description": "填写以下信息以完成您的预订",
+        "pickupInfo": "取车信息",
+        "dropoffInfo": "还车信息",
+        "pickupDate": "取车日期",
+        "pickupTime": "取车时间",
+        "pickupLocation": "取车地点",
+        "dropoffDate": "还车日期",
+        "dropoffTime": "还车时间",
+        "dropoffLocation": "还车地点",
+        "driverLicense": "驾驶执照号码",
+        "locationPlaceholder": "阿比让 - 机场",
+        "specialRequestsPlaceholder": "特殊要求、附加设备..."
+      },
+      "generic": {
+        "title": "预订",
+        "description": "填写以下信息以完成您的预订",
+        "startDate": "开始日期",
+        "endDate": "结束日期",
+        "guests": "人数",
+        "prepareDescription": "只需几个简单步骤即可预订此服务",
+        "startBooking": "开始预订"
+      }
+    },
+    "form": {
+      "passengers": "乘客人数",
+      "customerInfo": "旅客信息",
+      "customerName": "全名",
+      "customerEmail": "电子邮件",
+      "customerPhone": "电话",
+      "passportNumber": "护照号码",
+      "passportIssueDate": "护照签发日期",
+      "passportExpiryDate": "护照到期日期",
+      "notes": "附加说明",
+      "specialRequests": "特殊要求、偏好...",
+      "driverInfo": "驾驶员信息"
+    },
+    "summary": {
+      "flightDetails": "航班详情",
+      "hotelDetails": "酒店详情",
+      "carDetails": "车辆详情",
+      "from": "从",
+      "to": "到",
+      "departure": "出发",
+      "arrival": "到达",
+      "class": "舱位",
+      "airline": "航空公司",
+      "checkIn": "入住",
+      "checkOut": "退房",
+      "nights": "晚",
+      "location": "地点",
+      "category": "类别",
+      "transmission": "变速器",
+      "seats": "座位",
+      "pickupDate": "取车日期",
+      "dropoffDate": "还车日期",
+      "days": "天",
+      "passengerInfo": "乘客信息",
+      "totalPrice": "总价",
+      "modify": "修改",
+      "confirm": "确认预订",
+      "confirming": "确认中...",
+      "downloadTicket": "下载票据",
+      "proceedToPayment": "前往付款",
+      "continueToPayment": "继续付款",
+      "route": "路线",
+      "type": "类型",
+      "name": "姓名",
+      "email": "电子邮件",
+      "phone": "电话"
+    },
+    "validation": {
+      "checkInfo": "请检查您的信息",
+      "mustBeLoggedIn": "您必须登录才能预订",
+      "selectDates": "请选择日期",
+      "selectCheckInOut": "请选择入住和退房日期",
+      "checkOutAfterCheckIn": "退房日期必须在入住日期之后",
+      "dropoffAfterPickup": "还车日期必须在取车日期之后",
+      "confirmFirst": "请先确认预订",
+      "offerExpired": "该报价已失效，请重新搜索。"
+    },
+    "success": {
+      "created": "预订已创建",
+      "description": "您的预订已成功创建",
+      "emailSent": "确认邮件已发送",
+      "ticketGenerated": "票据生成成功",
+      "ticketDownloaded": "票据下载成功"
+    },
+    "loginDialog": {
+      "title": "需要登录",
+      "description": "您必须登录才能继续支付您的预订。",
+      "benefitsIntro": "登录后，您将可以："
+    },
+    "error": {
+      "createService": "无法创建服务",
+      "createBooking": "无法创建预订",
+      "sendEmail": "发送确认邮件时出错",
+      "generateTicket": "生成票据时出错",
+      "downloadTicket": "下载票据时出错"
+    },
+    "loading": {
+      "generatingTicket": "正在生成票据..."
     }
   },
   "payment": {
@@ -274,7 +420,11 @@
     "email": "邮箱",
     "phone": "电话",
     "phoneNote": "此号码将用于移动支付",
+    "mobileRequestNote": "付款请求将发送至以下号码：",
+    "fullNamePlaceholder": "您的全名",
+    "emailPlaceholder": "your@email.com",
     "address": "地址",
+    "addressPlaceholder": "您的地址",
     "city": "城市",
     "payButton": "支付",
     "processing": "处理中...",
@@ -286,7 +436,11 @@
       "alreadyPaid": "支付已完成",
       "bookingNotFound": "找不到预订或访问被拒绝",
       "bookingCancelled": "此预订已被取消，无法支付",
-      "paymentFailed": "支付处理错误"
+      "paymentFailed": "支付处理错误",
+      "timeoutTitle": "超时",
+      "timeoutDescription": "支付处理时间过长，请重试。",
+      "paymentErrorTitle": "支付错误",
+      "loadPageDescription": "无法加载支付页面"
     },
     "success": {
       "title": "支付成功",
@@ -393,7 +547,17 @@
     "updatePassword": "新密码",
     "updatePasswordDesc": "请在下方输入新密码",
     "confirmNewPassword": "确认新密码",
-    "updateBtn": "更新"
+    "updateBtn": "更新",
+    "emailPlaceholder": "your@email.com",
+    "namePlaceholder": "张三",
+    "passwordStrengthLabel": "密码强度",
+    "facebookComingSoon": "Facebook登录即将推出",
+    "appleComingSoon": "Apple登录即将推出",
+    "backToHome": "返回首页",
+    "mfaVerificationSuccess": "验证成功",
+    "resetPasswordBtn": "重置密码",
+    "termsRequired": "您必须接受使用条款和隐私政策",
+    "logout": "退出登录"
   },
   "errors": {
     "generic": "发生错误",
@@ -432,12 +596,26 @@
     "lightMode": "浅色模式",
     "darkMode": "深色模式",
     "systemMode": "跟随系统",
-    "toggleTheme": "切换主题"
+    "toggleTheme": "切换主题",
+    "book": "预订",
+    "from": "起价",
+    "tryAgain": "发生错误，请重试。",
+    "viewDetails": "查看更多",
+    "learnMore": "了解更多",
+    "menu": "菜单"
   },
   "pages": {
     "index": {
       "aiTitle": "用AI规划您的旅行",
-      "aiSubtitle": "获取您下一个目的地的个性化推荐"
+      "aiSubtitle": "获取您下一个目的地的个性化推荐",
+      "seasonalTitle": "季节性推荐",
+      "seasonalSubtitle": "发现最佳旅行时间",
+      "bossiz": {
+        "badge": "高级服务",
+        "servicesLabel": "服务：",
+        "visit": "访问",
+        "viewPortal": "查看完整门户"
+      }
     },
     "flights": {
       "title": "搜索航班",
@@ -466,6 +644,17 @@
         "duration": "时长",
         "stops": "次中转",
         "direct": "直飞"
+      },
+      "comparePrices": "比较价格",
+      "popularFromAbidjan": "从阿比让出发的热门目的地：",
+      "loadingPopular": "正在加载热门航班...",
+      "featured": {
+        "title": "精选航班：阿比让 → 巴黎",
+        "subtitle": "发现这个热门目的地的最佳优惠。使用上方的搜索表单查找其他航线。",
+        "trending": "本周热门"
+      },
+      "sort": {
+        "best": "最佳"
       }
     },
     "hotels": {
@@ -486,7 +675,7 @@
         "priceLow": "价格升序",
         "priceHigh": "价格降序",
         "rating": "评分",
-        "stars": "星级"
+        "allAmenities": "全部"
       },
       "results": {
         "showing": "显示",
@@ -495,16 +684,65 @@
         "hotels": "家酒店",
         "night": "每晚",
         "reviews": "条评价",
-        "noResults": "无结果",
-        "noResultsDesc": "修改搜索条件",
+        "noResults": "没有符合条件的酒店",
+        "noResultsDesc": "请尝试更改筛选条件或搜索内容",
         "compare": "比较",
         "comparing": "比较中",
-        "viewComparison": "查看比较"
-      }
+        "viewComparison": "查看比较",
+        "foundCount": "找到{{count}}家酒店"
+      },
+      "destinationPlaceholder": "搜索城市...",
+      "suggestionsTitle": "阿比让住宿推荐",
+      "suggestionsHint": "使用上方的搜索表单查看实时价格和空房情况。",
+      "realTimeData": "实时数据",
+      "realHotelsWorldwide": "来自世界各地的真实酒店",
+      "pricesUpdatedFrom": "价格和空房情况来自{{count}}个来源更新：{{sources}}",
+      "hotelsLoadedFrom": "已从多个热门目的地加载{{count}}家酒店，含真实价格和详情",
+      "qualifiers": {
+        "exceptional": "卓越",
+        "excellent": "优秀",
+        "veryGood": "很好",
+        "good": "好",
+        "fair": "一般"
+      },
+      "badges": {
+        "topRated": "评分最高",
+        "popular": "热门",
+        "freeCancellation": "免费取消",
+        "breakfastIncluded": "含早餐",
+        "othersAmenities": "更多"
+      },
+      "startingFrom": "起价",
+      "perNightTaxesIncluded": "每晚 • 含税",
+      "viewRooms": "查看房间"
     },
     "support": {
       "title": "帮助中心",
       "subtitle": "我们全天候为您服务",
+      "categories": {
+        "sectionTitle": "我们能为您做些什么？",
+        "sectionSubtitle": "选择一个类别以快速找到答案",
+        "allCategories": "所有类别",
+        "booking": { "title": "预订与修改", "description": "查看、修改或管理您的预订" },
+        "payment": { "title": "支付与账单", "description": "支付方式、发票和交易" },
+        "refunds": { "title": "退款与取消", "description": "申请退款或取消行程" },
+        "baggage": { "title": "行李", "description": "免费额度、额外行李及违禁物品" },
+        "children": { "title": "携带儿童出行", "description": "价格、条件及未成年人出行须知" },
+        "documents": { "title": "旅行证件", "description": "护照、签证及所需身份证件" },
+        "delays": { "title": "航班延误与取消", "description": "航班中断时该怎么办" }
+      },
+      "manageBooking": {
+        "title": "管理我的预订",
+        "description": "轻松查看、修改或取消您的预订",
+        "cta": "前往我的预订"
+      },
+      "search": {
+        "placeholder": "搜索帮助内容（如：行李、退款……）",
+        "noResults": "未找到与\"{{query}}\"相关的结果。请尝试其他关键词或联系我们。",
+        "resultsCount": "找到 {{count}} 条结果"
+      },
+      "stillNeedHelp": "没有找到您需要的答案？",
+      "stillNeedHelpDesc": "我们的团队随时为您提供帮助",
       "contact": {
         "phone": "电话",
         "phoneDesc": "全天候服务",
@@ -538,114 +776,164 @@
         "q6": "航班延误或取消怎么办？",
         "a6": "如遇延误或取消，请立即联系我们全天候客服。我们将协助您寻找替代方案或处理退款。"
       },
+      "categoryPage": {
+        "breadcrumbHome": "帮助中心",
+        "backToSupport": "返回帮助中心",
+        "otherCategoriesTitle": "其他类别",
+        "searchPlaceholder": "在此类别中搜索..."
+      },
+      "faqByCategory": {
+        "booking": {
+          "q1": "如何修改我的预订？",
+          "a1": "您可以登录账户并访问“我的预订”来修改预订。点击相关预订并选择“修改”。请注意，根据票价条件可能会收取费用。",
+          "q2": "如何查看我的预订状态？",
+          "a2": "在您的账户中心进入“我的预订”：每个预订都会显示其状态（已确认、待处理、已取消）以及所有行程详情。",
+          "q3": "我可以在线取消预订吗？",
+          "a3": "可以，直接在“我的预订”中选择“取消”即可。取消条件及可能的费用取决于您预订时选择的票价。",
+          "q4": "预订是否需要注册账户？",
+          "a4": "预订并非必须注册账户，但注册后您可以方便地查找预订记录、接收价格提醒，并加快后续预订流程。"
+        },
+        "payment": {
+          "q1": "接受哪些支付方式？",
+          "a1": "我们接受信用卡（Visa、Mastercard）、移动支付（Orange Money、MTN Money、Moov Money）和银行转账。我们的门店也接受现金支付。",
+          "q2": "支付出错该怎么办？",
+          "a2": "如果支付失败，请检查您的支付方式余额和信息后重试。如问题仍未解决，请携带预订参考号联系我们的客服。",
+          "q3": "如何获取我的发票？",
+          "a3": "支付确认后，您的发票会显示在“我的预订”中，同时也会通过邮件发送给您。您可以随时下载PDF格式的发票。",
+          "q4": "我的支付信息安全吗？",
+          "a4": "是的，所有支付均通过CinetPay进行安全加密处理。我们绝不会在服务器上存储您的银行卡信息。"
+        },
+        "refunds": {
+          "q1": "如何获得退款？",
+          "a1": "退款申请必须在取消后24小时内通过您的账户提交。根据您的银行，处理时间为7至14个工作日。",
+          "q2": "取消费用是多少？",
+          "a2": "取消费用因您预订的票价类型（可退款、半灵活或不可退款）以及距出发日期的时间而异。详情会在您确认预订前显示。",
+          "q3": "退款需要多长时间？",
+          "a3": "退款申请确认后将在7至14个工作日内处理完成，具体到账时间取决于您的银行或移动支付运营商。",
+          "q4": "我可以只取消部分预订吗？",
+          "a4": "可以，对于多项预订（多名乘客或组合服务），您可以在“我的预订”中部分取消，或联系我们的客服协助处理。"
+        },
+        "baggage": {
+          "q1": "包含多少免费行李额度？",
+          "a1": "免费行李额度取决于您选择的票价和承运商，具体信息会在预订时及航班确认单中详细说明。",
+          "q2": "如何添加额外行李？",
+          "a2": "您可以在出发前通过“我的预订”添加额外行李，特殊情况也可直接联系我们的客服处理。",
+          "q3": "行李丢失或损坏该怎么办？",
+          "a3": "请在离开行李提取区之前，立即在机场行李柜台报告问题，然后携带预订参考号联系我们的客服进行跟进。",
+          "q4": "托运或随身行李中禁止携带哪些物品？",
+          "a4": "随身行李中禁止携带利器、易燃液体和散装锂电池；部分危险物品在托运行李中也被禁止。打包前请查看您所选承运商的具体规定。"
+        },
+        "children": {
+          "q1": "我可以带儿童旅行吗？",
+          "a1": "是的，欢迎儿童。12岁以下儿童享有优惠价格。某些服务为2岁以下儿童提供免费旅行。",
+          "q2": "儿童可以独自旅行吗？",
+          "a2": "根据承运商规定，无人陪伴的未成年人可在特定条件下旅行，需提供家长授权书，部分情况下需支付陪同服务费用。",
+          "q3": "未成年人是否需要特殊证件？",
+          "a3": "独自旅行或仅由一位家长陪同的未成年人，根据目的地要求，可能需要由父母双方或法定监护人签署的离境授权书。",
+          "q4": "是否提供婴儿座椅？",
+          "a4": "部分合作承运商和酒店可根据要求提供婴儿座椅及摇篮服务，请在预订时说明此需求。"
+        },
+        "documents": {
+          "q1": "旅行需要什么证件？",
+          "a1": "国际航班必须持有有效护照。根据目的地，可能需要签证。国内航班只需身份证。查看我们的目的地指南了解更多信息。",
+          "q2": "如何办理目的地签证？",
+          "a2": "签证要求因您的国籍和目的地而异。请咨询相关使馆或领事馆，或联系我们的礼宾服务协助办理。",
+          "q3": "护照是否需要一定的有效期？",
+          "a3": "大多数国家要求护照在预计返程日期后至少还有6个月的有效期。出行前请务必确认目的地的具体要求。",
+          "q4": "国内航班使用身份证是否足够？",
+          "a4": "是的，科特迪瓦境内的国内航班，凭有效的国民身份证即可登机。"
+        },
+        "delays": {
+          "q1": "航班延误或取消怎么办？",
+          "a1": "如遇延误或取消，请立即联系我们全天候客服。我们将协助您寻找替代方案或处理退款。",
+          "q2": "延误是否可以获得赔偿？",
+          "a2": "是否有权获得赔偿取决于承运商、延误时长及原因。我们的客服团队将协助您确认资格并提交申请。",
+          "q3": "如何实时查看航班状态？",
+          "a3": "航班状态可在“我的预订”中查看，行程时间或登机口变更时会自动通知您。",
+          "q4": "因延误错过转机该怎么办？",
+          "a4": "请立即前往机场承运商柜台办理改签至下一班可用航班，并告知我们的客服以便跟进您的情况。"
+        }
+      },
       "hours": {
-        "title": "营业时间",
-        "247": "全天候服务"
-      }
-    }
-  },
-  "booking": {
-    "dialog": {
-      "flight": {
-        "title": "预订此航班",
-        "description": "填写以下信息以完成您的预订",
-        "tripType": "旅行类型",
-        "oneWay": "单程",
-        "roundTrip": "往返",
-        "summary": "预订摘要"
+        "247": "全天候服务",
+        "title": "营业时间"
       },
-      "hotel": {
-        "title": "预订",
-        "description": "填写以下信息以完成您的预订",
-        "rooms": "房间数",
-        "adults": "成人",
-        "children": "儿童"
-      },
-      "car": {
-        "title": "预订",
-        "description": "填写以下信息以完成您的预订",
-        "pickupInfo": "取车信息",
-        "dropoffInfo": "还车信息",
-        "pickupDate": "取车日期",
-        "pickupTime": "取车时间",
-        "pickupLocation": "取车地点",
-        "dropoffDate": "还车日期",
-        "dropoffTime": "还车时间",
-        "dropoffLocation": "还车地点",
-        "driverLicense": "驾驶执照号码"
-      },
-      "generic": {
-        "title": "预订",
-        "description": "填写以下信息以完成您的预订",
-        "startDate": "开始日期",
-        "endDate": "结束日期",
-        "guests": "人数"
+      "callUs": "致电我们",
+      "globalVoiceSupport": "全球语音支持",
+      "writeToUs": "给我们写信",
+      "technicalBillingSupport": "技术与账单支持",
+      "responseWithin24h": "12-24小时内回复",
+      "agentsAvailable": "客服在线",
+      "instantResponse": "即时回复",
+      "startChat": "开始聊天",
+      "namePlaceholder": "您的姓名",
+      "subjectPlaceholder": "您的请求主题",
+      "referencePlaceholder": "例如：BK123456",
+      "messagePlaceholder": "描述您的问题或疑问...",
+      "sendMessage": "发送消息",
+      "phoneSupport": "电话支持",
+      "agencies": "门店",
+      "agenciesHours": "周一至周五8点-18点，周六9点-13点",
+      "onlineChat": "在线聊天",
+      "exclusivePerks": "专属特权",
+      "followNews": "关注最新动态",
+      "subscribe": "订阅",
+      "newsletterDisclaimer": "订阅即表示您同意我们的隐私政策。"
+    },
+    "contact": {
+      "title": "联系我们",
+      "subtitle": "所有联系方式，一站汇总",
+      "formTitle": "给我们留言",
+      "agenciesTitle": "我们的门店",
+      "socialTitle": "关注我们",
+      "helpRedirect": "想快速获得答案？请查看我们的帮助中心，或直接管理您的预订。",
+      "channels": {
+        "phone": { "title": "电话", "description": "全天候客服支持" },
+        "whatsapp": { "title": "WhatsApp", "description": "全周快速回复" },
+        "email": { "title": "邮箱", "description": "24小时内回复" },
+        "chat": { "title": "在线聊天", "description": "即时回复，客服全天在线", "cta": "开始对话" }
       }
     },
-    "form": {
-      "passengers": "乘客人数",
-      "customerInfo": "旅客信息",
-      "customerName": "全名",
-      "customerEmail": "电子邮件",
-      "customerPhone": "电话",
-      "passportNumber": "护照号码",
-      "passportIssueDate": "护照签发日期",
-      "passportExpiryDate": "护照到期日期",
-      "notes": "附加说明",
-      "specialRequests": "特殊要求、偏好...",
-      "driverInfo": "驾驶员信息"
+    "stays": {
+      "types": {
+        "villa": "别墅",
+        "apartment": "公寓",
+        "beach": "海滨",
+        "luxury": "豪华"
+      },
+      "features": {
+        "secureBooking": {
+          "title": "安全预订",
+          "description": "100%安全支付"
+        },
+        "freeCancellation": {
+          "description": "出发前48小时"
+        },
+        "support": {
+          "title": "24/7支持",
+          "description": "随时为您服务"
+        },
+        "quality": {
+          "title": "质量认证",
+          "description": "我们所有的住宿都经过检查"
+        }
+      },
+      "filterBy": "筛选："
     },
-    "summary": {
-      "flightDetails": "航班详情",
-      "hotelDetails": "酒店详情",
-      "carDetails": "车辆详情",
-      "from": "从",
-      "to": "到",
-      "departure": "出发",
-      "arrival": "到达",
-      "class": "舱位",
-      "airline": "航空公司",
-      "checkIn": "入住",
-      "checkOut": "退房",
-      "nights": "晚",
-      "location": "地点",
-      "category": "类别",
-      "transmission": "变速器",
-      "seats": "座位",
-      "pickupDate": "取车日期",
-      "dropoffDate": "还车日期",
-      "days": "天",
-      "passengerInfo": "乘客信息",
-      "totalPrice": "总价",
-      "modify": "修改",
-      "confirm": "确认预订",
-      "confirming": "确认中...",
-      "downloadTicket": "下载票据",
-      "proceedToPayment": "前往付款"
+    "orderSummary": {
+      "downloadPdf": "下载PDF",
+      "title": "订单摘要",
+      "financialSummary": "财务摘要"
     },
-    "validation": {
-      "checkInfo": "请检查您的信息",
-      "mustBeLoggedIn": "您必须登录才能预订",
-      "selectDates": "请选择日期",
-      "selectCheckInOut": "请选择入住和退房日期",
-      "checkOutAfterCheckIn": "退房日期必须在入住日期之后",
-      "dropoffAfterPickup": "还车日期必须在取车日期之后"
+    "flightHotelBookingProcess": {
+      "backToSearch": "返回搜索"
     },
-    "success": {
-      "created": "预订已创建",
-      "description": "您的预订已成功创建",
-      "emailSent": "确认邮件已发送",
-      "ticketGenerated": "票据生成成功"
-    },
-    "error": {
-      "createService": "无法创建服务",
-      "createBooking": "无法创建预订",
-      "sendEmail": "发送确认邮件时出错",
-      "generateTicket": "生成票据时出错",
-      "downloadTicket": "下载票据时出错"
-    },
-    "loading": {
-      "generatingTicket": "正在生成票据..."
+    "flightHotel": {
+      "title": "机票+酒店套餐",
+      "noResults": "使用上方表单搜索机票和酒店",
+      "yourPackage": "您的套餐",
+      "availabilityNote": "可用性将在确认时核实。",
+      "continueBooking": "继续预订"
     }
   },
   "notFound": {
@@ -698,7 +986,12 @@
       "rating": "评分最高"
     },
     "carsFound": "辆车找到",
-    "displayLocal": "显示本地可用车辆"
+    "displayLocal": "显示本地可用车辆",
+    "pickupDate": "取车日期",
+    "dropoffDate": "还车日期",
+    "dropoffLocation": "还车地点",
+    "useFormToSearch": "使用表单搜索车辆",
+    "vehiclesFoundToast": "找到{{count}}辆车"
   },
   "bookingHistory": {
     "title": "我的预订",
@@ -725,7 +1018,8 @@
     "loadingError": "加载预订时出错",
     "ticketGenerating": "正在生成票据...",
     "ticketSuccess": "票据已发送到邮箱！使用Ctrl+P保存为PDF",
-    "ticketError": "下载票据时出错"
+    "ticketError": "下载票据时出错",
+    "modifyNotAvailable": "在线修改功能暂未开放，我们的客服团队可以为您提供帮助。"
   },
   "subscriptions": {
     "title": "订阅计划",
@@ -752,7 +1046,24 @@
       "successDesc": "我们的团队将在24小时内与您联系。",
       "error": "发送错误",
       "errorDesc": "请稍后重试。"
-    }
+    },
+    "badge": "Bossiz礼宾服务",
+    "featuredTitle": "我们的订阅",
+    "featuredSubtitle": "探索适合您需求的套餐",
+    "requestInfo": "索取报价",
+    "subscribeDirect": "订阅",
+    "viewAll": "查看所有优惠",
+    "subscribeTo": "订阅",
+    "fillForm": "填写此表格，我们的团队将尽快与您联系。",
+    "fullName": "全名",
+    "phone": "电话",
+    "email": "电子邮件",
+    "messageOptional": "留言（可选）",
+    "specifyNeeds": "请说明您的需求...",
+    "sendRequest": "发送请求",
+    "sending": "发送中...",
+    "requestSent": "请求已发送！",
+    "contactSoon": "我们的团队将尽快与您联系。"
   },
   "confirmation": {
     "loading": "正在加载您的预订...",
@@ -798,7 +1109,16 @@
       "main": "主要",
       "other": "乘客"
     },
-    "bornOn": "出生日期"
+    "bornOn": "出生日期",
+    "missingBookingId": "缺少预订编号",
+    "shareTitle": "我的Bossiz预订",
+    "linkCopied": "链接已复制到剪贴板！",
+    "bookingConfirmed": "预订已确认",
+    "paymentReceived": "已收到付款",
+    "cancelled": "预订已取消并已退款",
+    "cancelledDesc": "此预订已取消，款项已全额退还。",
+    "processingSupplier": "已收到付款，正在确认您的预订",
+    "processingSupplierDesc": "我们已收到您的付款，正在与承运商最终确认，可能需要几分钟时间。"
   },
   "dashboardPage": {
     "title": "我的控制面板",
@@ -846,10 +1166,1000 @@
       "confirmError": "无法确认预订",
       "cancelError": "无法取消预订",
       "deleteError": "无法删除预订"
+    },
+    "sidebar": {
+      "main": "主菜单",
+      "overview": "概览",
+      "bookings": "预订",
+      "priceAlerts": "价格提醒",
+      "explore": "探索",
+      "account": "账户",
+      "support": "客服支持"
     }
   },
-  "nav": {
-    "subscriptions": "订阅",
-    "profile": "我的资料"
+  "aiTravelAdvisor": {
+    "title": "AI旅行顾问",
+    "destination": "目的地",
+    "destinationPlaceholder": "例如：巴黎、东京、马拉喀什...",
+    "interests": "兴趣",
+    "interestsPlaceholder": "例如：文化、自然、美食...",
+    "budget": "预算",
+    "budgetPlaceholder": "例如：经济型、中等、豪华型...",
+    "duration": "行程时长",
+    "durationPlaceholder": "例如：3天、一周...",
+    "generating": "生成中...",
+    "submit": "获取AI推荐",
+    "resultsTitle": "个性化推荐",
+    "success": "推荐生成成功！",
+    "errors": {
+      "destinationRequired": "请输入目的地",
+      "generic": "生成推荐时出错"
+    }
+  },
+  "carCard": {
+    "deposit": "押金",
+    "totalPrice": "总价"
+  },
+  "carDetails": {
+    "passengers": "乘客",
+    "luggage": "行李",
+    "doors": "车门",
+    "vehicleSpecs": "车辆规格",
+    "brand": "品牌",
+    "model": "型号",
+    "engine": "发动机",
+    "airConditioning": "空调",
+    "year": "年份",
+    "rentalConditions": "租赁条件",
+    "mileage": "里程",
+    "unlimited": "无限制",
+    "limited": "有限（请查看条款）",
+    "fuelPolicy": "燃油政策",
+    "fuelPolicyFullToFull": "满油还满油",
+    "fuelPolicySameToSame": "相同油量",
+    "fuelPolicyFullToEmpty": "满油还空（预付燃油）",
+    "cancellation": "取消政策",
+    "freeCancellationUntil48h": "出发前48小时可免费取消",
+    "cancellationTermsApply": "适用取消条款",
+    "depositRequired": "需要押金",
+    "blockedOnCard": "将在您的卡上冻结",
+    "featuresIncluded": "包含的设施和服务",
+    "totalPricePerDay": "每日总价",
+    "day": "天",
+    "taxesIncluded": "含税费",
+    "bookNow": "立即预订"
+  },
+  "carFilters": {
+    "brandModelPlaceholder": "品牌、型号..."
+  },
+  "destinationsSection": {
+    "upToPersons": "最多{{count}}人",
+    "flexibleCancellation": "灵活取消"
+  },
+  "flightCard": {
+    "directFlight": "直飞",
+    "seatsAvailable": "有空位"
+  },
+  "flightFilters": {
+    "priceAlerts": {
+      "title": "创建价格提醒",
+      "description": "当此航线价格变化时接收提醒。"
+    },
+    "baggage": {
+      "title": "行李",
+      "hand": "手提行李",
+      "checked": "托运行李"
+    },
+    "upToOneStop": "最多1次中转",
+    "upToTwoStops": "最多2次中转",
+    "allowOvernight": "允许过夜中转"
+  },
+  "iosDownload": {
+    "badge": "移动应用",
+    "title": "下载 B-Reserve",
+    "titleHighlight": "在您的手机上",
+    "subtitle": "直接从您的智能手机访问我们所有的预订服务",
+    "detected": {
+      "ios": "检测到iOS",
+      "android": "检测到Android",
+      "windows": "检测到Windows",
+      "mac": "检测到macOS",
+      "linux": "检测到Linux",
+      "unknown": "未知系统"
+    },
+    "smart": {
+      "title": "智能下载",
+      "subtitle": "自动检测您的系统",
+      "ctaIOS": "在iOS上安装",
+      "ctaAndroid": "在Android上安装",
+      "ctaGeneric": "下载应用",
+      "hintIOS": "正在跳转到App Store",
+      "hintAndroid": "正在跳转到Google Play",
+      "hintGeneric": "请在下方选择您的平台"
+    },
+    "ios": {
+      "devices": "iPhone和iPad",
+      "scanQR": "扫描二维码",
+      "hideQR": "隐藏二维码",
+      "qrHint": "用您的iOS设备扫描此二维码",
+      "qrAlt": "在iOS上下载B-Reserve的二维码"
+    },
+    "android": {
+      "devices": "手机和平板电脑",
+      "ctaDownload": "在Google Play下载",
+      "ctaView": "在Google Play查看"
+    },
+    "downloadsCount": "{{count}}次下载",
+    "features": {
+      "fast": {
+        "title": "快速",
+        "description": "为所有设备优化性能"
+      },
+      "secure": {
+        "title": "安全",
+        "description": "安全支付和数据保护"
+      },
+      "reliable": {
+        "title": "可靠",
+        "description": "随时随地24/7可用"
+      }
+    },
+    "instructions": {
+      "title": "如何安装？",
+      "iosTitle": "iOS（iPhone/iPad）",
+      "iosSteps": [
+        "用相机扫描二维码",
+        "点击\"在App Store中打开\"",
+        "点击\"获取\"进行安装",
+        "B-Reserve图标将出现在您的主屏幕上"
+      ],
+      "androidSteps": [
+        "点击下载按钮",
+        "按照Google Play的说明操作",
+        "接受所需权限",
+        "应用将自动安装"
+      ]
+    },
+    "alerts": {
+      "redirectAppStore": "正在跳转到App Store...\n安装将自动开始！",
+      "redirectPlayStore": "正在跳转到Google Play...\n安装将自动开始！",
+      "choosePlatform": "选择您的移动平台：\n\n1. iOS（iPhone/iPad）\n2. Android\n\n或扫描对应的二维码！\n\n点击\"确定\"查看iOS，或\"取消\"查看Android。",
+      "iosOnly": "此应用仅适用于iOS设备（iPhone/iPad）。\n请使用iOS设备安装此应用。"
+    }
+  },
+  "promoBanner": {
+    "bannerLabel": "横幅",
+    "close": "关闭横幅",
+    "viewShort": "查看",
+    "flights": {
+      "title": "所有航班8折",
+      "subtitle": "限时优惠至1月31日",
+      "badge": "促销",
+      "ctaText": "预订"
+    },
+    "hotels": {
+      "title": "第三晚免费",
+      "subtitle": "部分合作酒店适用",
+      "badge": "专属",
+      "ctaText": "探索"
+    },
+    "cars": {
+      "title": "每日租金15,000 FCFA起",
+      "subtitle": "含全险",
+      "badge": "新品",
+      "ctaText": "租车"
+    },
+    "pack": {
+      "title": "机票+酒店套餐7折",
+      "subtitle": "组合旅行更省钱",
+      "badge": "最佳优惠",
+      "ctaText": "立即享受"
+    }
+  },
+  "quickSearch": {
+    "subtitle": "快速找到您想要的内容"
+  },
+  "multiCityFlightForm": {
+    "addFlight": "添加航段（最多5个）"
+  },
+  "nationalitySelect": {
+    "placeholder": "选择国籍"
+  },
+  "passengersForm": {
+    "nationalityPlaceholder": "法国"
+  },
+  "flightBookingDialog": {
+    "cancelPolicyNote": "这取决于航空公司的规定和适用法律",
+    "changePolicyNote": "这取决于航空公司的规定",
+    "benefitsDescription": "尽享专属优惠与全面保障，安心出行。"
+  },
+  "baggageInfo": {
+    "realDataBadge": "实时数据",
+    "lowCostWarning": "廉价航空公司：默认不含托运行李",
+    "confirmationNote": "请在确认预订时核实具体条件。"
+  },
+  "passengerStep": {
+    "firstNameLabel": "名字 *",
+    "firstNamePlaceholder": "名字",
+    "documentNumberLabel": "证件号码 *",
+    "documentIssueDateLabel": "签发日期"
+  },
+  "preferencesStep": {
+    "legend": "图例",
+    "floorPreferenceLabel": "楼层偏好",
+    "choosePreferencePlaceholder": "选择偏好",
+    "estimatedArrivalTimeLabel": "预计到达时间",
+    "selectPlaceholder": "请选择",
+    "hotelSpecialRequestsLabel": "特殊要求",
+    "hotelSpecialRequestsPlaceholder": "例如：安静的房间、远离电梯、生日庆祝……",
+    "selectTimePlaceholder": "选择时间",
+    "carNotesPlaceholder": "例如：需要自动挡车辆、需要儿童安全座椅……",
+    "desiredDepartureTimeLabel": "期望出发时间",
+    "dietaryPreferencesLabel": "饮食偏好",
+    "particularRequestsLabel": "特殊要求",
+    "genericSpecialRequestsPlaceholder": "分享您的期望或特殊需求……"
+  },
+  "seasonalSuggestions": {
+    "title": "智能旅行推荐",
+    "subtitle": "根据天气、活动和季节性发现最佳旅行时间",
+    "placeholder": "输入目的地（例如：巴黎、东京、纽约）",
+    "analyze": "分析",
+    "tabs": {
+      "seasonal": "季节",
+      "weather": "天气",
+      "events": "活动",
+      "ai": "AI"
+    },
+    "current": "当前",
+    "advantagesLabel": "优势",
+    "temperature": "温度",
+    "rainfall": "降雨量",
+    "weatherAt": "{{location}}的当前天气",
+    "feelsLike": "体感温度",
+    "humidity": "湿度",
+    "wind": "风速",
+    "weatherError": "无法获取此目的地的天气数据",
+    "eventsEmpty": "未找到此目的地的活动",
+    "aiRecommendationsFor": "{{destination}}的个性化推荐",
+    "aiError": "无法为此目的地生成推荐",
+    "seasons": {
+      "spring": {
+        "name": "春季",
+        "months": [
+          "三月",
+          "四月",
+          "五月"
+        ],
+        "description": "气候温和，万物复苏",
+        "advantages": [
+          "气温宜人",
+          "游客较少",
+          "价格实惠"
+        ],
+        "temperature": "15-25°C",
+        "rainfall": "适中"
+      },
+      "summer": {
+        "name": "夏季",
+        "months": [
+          "六月",
+          "七月",
+          "八月"
+        ],
+        "description": "旺季，活动丰富",
+        "advantages": [
+          "活动众多",
+          "夜生活丰富",
+          "所有服务开放"
+        ],
+        "temperature": "25-35°C",
+        "rainfall": "较少"
+      },
+      "autumn": {
+        "name": "秋季",
+        "months": [
+          "九月",
+          "十月",
+          "十一月"
+        ],
+        "description": "宁静而真实的氛围",
+        "advantages": [
+          "气温温和",
+          "色彩绚丽",
+          "价格优惠"
+        ],
+        "temperature": "15-25°C",
+        "rainfall": "中到大"
+      },
+      "winter": {
+        "name": "冬季",
+        "months": [
+          "十二月",
+          "一月",
+          "二月"
+        ],
+        "description": "宁静与文化探索",
+        "advantages": [
+          "游客稀少",
+          "价格非常实惠",
+          "当地特色浓郁"
+        ],
+        "temperature": "5-15°C",
+        "rainfall": "较多"
+      }
+    }
+  },
+  "stays": {
+    "title": "住宿与度假",
+    "subtitle": "探索我们的全包住宿套餐和定制旅行",
+    "filters": "筛选",
+    "available": "可预订住宿",
+    "results": "住宿",
+    "results_desc": "探索我们为您下次假期精心挑选的独家推荐。",
+    "noResults": "暂无可预订住宿",
+    "highlights": "亮点",
+    "whyUs": "为什么选择我们预订？"
+  },
+  "support": {
+    "title": "我们随时为您提供帮助",
+    "subtitle": "我们的专家团队全天候为您解答问题并提供支持。"
+  },
+  "validation": {
+    "errorTitle": "验证错误",
+    "errorDescription": "请更正表单中的错误"
+  },
+  "homepage": {
+    "features": {
+      "secure-booking": {
+        "title": "安全预订",
+        "description": "通过我们的安全支付系统和数据保护放心预订。"
+      },
+      "best-prices": {
+        "title": "最优价格保证",
+        "description": "找到航班、酒店和租车的最佳优惠。"
+      },
+      "support-247": {
+        "title": "24/7支持",
+        "description": "我们的支持团队随时为您提供帮助。"
+      }
+    }
+  },
+  "bossizPortal": {
+    "nav": {
+      "sites": "我们的站点",
+      "services": "服务",
+      "values": "价值观",
+      "contact": "联系"
+    },
+    "headerTagline": "礼宾服务门户",
+    "reservations": "预订",
+    "visitSite": "访问网站",
+    "visit": "访问",
+    "hero": {
+      "eyebrow": "国际卓越品质",
+      "title": "BOSSIZ集团",
+      "subtitle": "您的礼宾服务门户",
+      "description": "西非高端礼宾服务的卓越典范"
+    },
+    "stats": {
+      "0": "卓越年数",
+      "1": "满意客户",
+      "2": "高级合作伙伴",
+      "3": "高级支持"
+    },
+    "sites": {
+      "eyebrow": "我们的站点",
+      "title": "两个国家，同样卓越",
+      "subtitle": "每个BOSSIZ站点都提供适合当地文化特色和需求的体验。",
+      "cote-d-ivoire": {
+        "title": "Bossiz 科特迪瓦",
+        "subtitle": "卓越礼宾服务",
+        "tagline": "象牙海岸的优雅，成就卓越服务",
+        "description": "在科特迪瓦体验独特的礼宾服务，传统与现代交融，提供卓越服务。",
+        "location": "阿比让、亚穆苏克罗、圣佩德罗",
+        "features": {
+          "0": "高级旅游与观光",
+          "1": "豪华地产",
+          "2": "VIP交通与私人飞机",
+          "3": "企业活动",
+          "4": "个性化服务",
+          "5": "24/7协助",
+          "6": "美食与养生",
+          "7": "私人购物"
+        },
+        "stats": {
+          "0": "卓越年数",
+          "1": "满意客户",
+          "2": "高级合作伙伴",
+          "3": "满意度"
+        }
+      },
+      "senegal": {
+        "title": "Bossiz 塞内加尔",
+        "subtitle": "卓越礼宾服务",
+        "tagline": "塞内加尔传统，成就奢华服务",
+        "description": "在塞内加尔体验卓越的礼宾服务，结合本地专业知识与国际标准，提供无与伦比的服务。",
+        "location": "达喀尔、蒂埃斯、圣路易",
+        "features": {
+          "0": "商务旅行",
+          "1": "地产管理",
+          "2": "高级交通",
+          "3": "活动策划",
+          "4": "企业服务",
+          "5": "数字礼宾服务",
+          "6": "养生与休闲",
+          "7": "高端购物"
+        },
+        "stats": {
+          "0": "专业经验年数",
+          "1": "满意客户",
+          "2": "高级合作伙伴",
+          "3": "满意度"
+        }
+      }
+    },
+    "services": {
+      "title": "一系列卓越服务",
+      "subtitle": "我们所有站点均提供全面服务，满足您的所有需求。",
+      "voyage": {
+        "title": "旅行与观光",
+        "description": "高级票务、豪华住宿、独家行程",
+        "features": {
+          "0": "私人飞机",
+          "1": "五星级酒店",
+          "2": "VIP行程",
+          "3": "旅行协助"
+        }
+      },
+      "immobilier": {
+        "title": "房地产与资产",
+        "description": "管理、租赁、资产咨询与高端交易",
+        "features": {
+          "0": "豪华别墅",
+          "1": "租赁管理",
+          "2": "资产咨询",
+          "3": "投资"
+        }
+      },
+      "transport": {
+        "title": "高级交通",
+        "description": "豪华车辆、私人飞机、游艇及VIP服务",
+        "features": {
+          "0": "豪华轿车",
+          "1": "私人飞机",
+          "2": "游艇",
+          "3": "VIP司机"
+        }
+      },
+      "evenements": {
+        "title": "活动与庆典",
+        "description": "婚礼策划、企业活动、晚宴与高端派对",
+        "features": {
+          "0": "婚礼",
+          "1": "企业活动",
+          "2": "晚宴",
+          "3": "私人派对"
+        }
+      },
+      "hotellerie": {
+        "title": "酒店与餐饮",
+        "description": "独家预订、私人厨师、美食体验",
+        "features": {
+          "0": "VIP预订",
+          "1": "私人厨师",
+          "2": "美食",
+          "3": "品鉴"
+        }
+      },
+      "services-vip": {
+        "title": "VIP服务",
+        "description": "24/7个性化协助、专属经理、定制服务",
+        "features": {
+          "0": "私人助理",
+          "1": "专属经理",
+          "2": "24/7服务",
+          "3": "私人礼宾服务"
+        }
+      }
+    },
+    "values": {
+      "title": "我们卓越品质的支柱",
+      "subtitle": "每天指引我们对客户承诺的价值观。",
+      "confiance": {
+        "title": "绝对信任",
+        "description": "为所有客户保证谨慎与保密。"
+      },
+      "excellence": {
+        "title": "卓越",
+        "description": "每项服务都体现卓越标准。"
+      },
+      "innovation": {
+        "title": "创新",
+        "description": "现代解决方案与尖端技术。"
+      },
+      "passion": {
+        "title": "热情",
+        "description": "为您的满意度而全情投入。"
+      }
+    },
+    "contact": {
+      "title": "联系BOSSIZ卓越团队",
+      "subtitle": "准备好体验无与伦比的礼宾服务了吗？立即联系我们的专家。"
+    },
+    "quickAccess": {
+      "title": "快速预订通道",
+      "subtitle": "直接访问我们的平台，规划您的高端体验。",
+      "cta": "前往预订"
+    },
+    "footer": {
+      "groupTagline": "集团门户",
+      "description": "您通往西非高端礼宾服务卓越体验的门户。",
+      "contactGroup": "集团联系方式",
+      "allRightsReserved": "版权所有。",
+      "privacyPolicy": "隐私政策",
+      "termsOfUse": "使用条款"
+    }
+  },
+  "bossizSite": {
+    "back": "返回 Bossiz.com",
+    "backToPortal": "返回 Bossiz.com",
+    "backToPortalBossiz": "返回 Bossiz.com",
+    "book": "预订",
+    "conciergerie": "礼宾服务",
+    "brandNameByCountry": {
+      "ci": "Bossiz 礼宾服务",
+      "sn": "Bossiz 塞内加尔"
+    },
+    "tagline": "高端礼宾服务的卓越典范",
+    "footer": {
+      "siteLabel": "网站",
+      "companyLabel": "公司"
+    },
+    "countries": {
+      "ci": "科特迪瓦",
+      "sn": "塞内加尔"
+    },
+    "nav": {
+      "home": "首页",
+      "services": "服务",
+      "about": "关于我们",
+      "plans": "套餐"
+    },
+    "recommended": "推荐",
+    "requestQuote": "索取报价",
+    "monthlyPlans": "月度套餐",
+    "shortStayPlansLabel": "短期套餐",
+    "plansTitle": "我们的礼宾服务套餐",
+    "plansSubtitle": "为每种需求量身定制的套餐，从短暂停留到长期居住。",
+    "servicesEyebrow": "我们的服务",
+    "servicesTitle": "量身定制服务，随时为您效劳",
+    "servicesSubtitle": "旅行、房产、出行、活动策划：我们的团队以严谨和低调的态度打理您生活的每一个细节。",
+    "testimonialsTitle": "客户的信任",
+    "philosophy": "卓越并非一时之举，而是我们每天为您培养的习惯。",
+    "about": {
+      "title": "我们的承诺",
+      "description": "Bossiz礼宾服务以无可挑剔的专业能力、全天候的服务和绝对的保密性，为高要求的客户提供支持。",
+      "cta": "查看我们的套餐",
+      "values": {
+        "trust": {
+          "title": "信任",
+          "text": "建立在保密和透明基础上的合作关系。"
+        },
+        "availability": {
+          "title": "全天候服务",
+          "text": "全年无休，随时为您服务的团队。"
+        },
+        "excellence": {
+          "title": "卓越品质",
+          "text": "对每一项服务细节始终如一的高标准追求。"
+        }
+      }
+    },
+    "contactCta": {
+      "title": "让我们谈谈您的下一个项目",
+      "button": "联系我们的团队"
+    },
+    "contact": {
+      "ci": {
+        "address": "阿比让，科特迪瓦"
+      },
+      "sn": {
+        "address": "达喀尔，塞内加尔"
+      }
+    },
+    "hero": {
+      "eyebrow": "私人礼宾服务",
+      "titleLine1": "生活的艺术",
+      "titleLine2": "不妥协的品质",
+      "subtitle": "一项高端礼宾服务，旨在预见您的每一项需求。",
+      "ctaServices": "了解我们的服务",
+      "ctaPlans": "查看套餐",
+      "stats": {
+        "clients": "尊贵客户",
+        "partners": "高端合作伙伴",
+        "availability": "全天候服务"
+      }
+    },
+    "services": {
+      "voyage": {
+        "title": "旅行与住宿",
+        "description": "全方位安排您的出行：航班、住宿及量身定制的行程。",
+        "features": [
+          "航班与酒店预订",
+          "个性化行程安排",
+          "机场贵宾接待"
+        ]
+      },
+      "immobilier": {
+        "title": "房产服务",
+        "description": "房产搜寻、租赁管理及物业跟踪，让您安心无忧。",
+        "features": [
+          "房产搜寻",
+          "租赁管理",
+          "行政事务跟进"
+        ]
+      },
+      "transport": {
+        "title": "私人出行",
+        "description": "私人司机、豪华车辆及全天候接送服务。",
+        "features": [
+          "私人司机",
+          "豪华车辆",
+          "24/7接送服务"
+        ]
+      },
+      "evenementiel": {
+        "title": "活动策划",
+        "description": "策划并组织卓越的私人或商务活动。",
+        "features": [
+          "私人活动",
+          "研讨会与招待会",
+          "全程协调"
+        ]
+      }
+    },
+    "servicesSN": {
+      "voyage": {
+        "features": [
+          "塞内加尔航班与酒店",
+          "戈雷岛与圣路易游览",
+          "达喀尔贵宾接待"
+        ]
+      },
+      "immobilier": {
+        "features": [
+          "达喀尔房产搜寻",
+          "租赁管理",
+          "行政事务跟进"
+        ]
+      },
+      "transport": {
+        "features": [
+          "私人司机",
+          "豪华车辆",
+          "达喀尔拉力赛接送"
+        ]
+      },
+      "evenementiel": {
+        "features": [
+          "私人活动",
+          "萨利游览",
+          "全程协调"
+        ]
+      }
+    },
+    "additionalServices": {
+      "personnel": {
+        "title": "私人助理",
+        "items": [
+          "日程管理",
+          "跑腿及事务办理",
+          "专属协助"
+        ]
+      },
+      "quotidien": {
+        "title": "日常协助",
+        "items": [
+          "清洁与维护",
+          "账单管理",
+          "供应商协调"
+        ]
+      },
+      "bien-etre": {
+        "title": "健康养生",
+        "items": [
+          "水疗与按摩",
+          "私人教练",
+          "健康预约"
+        ]
+      },
+      "loisirs": {
+        "title": "休闲娱乐",
+        "items": [
+          "文化活动预订",
+          "定制活动",
+          "VIP通道"
+        ]
+      },
+      "gastronomie": {
+        "title": "美食体验",
+        "items": [
+          "私人厨师",
+          "餐厅预订",
+          "定制酒窖"
+        ]
+      },
+      "shopping": {
+        "title": "购物服务",
+        "items": [
+          "私人采购顾问",
+          "快速配送",
+          "私享精品店通道"
+        ]
+      }
+    },
+    "additionalServicesSN": {
+      "personnel": {
+        "items": [
+          "日程管理",
+          "跑腿及事务办理",
+          "达喀尔专属协助"
+        ]
+      },
+      "quotidien": {
+        "items": [
+          "清洁与维护",
+          "账单管理",
+          "供应商协调"
+        ]
+      },
+      "bien-etre": {
+        "items": [
+          "水疗与按摩",
+          "私人教练",
+          "健康预约"
+        ]
+      },
+      "loisirs": {
+        "items": [
+          "戈雷岛与圣路易游览",
+          "定制活动",
+          "VIP通道"
+        ]
+      },
+      "gastronomie": {
+        "items": [
+          "私人厨师",
+          "餐厅预订",
+          "当地美食探索"
+        ]
+      },
+      "shopping": {
+        "items": [
+          "私人采购顾问",
+          "快速配送",
+          "当地市场与精品店通道"
+        ]
+      }
+    },
+    "plans": {
+      "premium": {
+        "name": "尊享",
+        "detail": "简化日常生活的基础礼宾服务。"
+      },
+      "privilege": {
+        "name": "特权",
+        "detail": "拓展式服务支持，优先享有我们的各项服务。"
+      },
+      "excellence": {
+        "name": "卓越",
+        "detail": "极致礼宾体验，尊享无限服务。"
+      }
+    },
+    "shortStayPlans": {
+      "3days": {
+        "name": "3天",
+        "detail": "适合短期商务或私人出行。"
+      },
+      "1week": {
+        "name": "1周",
+        "detail": "为期一周的全方位服务陪伴。"
+      },
+      "1month": {
+        "name": "1个月",
+        "detail": "长期停留的理想之选，让您安心无忧。"
+      }
+    },
+    "testimonials": {
+      "ci": {
+        "kouadio": {
+          "name": "Kouadio 先生",
+          "role": "企业主",
+          "content": "无可挑剔的服务，始终关注我最苛刻的需求。",
+          "location": "阿比让"
+        },
+        "toure": {
+          "name": "Touré 女士",
+          "role": "高级主管",
+          "content": "Bossiz团队的响应速度和保密性都非常出色。",
+          "location": "阿比让"
+        },
+        "bamba": {
+          "name": "Bamba 先生",
+          "role": "投资人",
+          "content": "有了Bossiz，我可以放心地专注于重要的事情。",
+          "location": "阿比让"
+        }
+      },
+      "sn": {
+        "diop": {
+          "name": "Diop 先生",
+          "role": "企业主",
+          "content": "一支卓越的团队，随时待命且极为低调。",
+          "location": "达喀尔"
+        },
+        "fall": {
+          "name": "Fall 女士",
+          "role": "高级主管",
+          "content": "Bossiz以无可挑剔的服务改变了我在达喀尔的日常生活。",
+          "location": "达喀尔"
+        },
+        "samba": {
+          "name": "Samba 先生",
+          "role": "投资人",
+          "content": "每一刻都提供高质量的服务支持。",
+          "location": "达喀尔"
+        }
+      }
+    }
+  },
+  "events": {
+    "title": "活动与票务",
+    "subtitle": "发现并预订您身边的精彩活动。",
+    "categories": "分类",
+    "categoryNames": {
+      "concert": "音乐会",
+      "sport": "体育",
+      "theater": "戏剧",
+      "festival": "节庆活动"
+    },
+    "popular": "热门活动",
+    "popularSubtitle": "当下最受欢迎的活动。",
+    "viewAll": "查看全部",
+    "whyUs": "为什么选择我们",
+    "bestPrices": {
+      "title": "最优价格保证",
+      "description": "我们保证所有票务均为最优价格。"
+    },
+    "authenticTickets": {
+      "title": "正品票务",
+      "description": "所有票务均保证正品并经过验证。"
+    },
+    "support": {
+      "description": "我们的团队随时为您提供协助。"
+    }
+  },
+  "help": {
+    "title": "帮助中心",
+    "subtitle": "按主题分类的所有问题解答",
+    "searchPlaceholder": "搜索问题...",
+    "categoriesTitle": "按主题浏览",
+    "questionsCount": "{{count}} 个问题",
+    "searchResultsCount": "找到 {{count}} 条与\"{{query}}\"相关的结果",
+    "allQuestionsTitle": "按主题查看所有问题",
+    "noResults": {
+      "title": "未找到相关结果",
+      "description": "请尝试其他关键词或联系我们的客服支持。"
+    },
+    "contactSupport": "联系客服支持",
+    "ctaTitle": "没有找到答案？",
+    "ctaSubtitle": "我们的客服团队随时为您提供帮助。",
+    "categories": {
+      "flights": {
+        "title": "航班",
+        "description": "航班预订、变更与取消。"
+      },
+      "hotels": {
+        "title": "酒店",
+        "description": "酒店预订及入住管理。"
+      },
+      "cars": {
+        "title": "租车",
+        "description": "关于租车的一切信息。"
+      },
+      "payments": {
+        "title": "支付",
+        "description": "支付方式及账单。"
+      },
+      "security": {
+        "title": "安全",
+        "description": "保护您的数据与交易安全。"
+      }
+    },
+    "faqCategories": {
+      "general": {
+        "label": "常见问题",
+        "q0": {
+          "question": "如何在B-Reserve上创建账户？",
+          "answer": "点击页面顶部的\"登录\"，然后点击\"创建账户\"，填写信息并验证您的电子邮件。"
+        },
+        "q1": {
+          "question": "如何联系客户支持？",
+          "answer": "您可以通过支持页面的表单、电子邮件或电话联系我们，我们全天候提供服务。"
+        },
+        "q2": {
+          "question": "我可以修改我的个人信息吗？",
+          "answer": "可以，请前往您的仪表板\"账户\"部分，随时修改您的信息。"
+        }
+      },
+      "flights": {
+        "label": "航班",
+        "q0": {
+          "question": "如何预订航班？",
+          "answer": "使用首页的航班搜索引擎，选择日期和目的地，然后选择适合您的方案。"
+        },
+        "q1": {
+          "question": "我可以更改或取消航班吗？",
+          "answer": "更改和取消取决于您机票的票价条款。请在仪表板中查看您的预订。"
+        },
+        "q2": {
+          "question": "如何获取登机牌？",
+          "answer": "值机后登机牌将通过电子邮件发送，也可在您的预订区域中查看。"
+        },
+        "q3": {
+          "question": "行李政策是什么？",
+          "answer": "行李政策因航空公司和所选票价而异，预订时会显示相关信息。"
+        }
+      },
+      "hotels": {
+        "label": "酒店",
+        "q0": {
+          "question": "如何预订酒店？",
+          "answer": "搜索目的地，选择日期和出行人数，然后选择您心仪的住宿。"
+        },
+        "q1": {
+          "question": "我可以取消酒店预订吗？",
+          "answer": "这取决于酒店的取消政策，在确认预订前会显示相关信息。"
+        },
+        "q2": {
+          "question": "入住前如何联系酒店？",
+          "answer": "酒店联系方式在您的确认邮件及预订详情中均有显示。"
+        }
+      },
+      "payment": {
+        "label": "支付",
+        "q0": {
+          "question": "您接受哪些支付方式？",
+          "answer": "我们通过安全的支付合作伙伴接受银行卡、移动支付及转账。"
+        },
+        "q1": {
+          "question": "我的付款是否安全？",
+          "answer": "是的，所有交易均经过加密，并由认证的支付服务商处理。"
+        },
+        "q2": {
+          "question": "我可以获取发票吗？",
+          "answer": "是的，每次付款确认后，您可以在预订区域中获取发票。"
+        },
+        "q3": {
+          "question": "付款失败该怎么办？",
+          "answer": "请检查您的银行信息并重试，如问题持续存在，请联系我们的客服支持。"
+        }
+      },
+      "carRental": {
+        "label": "租车",
+        "q0": {
+          "question": "租车需要哪些证件？",
+          "answer": "需要提供有效的驾驶证、身份证件以及驾驶人本人的信用卡。"
+        },
+        "q1": {
+          "question": "是否包含保险？",
+          "answer": "已包含基础保险，预订时可选择额外的保险方案。"
+        },
+        "q2": {
+          "question": "我可以在其他城市还车吗？",
+          "answer": "这取决于租车公司，如有此选项将在预订时显示。"
+        }
+      }
+    }
   }
 }

@@ -28,6 +28,12 @@ interface CreateBookingParams {
   notes?: string;
   passengers: Passenger[];
   booking_details?: any;
+  // Present only for service types backed by a signed search offer (hotel, car)
+  unit_price?: number;
+  offer_signature?: string;
+  offer_expires_at?: string;
+  // Flights only: real base_fare from the signed checkout price breakdown
+  supplier_cost?: number;
 }
 
 export const useCreateBooking = () => {

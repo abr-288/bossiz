@@ -74,20 +74,6 @@ const Dashboard = () => {
           return;
         }
         
-        // Check if user has majestic subscription
-        const { data: subscription } = await supabase
-          .from('active_subscriptions' as any)
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('subscription_type', 'majestic')
-          .single();
-        
-        // If user has majestic subscription, redirect to majestic dashboard
-        if (subscription) {
-          navigate('/majestic-dashboard');
-          return;
-        }
-        
         setUserProfile({
           full_name: user.user_metadata?.full_name || '',
           email: user.email || '',

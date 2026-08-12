@@ -6,11 +6,7 @@ export interface AppConfig {
   supabaseUrl: string;
   supabaseAnonKey: string;
   supabaseProjectId: string;
-  
-  // CinetPay
-  cinetPayApiKey: string;
-  cinetPaySiteId: string;
-  
+
   // Application
   appName: string;
   appVersion: string;
@@ -21,38 +17,59 @@ export interface AppConfig {
   webBaseUrl: string;
 }
 
+const normalizeEnvValue = (value: string | undefined): string => {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  return trimmed;
+};
+
+export const resolveEnvValue = (viteKey: string, legacyKey?: string): string => {
+  const viteValue = normalizeEnvValue(import.meta.env[viteKey]);
+  if (viteValue) {
+    return viteValue;
+  }
+
+  if (legacyKey) {
+    const legacyValue = normalizeEnvValue(import.meta.env[legacyKey]);
+    if (legacyValue) {
+      return legacyValue;
+    }
+  }
+
+  return '';
+};
+
 // Configuration par défaut (développement)
 const defaultConfig: AppConfig = {
-  supabaseUrl: import.meta.env.VITE_SUPABASE_URL || 'https://your-project-id.supabase.co',
-  supabaseAnonKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'your-anon-key',
-  supabaseProjectId: import.meta.env.VITE_SUPABASE_PROJECT_ID || 'your-project-id',
+  supabaseUrl: resolveEnvValue('VITE_SUPABASE_URL', 'REACT_APP_SUPABASE_URL') || 'https://your-project-id.supabase.co',
+  supabaseAnonKey: resolveEnvValue('VITE_SUPABASE_PUBLISHABLE_KEY', 'REACT_APP_SUPABASE_PUBLISHABLE_KEY') || 'your-anon-key',
+  supabaseProjectId: resolveEnvValue('VITE_SUPABASE_PROJECT_ID', 'REACT_APP_SUPABASE_PROJECT_ID') || 'your-project-id',
+
+  appName: resolveEnvValue('VITE_APP_NAME') || 'Bossiz Conciergerie',
+  appVersion: resolveEnvValue('VITE_APP_VERSION') || '1.0.0',
+  appEnvironment: resolveEnvValue('VITE_APP_ENVIRONMENT') || 'development',
   
-  // CinetPay - clés réelles fournies
-  cinetPayApiKey: import.meta.env.REACT_APP_CINETPAY_API_KEY || '143651967568ca9e4b0f0f14.89848998',
-  cinetPaySiteId: import.meta.env.REACT_APP_CINETPAY_SITE_ID || '105906547',
-  
-  appName: import.meta.env.VITE_APP_NAME || 'Bossiz Conciergerie',
-  appVersion: import.meta.env.VITE_APP_VERSION || '1.0.0',
-  appEnvironment: import.meta.env.VITE_APP_ENVIRONMENT || 'development',
-  
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
-  webBaseUrl: import.meta.env.VITE_WEB_BASE_URL || 'http://localhost:8083',
+  apiBaseUrl: resolveEnvValue('VITE_API_BASE_URL') || 'http://localhost:8080/api',
+  webBaseUrl: resolveEnvValue('VITE_WEB_BASE_URL') || 'http://localhost:8083',
 };
 
 // Configuration de production
 const productionConfig: Partial<AppConfig> = {
   appEnvironment: 'production',
   // En production, les variables doivent être définies dans les variables d'environnement
-  cinetPayApiKey: import.meta.env.REACT_APP_CINETPAY_API_KEY || '143651967568ca9e4b0f0f14.89848998',
-  cinetPaySiteId: import.meta.env.REACT_APP_CINETPAY_SITE_ID || '105906547',
 };
 
 // Configuration de développement
 const developmentConfig: Partial<AppConfig> = {
   appEnvironment: 'development',
   // En développement, utiliser les clés sandbox
-  cinetPayApiKey: '143651967568ca9e4b0f0f14.89848998',
-  cinetPaySiteId: '105906547',
 };
 
 // Fusion des configurations selon l'environnement
@@ -83,15 +100,7 @@ export const validateConfig = (): string[] => {
   if (!appConfig.supabaseAnonKey || appConfig.supabaseAnonKey.includes('your-anon-key')) {
     errors.push('Supabase Anon Key non configurée');
   }
-  
-  if (!appConfig.cinetPayApiKey || appConfig.cinetPayApiKey.includes('YOUR_API_KEY')) {
-    errors.push('CinetPay API Key non configurée');
-  }
-  
-  if (!appConfig.cinetPaySiteId || appConfig.cinetPaySiteId.includes('YOUR_SITE_ID')) {
-    errors.push('CinetPay Site ID non configuré');
-  }
-  
+
   return errors;
 };
 
@@ -99,8 +108,6 @@ export const validateConfig = (): string[] => {
 export const {
   supabaseUrl,
   supabaseAnonKey,
-  cinetPayApiKey,
-  cinetPaySiteId,
   appName,
   appVersion,
   appEnvironment,

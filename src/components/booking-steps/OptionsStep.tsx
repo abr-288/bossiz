@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Briefcase, Plus, Minus, Check, Shield, Utensils, Wifi, Car, Bed, Sparkles } from "lucide-react";
+import { Briefcase, Plus, Minus, Check, Shield, Utensils, Wifi, Car, Bed, Star, Users, Camera, Crown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,16 +41,21 @@ export const OptionsStep = ({
   cabinClass = "ECONOMY",
 }: OptionsStepProps) => {
   
-  const getOptionsForService = (): { title: string; subtitle: string; options: Option[] } => {
+  // Baggage fees come from getBaggageAllowance in EUR (real airline fee scale);
+  // every other vertical's options below are flat XOF amounts. Mixing them
+  // under one hardcoded fromCurrency="EUR" was causing XOF amounts to be
+  // re-converted as if they were EUR (~656x too high on display).
+  const getOptionsForService = (): { title: string; subtitle: string; currency: "EUR" | "XOF"; options: Option[] } => {
     switch (serviceType) {
       case "flight":
         // Get real baggage allowance for the airline
         const allowance = getBaggageAllowance(airline || "Air France", fareType, cabinClass);
         const additionalBagPrice = allowance.additionalBagPrice || 30;
-        
+
         return {
           title: "Sélection des bagages",
           subtitle: `Ajoutez des bagages supplémentaires pour votre voyage (${guestsCount} passager${guestsCount > 1 ? "s" : ""})`,
+          currency: "EUR",
           options: [
             { 
               id: "checked-additional", 
@@ -67,17 +72,19 @@ export const OptionsStep = ({
         return {
           title: "Options et services",
           subtitle: "Personnalisez votre séjour avec nos options",
+          currency: "XOF",
           options: [
             { id: "breakfast", name: "Petit-déjeuner inclus", description: "Buffet complet chaque matin", price: 8000, included: false, icon: <Utensils className="h-5 w-5" /> },
             { id: "wifi-premium", name: "Wi-Fi Premium", description: "Connexion haut débit illimitée", price: 3000, included: false, icon: <Wifi className="h-5 w-5" /> },
             { id: "late-checkout", name: "Départ tardif", description: "Check-out jusqu'à 16h", price: 15000, included: false, icon: <Bed className="h-5 w-5" /> },
-            { id: "room-upgrade", name: "Surclassement chambre", description: "Vue mer ou suite", price: 25000, included: false, icon: <Sparkles className="h-5 w-5" /> },
+            { id: "room-upgrade", name: "Surclassement chambre", description: "Vue mer ou suite", price: 25000, included: false, icon: <Star className="h-5 w-5" /> },
           ],
         };
       case "car":
         return {
           title: "Assurances et extras",
           subtitle: "Protégez votre location avec nos options",
+          currency: "XOF",
           options: [
             { id: "basic-insurance", name: "Assurance de base", description: "Couverture collision - Inclus", price: 0, included: true, icon: <Shield className="h-5 w-5" /> },
             { id: "full-insurance", name: "Assurance tous risques", description: "Couverture complète sans franchise", price: 15000, included: false, icon: <Shield className="h-5 w-5" /> },
@@ -92,10 +99,11 @@ export const OptionsStep = ({
         return {
           title: "Options et extras",
           subtitle: "Enrichissez votre expérience",
+          currency: "XOF",
           options: [
-            { id: "guide-private", name: "Guide privé", description: "Guide francophone dédié", price: 25000, included: false, icon: <Sparkles className="h-5 w-5" /> },
+            { id: "guide-private", name: "Guide privé", description: "Guide francophone dédié", price: 25000, included: false, icon: <Users className="h-5 w-5" /> },
             { id: "meals", name: "Repas inclus", description: "Déjeuner et dîner locaux", price: 15000, included: false, icon: <Utensils className="h-5 w-5" /> },
-            { id: "photo-pack", name: "Pack photo souvenir", description: "Photos professionnelles", price: 20000, included: false, icon: <Sparkles className="h-5 w-5" /> },
+            { id: "photo-pack", name: "Pack photo souvenir", description: "Photos professionnelles", price: 20000, included: false, icon: <Camera className="h-5 w-5" /> },
             { id: "transport-vip", name: "Transport VIP", description: "Véhicule climatisé privé", price: 35000, included: false, icon: <Car className="h-5 w-5" /> },
           ],
         };
@@ -103,15 +111,16 @@ export const OptionsStep = ({
         return {
           title: "Options supplémentaires",
           subtitle: "Personnalisez votre réservation",
+          currency: "XOF",
           options: [
-            { id: "premium", name: "Option Premium", description: "Service prioritaire", price: 15000, included: false, icon: <Sparkles className="h-5 w-5" /> },
+            { id: "premium", name: "Option Premium", description: "Service prioritaire", price: 15000, included: false, icon: <Crown className="h-5 w-5" /> },
             { id: "support", name: "Support dédié", description: "Assistance 24/7", price: 10000, included: false, icon: <Shield className="h-5 w-5" /> },
           ],
         };
     }
   };
 
-  const { title, subtitle, options } = getOptionsForService();
+  const { title, subtitle, currency, options } = getOptionsForService();
 
   const handleQuantityChange = (optionId: string, delta: number) => {
     const currentQuantity = selectedOptions[optionId] || 0;
@@ -187,7 +196,7 @@ export const OptionsStep = ({
 
             <div className="flex items-center justify-between mt-4">
               <div className="text-2xl font-bold text-primary">
-                {option.price === 0 ? "Gratuit" : <Price amount={option.price} fromCurrency="EUR" showLoader />}
+                {option.price === 0 ? "Gratuit" : <Price amount={option.price} fromCurrency={currency} showLoader />}
               </div>
               {!option.included && (
                 <div className="flex items-center gap-2">
@@ -224,7 +233,7 @@ export const OptionsStep = ({
           <div className="flex justify-between items-center">
             <span className="text-lg font-semibold">Total options</span>
             <span className="text-2xl font-bold text-primary">
-              <Price amount={getTotalOptionsPrice()} fromCurrency="EUR" showLoader />
+              <Price amount={getTotalOptionsPrice()} fromCurrency={currency} showLoader />
             </span>
           </div>
         </Card>

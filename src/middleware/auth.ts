@@ -8,7 +8,6 @@ export async function middleware(request: NextRequest) {
   // Routes protégées qui nécessitent une authentification
   const protectedRoutes = [
     '/subscriptions',
-    '/majestic-subscription',
     '/payment',
     '/dashboard',
     '/profile',
@@ -54,7 +53,7 @@ export async function middleware(request: NextRequest) {
       
       // Vérifier si l'utilisateur a des informations de paiement
       // (uniquement pour les routes d'abonnement)
-      if (pathname.includes('/subscriptions') || pathname.includes('/majestic-subscription')) {
+      if (pathname.includes('/subscriptions')) {
         const { data: paymentMethods, error: paymentError } = await supabase
           .from('user_payment_methods')
           .select('id')

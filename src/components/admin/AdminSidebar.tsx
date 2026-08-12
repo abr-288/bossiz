@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper } from "lucide-react";
+import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import {
   Sidebar,
@@ -28,7 +28,8 @@ const menuItems = [
   { title: "Avis Clients", url: "/admin/reviews", icon: Star },
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
-  { title: "Bossiz Sites", url: "/admin/bossiz-sites", icon: Globe },
+  { title: "Contenu Bossiz", url: "/admin/bossiz-microsites", icon: Globe },
+  { title: "Intégrations (Email/SMS/Paiement)", url: "/admin/integrations", icon: KeyRound },
   { title: "Utilisateurs", url: "/admin/users", icon: Users },
   { title: "Templates Email", url: "/admin/email-templates", icon: Mail },
   { title: "Configuration", url: "/admin/configuration", icon: Cog },
@@ -62,8 +63,9 @@ export function AdminSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
+                      aria-label={item.title}
                       className={`flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
                         isActive(item.url) ? "bg-accent text-accent-foreground font-medium" : ""
                       }`}

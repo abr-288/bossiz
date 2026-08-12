@@ -33,6 +33,7 @@ const UnifiedBookingProcess = () => {
   const serviceName = searchParams.get("name") || "Service";
   const servicePrice = searchParams.get("price") || "0";
   const serviceLocation = searchParams.get("location") || "";
+  const serviceId = searchParams.get("serviceId") || undefined;
   const startDate = searchParams.get("startDate") || new Date().toISOString().split("T")[0];
   const endDate = searchParams.get("endDate");
   
@@ -310,6 +311,7 @@ const UnifiedBookingProcess = () => {
               <SummaryStep
                 flightData={flightData}
                 serviceType={serviceType}
+                serviceId={serviceId}
                 serviceName={serviceName}
                 servicePrice={parseFloat(servicePrice)}
                 serviceLocation={serviceLocation}

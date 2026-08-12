@@ -1,64 +1,46 @@
 import { useState, useEffect } from "react";
-import { X, Sparkles, ArrowRight, Percent, Clock, Plane, Hotel, Car, Gift } from "lucide-react";
+import { X, ArrowRight, Percent, Clock, Plane, Hotel, Car, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface PromoBannerData {
   id: string;
-  title: string;
-  subtitle: string;
-  badge: string;
   icon: React.ReactNode;
   link: string;
-  ctaText: string;
   gradient: string;
 }
 
 const promoBanners: PromoBannerData[] = [
   {
     id: "flights",
-    title: "-20% sur tous les vols",
-    subtitle: "Offre limitée jusqu'au 31 janvier",
-    badge: "Promo",
     icon: <Plane className="w-4 h-4 text-white" />,
     link: "/flights",
-    ctaText: "Réserver",
     gradient: "from-secondary via-secondary/90 to-primary"
   },
   {
     id: "hotels",
-    title: "3ème nuit offerte",
-    subtitle: "Sur une sélection d'hôtels partenaires",
-    badge: "Exclusif",
     icon: <Hotel className="w-4 h-4 text-white" />,
     link: "/hotels",
-    ctaText: "Découvrir",
     gradient: "from-emerald-600 via-emerald-500 to-teal-500"
   },
   {
     id: "cars",
-    title: "Location dès 15 000 FCFA/jour",
-    subtitle: "Assurance tous risques incluse",
-    badge: "Nouveau",
     icon: <Car className="w-4 h-4 text-white" />,
     link: "/cars",
-    ctaText: "Louer",
     gradient: "from-orange-600 via-orange-500 to-amber-500"
   },
   {
     id: "pack",
-    title: "Pack Vol + Hôtel -30%",
-    subtitle: "Économisez sur vos voyages combinés",
-    badge: "Best Deal",
     icon: <Gift className="w-4 h-4 text-white" />,
     link: "/flight-hotel",
-    ctaText: "Profiter",
     gradient: "from-purple-600 via-purple-500 to-pink-500"
   }
 ];
 
 const PromoBanner = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -95,17 +77,6 @@ const PromoBanner = () => {
             }} />
           </div>
 
-          {/* Animated sparkles */}
-          <div className="absolute top-1 left-[10%] animate-pulse">
-            <Sparkles className="w-3 h-3 text-white/60" />
-          </div>
-          <div className="absolute bottom-1 right-[15%] animate-pulse" style={{ animationDelay: '0.5s' }}>
-            <Sparkles className="w-4 h-4 text-white/50" />
-          </div>
-          <div className="absolute top-2 right-[30%] animate-pulse" style={{ animationDelay: '1s' }}>
-            <Sparkles className="w-2.5 h-2.5 text-white/40" />
-          </div>
-
           <div className="site-container relative">
             <div className="flex items-center justify-between py-2 sm:py-2.5 gap-2 sm:gap-4">
               {/* Content */}
@@ -119,16 +90,16 @@ const PromoBanner = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-3 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/20 text-[10px] sm:text-xs font-bold text-white uppercase tracking-wide shrink-0">
-                      {currentBanner.badge}
+                      {t(`promoBanner.${currentBanner.id}.badge`)}
                     </span>
                     <span className="text-white font-semibold text-xs sm:text-sm truncate">
-                      {currentBanner.title}
+                      {t(`promoBanner.${currentBanner.id}.title`)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-white/80">
                     <Clock className="w-3 h-3 shrink-0" />
                     <span className="text-[10px] sm:text-xs truncate">
-                      {currentBanner.subtitle}
+                      {t(`promoBanner.${currentBanner.id}.subtitle`)}
                     </span>
                   </div>
                 </div>
@@ -141,11 +112,11 @@ const PromoBanner = () => {
                     key={index}
                     onClick={() => setCurrentIndex(index)}
                     className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      index === currentIndex 
-                        ? "bg-white w-3" 
+                      index === currentIndex
+                        ? "bg-white w-3"
                         : "bg-white/40 hover:bg-white/60"
                     }`}
-                    aria-label={`Bannière ${index + 1}`}
+                    aria-label={`${t('promoBanner.bannerLabel')} ${index + 1}`}
                   />
                 ))}
               </div>
@@ -157,8 +128,8 @@ const PromoBanner = () => {
                 onClick={() => navigate(currentBanner.link)}
                 className="shrink-0 h-7 sm:h-8 px-2.5 sm:px-4 text-[10px] sm:text-xs font-semibold bg-white text-primary hover:bg-white/90 shadow-lg"
               >
-                <span className="hidden sm:inline">{currentBanner.ctaText}</span>
-                <span className="sm:hidden">Voir</span>
+                <span className="hidden sm:inline">{t(`promoBanner.${currentBanner.id}.ctaText`)}</span>
+                <span className="sm:hidden">{t('promoBanner.viewShort')}</span>
                 <ArrowRight className="w-3 h-3 ml-1" />
               </Button>
 
@@ -166,7 +137,7 @@ const PromoBanner = () => {
               <button
                 onClick={() => setIsVisible(false)}
                 className="shrink-0 p-1 rounded-full hover:bg-white/10 transition-colors"
-                aria-label="Fermer la bannière"
+                aria-label={t('promoBanner.close')}
               >
                 <X className="w-4 h-4 text-white/70 hover:text-white" />
               </button>

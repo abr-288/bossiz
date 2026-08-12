@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  CreditCard, 
-  User, 
-  Bell, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Calendar,
+  User,
+  Bell,
+  Settings,
   MapPin,
   Plane,
   HelpCircle,
   LogOut,
-  Building2,
-  Crown
+  Building2
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -71,14 +69,8 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       url: "/dashboard", 
       icon: LayoutDashboard 
     },
-    { 
-      title: 'Majestic Club', 
-      url: "/majestic-club", 
-      icon: Crown,
-      premium: true
-    },
-    { 
-      title: t('dashboardPage.sidebar.bookings', 'Mes réservations'), 
+    {
+      title: t('dashboardPage.sidebar.bookings', 'Mes réservations'),
       url: "/booking-history", 
       icon: Calendar 
     },
@@ -183,15 +175,16 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
+                      aria-label={item.title}
                       className={`flex items-center gap-3 ${
-                        isActive(item.url) 
-                          ? (item.url === "/majestic-club" ? "bg-[#D4AF37]/20 text-[#D4AF37] font-bold" : "bg-primary/10 text-primary font-medium")
-                          : (item.url === "/majestic-club" ? "text-[#D4AF37] hover:bg-[#D4AF37]/10" : "hover:bg-muted")
+                        isActive(item.url)
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-muted"
                       }`}
                     >
-                      <item.icon className={`h-5 w-5 shrink-0 ${item.url === "/majestic-club" ? "text-[#D4AF37]" : ""}`} />
+                      <item.icon className="h-5 w-5 shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
@@ -210,11 +203,12 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={agencyItem.url}
+                      aria-label={agencyItem.title}
                       className={`flex items-center gap-3 ${
-                        isActive(agencyItem.url) 
-                          ? "bg-primary/10 text-primary font-medium" 
+                        isActive(agencyItem.url)
+                          ? "bg-primary/10 text-primary font-medium"
                           : "hover:bg-muted"
                       }`}
                     >
@@ -237,11 +231,12 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               {exploreItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
+                      aria-label={item.title}
                       className={`flex items-center gap-3 ${
-                        isActive(item.url) 
-                          ? "bg-primary/10 text-primary font-medium" 
+                        isActive(item.url)
+                          ? "bg-primary/10 text-primary font-medium"
                           : "hover:bg-muted"
                       }`}
                     >
@@ -264,8 +259,9 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               {supportItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
+                      aria-label={item.title}
                       className={`flex items-center gap-3 hover:bg-muted`}
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
@@ -280,9 +276,10 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-2">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={handleLogout}
+          aria-label={t('auth.logout', 'Déconnexion')}
           className={`w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 ${
             collapsed ? "justify-center px-2" : ""
           }`}

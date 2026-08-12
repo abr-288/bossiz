@@ -69,6 +69,9 @@ serve(async (req) => {
     const amadeusSecret = Deno.env.get('AMADEUS_API_SECRET');
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
     const travelpayoutsToken = Deno.env.get('TRAVELPAYOUTS_TOKEN');
+    const kayakRapidApiKey = Deno.env.get('KAYAK_RAPIDAPI_KEY') || rapidApiKey;
+    const kayakRapidApiHost = Deno.env.get('KAYAK_RAPIDAPI_HOST') || 'kayak-api.p.rapidapi.com';
+
     
     const results: any[] = [];
     
@@ -94,6 +97,12 @@ serve(async (req) => {
     if (travelpayoutsToken) {
       apiPromises.push(searchTravelpayouts(originCode, destinationCode, departureDate, returnDate, adults, finalChildren, finalTravelClass, travelpayoutsToken));
     }
+
+    // Kayak API via RapidAPI
+    if (kayakRapidApiKey) {
+      apiPromises.push(searchKayak(originCode, destinationCode, departureDate, returnDate, adults, finalChildren, finalTravelClass, kayakRapidApiKey, kayakRapidApiHost));
+    }
+
 
     if (apiPromises.length === 0) {
       console.log('No API credentials configured, returning mock data');
@@ -1065,3 +1074,127 @@ async function searchTravelpayouts(
     return [];
   }
 }
+
+// Kayak API via RapidAPI implementation
+async function searchKayak(
+  origin: string,
+  destination: string,
+  departureDate: string,
+  returnDate: string | undefined,
+  adults: number,
+  children: number,
+  travelClass: string,
+  rapidApiKey: string,
+  rapidApiHost: string
+): Promise<any[]> {
+  try {
+    console.log('Searching flights with Kayak API via RapidAPI (POST)...');
+    
+    const travelers = [];
+    for (let i = 0; i < adults; i++) travelers.push("ADT");
+    for (let i = 0; i < children; i++) travelers.push("CHD");
+
+    const cabinMap: Record<string, string> = {
+      'ECONOMY': 'e',
+      'PREMIUM_ECONOMY': 'p',
+      'BUSINESS': 'b',
+      'FIRST': 'f'
+    };
+
+    const payload = {
+      origin: origin,
+      destination: destination,
+      departure_date: departureDate,
+      return_date: returnDate,
+      searchMetaData: {
+        pageNumber: 1,
+        priceMode: "per-person"
+      },
+      userSearchParams: {
+        sortMode: "price_a",
+        passengers: travelers
+      },
+      filterParams: {
+        fs: `cabin=${cabinMap[travelClass] || 'e'}`
+      }
+    };
+    
+    const response = await fetch(
+      `https://${rapidApiHost}/search-flights`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RapidAPI-Key': rapidApiKey,
+          'X-RapidAPI-Host': rapidApiHost
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Kayak Flights API error:', response.status, errorText.substring(0, 300));
+      return [];
+    }
+    
+    const data = await response.json();
+    // The specific Kayak API results might be in data.itineraries or data.data
+    const flightsArray = data.data || data.results || data.itineraries || [];
+    
+    if (Array.isArray(flightsArray) && flightsArray.length > 0) {
+      console.log(`Kayak found ${flightsArray.length} flights`);
+      
+      return flightsArray.slice(0, 15).map((flight: any, index: number) => {
+        // Handle varying response structures
+        const price = flight.price?.total || flight.price?.raw || flight.price || 0;
+        const legs = flight.legs || flight.itineraries?.[0]?.segments || [flight];
+        const firstLeg = legs[0] || {};
+        const lastLeg = legs[legs.length - 1] || firstLeg;
+        
+        const carrierCode = firstLeg.airline?.code || firstLeg.carrierCode || 'XX';
+        const carrierName = firstLeg.airline?.name || firstLeg.carrierName || carrierCode;
+        
+        return {
+          id: `KAYAK-${origin}-${destination}-${index}`,
+          itineraries: [{
+            segments: [{
+              departure: {
+                iataCode: firstLeg.origin || origin,
+                at: firstLeg.departureTime || `${departureDate}T00:00:00`,
+              },
+              arrival: {
+                iataCode: lastLeg.destination || destination,
+                at: lastLeg.arrivalTime || `${departureDate}T23:59:00`,
+              },
+              carrierCode: carrierCode,
+              carrierName: carrierName,
+              number: firstLeg.flightNumber || '0000',
+              duration: firstLeg.duration || 'PT0H',
+            }],
+            duration: flight.duration || 'PT0H',
+          }],
+          price: {
+            grandTotal: price.toString(),
+            currency: 'EUR',
+          },
+          validatingAirlineCodes: [carrierCode],
+          carrierName: carrierName,
+          travelerPricings: [{
+            fareDetailsBySegment: [{
+              cabin: travelClass || 'ECONOMY',
+            }],
+          }],
+          source: 'kayak',
+          deepLink: flight.deepLink || flight.url
+        };
+      });
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Kayak Flights API exception:', error instanceof Error ? error.message : String(error));
+    return [];
+  }
+}
+

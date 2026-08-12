@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/integrations.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,21 +15,8 @@ serve(async (req) => {
   try {
     const { bookingId } = await req.json();
     
-    const smtpHost = Deno.env.get('SMTP_HOST');
-    const smtpPort = Deno.env.get('SMTP_PORT');
-    const smtpUser = Deno.env.get('SMTP_USER');
-    const smtpPassword = Deno.env.get('SMTP_PASSWORD');
-    const smtpFrom = Deno.env.get('SMTP_FROM');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!smtpHost || !smtpUser || !smtpPassword || !smtpFrom) {
-      console.log('SMTP configuration not complete, skipping email');
-      return new Response(
-        JSON.stringify({ success: true, message: 'Email skipped (SMTP not configured)' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('Supabase configuration missing');
@@ -69,26 +57,25 @@ serve(async (req) => {
       .select('*')
       .eq('booking_id', bookingId);
 
-    // Send PNR confirmation email via SMTP
+    // Send PNR confirmation email via le prestataire actif (Resend ou SMTP)
     const emailHtml = generatePNRConfirmationEmail(booking, passengers || []);
 
-    const response = await fetch('https://api.smtprelay.com/v1/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${smtpPassword}`,
-      },
-      body: JSON.stringify({
-        from: smtpFrom,
-        to: [booking.customer_email],
-        subject: `PNR Confirmation - ${booking.external_ref}`,
-        html: emailHtml,
-      }),
+    const result = await sendEmail(supabase, {
+      from: 'B-Reserve <onboarding@resend.dev>',
+      to: [booking.customer_email],
+      subject: `PNR Confirmation - ${booking.external_ref}`,
+      html: emailHtml,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('SMTP API error:', response.status, errorText);
+    if (!result.ok) {
+      if (result.error === 'RESEND_API_KEY not configured') {
+        console.log('Aucun prestataire email configuré, envoi ignoré');
+        return new Response(
+          JSON.stringify({ success: true, message: 'Email skipped (no provider configured)' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.error('Email send error:', result.error);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to send email' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/integrations.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,42 +14,32 @@ serve(async (req) => {
 
   try {
     const { customerEmail, customerName, invoiceNumber, invoiceDate, items, subtotal, tax, total, currency, paymentMethod } = await req.json();
-    
-    const smtpHost = Deno.env.get('SMTP_HOST');
-    const smtpPort = Deno.env.get('SMTP_PORT');
-    const smtpUser = Deno.env.get('SMTP_USER');
-    const smtpPassword = Deno.env.get('SMTP_PASSWORD');
-    const smtpFrom = Deno.env.get('SMTP_FROM');
 
-    if (!smtpHost || !smtpUser || !smtpPassword || !smtpFrom) {
-      console.log('SMTP configuration not complete, skipping email');
-      return new Response(
-        JSON.stringify({ success: true, message: 'Email skipped (SMTP not configured)' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
 
     console.log('Sending invoice email to:', customerEmail);
 
     const emailHtml = generateInvoiceEmailHtml(customerName, invoiceNumber, invoiceDate, items, subtotal, tax, total, currency, paymentMethod);
 
-    const response = await fetch('https://api.smtprelay.com/v1/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${smtpPassword}`,
-      },
-      body: JSON.stringify({
-        from: smtpFrom,
-        to: [customerEmail],
-        subject: `Invoice ${invoiceNumber}`,
-        html: emailHtml,
-      }),
+    const result = await sendEmail(supabase, {
+      from: 'B-Reserve <onboarding@resend.dev>',
+      to: [customerEmail],
+      subject: `Invoice ${invoiceNumber}`,
+      html: emailHtml,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('SMTP API error:', response.status, errorText);
+    if (!result.ok) {
+      if (result.error === 'RESEND_API_KEY not configured') {
+        console.log('Aucun prestataire email configuré, envoi ignoré');
+        return new Response(
+          JSON.stringify({ success: true, message: 'Email skipped (no provider configured)' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.error('Email send error:', result.error);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to send email' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -57,9 +49,9 @@ serve(async (req) => {
     console.log('Invoice email sent successfully');
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Invoice email sent successfully' 
+      JSON.stringify({
+        success: true,
+        message: 'Invoice email sent successfully'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -139,7 +131,7 @@ function generateInvoiceEmailHtml(customerName: string, invoiceNumber: string, i
           <p>Best regards,<br>The B-Reserve Team</p>
         </div>
         <div class="footer">
-          <p>&copy; 2025 B-Reserve. All rights reserved.</p>
+          <p>&copy; 2026 B-Reserve. All rights reserved.</p>
         </div>
       </div>
     </body>
