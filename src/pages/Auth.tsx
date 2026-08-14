@@ -1,20 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Lock, Mail, User, ArrowLeft, Facebook, Apple } from "lucide-react";
+import { Lock, Mail, User, ArrowLeft } from "lucide-react";
 import { MFAVerification } from "@/components/MFAVerification";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import logoLight from "@/assets/logo-light.png";
 import bannerHotels from "@/assets/ordinateur.jpg";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
+import Logo from "@/components/Logo";
 import AnimatedFormField from "@/components/forms/AnimatedFormField";
 import {
   signUpSchema,
@@ -36,7 +35,7 @@ const Auth = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  
+
   // Form states
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
   const [signUpForm, setSignUpForm] = useState({ fullName: "", email: "", password: "" });
@@ -78,7 +77,7 @@ const Auth = () => {
     const errors = { ...validation.errors };
     
     if (!acceptTerms) {
-      errors.terms = "Vous devez accepter les CGU et la politique de confidentialité";
+      errors.terms = t('auth.termsRequired');
     }
     
     setSignUpErrors(errors);
@@ -98,27 +97,23 @@ const Auth = () => {
 
     setLoading(false);
 
-    if (error) {
-      if (error.message.includes("already registered")) {
-        toast({
-          title: "Compte existant",
-          description: "Un compte existe déjà avec cet email. Connectez-vous ou réinitialisez votre mot de passe.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Erreur d'inscription",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    } else {
+    if (error && !error.message.includes("already registered")) {
       toast({
-        title: "Inscription réussie",
-        description: "Vérifiez votre email pour confirmer votre compte",
+        title: t('auth.errors.signupError'),
+        description: error.message,
+        variant: "destructive",
       });
-      setSignUpForm({ fullName: "", email: "", password: "" });
+      return;
     }
+
+    // Same success message whether the signup just happened or the email was
+    // already registered — revealing the difference would let anyone probe
+    // which emails have an account (user enumeration).
+    toast({
+      title: t('auth.success.signup'),
+      description: t('auth.success.signupDesc'),
+    });
+    setSignUpForm({ fullName: "", email: "", password: "" });
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -141,21 +136,21 @@ const Auth = () => {
     if (error) {
       if (error.message.includes("Invalid login credentials")) {
         toast({
-          title: "Identifiants incorrects",
-          description: "Email ou mot de passe invalide. Vérifiez vos informations.",
+          title: t('auth.errors.invalidCredentials'),
+          description: t('auth.errors.invalidCredentialsDesc'),
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Erreur de connexion",
+          title: t('auth.errors.loginError'),
           description: error.message,
           variant: "destructive",
         });
       }
     } else {
       toast({
-        title: "Connexion réussie",
-        description: "Bienvenue sur B-Reserve!",
+        title: t('auth.success.login'),
+        description: t('auth.success.loginDesc'),
       });
       navigate("/");
     }
@@ -163,14 +158,17 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
     });
 
     if (error) {
       setLoading(false);
       toast({
-        title: "Erreur Google",
+        title: t('auth.errors.googleError'),
         description: error.message,
         variant: "destructive",
       });
@@ -195,14 +193,14 @@ const Auth = () => {
 
     if (error) {
       toast({
-        title: "Erreur",
+        title: t('common.error'),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Email envoyé",
-        description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe",
+        title: t('auth.success.resetSent'),
+        description: t('auth.success.resetSentDesc'),
       });
       setShowResetPassword(false);
       setResetForm({ email: "" });
@@ -225,14 +223,14 @@ const Auth = () => {
 
     if (error) {
       toast({
-        title: "Erreur",
+        title: t('common.error'),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Mot de passe mis à jour",
-        description: "Votre mot de passe a été modifié avec succès",
+        title: t('auth.success.passwordUpdated'),
+        description: t('auth.success.passwordUpdatedDesc'),
       });
       setShowUpdatePassword(false);
       navigate("/");
@@ -255,8 +253,8 @@ const Auth = () => {
       <MFAVerification 
         onSuccess={() => {
           toast({
-            title: "Vérification réussie",
-            description: "Bienvenue sur B-Reserve!",
+            title: t('auth.mfaVerificationSuccess'),
+            description: t('auth.success.loginDesc'),
           });
           navigate("/");
         }}
@@ -279,11 +277,7 @@ const Auth = () => {
           <Card className="bg-white border border-gray-200 shadow-sm rounded-3xl w-full max-w-lg">
             <CardHeader className="text-center pb-6 pt-4 px-6">
               <div className="flex justify-center mb-4">
-                <img 
-                  src={logoLight}
-                  alt="B-Reserve"
-                  className="h-10 w-auto"
-                />
+                <Logo variant="dark" className="h-10 w-auto" />
               </div>
               <CardTitle className="text-2xl font-semibold text-gray-900 mb-2">
                 B-Reserve
@@ -327,7 +321,7 @@ const Auth = () => {
                       className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-md transition-colors" 
                       disabled={loading}
                     >
-                      {loading ? "Chargement..." : "Mettre à jour"}
+                      {loading ? t('common.loading') : t('auth.updateBtn')}
                     </Button>
                   </form>
                 </div>
@@ -347,7 +341,7 @@ const Auth = () => {
                       </label>
                       <Input
                         type="email"
-                        placeholder="votre@email.com"
+                        placeholder={t('auth.emailPlaceholder')}
                         value={resetForm.email}
                         onChange={(e) => setResetForm({ email: e.target.value })}
                         className="h-11 border-gray-300 rounded-md"
@@ -358,7 +352,7 @@ const Auth = () => {
                       className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-md transition-colors" 
                       disabled={loading}
                     >
-                      {loading ? "Chargement..." : "Réinitialiser le mot de passe"}
+                      {loading ? t('common.loading') : t('auth.resetPasswordBtn')}
                     </Button>
                   </form>
                 </div>
@@ -384,10 +378,10 @@ const Auth = () => {
                       <TabsContent value="signin" className="mt-0">
                         <form onSubmit={handleSignIn} className="space-y-5">
                           <AnimatedFormField
-                            label="Email"
+                            label={t('auth.email')}
                             name="signin-email"
                             type="email"
-                            placeholder="votre@email.com"
+                            placeholder={t('auth.emailPlaceholder')}
                             icon={<Mail className="w-4 h-4" />}
                             error={signInErrors.email}
                             value={signInForm.email}
@@ -395,7 +389,7 @@ const Auth = () => {
                           />
                           
                           <AnimatedFormField
-                            label="Mot de passe"
+                            label={t('auth.password')}
                             name="signin-password"
                             type="password"
                             placeholder="••••••••"
@@ -414,7 +408,7 @@ const Auth = () => {
                                 onCheckedChange={(checked) => setRememberMe(checked === true)}
                                 className="transition-all data-[state=checked]:bg-primary"
                               />
-                              <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">Se souvenir de moi</span>
+                              <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">{t('auth.rememberMe')}</span>
                             </label>
                             <button
                               type="button"
@@ -430,7 +424,7 @@ const Auth = () => {
                             className="w-full h-12 gradient-primary hover:shadow-primary hover:scale-[1.02] text-white font-medium rounded-xl transition-all duration-300 shadow-lg mt-2" 
                             disabled={loading}
                           >
-                            {loading ? "Chargement..." : "Se connecter"}
+                            {loading ? t('common.loading') : t('auth.loginNow')}
                           </Button>
                           
                           <div className="relative my-6">
@@ -442,50 +436,31 @@ const Auth = () => {
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-3">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors rounded-xl"
-                              disabled={loading}
-                              onClick={handleGoogleSignIn}
-                            >
-                              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                              </svg>
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-[#1877F2]/10 hover:text-[#1877F2] transition-colors rounded-xl"
-                              disabled={loading}
-                              onClick={() => toast({ title: "Info", description: "Connexion Facebook à venir" })}
-                            >
-                              <Facebook className="h-5 w-5 text-[#1877F2]" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-black/5 hover:text-black transition-colors rounded-xl dark:hover:bg-white/10 dark:hover:text-white"
-                              disabled={loading}
-                              onClick={() => toast({ title: "Info", description: "Connexion Apple à venir" })}
-                            >
-                              <Apple className="h-5 w-5 text-black dark:text-white" />
-                            </Button>
-                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors rounded-xl flex items-center justify-center gap-2"
+                            disabled={loading}
+                            onClick={handleGoogleSignIn}
+                          >
+                            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            <span>Google</span>
+                          </Button>
                         </form>
                       </TabsContent>
 
                       <TabsContent value="signup" className="mt-0">
                         <form onSubmit={handleSignUp} className="space-y-5">
                           <AnimatedFormField
-                            label="Nom complet"
+                            label={t('auth.fullName')}
                             name="signup-name"
                             type="text"
-                            placeholder="Jean Dupont"
+                            placeholder={t('auth.namePlaceholder')}
                             icon={<User className="w-4 h-4" />}
                             error={signUpErrors.fullName}
                             value={signUpForm.fullName}
@@ -493,10 +468,10 @@ const Auth = () => {
                           />
                           
                           <AnimatedFormField
-                            label="Email"
+                            label={t('auth.email')}
                             name="signup-email"
                             type="email"
-                            placeholder="votre@email.com"
+                            placeholder={t('auth.emailPlaceholder')}
                             icon={<Mail className="w-4 h-4" />}
                             error={signUpErrors.email}
                             value={signUpForm.email}
@@ -504,7 +479,7 @@ const Auth = () => {
                           />
                           
                           <AnimatedFormField
-                            label="Mot de passe"
+                            label={t('auth.password')}
                             name="signup-password"
                             type="password"
                             placeholder="••••••••"
@@ -524,7 +499,7 @@ const Auth = () => {
                                 className="pt-1 pb-2 space-y-2 overflow-hidden"
                               >
                                 <div className="flex justify-between items-center text-xs">
-                                  <span className="text-gray-500">Force du mot de passe</span>
+                                  <span className="text-gray-500">{t('auth.passwordStrengthLabel')}</span>
                                   <span className={`font-medium ${passwordStrength > 2 ? 'text-green-600' : 'text-orange-500'}`}>
                                     {strengthLabels[passwordStrength]}
                                   </span>
@@ -570,7 +545,7 @@ const Auth = () => {
                             className="w-full h-12 gradient-primary hover:shadow-primary hover:scale-[1.02] text-white font-medium rounded-xl transition-all duration-300 shadow-lg mt-2" 
                             disabled={loading}
                           >
-                            {loading ? "Chargement..." : "Créer un compte"}
+                            {loading ? t('common.loading') : t('auth.createAccount')}
                           </Button>
                           
                           <div className="relative my-6">
@@ -582,46 +557,27 @@ const Auth = () => {
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-3">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors rounded-xl"
-                              disabled={loading}
-                              onClick={handleGoogleSignIn}
-                            >
-                              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                              </svg>
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-[#1877F2]/10 hover:text-[#1877F2] transition-colors rounded-xl"
-                              disabled={loading}
-                              onClick={() => toast({ title: "Info", description: "Inscription Facebook à venir" })}
-                            >
-                              <Facebook className="h-5 w-5 text-[#1877F2]" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-black/5 hover:text-black transition-colors rounded-xl dark:hover:bg-white/10 dark:hover:text-white"
-                              disabled={loading}
-                              onClick={() => toast({ title: "Info", description: "Inscription Apple à venir" })}
-                            >
-                              <Apple className="h-5 w-5 text-black dark:text-white" />
-                            </Button>
-                          </div>
-                          
-                          <p className="text-xs text-center text-gray-500 leading-relaxed">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors rounded-xl flex items-center justify-center gap-2"
+                            disabled={loading}
+                            onClick={handleGoogleSignIn}
+                          >
+                            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            <span>Google</span>
+                          </Button>
+
+                          <p className="text-xs text-center text-gray-500 leading-relaxed px-2">
                             En vous inscrivant, vous acceptez nos{" "}
-                            <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">conditions d'utilisation</a>
+                            <a href="/terms" className="text-gray-700 hover:text-gray-900 font-medium underline-offset-2 hover:underline">conditions d'utilisation</a>
                             {" "}et notre{" "}
-                            <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">politique de confidentialité</a>
+                            <a href="/privacy" className="text-gray-700 hover:text-gray-900 font-medium underline-offset-2 hover:underline">politique de confidentialité</a>
                           </p>
                         </form>
                       </TabsContent>
@@ -641,7 +597,7 @@ const Auth = () => {
             className="gap-2 text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 rounded-xl transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Retourner à l'accueil</span>
+            <span>{t('auth.backToHome')}</span>
           </Button>
         </div>
         </div>
@@ -651,7 +607,7 @@ const Auth = () => {
           <div className="relative w-full h-[550px] lg:h-[650px] rounded-3xl overflow-hidden shadow-xl">
             <img 
               src={bannerHotels}
-              alt="Connexion sécurisée"
+              alt={t('auth.secureConnection')}
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/60 via-gray-900/40 to-gray-900/60" />
@@ -659,7 +615,7 @@ const Auth = () => {
             {/* Content overlay on image */}
             <div className="relative z-10 flex flex-col justify-center items-center h-full text-white p-8">
               <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
-                {activeTab === "signin" ? "Bienvenue" : "Rejoignez-nous"}
+                {activeTab === 'signin' ? t('auth.welcomeBack') : t('auth.createAccount')}
               </h2>
               <p className="text-lg text-center text-white/90 max-w-md">
                 {activeTab === "signin" 
