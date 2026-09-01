@@ -90,7 +90,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
             <div className="flex items-center gap-2 md:gap-4 min-w-0">
               <SidebarTrigger className="touch-target flex-shrink-0" />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" title="Retour à l'accueil">
+                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" aria-label="Retour à l'accueil" title="Retour à l'accueil">
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>

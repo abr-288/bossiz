@@ -13,8 +13,10 @@ import {
   Zap,
   Monitor
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const iOSDownloadSection = () => {
+  const { t } = useTranslation();
   const [showQR, setShowQR] = useState(false);
   const [downloadStats, setDownloadStats] = useState({
     ios: 0,
@@ -42,7 +44,7 @@ const iOSDownloadSection = () => {
     }
     
     // Détection macOS
-    if (/Mac/.test(userAgent)) && !(/iPad|iPhone|iPod/.test(userAgent)) {
+    if (/Mac/.test(userAgent) && !(/iPad|iPhone|iPod/.test(userAgent))) {
       return 'mac';
     }
     
@@ -88,16 +90,16 @@ const iOSDownloadSection = () => {
         // Rediriger vers l'App Store
         window.open(appStoreUrl, '_blank');
         setTimeout(() => {
-          alert('Redirection vers l\'App Store en cours...\nL\'installation commencera automatiquement !');
+          alert(t('iosDownload.alerts.redirectAppStore'));
         }, 500);
         handleDownloadClick('ios');
         break;
-        
+
       case 'android':
         // Rediriger vers Google Play
         window.open(playStoreUrl, '_blank');
         setTimeout(() => {
-          alert('Redirection vers Google Play en cours...\nL\'installation commencera automatiquement !');
+          alert(t('iosDownload.alerts.redirectPlayStore'));
         }, 500);
         handleDownloadClick('android');
         break;
@@ -118,16 +120,7 @@ const iOSDownloadSection = () => {
 
   // Fonction pour afficher les options desktop
   const showDesktopOptions = () => {
-    const message = `
-Choisissez votre plateforme mobile :
-
-1. iOS (iPhone/iPad)
-2. Android
-
-Ou scannez le QR Code correspondant !
-    `;
-    
-    if (confirm(message + '\n\nCliquez sur OK pour voir iOS, ou Annuler pour Android.')) {
+    if (confirm(t('iosDownload.alerts.choosePlatform'))) {
       window.open(appStoreUrl, '_blank');
       handleDownloadClick('ios');
     } else {
@@ -143,22 +136,22 @@ Ou scannez le QR Code correspondant !
     if (isIOS) {
       window.open(appStoreUrl, '_blank');
       setTimeout(() => {
-        alert('Redirection vers l\'App Store en cours...\nL\'installation commencera automatiquement !');
+        alert(t('iosDownload.alerts.redirectAppStore'));
       }, 500);
     } else {
-      alert('Cette application est réservée aux appareils iOS (iPhone/iPad).\nVeuillez utiliser un appareil iOS pour installer cette application.');
+      alert(t('iosDownload.alerts.iosOnly'));
     }
   };
 
   // Fonction pour obtenir le texte du système détecté
   const getDetectedOSText = () => {
     switch (detectedOS) {
-      case 'ios': return 'iOS détecté';
-      case 'android': return 'Android détecté';
-      case 'windows': return 'Windows détecté';
-      case 'mac': return 'macOS détecté';
-      case 'linux': return 'Linux détecté';
-      default: return 'Système inconnu';
+      case 'ios': return t('iosDownload.detected.ios');
+      case 'android': return t('iosDownload.detected.android');
+      case 'windows': return t('iosDownload.detected.windows');
+      case 'mac': return t('iosDownload.detected.mac');
+      case 'linux': return t('iosDownload.detected.linux');
+      default: return t('iosDownload.detected.unknown');
     }
   };
 
@@ -190,17 +183,17 @@ Ou scannez le QR Code correspondant !
           <div className="inline-block mb-6">
             <Badge className="bg-blue-100 text-blue-800 border-blue-200 px-6 py-3">
               <Apple className="w-6 h-6 mr-3" />
-              <span className="text-lg font-semibold">Application Mobile</span>
+              <span className="text-lg font-semibold">{t('iosDownload.badge')}</span>
             </Badge>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
-            Téléchargez B-Reserve
+            {t('iosDownload.title')}
             <span className="block text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent mt-2">
-              SUR VOTRE MOBILE
+              {t('iosDownload.titleHighlight')}
             </span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Accédez à tous nos services de réservation directement depuis votre smartphone
+            {t('iosDownload.subtitle')}
           </p>
           
           {/* Système détecté */}
@@ -220,28 +213,28 @@ Ou scannez le QR Code correspondant !
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Download className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Téléchargement Intelligent</h3>
-                <p className="text-gray-600">Détecte automatiquement votre système</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('iosDownload.smart.title')}</h3>
+                <p className="text-gray-600">{t('iosDownload.smart.subtitle')}</p>
               </div>
-              
-              <Button 
+
+              <Button
                 size="lg"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl animate-pulse hover:animate-none relative overflow-hidden group"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-2xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl relative overflow-hidden group"
                 onClick={handleUniversalInstall}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 <div className="relative z-10 flex items-center justify-center">
                   <Download className="w-6 h-6 mr-3" />
-                  {detectedOS === 'ios' ? 'Installer sur iOS' : 
-                   detectedOS === 'android' ? 'Installer sur Android' : 
-                   'Télécharger l\'App'}
+                  {detectedOS === 'ios' ? t('iosDownload.smart.ctaIOS') :
+                   detectedOS === 'android' ? t('iosDownload.smart.ctaAndroid') :
+                   t('iosDownload.smart.ctaGeneric')}
                 </div>
               </Button>
-              
+
               <p className="text-sm text-gray-500 mt-4">
-                {detectedOS === 'ios' ? 'Redirection vers l\'App Store' :
-                 detectedOS === 'android' ? 'Redirection vers Google Play' :
-                 'Choisissez votre plateforme ci-dessous'}
+                {detectedOS === 'ios' ? t('iosDownload.smart.hintIOS') :
+                 detectedOS === 'android' ? t('iosDownload.smart.hintAndroid') :
+                 t('iosDownload.smart.hintGeneric')}
               </p>
             </CardContent>
           </Card>
@@ -256,13 +249,13 @@ Ou scannez le QR Code correspondant !
                   <Apple className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">iOS</h3>
-                <p className="text-gray-600 mb-4">iPhone & iPad</p>
+                <p className="text-gray-600 mb-4">{t('iosDownload.ios.devices')}</p>
               </div>
-              
+
               <div className="space-y-4">
-                <Button 
+                <Button
                   size="lg"
-                  className="w-full bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl animate-pulse hover:animate-none relative overflow-hidden group"
+                  className="w-full bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-300 shadow-2xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl relative overflow-hidden group"
                   onClick={() => {
                     handleDownloadClick('ios');
                     handleAppInstall();
@@ -271,27 +264,27 @@ Ou scannez le QR Code correspondant !
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                   <div className="relative z-10 flex items-center justify-center">
                     <Download className="w-6 h-6 mr-3" />
-                    Installer sur iOS
+                    {t('iosDownload.smart.ctaIOS')}
                   </div>
                 </Button>
-                
-                <Button 
+
+                <Button
                   variant="outline"
                   className="w-full border-2 border-gray-300 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 font-bold py-6 text-lg"
                   onClick={() => setShowQR(!showQR)}
                 >
                   <QrCode className="w-6 h-6 mr-3" />
-                  {showQR ? 'Masquer le QR Code' : 'Scanner le QR Code'}
+                  {showQR ? t('iosDownload.ios.hideQR') : t('iosDownload.ios.scanQR')}
                 </Button>
               </div>
 
               {/* QR Code Modal */}
               {showQR && (
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-600 mb-3">Scannez ce QR Code avec votre appareil iOS</p>
-                  <img 
+                  <p className="text-sm text-gray-600 mb-3">{t('iosDownload.ios.qrHint')}</p>
+                  <img
                     src={qrCodeUrl}
-                    alt="QR Code pour télécharger B-Reserve sur iOS"
+                    alt={t('iosDownload.ios.qrAlt')}
                     className="w-32 h-32 mx-auto"
                   />
                 </div>
@@ -301,7 +294,7 @@ Ou scannez le QR Code correspondant !
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                   <Download className="w-4 h-4" />
-                  <span>{downloadStats.ios} téléchargements</span>
+                  <span>{t('iosDownload.downloadsCount', { count: downloadStats.ios })}</span>
                 </div>
               </div>
             </CardContent>
@@ -315,11 +308,11 @@ Ou scannez le QR Code correspondant !
                   <Smartphone className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Android</h3>
-                <p className="text-gray-600 mb-4">Téléphones & Tablettes</p>
+                <p className="text-gray-600 mb-4">{t('iosDownload.android.devices')}</p>
               </div>
-              
+
               <div className="space-y-4">
-                <Button 
+                <Button
                   size="lg"
                   className="w-full bg-green-600 text-white hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-bold py-6 text-lg"
                   onClick={() => {
@@ -328,16 +321,16 @@ Ou scannez le QR Code correspondant !
                   }}
                 >
                   <Download className="w-6 h-6 mr-3" />
-                  Télécharger sur Google Play
+                  {t('iosDownload.android.ctaDownload')}
                 </Button>
-                
-                <Button 
+
+                <Button
                   variant="outline"
                   className="w-full border-2 border-gray-300 hover:border-green-300 hover:text-green-600 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 font-bold py-6 text-lg"
                   onClick={() => window.open(playStoreUrl, '_blank')}
                 >
                   <ExternalLink className="w-6 h-6 mr-3" />
-                  Voir sur Google Play
+                  {t('iosDownload.android.ctaView')}
                 </Button>
               </div>
 
@@ -345,7 +338,7 @@ Ou scannez le QR Code correspondant !
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                   <Download className="w-4 h-4" />
-                  <span>{downloadStats.android} téléchargements</span>
+                  <span>{t('iosDownload.downloadsCount', { count: downloadStats.android })}</span>
                 </div>
               </div>
             </CardContent>
@@ -358,55 +351,53 @@ Ou scannez le QR Code correspondant !
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Zap className="w-8 h-8 text-blue-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Rapide</h3>
-            <p className="text-gray-600">Performance optimisée pour tous les appareils</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('iosDownload.features.fast.title')}</h3>
+            <p className="text-gray-600">{t('iosDownload.features.fast.description')}</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Shield className="w-8 h-8 text-green-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Sécurisé</h3>
-            <p className="text-gray-600">Paiements sécurisés et protection des données</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('iosDownload.features.secure.title')}</h3>
+            <p className="text-gray-600">{t('iosDownload.features.secure.description')}</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-purple-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Fiable</h3>
-            <p className="text-gray-600">Disponible 24/7 où que vous soyez</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('iosDownload.features.reliable.title')}</h3>
+            <p className="text-gray-600">{t('iosDownload.features.reliable.description')}</p>
           </div>
         </div>
 
         {/* Instructions Section */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Comment installer ?</h3>
-          
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('iosDownload.instructions.title')}</h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Apple className="w-5 h-5" />
-                iOS (iPhone/iPad)
+                {t('iosDownload.instructions.iosTitle')}
               </h4>
               <ol className="space-y-3 text-gray-600">
-                <li>1. Scannez le QR Code avec votre appareil photo</li>
-                <li>2. Cliquez sur "Ouvrir dans l'App Store"</li>
-                <li>3. Tapez sur "Obtenir" pour installer</li>
-                <li>4. L'icône B-Reserve apparaîtra sur votre écran d'accueil</li>
+                {(t('iosDownload.instructions.iosSteps', { returnObjects: true }) as string[]).map((step, i) => (
+                  <li key={i}>{i + 1}. {step}</li>
+                ))}
               </ol>
             </div>
-            
+
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Smartphone className="w-5 h-5" />
                 Android
               </h4>
               <ol className="space-y-3 text-gray-600">
-                <li>1. Cliquez sur le bouton de téléchargement</li>
-                <li>2. Suivez les instructions de Google Play</li>
-                <li>3. Acceptez les permissions nécessaires</li>
-                <li>4. L'application s'installera automatiquement</li>
+                {(t('iosDownload.instructions.androidSteps', { returnObjects: true }) as string[]).map((step, i) => (
+                  <li key={i}>{i + 1}. {step}</li>
+                ))}
               </ol>
             </div>
           </div>

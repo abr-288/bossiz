@@ -73,7 +73,8 @@ export const hotelSearchSchema = z.object({
     .min(1, "At least 1 room is required")
     .max(10, "Maximum 10 rooms allowed")
     .optional()
-    .default(1)
+    .default(1),
+  partnerOnly: z.boolean().optional()
 }).refine(
   data => new Date(data.checkOut) > new Date(data.checkIn),
   {
@@ -110,7 +111,8 @@ export const carRentalSchema = z.object({
   dropoffTime: z.string()
     .regex(/^\d{2}:\d{2}$/, "Dropoff time must be in HH:MM format")
     .optional()
-    .default("10:00")
+    .default("10:00"),
+  partnerOnly: z.boolean().optional()
 }).refine(
   data => new Date(data.dropoffDate) > new Date(data.pickupDate),
   {

@@ -12,17 +12,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { 
-  Menu, User, LogOut, LayoutDashboard, Plane, Hotel, PlaneTakeoff, 
-  Train, Calendar, Car, HelpCircle, UserCircle2, Crown, 
-  MapPin, Compass, ChevronDown, Sparkles, Search
+  Menu, User, LogOut, LayoutDashboard, Plane, Hotel, PlaneTakeoff,
+  Train, Calendar, Car, HelpCircle, UserCircle2,
+  MapPin, Compass, ChevronDown, Search
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
 import { usePWA } from "@/hooks/usePWA";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import logoDark from "@/assets/logo-dark.png";
-import logoLight from "@/assets/logo-light.png";
+import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import DarkModeToggle from "./DarkModeToggle";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
@@ -49,10 +48,28 @@ const Navbar = () => {
   // Vérifie si le chemin actuel correspond au chemin donné
   const isActive = (path: string) => location.pathname === path;
 
+  // Lien interne (SPA) ou externe (nouvel onglet) selon la cible
+  const ServiceLink = ({ to, className, onClick, children }: {
+    to: string; className?: string; onClick?: () => void; children: React.ReactNode;
+  }) => {
+    if (to.startsWith("http")) {
+      return (
+        <a href={to} target="_blank" rel="noopener noreferrer" onClick={onClick} className={className}>
+          {children}
+        </a>
+      );
+    }
+    return (
+      <Link to={to} onClick={onClick} className={className}>
+        {children}
+      </Link>
+    );
+  };
+
   // Liens vers les services de l'application
   const serviceLinks = [
-    { to: "/flights", icon: Plane, label: t("nav.flights") },
-    { to: "/hotels", icon: Hotel, label: t("nav.hotels") },
+    { to: "https://vols.bossiz.com/", icon: Plane, label: t("nav.flights") },
+    { to: "/hotels-partenaires", icon: Hotel, label: t("nav.hotels") },
     { to: "/flight-hotel", icon: PlaneTakeoff, label: t("nav.flightHotel") },
     { to: "/cars", icon: Car, label: t("nav.carRental") },
     { to: "/trains", icon: Train, label: t("nav.trains") },
@@ -60,6 +77,11 @@ const Navbar = () => {
     { to: "/destinations", icon: MapPin, label: t("nav.destinations") },
     { to: "/stays", icon: Compass, label: t("nav.stays") },
   ];
+
+  // Verticaux principaux affichés directement, le reste regroupé sous "Autres"
+  // pour éviter une rangée plate de 8 items dans la barre de navigation.
+  const primaryServiceLinks = serviceLinks.slice(0, 4);
+  const moreServiceLinks = serviceLinks.slice(4);
 
   // Effet pour détecter le scroll et ajouter l'ombre
   useEffect(() => {
@@ -103,16 +125,24 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-14 gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <img
-                src={logoDark}
-                alt={`${config.branding.siteName} Logo`}
-                className="h-9 w-auto dark:hidden"
-              />
-              <img
-                src={config.branding.logoLight || logoLight}
-                alt={`${config.branding.siteName} Logo`}
-                className="h-9 w-auto hidden dark:block"
-              />
+              {config.branding.logoDark ? (
+                <img
+                  src={config.branding.logoDark}
+                  alt={`${config.branding.siteName} Logo`}
+                  className="h-9 w-auto dark:hidden"
+                />
+              ) : (
+                <Logo variant="dark" showWordmark={false} className="h-9 w-auto dark:hidden" />
+              )}
+              {config.branding.logoLight ? (
+                <img
+                  src={config.branding.logoLight}
+                  alt={`${config.branding.siteName} Logo`}
+                  className="h-9 w-auto hidden dark:block"
+                />
+              ) : (
+                <Logo variant="light" showWordmark={false} className="h-9 w-auto hidden dark:block" />
+              )}
               <span className="font-bold text-lg text-foreground hidden sm:inline">
                 {config.branding.siteName}
               </span>
@@ -126,13 +156,13 @@ const Navbar = () => {
                   type="text"
                   placeholder={t('hero.searchPlaceholder', 'Recherchez vols, hôtels, destinations...')}
                   className="w-full h-9 pl-9 pr-20 rounded-full bg-muted/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all"
-                  onFocus={() => navigate('/flights')}
+                  onFocus={() => { window.location.href = 'https://vols.bossiz.com/'; }}
                   readOnly
                 />
                 <Button
                   size="sm"
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-7 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 text-xs px-3 font-medium"
-                  onClick={() => navigate('/flights')}
+                  onClick={() => { window.location.href = 'https://vols.bossiz.com/'; }}
                 >
                   {t('common.search', 'Rechercher')}
                 </Button>
@@ -141,21 +171,9 @@ const Navbar = () => {
 
             {/* Right Actions */}
             <div className="hidden lg:flex items-center gap-1">
-              {/* Premium Button */}
-              <Link to="/subscriptions">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-sm"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span className="hidden xl:inline">{t("nav.subscriptions")}</span>
-                </Button>
-              </Link>
-
               {/* Support */}
               <Link to="/support">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
+                <Button variant="ghost" size="sm" aria-label={t("nav.support")} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
                   <HelpCircle className="w-4 h-4" />
                 </Button>
               </Link>
@@ -279,7 +297,7 @@ const Navbar = () => {
                         Nos Services
                       </p>
                       {serviceLinks.map(({ to, icon: Icon, label }) => (
-                        <Link
+                        <ServiceLink
                           key={to}
                           to={to}
                           onClick={() => setIsMenuOpen(false)}
@@ -292,19 +310,9 @@ const Navbar = () => {
                         >
                           <Icon className="w-5 h-5" />
                           <span>{label}</span>
-                        </Link>
+                        </ServiceLink>
                       ))}
                     </div>
-
-                    <Link to="/subscriptions" onClick={() => setIsMenuOpen(false)}>
-                      <div className="flex items-center gap-3 p-4 rounded-xl bg-secondary/10 border border-secondary/20">
-                        <Crown className="w-5 h-5 text-secondary" />
-                        <div>
-                          <p className="font-semibold text-foreground">{t("nav.subscriptions")}</p>
-                          <p className="text-xs text-muted-foreground">Avantages exclusifs</p>
-                        </div>
-                      </div>
-                    </Link>
 
                     <Link to="/support" onClick={() => setIsMenuOpen(false)}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
@@ -339,8 +347,8 @@ const Navbar = () => {
       <div className="hidden lg:block bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-[1200px] mx-auto px-4">
           <div className="flex items-center gap-0.5 h-10 overflow-x-auto">
-            {serviceLinks.map(({ to, icon: Icon, label }) => (
-              <Link
+            {primaryServiceLinks.map(({ to, icon: Icon, label }) => (
+              <ServiceLink
                 key={to}
                 to={to}
                 className={cn(
@@ -352,8 +360,34 @@ const Navbar = () => {
               >
                 <Icon className="w-4 h-4" />
                 {label}
-              </Link>
+              </ServiceLink>
             ))}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200",
+                    moreServiceLinks.some(({ to }) => isActive(to))
+                      ? "bg-secondary/15 text-secondary border border-secondary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  {t("nav.others")}
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="z-50">
+                {moreServiceLinks.map(({ to, icon: Icon, label }) => (
+                  <DropdownMenuItem key={to} asChild>
+                    <ServiceLink to={to} className="flex items-center gap-2 cursor-pointer">
+                      <Icon className="w-4 h-4" />
+                      {label}
+                    </ServiceLink>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

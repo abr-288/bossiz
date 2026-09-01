@@ -8,6 +8,7 @@ export interface HotelSearchParams {
   adults: number;
   children?: number;
   rooms?: number;
+  partnerOnly?: boolean;
 }
 
 export const useHotelSearch = () => {

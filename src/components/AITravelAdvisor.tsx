@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Bot } from "lucide-react";
 import { useAITravelAdvisor } from "@/hooks/useAITravelAdvisor";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const AITravelAdvisor = () => {
+  const { t } = useTranslation();
   const [destination, setDestination] = useState("");
   const [interests, setInterests] = useState("");
   const [budget, setBudget] = useState("");
@@ -21,7 +23,7 @@ export const AITravelAdvisor = () => {
     e.preventDefault();
     
     if (!destination.trim()) {
-      toast.error("Veuillez entrer une destination");
+      toast.error(t('aiTravelAdvisor.errors.destinationRequired'));
       return;
     }
 
@@ -34,9 +36,9 @@ export const AITravelAdvisor = () => {
 
     if (result?.success) {
       setRecommendations(result.recommendations);
-      toast.success("Recommandations générées avec succès!");
+      toast.success(t('aiTravelAdvisor.success'));
     } else {
-      toast.error(result?.error || "Erreur lors de la génération des recommandations");
+      toast.error(result?.error || t('aiTravelAdvisor.errors.generic'));
     }
   };
 
@@ -44,54 +46,54 @@ export const AITravelAdvisor = () => {
     <Card className="w-full shadow-xl border-border/50">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl md:text-2xl">
-          <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-          Conseiller de Voyage AI
+          <Bot className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+          {t('aiTravelAdvisor.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="destination" className="text-sm font-medium">Destination *</Label>
+            <Label htmlFor="destination" className="text-sm font-medium">{t('aiTravelAdvisor.destination')} *</Label>
             <Input
               id="destination"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              placeholder="Ex: Paris, Tokyo, Marrakech..."
+              placeholder={t('aiTravelAdvisor.destinationPlaceholder')}
               className="h-11"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="interests" className="text-sm font-medium">Intérêts</Label>
+            <Label htmlFor="interests" className="text-sm font-medium">{t('aiTravelAdvisor.interests')}</Label>
             <Input
               id="interests"
               value={interests}
               onChange={(e) => setInterests(e.target.value)}
-              placeholder="Ex: culture, nature, gastronomie..."
+              placeholder={t('aiTravelAdvisor.interestsPlaceholder')}
               className="h-11"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             <div className="space-y-2">
-              <Label htmlFor="budget" className="text-sm font-medium">Budget</Label>
+              <Label htmlFor="budget" className="text-sm font-medium">{t('aiTravelAdvisor.budget')}</Label>
               <Input
                 id="budget"
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
-                placeholder="Ex: économique, moyen, luxe..."
+                placeholder={t('aiTravelAdvisor.budgetPlaceholder')}
                 className="h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="duration" className="text-sm font-medium">Durée du séjour</Label>
+              <Label htmlFor="duration" className="text-sm font-medium">{t('aiTravelAdvisor.duration')}</Label>
               <Input
                 id="duration"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
-                placeholder="Ex: 3 jours, une semaine..."
+                placeholder={t('aiTravelAdvisor.durationPlaceholder')}
                 className="h-11"
               />
             </div>
@@ -102,12 +104,12 @@ export const AITravelAdvisor = () => {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 md:h-5 md:w-5 animate-spin" />
-                  Génération en cours...
+                  {t('aiTravelAdvisor.generating')}
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                  Obtenir des recommandations AI
+                  <Bot className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                  {t('aiTravelAdvisor.submit')}
                 </>
               )}
             </Button>
@@ -117,8 +119,8 @@ export const AITravelAdvisor = () => {
         {recommendations && (
           <div className="mt-4 md:mt-6 p-4 bg-muted/50 rounded-xl border border-border">
             <h3 className="font-semibold mb-3 flex items-center gap-2 text-base md:text-lg">
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-              Recommandations personnalisées
+              <Bot className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              {t('aiTravelAdvisor.resultsTitle')}
             </h3>
             <div className="prose prose-sm max-w-none">
               <Textarea

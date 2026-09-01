@@ -99,13 +99,18 @@ const FeaturedServices = () => {
                   style={{ animationDelay: `${index * 0.08}s` }}
                   onClick={() => {
                     const routes: Record<string, string> = {
-                      flight: '/flights',
-                      hotel: '/hotels',
+                      flight: 'https://vols.bossiz.com/',
+                      hotel: '/hotels-partenaires',
                       car: '/cars',
                       event: '/events',
                       tour: '/tours'
                     };
-                    navigate(routes[service.type] || '/');
+                    const target = routes[service.type] || '/';
+                    if (target.startsWith('http')) {
+                      window.location.href = target;
+                    } else {
+                      navigate(target);
+                    }
                   }}
                 >
                   {/* Shine effect overlay */}
@@ -118,6 +123,7 @@ const FeaturedServices = () => {
                       src={service.image_url || service.images?.[0] || '/placeholder.svg'}
                       alt={service.name}
                       className="w-full h-full object-cover transition-smooth group-hover:scale-110"
+                      loading="lazy"
                     />
                     <Badge className="absolute top-3 left-3 gap-1">
                       <ServiceIcon className="w-3 h-3" />

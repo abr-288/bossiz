@@ -1,0 +1,434 @@
+=== MISSING i18n KEYS (used in code, absent from locale) ===
+
+--- fr (0 missing) ---
+
+--- en (0 missing) ---
+
+--- zh (0 missing) ---
+
+=== DYNAMIC-KEY PREFIXES with unresolved base object ===
+
+=== UNUSED fr.json KEYS (360) — not referenced by any t() call ===
+nav.signup
+hero.search
+flights.from
+flights.to
+flights.departure
+flights.arrival
+flights.passengers
+flights.roundtrip
+flights.oneway
+flights.search
+search.passengers
+search.multiCity
+search.pickup
+search.dropoff
+search.duration
+search.days
+features.title
+features.bestPrices.title
+features.bestPrices.description
+features.bestPricesDesc
+features.support
+features.supportDesc
+features.easyBooking
+features.easyBookingDesc
+features.securePayment
+features.securePaymentDesc
+features.secureBooking.title
+features.secureBooking.description
+features.support247.title
+features.support247.description
+destinations.explore
+destinations.reviews
+testimonials.readMore
+testimonials.traveler
+testimonials.entrepreneur
+testimonials.guide
+testimonials.comment1
+testimonials.comment2
+testimonials.comment3
+offers.days
+  ... and 320 more
+
+=== POSSIBLE HARDCODED TEXT (heuristic, 372 hits) ===
+  src\components\admin\AdminLayout.tsx:76  <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Retour à l'accueil" title="Retou
+  src\components\admin\BookingsByServiceChart.tsx:26  Aucune donnée disponible
+  src\components\admin\DashboardCustomizer.tsx:168  placeholder="Ex: Vue Complète, Vue Essentielle..."
+  src\components\admin\GeographicDistributionChart.tsx:17  Aucune donnée disponible
+  src\components\admin\ImageUpload.tsx:147  placeholder="URL de l'image ou télécharger"
+  src\components\admin\ThemeConfig.tsx:173  Thèmes prédéfinis
+  src\components\admin\ThemeConfig.tsx:428  Aperçu: Titre exemple
+  src\components\admin\ThemeConfig.tsx:450  Aperçu: Texte de paragraphe exemple
+  src\components\admin\ThemeConfig.tsx:562  Sauvegarder le thème
+  src\components\agency\AgencyLayout.tsx:93  <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" aria-label="Retour à l'accueil
+  src\components\agency\AgencySidebar.tsx:88  aria-label="Déconnexion"
+  src\components\booking-steps\BaggageInfo.tsx:105  Données réelles
+  src\components\booking-steps\BaggageInfo.tsx:181  Compagnie low-cost : aucun bagage en soute inclus par défaut
+  src\components\booking-steps\BaggageInfo.tsx:214  Vérifiez les conditions exactes lors de la confirmation.
+  src\components\booking-steps\PassengerStep.tsx:204  Prénom *
+  src\components\booking-steps\PassengerStep.tsx:209  placeholder="Prénom"
+  src\components\booking-steps\PassengerStep.tsx:306  Numéro de document *
+  src\components\booking-steps\PassengerStep.tsx:327  Date d'émission
+  src\components\booking-steps\PassengerStep.tsx:388  Prénom *
+  src\components\booking-steps\PassengerStep.tsx:393  placeholder="Prénom"
+  src\components\booking-steps\PassengerStep.tsx:490  Numéro de document *
+  src\components\booking-steps\PreferencesStep.tsx:131  Légende
+  src\components\booking-steps\PreferencesStep.tsx:258  Continuer vers le paiement
+  src\components\booking-steps\PreferencesStep.tsx:317  Préférence d'étage
+  src\components\booking-steps\PreferencesStep.tsx:324  <SelectValue placeholder="Choisir une préférence" />
+  src\components\booking-steps\PreferencesStep.tsx:336  Heure d'arrivée estimée
+  src\components\booking-steps\PreferencesStep.tsx:343  <SelectValue placeholder="Sélectionner" />
+  src\components\booking-steps\PreferencesStep.tsx:357  Demandes spéciales
+  src\components\booking-steps\PreferencesStep.tsx:360  placeholder="Ex: Chambre calme, loin de l'ascenseur, célébration d'anniversaire..."
+  src\components\booking-steps\PreferencesStep.tsx:377  Continuer vers le paiement
+  src\components\booking-steps\PreferencesStep.tsx:436  <SelectValue placeholder="Sélectionner l'heure" />
+  src\components\booking-steps\PreferencesStep.tsx:453  <SelectValue placeholder="Sélectionner l'heure" />
+  src\components\booking-steps\PreferencesStep.tsx:471  placeholder="Ex: Besoin d'un véhicule automatique, booster pour enfant requis..."
+  src\components\booking-steps\PreferencesStep.tsx:485  Continuer vers le paiement
+  src\components\booking-steps\PreferencesStep.tsx:509  Heure de départ souhaitée
+  src\components\booking-steps\PreferencesStep.tsx:516  <SelectValue placeholder="Sélectionner l'heure" />
+  src\components\booking-steps\PreferencesStep.tsx:530  Préférences alimentaires
+  src\components\booking-steps\PreferencesStep.tsx:537  <SelectValue placeholder="Sélectionner" />
+  src\components\booking-steps\PreferencesStep.tsx:552  Demandes particulières
+  src\components\booking-steps\PreferencesStep.tsx:555  placeholder="Partagez vos attentes ou besoins spéciaux..."
+  src\components\booking-steps\PreferencesStep.tsx:569  Continuer vers le paiement
+  src\components\booking-steps\SummaryStep.tsx:395  Vérifiez vos informations avant de procéder au paiement
+  src\components\booking-steps\SummaryStep.tsx:547  Options sélectionnées
+  src\components\booking-steps\SummaryStep.tsx:567  Sièges sélectionnés
+  src\components\booking-steps\SummaryStep.tsx:585  Détails du prix
+  src\components\booking-steps\SummaryStep.tsx:650  Prix calculé par le serveur • Garanti jusqu'à expiration
+  src\components\booking-steps\SummaryStep.tsx:721  Procéder au paiement
+  src\components\booking-steps\SummaryStep.tsx:733  Procéder au paiement
+  src\components\booking-steps\SummaryStep.tsx:751  Connexion requise
+  src\components\booking-steps\SummaryStep.tsx:754  Vous devez être connecté pour procéder au paiement de votre réservation.
+  src\components\booking-steps\SummaryStep.tsx:759  En vous connectant, vous pourrez :
+  src\components\BookingDialog.tsx:60  Préparez-vous à réserver ce service en quelques étapes simples
+  src\components\BookingDialog.tsx:125  Commencer la réservation
+  src\components\bossiz\BossizSiteLayout.tsx:133  Réserver
+  src\components\CarBookingDialog.tsx:156  placeholder="Abidjan - Aéroport"
+  src\components\CarBookingDialog.tsx:182  placeholder="Abidjan - Aéroport"
+  src\components\CarBookingDialog.tsx:241  placeholder="Demandes spéciales, équipements additionnels..."
+  src\components\CarBookingDialog.tsx:246  Confirmer la réservation
+  src\components\cars\CarCard.tsx:127  Kilométrage illimité
+  src\components\cars\CarCard.tsx:242  Détails
+  src\components\cars\CarCard.tsx:248  Réserver
+  src\components\cars\CarFilters.tsx:123  Réinitialiser
+  src\components\cars\CarFilters.tsx:149  Type de véhicule
+  src\components\cars\CarFilters.tsx:261  Kilométrage illimité
+  src\components\CarSearchForm.tsx:194  Restituer à un autre endroit
+  src\components\CarSearchForm.tsx:359  Âge du conducteur
+  src\components\CarSearchForm.tsx:384  Restrictions d'âge possibles
+  src\components\ChatWidget.tsx:253  aria-label="Insérer un émoji"
+  src\components\CompatibilityDetector.tsx:130  Vérifier la compatibilité
+  src\components\CompatibilityDetector.tsx:162  Votre appareil ou navigateur n'est pas compatible avec B-Reserve.
+  src\components\CompatibilityDetector.tsx:163  Vous allez être redirigé vers la page de compatibilité.
+  src\components\CreatePriceAlert.tsx:76  Créer une Alerte de Prix
+  src\components\CreatePriceAlert.tsx:79  Soyez notifié quand les prix baissent pour cette recherche
+  src\components\CreatePriceAlert.tsx:153  placeholder="Prix souhaité"
+  src\components\CreatePriceAlert.tsx:170  Vous serez notifié si le prix baisse de ce pourcentage
+  src\components\dashboard\BookingCalendar.tsx:179  Réinitialiser
+  src\components\dashboard\BookingCalendar.tsx:191  Calendrier des réservations
+  src\components\dashboard\BookingCalendar.tsx:221  Aucune réservation pour cette date
+  src\components\dashboard\UpcomingReminders.tsx:50  Prochains départs
+  src\components\destinations\DestinationGrid.tsx:57  Réessayer
+  src\components\destinations\DestinationGrid.tsx:78  Essayez une autre recherche ou catégorie
+  src\components\DestinationsSection.tsx:138  Équipements
+  src\components\DestinationsSection.tsx:197  Voir détails
+  src\components\ErrorBoundary.tsx:86  Nous nous excusons pour ce désagrément
+  src\components\ErrorBoundary.tsx:94  Détails de l'erreur:
+  src\components\ErrorBoundary.tsx:104  Stack trace (développement uniquement)
+  src\components\ErrorBoundary.tsx:119  Réessayer
+  src\components\ErrorBoundary.tsx:127  Retour à l'accueil
+  src\components\ErrorBoundary.tsx:192  Réessayer
+  src\components\EventResults.tsx:96  Réserver
+  src\components\EventResults.tsx:102  Détails
+  src\components\FeaturedServices.tsx:56  Découvrez nos meilleures offres sélectionnées pour vous
+  src\components\FlightBookingDialog.tsx:390  Cela dépend des règles de la compagnie aérienne et des lois applicables
+  src\components\FlightBookingDialog.tsx:397  Cela dépend des règles de la compagnie aérienne
+  src\components\FlightBookingDialog.tsx:414  Voyage en toute sérénité avec des avantages exclusifs et une protection complète.
+  src\components\flights\PriceCalendar.tsx:211  Meilleur prix: <Price amount={priceStats.min} fromCurrency={currency} />
+  src\components\flights\PriceCalendar.tsx:265  Meilleur prix
+  src\components\Footer.tsx:201  Compatibilité
+  src\components\HotelAutocomplete.tsx:183  Prix moyen/nuit
+  src\components\HotelBookingDialog.tsx:222  placeholder="Préférences, allergies, demandes particulières..."
+  src\components\HotelBookingDialog.tsx:227  Confirmer la réservation
+  src\components\HotelComparisonDialog.tsx:133  Réserver
+  src\components\HotelRoomDetailsDialog.tsx:34  Détails de l’établissement et aperçu des chambres disponibles.
+  src\components\hotels\HotelPriceCalendar.tsx:146  Prix par nuit - Meilleur: <Price amount={priceStats.min} fromCurrency={currency} />
+  src\components\hotels\HotelPriceCalendar.tsx:200  Meilleur prix
+  src\components\majestic-club\NotificationsSystem.tsx:285  Restez informé de toutes vos activités Majestic Club
+  src\components\majestic-club\NotificationsSystem.tsx:392  Paramètres
+  src\components\majestic-club\NotificationsSystem.tsx:419  Vous serez notifié des nouvelles activités
+  src\components\majestic-club\NotificationsSystem.tsx:558  Accéder à la page
+  src\components\majestic-club\OffMarketProperties.tsx:239  Accès à des biens immobiliers non visibles publiquement
+  src\components\majestic-club\OffMarketProperties.tsx:244  Votre niveau d'accès
+  src\components\majestic-club\OffMarketProperties.tsx:374  Demander l'Accès
+  src\components\majestic-club\OffMarketProperties.tsx:451  Révéler
+  src\components\majestic-club\OffMarketProperties.tsx:460  Télécharger
+  src\components\majestic-club\OffMarketProperties.tsx:470  Demander l'Accès
+  src\components\majestic-club\OffMarketProperties.tsx:512  Demande d'Accès Confidentiel
+  src\components\majestic-club\OffMarketProperties.tsx:542  placeholder="Précisez votre intérêt pour cette propriété..."
+  src\components\majestic-club\OffMarketProperties.tsx:553  Processus de vérification confidentiel
+  src\components\majestic-club\OffMarketProperties.tsx:556  Votre demande sera examinée par notre équipe de sécurité.
+  src\components\majestic-club\OffMarketProperties.tsx:557  Une vérification d'identité peut être requise pour les propriétés Black Card.
+  src\components\majestic-club\PaymentSystem.tsx:290  Gérez vos paiements et transactions en toute sécurité
+  src\components\majestic-club\PaymentSystem.tsx:546  placeholder="Entrez le montant à ajouter"
+  src\components\majestic-club\PaymentSystem.tsx:560  Vos informations de paiement sont protégées par un chiffrement de bout en bout
+  src\components\majestic-club\StayManagement.tsx:335  Suivez votre itinéraire et accédez à vos documents sécurisés
+  src\components\majestic-club\StayManagement.tsx:547  Sélectionnez une réservation pour voir son timeline
+  src\components\majestic-club\StayManagement.tsx:559  Documents Sécurisés
+  src\components\majestic-club\StayManagement.tsx:598  Révéler
+  src\components\majestic-club\StayManagement.tsx:607  Télécharger
+  src\components\majestic-club\TravelBooking.tsx:326  placeholder="Rechercher un service de voyage..."
+  src\components\majestic-club\TravelBooking.tsx:352  <SelectValue placeholder="Gamme de prix" />
+  src\components\majestic-club\TravelBooking.tsx:384  Hébergement
+  src\components\majestic-club\TravelBooking.tsx:461  Prix de base
+  src\components\majestic-club\TravelBooking.tsx:469  Réserver
+  src\components\majestic-club\TravelBooking.tsx:487  Essayez d'ajuster vos filtres ou votre recherche
+  src\components\majestic-club\TravelBooking.tsx:523  placeholder="Ville ou aéroport"
+  src\components\majestic-club\TravelBooking.tsx:533  placeholder="Ville ou aéroport"
+  src\components\majestic-club\TravelBooking.tsx:596  placeholder="Précisez vos besoins spécifiques..."
+  src\components\majestic-club\TravelBooking.tsx:633  Confirmer la Réservation
+  src\components\majestic-club\VIPChat.tsx:257  Réponse en 2-5 min
+  src\components\majestic-club\VIPChat.tsx:278  Vidéo
+  src\components\majestic-club\VIPChat.tsx:314  Chiffé de bout en bout
+  src\components\majestic-club\VIPChat.tsx:431  placeholder="Tapez votre message..."
+  src\components\MFAVerification.tsx:157  Entrez le code de votre application d'authentification
+  src\components\MFAVerification.tsx:205  Vérifier
+  src\components\ModernSubscriptionPayment.tsx:413  Finaliser Votre Abonnement
+  src\components\ModernSubscriptionPayment.tsx:416  Rejoignez l'excellence avec Bossiz Conciergerie et accédez à des services premium
+  src\components\ModernSubscriptionPayment.tsx:508  Choisissez la périodicité qui vous convient
+  src\components\ModernSubscriptionPayment.tsx:571  Récapitulatif de Commande
+  src\components\ModernSubscriptionPayment.tsx:658  Récapitulatif financier
+  src\components\ModernSubscriptionPayment.tsx:720  Méthode de Paiement
+  src\components\ModernSubscriptionPayment.tsx:727  Choisissez votre opérateur de paiement
+  src\components\ModernSubscriptionPayment.tsx:780  Sécurisé
+  src\components\ModernSubscriptionPayment.tsx:804  Récapitulatif de Commande
+  src\components\MultiCityFlightForm.tsx:59  placeholder="Ville de départ"
+  src\components\MultiCityFlightForm.tsx:102  Ajouter un vol (max 5)
+  src\components\NationalitySelect.tsx:60  <SelectValue placeholder="Sélectionner une nationalité" />
+  src\components\Navbar.tsx:284  Nos Services
+  src\components\NotificationPrompt.tsx:61  Recevez des notifications pour vos réservations et offres spéciales
+  src\components\Pagination.tsx:58  Précédent
+  src\components\PassengersForm.tsx:135  placeholder="Française"
+  src\components\PriceAlertManager.tsx:70  Mes Alertes de Prix
+  src\components\PriceAlertManager.tsx:73  Recevez des notifications quand les prix baissent pour vos destinations favorites
+  src\components\PriceAlertManager.tsx:82  Créez des alertes pour être notifié des baisses de prix
+  src\components\PriceAlertManager.tsx:116  Prix actuel: <span className="font-semibold">{formatPrice(alert.current_price, alert.currency)}</spa
+  src\components\PriceAlertManager.tsx:122  Prix cible: <span className="font-semibold">{formatPrice(alert.target_price, alert.currency)}</span>
+  src\components\QuickSearch.tsx:32  Trouvez rapidement ce que vous cherchez
+  src\components\QuickSearch.tsx:60  placeholder="Ville de départ"
+  src\components\QuickSearch.tsx:66  placeholder="Ville d'arrivée"
+  src\components\TwoFactorAuth.tsx:112  Authentification à Deux Facteurs (2FA)
+  src\components\TwoFactorAuth.tsx:115  Renforcez la sécurité de votre compte avec une application d'authentification
+  src\components\TwoFactorAuth.tsx:135  Votre compte est protégé par l'authentification à deux facteurs
+  src\components\TwoFactorAuth.tsx:149  Activez le 2FA pour une sécurité renforcée
+  src\components\TwoFactorAuth.tsx:193  Cette action va désactiver l'authentification à deux facteurs sur votre compte.
+  src\components\TwoFactorAuth.tsx:194  Vous devrez la reconfigurer pour la réactiver.
+  src\components\TwoFactorAuth.tsx:203  Désactiver
+  src\components\TwoFactorAuth.tsx:247  Ou entrez cette clé manuellement :
+  src\components\TwoFactorAuth.tsx:267  Entrez le code à 6 chiffres de votre application
+  src\components\TwoFactorAuth.tsx:312  Vérifier et Activer
+  src\components\TwoFactorAuth.tsx:334  Configurer l'authentification à deux facteurs
+  src\pages\Account.tsx:347  Gérez vos informations personnelles et de contact
+  src\pages\Account.tsx:370  L'email ne peut pas être modifié pour des raisons de sécurité
+  src\pages\Account.tsx:385  placeholder="Votre nom complet"
+  src\pages\Account.tsx:471  Modifiez votre mot de passe pour sécuriser votre compte
+  src\pages\Account.tsx:694  Préférences de Communication
+  src\pages\Account.tsx:697  Gérez comment vous souhaitez recevoir nos communications
+  src\pages\Account.tsx:752  Créez et gérez vos alertes de baisse de prix par destination
+  src\pages\Account.tsx:766  Enregistrer les préférences
+  src\pages\Account.tsx:784  Moyens de Paiement
+  src\pages\Account.tsx:787  Gérez vos méthodes de paiement enregistrées
+  src\pages\Account.tsx:807  Pour votre sécurité, nous ne stockons aucune carte bancaire. Vous la
+  src\pages\admin\AdminActivities.tsx:155  Nouvelle Activité
+  src\pages\admin\AdminActivities.tsx:259  placeholder="Rechercher une activité..."
+  src\pages\admin\AdminAdvertisements.tsx:195  Gérez les bannières publicitaires affichées sur le site
+  src\pages\admin\AdminAdvertisements.tsx:202  Nouvelle publicité
+  src\pages\admin\AdminAdvertisements.tsx:217  placeholder="Titre de la publicité"
+  src\pages\admin\AdminAdvertisements.tsx:378  Aucune publicité. Créez-en une !
+  src\pages\admin\AdminAgencies.tsx:311  Gérez les sous-agences partenaires et leurs accès
+  src\pages\admin\AdminAgencies.tsx:350  <SelectValue placeholder="Sélectionner un utilisateur" />
+  src\pages\admin\AdminAgencies.tsx:478  Aucune agence trouvée
+  src\pages\admin\AdminBookings.tsx:246  <SelectValue placeholder="Paiement" />
+  src\pages\admin\AdminBookings.tsx:459  Relancer l'émission du billet (PNR)
+  src\pages\admin\AdminBossizSites.tsx:226  Modifiez les informations des sites Bossiz Côte d'Ivoire et Sénégal
+  src\pages\admin\AdminBossizSites.tsx:239  Bossiz Côte d'Ivoire
+  src\pages\admin\AdminBossizSites.tsx:243  Bossiz Sénégal
+  src\pages\admin\AdminBossizSites.tsx:518  Aperçu du site
+  src\pages\admin\AdminCommissions.tsx:170  Suivez et gérez les commissions des sous-agences
+  src\pages\admin\AdminCommissions.tsx:252  Aucune commission trouvée
+  src\pages\admin\AdminCommissions.tsx:279  Marquer payée
+  src\pages\admin\AdminConfiguration.tsx:110  Gérez tous les paramètres du site depuis cette interface
+  src\pages\admin\AdminConfiguration.tsx:505  placeholder="Ex: Découvrez Paris"
+  src\pages\admin\AdminConfiguration.tsx:515  Aucun slide configuré. Les images par défaut seront utilisées.
+  src\pages\admin\AdminConfiguration.tsx:583  placeholder="Icône (Shield, Clock, Star...)"
+  src\pages\admin\AdminDestinations.tsx:107  Aucune entrée en cache
+  src\pages\admin\AdminHomepageConfig.tsx:123  Gérez le contenu et l'apparence de la page d'accueil
+  src\pages\admin\AdminHomepageConfig.tsx:140  Fonctionnalités
+  src\pages\admin\AdminHomepageConfig.tsx:231  Fonctionnalités Principales
+  src\pages\admin\AdminNewsletter.tsx:142  Aucun abonné trouvé
+  src\pages\admin\AdminOverview.tsx:46  Temps réel
+  src\pages\admin\AdminPayments.tsx:140  Aucun paiement trouvé
+  src\pages\admin\AdminPromotions.tsx:302  placeholder="Hôtel Sofitel Abidjan"
+  src\pages\admin\AdminPromotions.tsx:322  placeholder="Abidjan, Côte d'Ivoire"
+  src\pages\admin\AdminStays.tsx:155  Nouveau Séjour
+  src\pages\admin\AdminStays.tsx:260  placeholder="Rechercher un séjour..."
+  src\pages\admin\AdminSubscriptionPlans.tsx:354  placeholder="Gestion complète des réservations&#10;Support prioritaire 7j/7"
+  src\pages\admin\AdminSubscriptions.tsx:223  placeholder="Rechercher par nom, email, téléphone..."
+  src\pages\admin\AdminSubscriptions.tsx:269  Aucune demande trouvée
+  src\pages\admin\AdminSubscriptions.tsx:392  Marquer contacté
+  src\pages\admin\FooterCustomization.tsx:223  Personnalisez l'apparence et le contenu du footer de manière indépendante
+  src\pages\admin\FooterCustomization.tsx:385  placeholder="© 2024 Bossiz Conciergerie. Tous droits réservés."
+  src\pages\admin\FooterCustomization.tsx:394  placeholder="Abonnez-vous à notre newsletter pour recevoir les dernières actualités"
+  src\pages\admin\FooterCustomization.tsx:492  placeholder="Abidjan, Côte d'Ivoire"
+  src\pages\admin\FooterCustomization.tsx:518  placeholder="À propos"
+  src\pages\admin\FooterCustomization.tsx:534  placeholder="Carrières"
+  src\pages\admin\FooterCustomization.tsx:553  placeholder="Politique de confidentialité"
+  src\pages\admin\SubscriptionManagement.tsx:336  Gérez tous les aspects de vos plans d'abonnement
+  src\pages\admin\SubscriptionManagement.tsx:491  Ajouter une fonctionnalité
+  src\pages\admin\SubscriptionManagement.tsx:533  Ajouter un témoignage
+  src\pages\admin\SubscriptionManagement.tsx:579  Choisissez un plan d'abonnement pour voir et modifier ses détails
+  src\pages\admin\SubscriptionManagement.tsx:625  placeholder="Accès Premium aux services exclusifs"
+  src\pages\admin\SubscriptionManagement.tsx:635  placeholder="Description détaillée du plan..."
+  src\pages\admin\SubscriptionManagement.tsx:767  Ajouter une fonctionnalité
+  src\pages\AdminContentManager.tsx:398  placeholder="Caractéristique 1&#10;Caractéristique 2&#10;Caractéristique 3"
+  src\pages\AdminDashboard.tsx:209  Réservations
+  src\pages\AdminDashboard.tsx:389  <SelectValue placeholder="Sélectionner" />
+  src\pages\AdminEmailTemplates.tsx:141  <SelectValue placeholder="Sélectionner un type" />
+  src\pages\AdminUsers.tsx:122  Rechercher par email, nom ou téléphone
+  src\pages\agency\AgencyActivities.tsx:358  Aucune activité
+  src\pages\agency\AgencyDashboard.tsx:151  Bienvenue dans votre espace agence
+  src\pages\agency\AgencyDashboard.tsx:263  Guide de démarrage
+  src\pages\agency\AgencyDashboard.tsx:266  Commencez à ajouter vos offres pour les rendre visibles aux clients
+  src\pages\agency\AgencyDashboard.tsx:274  Créez des services de voyage (vols, hôtels, voitures) avec vos propres prix.
+  src\pages\agency\AgencyDashboard.tsx:280  Proposez des activités touristiques et excursions locales.
+  src\pages\agency\AgencyDashboard.tsx:286  Offrez des packages de séjours complets à vos clients.
+  src\pages\agency\AgencyDashboard.tsx:292  Créez des offres spéciales pour attirer plus de clients.
+  src\pages\agency\AgencySettings.tsx:118  Gérez les informations de votre agence
+  src\pages\agency\AgencySettings.tsx:127  Informations générales
+  src\pages\agency\AgencySettings.tsx:130  Ces informations peuvent être affichées aux clients si la visibilité est activée
+  src\pages\agency\AgencySettings.tsx:151  placeholder="Décrivez votre agence..."
+  src\pages\agency\AgencySettings.tsx:201  Si activé, votre nom et logo seront affichés sur vos offres
+  src\pages\agency\AgencyStays.tsx:358  Aucun séjour
+  src\pages\Auth.tsx:373  Connexion
+  src\pages\Auth.tsx:379  Inscription
+  src\pages\Auth.tsx:424  Mot de passe oublié ?
+  src\pages\Auth.tsx:556  Conditions Générales
+  src\pages\Auth.tsx:560  Politique de Confidentialité
+  src\pages\BossizPortal.tsx:148  Réservations
+  src\pages\BossizPortal.tsx:200  Bossiz Côte d'Ivoire
+  src\pages\BossizPortal.tsx:210  Bossiz Sénégal
+  src\pages\Cars.tsx:361  Véhicules disponibles
+  src\pages\Compatibility.tsx:215  Page de Compatibilité
+  src\pages\Compatibility.tsx:219  Vérification de la compatibilité de votre appareil avec B-Reserve
+  src\pages\Compatibility.tsx:230  Votre appareil est compatible
+  src\pages\Compatibility.tsx:235  Problèmes de compatibilité détectés
+  src\pages\Compatibility.tsx:279  Informations sur votre appareil
+  src\pages\Compatibility.tsx:282  Détails techniques de votre configuration actuelle
+  src\pages\Compatibility.tsx:329  Pour une expérience optimale, utilisez l'un de ces navigateurs
+  src\pages\Compatibility.tsx:353  Télécharger
+  src\pages\Compatibility.tsx:366  Solutions aux problèmes courants
+  src\pages\Compatibility.tsx:390  Si vous rencontrez toujours des problèmes, vous pouvez :
+  src\pages\Compatibility.tsx:406  Retour à l'accueil
+  src\pages\DestinationDetail.tsx:309  Réserver maintenant
+  src\pages\DestinationDetail.tsx:396  Limité
+  src\pages\DestinationDetail.tsx:447  Profitez d'une large gamme d'activités pour enrichir votre séjour
+  src\pages\DestinationDetail.tsx:470  Réserver
+  src\pages\DestinationDetail.tsx:557  Séjour vérifié
+  src\pages\DestinationDetail.tsx:569  Répondre
+  src\pages\Documentation.tsx:468  <input type="text" placeholder="Numéro de carte" className="w-full p-2 border rounded" />
+  src\pages\Documentation.tsx:564  placeholder="Décrivez votre problème..."
+  src\pages\Documentation.tsx:738  Explorez notre plateforme à travers une démo interactive immersive
+  src\pages\Documentation.tsx:930  Précédent
+  src\pages\Documentation.tsx:965  Accéder
+  src\pages\FlightBookingProcess.tsx:113  Retour aux résultats
+  src\pages\FlightBookingProcess.tsx:119  Réservation de vol
+  src\pages\FlightBookingProcess.tsx:140  Détails du vol
+  src\pages\FlightComparison.tsx:232  Comparaison de Prix des Vols
+  src\pages\FlightComparison.tsx:235  Comparez les tarifs de toutes les compagnies aériennes en un coup d'œil
+  src\pages\FlightComparison.tsx:250  Sélectionnez une plage de dates pour analyser l'évolution des prix
+  src\pages\FlightComparison.tsx:477  Utilisez le filtre de dates ci-dessus pour analyser l'évolution des prix
+  src\pages\FlightComparison.tsx:627  Utilisez le formulaire ci-dessus pour comparer les prix des vols
+  src\pages\FlightHotel.tsx:175  alt="Forfaits Vol + Hôtel"
+  src\pages\FlightHotel.tsx:183  Forfaits Vol + Hôtel
+  src\pages\FlightHotel.tsx:207  Utilisez le formulaire ci-dessus pour rechercher des vols et hôtels
+  src\pages\FlightHotel.tsx:511  Votre forfait
+  src\pages\FlightHotel.tsx:545  Hôtel
+  src\pages\FlightHotel.tsx:583  Les disponibilités sont vérifiées lors de la confirmation.
+  src\pages\FlightHotel.tsx:595  Continuer la réservation
+  src\pages\FlightHotelBookingProcess.tsx:224  Retour à la recherche
+  src\pages\FlightHotelBookingProcess.tsx:288  Détails du vol
+  src\pages\FlightHotelBookingProcess.tsx:323  Détails de l'hôtel
+  src\pages\FlightHotelBookingProcess.tsx:401  Continuer vers le paiement
+  src\pages\FlightHotelBookingProcess.tsx:460  Procéder au paiement
+  src\pages\FlightHotelBookingProcess.tsx:495  Hôtel
+  src\pages\FlightHotelBookingProcess.tsx:530  Connexion requise
+  src\pages\FlightHotelBookingProcess.tsx:533  Vous devez être connecté pour procéder au paiement de votre réservation.
+  src\pages\FlightHotelBookingProcess.tsx:538  En vous connectant, vous pourrez :
+  src\pages\Flights.tsx:477  Le forfait de voyage ultime
+  src\pages\ForgotPassword.tsx:71  Récupérez votre
+  src\pages\ForgotPassword.tsx:107  Entrez votre email pour recevoir un lien de réinitialisation
+  src\pages\ForgotPassword.tsx:117  placeholder="votre@email.com"
+  src\pages\ForgotPassword.tsx:148  Réessayer
+  src\pages\ForgotPassword.tsx:157  Retour à la connexion
+  src\pages\Hotels.tsx:487  Réinitialiser les filtres
+  src\pages\Install.tsx:111  Accédez à vos voyages en un clic depuis votre écran d'accueil
+  src\pages\Install.tsx:166  Votre appareil
+  src\pages\Install.tsx:200  Sur l'écran d'accueil
+  src\pages\Install.tsx:235  Votre appareil
+  src\pages\Install.tsx:331  Restez informé de vos réservations et offres spéciales
+  src\pages\Install.tsx:355  Rappels de voyage
+  src\pages\InstallAndroid.tsx:108  Vérification de la compatibilité de votre appareil...
+  src\pages\InstallAndroid.tsx:177  Fonctionnalités Exclusives
+  src\pages\InstallAndroid.tsx:180  Profitez de toutes les fonctionnalités premium
+  src\pages\InstallAndroid.tsx:210  Suivez ces étapes simples pour installer l'application
+  src\pages\InstallAndroid.tsx:271  Besoin d'aide ? Contactez notre support technique
+  src\pages\InstalliOS.tsx:122  Vérification de la compatibilité de votre appareil...
+  src\pages\InstalliOS.tsx:157  Installation PWA optimisée pour iOS
+  src\pages\InstalliOS.tsx:191  Fonctionnalités Premium
+  src\pages\InstalliOS.tsx:194  Profitez d'une expérience iOS exclusive
+  src\pages\InstalliOS.tsx:224  Suivez ces étapes simples pour installer l'application
+  src\pages\InstalliOS.tsx:288  Besoin d'aide ? Contactez notre support technique dédié iOS
+  src\pages\MajesticDashboard.tsx:364  placeholder="Décrivez votre demande en détail..."
+  src\pages\MajesticDashboard.tsx:385  Demandes Récentes
+  src\pages\OrderSummary.tsx:256  RÉCAPITULATIF DE COMMANDE
+  src\pages\OrderSummary.tsx:270  DÉTAIL DE LA COMMANDE
+  src\pages\OrderSummary.tsx:282  FONCTIONNALITÉS:
+  src\pages\OrderSummary.tsx:287  RÉCAPITULATIF FINANCIER
+  src\pages\OrderSummary.tsx:297  Merci de votre confiance dans Bossiz Conciergerie
+  src\pages\OrderSummary.tsx:381  Télécharger PDF
+  src\pages\OrderSummary.tsx:397  Récapitulatif de Commande
+  src\pages\OrderSummary.tsx:532  Récapitulatif financier
+  src\pages\OrderSummary.tsx:584  Procéder au paiement
+  src\pages\Payment.tsx:381  <ErrorBoundary fallback={<ErrorFallback title="Erreur de paiement" description="Impossible de charge
+  src\pages\Payment.tsx:388  Complétez votre réservation en effectuant le paiement
+  src\pages\Payment.tsx:403  La demande de paiement sera envoyée au numéro: <strong>{customerPhone}</strong>
+  src\pages\Payment.tsx:507  Méthode de paiement
+  src\pages\Payment.tsx:528  placeholder="Votre nom complet"
+  src\pages\Payment.tsx:555  placeholder="votre@email.com"
+  src\pages\Payment.tsx:593  Ce numéro sera utilisé pour le paiement mobile
+  src\pages\Payment.tsx:603  placeholder="Votre adresse"
+  src\pages\Payment.tsx:651  Paiement sécurisé par CinetPay
+  src\pages\PrivacyPolicy.tsx:136  Politique de Confidentialité
+  src\pages\ResetPassword.tsx:105  Choisissez un mot de passe sécurisé pour protéger votre compte.
+  src\pages\ResetPassword.tsx:143  Entrez votre nouveau mot de passe ci-dessous
+  src\pages\ResetPassword.tsx:190  Vous allez être redirigé vers la page de connexion...
+  src\pages\Stays.tsx:105  Tous les séjours
+  src\pages\Stays.tsx:145  Tous les séjours
+  src\pages\Stays.tsx:208  Voir tous les séjours
+  src\pages\TermsOfService.tsx:196  Conditions Générales d'Utilisation
+  src\pages\Tours.tsx:339  Découvrez des expériences inoubliables
+  src\pages\Tours.tsx:379  Prix: <Price amount={priceRange[0]} fromCurrency="XOF" /> - <Price amount={priceRange[1]} fromCurren
+  src\pages\Tours.tsx:498  Réserver
+  src\pages\Trains.tsx:472  Réserver
+  src\pages\UserDashboard.tsx:363  Hôtels
+
+=== SUMMARY ===
+Files scanned: 354
+Static t() keys found: 835
+Dynamic t() prefixes found: 29
+Missing keys - fr: 0, en: 0, zh: 0
+Unused fr.json keys: 360
+Hardcoded-text heuristic hits: 372

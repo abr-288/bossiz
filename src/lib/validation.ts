@@ -90,6 +90,32 @@ export const supportMessageSchema = z.object({
     .max(2000, "Le message doit contenir moins de 2000 caractères"),
 });
 
+// Schéma de validation pour les candidatures "Devenir partenaire"
+export const partnerApplicationSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "Le nom de l'agence doit contenir au moins 2 caractères")
+    .max(150, "Le nom doit contenir moins de 150 caractères"),
+  contactEmail: z.string()
+    .trim()
+    .email("Adresse email invalide")
+    .max(255, "L'email doit contenir moins de 255 caractères"),
+  contactPhone: z.string()
+    .trim()
+    .max(30, "Le téléphone doit contenir moins de 30 caractères")
+    .optional(),
+  description: z.string()
+    .trim()
+    .max(1000, "La description doit contenir moins de 1000 caractères")
+    .optional(),
+  logoUrl: z.string()
+    .trim()
+    .url("URL invalide")
+    .max(500, "L'URL doit contenir moins de 500 caractères")
+    .optional()
+    .or(z.literal('')),
+});
+
 // Schéma de validation pour les passagers
 export const passengerSchema = z.object({
   firstName: z.string()

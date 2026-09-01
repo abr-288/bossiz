@@ -7,10 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { 
-  Book, 
-  Users, 
-  Crown, 
-  Shield, 
+  Book,
+  Users,
+  Shield,
   Lock, 
   Settings, 
   CreditCard, 
@@ -185,6 +184,7 @@ import {
   Octagon,
   Pentagon
 } from "lucide-react";
+import heroImage from "@/assets/destination-safari.jpg";
 
 const Documentation = () => {
   const navigate = useNavigate();
@@ -247,13 +247,6 @@ const Documentation = () => {
         'Gestion des réservations',
         'Personnalisation du profil'
       ],
-      'majestic': [
-        'Accès espace VIP',
-        'Modules premium exclusifs',
-        'Service conciergerie 24/7',
-        'Chat privé et assistance',
-        'Gestion séjours exclusifs'
-      ],
       'subscription': [
         'Découverte des plans',
         'Comparaison des tarifs',
@@ -303,7 +296,6 @@ const Documentation = () => {
   const getFeatureIcon = (feature: string) => {
     const icons: Record<string, React.ReactNode> = {
       'dashboard': <BarChart3 className="w-6 h-6" />,
-      'majestic': <Crown className="w-6 h-6" />,
       'subscription': <CreditCard className="w-6 h-6" />,
       'admin': <Settings className="w-6 h-6" />,
       'booking': <Calendar className="w-6 h-6" />,
@@ -317,7 +309,6 @@ const Documentation = () => {
   const getFeatureTitle = (feature: string) => {
     const titles: Record<string, string> = {
       'dashboard': 'Tableau de Bord',
-      'majestic': 'Majestic Club',
       'subscription': 'Abonnements',
       'admin': 'Administration',
       'booking': 'Réservations',
@@ -331,13 +322,12 @@ const Documentation = () => {
   const getFeatureRoute = (feature: string) => {
     const routes: Record<string, string> = {
       'dashboard': '/dashboard',
-      'majestic': '/majestic-dashboard',
-      'subscription': '/subscriptions',
+      'subscription': '/',
       'admin': '/admin',
-      'booking': '/booking',
-      'profile': '/profile',
+      'booking': '/booking-history',
+      'profile': '/account',
       'support': '/support',
-      'mobile': '/mobile'
+      'mobile': '/install'
     };
     return routes[feature] || '/';
   };
@@ -723,8 +713,10 @@ const Documentation = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
+        <img src={heroImage} alt="Master Traversee Connect" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/85 via-purple-600/85 to-indigo-700/85" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="flex justify-center mb-6">
               <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
@@ -853,7 +845,6 @@ const Documentation = () => {
             {[
               { id: 'dashboard', title: 'Tableau de Bord', icon: BarChart3, color: 'blue', description: 'Gestion principale' },
               { id: 'booking', title: 'Réservations', icon: Calendar, color: 'purple', description: 'Voyages et séjours' },
-              { id: 'majestic', title: 'Majestic Club', icon: Crown, color: 'yellow', description: 'Services VIP' },
               { id: 'subscription', title: 'Abonnements', icon: CreditCard, color: 'green', description: 'Plans tarifaires' },
               { id: 'profile', title: 'Profil', icon: User, color: 'indigo', description: 'Gestion personnelle' },
               { id: 'support', title: 'Support', icon: HelpCircle, color: 'orange', description: 'Aide et assistance' },
@@ -1031,7 +1022,6 @@ const Documentation = () => {
               {[
                 { icon: BarChart3, title: 'Tableau de Bord', description: 'Gestion principale et statistiques' },
                 { icon: Calendar, title: 'Réservations', description: 'Booking et voyages' },
-                { icon: Crown, title: 'Majestic Club', description: 'Services VIP premium' },
                 { icon: CreditCard, title: 'Abonnements', description: 'Plans et paiement' },
                 { icon: User, title: 'Profil', description: 'Gestion personnelle' },
                 { icon: HelpCircle, title: 'Support', description: 'Aide et assistance' },
@@ -1097,7 +1087,6 @@ const Documentation = () => {
                 <li>Interface moderne et intuitive</li>
                 <li>Gestion complète des réservations</li>
                 <li>Système d'abonnements flexible</li>
-                <li>Services VIP Majestic Club</li>
                 <li>Support client 24/7</li>
                 <li>Application mobile native</li>
               </ul>
@@ -1111,11 +1100,6 @@ const Documentation = () => {
                   icon: <Calendar className="w-8 h-8 text-blue-600" />,
                   title: "Réservations Intelligentes",
                   description: "Système de réservation avancé avec gestion des disponibilités en temps réel"
-                },
-                {
-                  icon: <Crown className="w-8 h-8 text-yellow-600" />,
-                  title: "Majestic Club",
-                  description: "Services exclusifs VIP avec conciergerie personnelle et avantages premium"
                 },
                 {
                   icon: <CreditCard className="w-8 h-8 text-green-600" />,
@@ -1159,12 +1143,6 @@ const Documentation = () => {
                   level: "Débutant"
                 },
                 {
-                  title: "Guide Majestic Club",
-                  description: "Maîtrisez tous les services VIP exclusifs",
-                  icon: <Crown className="w-6 h-6" />,
-                  level: "Avancé"
-                },
-                {
                   title: "Guide des paiements",
                   description: "Tout sur CinetPay et les méthodes de paiement",
                   icon: <CreditCard className="w-6 h-6" />,
@@ -1201,10 +1179,6 @@ const Documentation = () => {
                 {
                   question: "Comment fonctionne le système de réservation ?",
                   answer: "Notre système de réservation utilise un algorithme avancé pour vérifier les disponibilités en temps réel et proposer les meilleures options selon vos critères."
-                },
-                {
-                  question: "Qu'est-ce que le Majestic Club ?",
-                  answer: "Le Majestic Club est notre programme VIP qui offre des avantages exclusifs comme la conciergerie personnelle, des réductions spéciales et un accès prioritaire au support."
                 },
                 {
                   question: "Quelles méthodes de paiement sont acceptées ?",

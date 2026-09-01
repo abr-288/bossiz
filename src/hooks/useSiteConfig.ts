@@ -66,8 +66,8 @@ const DEFAULT_CONFIG: SiteConfig = {
   branding: {
     siteName: "B-Reserve",
     tagline: "Votre partenaire voyage",
-    logoLight: "/logo-light.png",
-    logoDark: "/logo-dark.png",
+    logoLight: "",
+    logoDark: "",
     favicon: "/favicon.ico",
   },
   contact: {

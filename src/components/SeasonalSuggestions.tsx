@@ -4,65 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Cloud, Sparkles, TrendingUp, MapPin, Search } from "lucide-react";
+import { Calendar, Cloud, Bot, TrendingUp, MapPin, Search } from "lucide-react";
 import { useWeather } from "@/hooks/useWeather";
 import { useEventSearch } from "@/hooks/useEventSearch";
 import { useAITravelAdvisor } from "@/hooks/useAITravelAdvisor";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 interface SeasonalInfo {
-  season: string;
-  months: string[];
-  description: string;
-  advantages: string[];
-  temperature: string;
-  rainfall: string;
+  key: string;
   color: string;
 }
 
-const seasonalData: Record<string, SeasonalInfo[]> = {
-  default: [
-    {
-      season: "Printemps",
-      months: ["Mars", "Avril", "Mai"],
-      description: "Climat doux et nature en fleurs",
-      advantages: ["Températures agréables", "Moins de touristes", "Prix avantageux"],
-      temperature: "15-25°C",
-      rainfall: "Modéré",
-      color: "bg-green-500"
-    },
-    {
-      season: "Été",
-      months: ["Juin", "Juillet", "Août"],
-      description: "Saison haute et animations",
-      advantages: ["Nombreux événements", "Vie nocturne active", "Tous services ouverts"],
-      temperature: "25-35°C",
-      rainfall: "Faible",
-      color: "bg-orange-500"
-    },
-    {
-      season: "Automne",
-      months: ["Septembre", "Octobre", "Novembre"],
-      description: "Ambiance paisible et authentique",
-      advantages: ["Températures douces", "Couleurs magnifiques", "Tarifs réduits"],
-      temperature: "15-25°C",
-      rainfall: "Modéré à élevé",
-      color: "bg-amber-600"
-    },
-    {
-      season: "Hiver",
-      months: ["Décembre", "Janvier", "Février"],
-      description: "Calme et découverte culturelle",
-      advantages: ["Peu de touristes", "Prix très attractifs", "Authenticité locale"],
-      temperature: "5-15°C",
-      rainfall: "Élevé",
-      color: "bg-blue-500"
-    }
-  ]
-};
+const seasonalData: SeasonalInfo[] = [
+  { key: "spring", color: "bg-green-500" },
+  { key: "summer", color: "bg-orange-500" },
+  { key: "autumn", color: "bg-amber-600" },
+  { key: "winter", color: "bg-blue-500" }
+];
 
 export const SeasonalSuggestions = () => {
+  const { t } = useTranslation();
   const [destination, setDestination] = useState("");
   const [searchTrigger, setSearchTrigger] = useState(false);
   
@@ -105,11 +68,11 @@ export const SeasonalSuggestions = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            Suggestions Intelligentes de Voyage
+            <Bot className="h-6 w-6 text-primary" />
+            {t('seasonalSuggestions.title')}
           </CardTitle>
           <CardDescription>
-            Découvrez les meilleures périodes pour voyager en fonction de la météo, des événements et de la saisonnalité
+            {t('seasonalSuggestions.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,7 +80,7 @@ export const SeasonalSuggestions = () => {
             <div className="relative flex-1">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Entrez une destination (ex: Paris, Tokyo, New York)"
+                placeholder={t('seasonalSuggestions.placeholder')}
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -126,7 +89,7 @@ export const SeasonalSuggestions = () => {
             </div>
             <Button onClick={handleSearch} disabled={!destination.trim()}>
               <Search className="h-4 w-4 mr-2" />
-              Analyser
+              {t('seasonalSuggestions.analyze')}
             </Button>
           </div>
         </CardContent>
@@ -137,27 +100,27 @@ export const SeasonalSuggestions = () => {
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1">
             <TabsTrigger value="seasonal" className="text-xs sm:text-sm px-2 py-1.5">
               <Calendar className="h-3.5 w-3.5 mr-1 sm:mr-2 shrink-0" />
-              <span className="truncate">Saisons</span>
+              <span className="truncate">{t('seasonalSuggestions.tabs.seasonal')}</span>
             </TabsTrigger>
             <TabsTrigger value="weather" className="text-xs sm:text-sm px-2 py-1.5">
               <Cloud className="h-3.5 w-3.5 mr-1 sm:mr-2 shrink-0" />
-              <span className="truncate">Météo</span>
+              <span className="truncate">{t('seasonalSuggestions.tabs.weather')}</span>
             </TabsTrigger>
             <TabsTrigger value="events" className="text-xs sm:text-sm px-2 py-1.5">
               <TrendingUp className="h-3.5 w-3.5 mr-1 sm:mr-2 shrink-0" />
-              <span className="truncate">Événements</span>
+              <span className="truncate">{t('seasonalSuggestions.tabs.events')}</span>
             </TabsTrigger>
             <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 py-1.5">
-              <Sparkles className="h-3.5 w-3.5 mr-1 sm:mr-2 shrink-0" />
-              <span className="truncate">IA</span>
+              <Bot className="h-3.5 w-3.5 mr-1 sm:mr-2 shrink-0" />
+              <span className="truncate">{t('seasonalSuggestions.tabs.ai')}</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="seasonal" className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              {seasonalData.default.map((season, index) => (
+              {seasonalData.map((season, index) => (
                 <motion.div
-                  key={season.season}
+                  key={season.key}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -167,21 +130,23 @@ export const SeasonalSuggestions = () => {
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
                           <div className={`w-3 h-3 rounded-full ${season.color}`} />
-                          {season.season}
+                          {t(`seasonalSuggestions.seasons.${season.key}.name`)}
                           {currentSeason === index && (
-                            <Badge variant="secondary" className="ml-2">Actuelle</Badge>
+                            <Badge variant="secondary" className="ml-2">{t('seasonalSuggestions.current')}</Badge>
                           )}
                         </CardTitle>
                       </div>
-                      <CardDescription>{season.months.join(" · ")}</CardDescription>
+                      <CardDescription>
+                        {(t(`seasonalSuggestions.seasons.${season.key}.months`, { returnObjects: true }) as string[]).join(" · ")}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-sm text-muted-foreground">{season.description}</p>
-                      
+                      <p className="text-sm text-muted-foreground">{t(`seasonalSuggestions.seasons.${season.key}.description`)}</p>
+
                       <div className="space-y-2">
-                        <h4 className="text-sm font-semibold">Avantages</h4>
+                        <h4 className="text-sm font-semibold">{t('seasonalSuggestions.advantagesLabel')}</h4>
                         <ul className="space-y-1">
-                          {season.advantages.map((advantage, i) => (
+                          {(t(`seasonalSuggestions.seasons.${season.key}.advantages`, { returnObjects: true }) as string[]).map((advantage, i) => (
                             <li key={i} className="text-sm flex items-start gap-2">
                               <span className="text-primary">•</span>
                               {advantage}
@@ -192,12 +157,12 @@ export const SeasonalSuggestions = () => {
 
                       <div className="grid grid-cols-2 gap-4 pt-2 border-t">
                         <div>
-                          <p className="text-xs text-muted-foreground">Température</p>
-                          <p className="text-sm font-medium">{season.temperature}</p>
+                          <p className="text-xs text-muted-foreground">{t('seasonalSuggestions.temperature')}</p>
+                          <p className="text-sm font-medium">{t(`seasonalSuggestions.seasons.${season.key}.temperature`)}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-muted-foreground">Précipitations</p>
-                          <p className="text-sm font-medium">{season.rainfall}</p>
+                          <p className="text-xs text-muted-foreground">{t('seasonalSuggestions.rainfall')}</p>
+                          <p className="text-sm font-medium">{t(`seasonalSuggestions.seasons.${season.key}.rainfall`)}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -220,7 +185,7 @@ export const SeasonalSuggestions = () => {
             ) : weatherData ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>Météo actuelle à {weatherData.location}</CardTitle>
+                  <CardTitle>{t('seasonalSuggestions.weatherAt', { location: weatherData.location })}</CardTitle>
                   <CardDescription>{weatherData.country}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -230,17 +195,17 @@ export const SeasonalSuggestions = () => {
                         <div className="text-5xl font-bold">{weatherData.temperature}°C</div>
                         <div>
                           <p className="text-lg font-medium">{weatherData.condition}</p>
-                          <p className="text-sm text-muted-foreground">Ressenti: {weatherData.feelsLike}°C</p>
+                          <p className="text-sm text-muted-foreground">{t('seasonalSuggestions.feelsLike')}: {weatherData.feelsLike}°C</p>
                         </div>
                       </div>
                     </div>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                        <span className="text-sm text-muted-foreground">Humidité</span>
+                        <span className="text-sm text-muted-foreground">{t('seasonalSuggestions.humidity')}</span>
                         <span className="font-medium">{weatherData.humidity}%</span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                        <span className="text-sm text-muted-foreground">Vent</span>
+                        <span className="text-sm text-muted-foreground">{t('seasonalSuggestions.wind')}</span>
                         <span className="font-medium">{weatherData.windSpeed} km/h</span>
                       </div>
                     </div>
@@ -251,7 +216,7 @@ export const SeasonalSuggestions = () => {
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-center text-muted-foreground">
-                    Impossible de récupérer les données météo pour cette destination
+                    {t('seasonalSuggestions.weatherError')}
                   </p>
                 </CardContent>
               </Card>
@@ -286,6 +251,7 @@ export const SeasonalSuggestions = () => {
                               src={event.thumbnail}
                               alt={event.name}
                               className="w-24 h-24 object-cover rounded-lg"
+                              loading="lazy"
                             />
                           )}
                           <div className="flex-1 space-y-2">
@@ -320,7 +286,7 @@ export const SeasonalSuggestions = () => {
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-center text-muted-foreground">
-                    Aucun événement trouvé pour cette destination
+                    {t('seasonalSuggestions.eventsEmpty')}
                   </p>
                 </CardContent>
               </Card>
@@ -342,8 +308,8 @@ export const SeasonalSuggestions = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    Recommandations personnalisées pour {destination}
+                    <Bot className="h-5 w-5 text-primary" />
+                    {t('seasonalSuggestions.aiRecommendationsFor', { destination })}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -358,7 +324,7 @@ export const SeasonalSuggestions = () => {
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-center text-muted-foreground">
-                    Impossible de générer des recommandations pour cette destination
+                    {t('seasonalSuggestions.aiError')}
                   </p>
                 </CardContent>
               </Card>

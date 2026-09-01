@@ -439,6 +439,7 @@ const Tours = () => {
                     src={tour.image}
                     alt={tour.name}
                     className="w-full h-48 object-cover"
+                    loading="lazy"
                   />
                   <CardContent className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{tour.name}</h3>

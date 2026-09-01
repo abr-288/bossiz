@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 interface Advertisement {
   id: string;
@@ -17,6 +18,7 @@ interface Advertisement {
 }
 
 export function AdvertisementBanner() {
+  const { t } = useTranslation();
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -86,6 +88,7 @@ export function AdvertisementBanner() {
                     src={currentAd.image_url}
                     alt={currentAd.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
               )}
@@ -110,7 +113,7 @@ export function AdvertisementBanner() {
                     className="bg-white text-gray-900 hover:bg-gray-100"
                   >
                     <Link to={currentAd.link_url}>
-                      {currentAd.link_text || "En savoir plus"}
+                      {currentAd.link_text || t('common.learnMore')}
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>

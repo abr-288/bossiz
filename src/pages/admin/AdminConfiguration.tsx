@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Plus, Trash2, Globe, Mail, Palette, Settings, FileText, CreditCard, Paintbrush, Upload } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Globe, Mail, Palette, Settings, FileText, CreditCard, Paintbrush } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeConfig } from "@/components/admin/ThemeConfig";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -19,7 +19,9 @@ interface ConfigItem {
   config_key: string;
   config_value: any;
   category: string;
-  description: string;
+  description: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export default function AdminConfiguration() {
@@ -676,16 +678,22 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
         <CardDescription>Paramètres régionaux par défaut</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          <strong>Devise :</strong> le site facture uniquement en XOF (Franc CFA)
+          via CinetPay — ces champs sont indicatifs et n'affectent pas le
+          site. Passer à un vrai multi-devises (affichage et paiement)
+          demanderait un développement dédié.
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>Devise par défaut</Label>
+            <Label>Devise par défaut (indicatif, non appliqué)</Label>
             <Input
               value={value.defaultCurrency || ""}
               onChange={(e) => setValue({ ...value, defaultCurrency: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Devises disponibles (séparées par des virgules)</Label>
+            <Label>Devises disponibles (indicatif, non appliqué)</Label>
             <Input
               value={value.availableCurrencies?.join(", ") || ""}
               onChange={(e) =>
@@ -697,14 +705,14 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
             />
           </div>
           <div className="space-y-2">
-            <Label>Langue par défaut</Label>
+            <Label>Langue par défaut (appliquée aux nouveaux visiteurs)</Label>
             <Input
               value={value.defaultLanguage || ""}
               onChange={(e) => setValue({ ...value, defaultLanguage: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Langues disponibles (séparées par des virgules)</Label>
+            <Label>Langues disponibles (codes fr/en/zh, séparées par des virgules)</Label>
             <Input
               value={value.availableLanguages?.join(", ") || ""}
               onChange={(e) =>
@@ -714,6 +722,9 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
                 })
               }
             />
+            <p className="text-xs text-muted-foreground">
+              Contrôle les langues proposées dans le sélecteur de langue du site.
+            </p>
           </div>
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
@@ -881,3 +892,8 @@ function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
     </Card>
   );
 }
+
+// Les clés d'API tierces (Amadeus, RapidAPI, AeroDataBox, TravelAdvisor, Flight Fare Search, Kayak)
+// ne sont jamais lues depuis site_config par les Edge Functions (elles utilisent Deno.env.get()
+// via les secrets Supabase). Un onglet d'administration qui les stockait ici a été supprimé :
+// il n'avait aucun effet fonctionnel et exposait ces secrets via la lecture publique de site_config.

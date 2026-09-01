@@ -110,7 +110,7 @@ export const CarFilters = ({
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Filtres</h2>
+          <h2 className="text-lg font-semibold">{t('cars.filters')}</h2>
           {activeFiltersCount > 0 && (
             <Badge variant="secondary" className="ml-2">
               {activeFiltersCount}
@@ -133,7 +133,7 @@ export const CarFilters = ({
             Rechercher
           </Label>
           <Input
-            placeholder="Marque, modèle..."
+            placeholder={t('carFilters.brandModelPlaceholder')}
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
             className="mt-2"
@@ -168,7 +168,7 @@ export const CarFilters = ({
         {/* Price Range */}
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center justify-between">
-            <span>Prix par jour</span>
+            <span>{t('cars.pricePerDay')}</span>
             <span className="text-primary font-semibold">
               {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
             </span>

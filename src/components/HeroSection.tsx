@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Hotel, Car, Plane } from "lucide-react";
+import { Hotel, Car, Plane, Train, Compass } from "lucide-react";
 import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import heroSlide2 from "@/assets/hero-slide-2.jpg";
 import heroSlide3 from "@/assets/hero-slide-3.jpg";
@@ -11,6 +11,8 @@ import { FlightSearchForm } from "./FlightSearchForm";
 import { HotelSearchForm } from "./HotelSearchForm";
 import { FlightHotelSearchForm } from "./FlightHotelSearchForm";
 import { CarSearchForm } from "./CarSearchForm";
+import { TrainSearchForm } from "./TrainSearchForm";
+import { StaySearchForm } from "./StaySearchForm";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 
 const DEFAULT_SLIDES = [heroSlide1, heroSlide2, heroSlide3, heroSlide4, heroSlide5];
@@ -116,12 +118,26 @@ const HeroSection = () => {
                 <Hotel className="w-3.5 h-3.5" />
                 <span className="whitespace-nowrap">{t('nav.flightHotel')}</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="car" 
+              <TabsTrigger
+                value="car"
                 className="gap-1.5 py-2.5 px-4 rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:bg-background data-[state=active]:text-secondary flex-shrink-0 scroll-snap-item text-sm font-medium"
               >
                 <Car className="w-4 h-4" />
                 <span className="whitespace-nowrap">{t('nav.carRental')}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="train"
+                className="gap-1.5 py-2.5 px-4 rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:bg-background data-[state=active]:text-secondary flex-shrink-0 scroll-snap-item text-sm font-medium"
+              >
+                <Train className="w-4 h-4" />
+                <span className="whitespace-nowrap">{t('nav.trains')}</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="stays"
+                className="gap-1.5 py-2.5 px-4 rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:bg-background data-[state=active]:text-secondary flex-shrink-0 scroll-snap-item text-sm font-medium"
+              >
+                <Compass className="w-4 h-4" />
+                <span className="whitespace-nowrap">{t('nav.stays')}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -136,6 +152,12 @@ const HeroSection = () => {
             </TabsContent>
             <TabsContent value="car" className="p-3 md:p-5">
               <CarSearchForm />
+            </TabsContent>
+            <TabsContent value="train" className="p-3 md:p-5">
+              <TrainSearchForm />
+            </TabsContent>
+            <TabsContent value="stays" className="p-3 md:p-5">
+              <StaySearchForm />
             </TabsContent>
           </Tabs>
         </div>

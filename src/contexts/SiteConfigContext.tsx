@@ -1,5 +1,6 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, ReactNode } from "react";
 import { useSiteConfig, SiteConfig } from "@/hooks/useSiteConfig";
+import { applyDefaultLanguage } from "@/i18n/config";
 
 interface SiteConfigContextType {
   config: SiteConfig;
@@ -12,6 +13,12 @@ const SiteConfigContext = createContext<SiteConfigContextType | undefined>(undef
 
 export const SiteConfigProvider = ({ children }: { children: ReactNode }) => {
   const { config, loading, updateConfig, refetch } = useSiteConfig();
+
+  useEffect(() => {
+    if (!loading && config.locale?.defaultLanguage) {
+      applyDefaultLanguage(config.locale.defaultLanguage);
+    }
+  }, [loading, config.locale?.defaultLanguage]);
 
   return (
     <SiteConfigContext.Provider value={{ config, loading, updateConfig, refetch }}>

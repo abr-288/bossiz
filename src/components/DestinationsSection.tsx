@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LazyImage } from "@/components/ui/lazy-image";
-import { MapPin, Star, Loader2, Users, Calendar, Wifi, Coffee, Utensils, Waves, Mountain, Building2, Sparkles } from "lucide-react";
+import { MapPin, Star, Loader2, Users, Calendar, Wifi, Coffee, Utensils, Waves, Mountain, Building2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDestinations } from "@/hooks/useDestinations";
@@ -19,7 +19,7 @@ const DestinationsSection = () => {
     if (nameLower.includes('plage') || nameLower.includes('beach') || nameLower.includes('mer')) return Waves;
     if (nameLower.includes('montagne') || nameLower.includes('mountain')) return Mountain;
     if (nameLower.includes('ville') || nameLower.includes('city')) return Building2;
-    return Sparkles;
+    return MapPin;
   };
 
   const getAmenityIcon = (amenity: string) => {
@@ -27,7 +27,7 @@ const DestinationsSection = () => {
     if (amenityLower.includes('wifi')) return Wifi;
     if (amenityLower.includes('restaurant') || amenityLower.includes('repas')) return Utensils;
     if (amenityLower.includes('café') || amenityLower.includes('coffee')) return Coffee;
-    return Sparkles;
+    return Star;
   };
 
   return (
@@ -179,11 +179,11 @@ const DestinationsSection = () => {
                   <div className="flex items-center gap-4 pt-2 border-t border-border/50">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Users className="w-4 h-4" />
-                      <span className="text-xs">Jusqu'à 4 personnes</span>
+                      <span className="text-xs">{t('destinationsSection.upToPersons', { count: 4 })}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Calendar className="w-4 h-4" />
-                      <span className="text-xs">Annulation flexible</span>
+                      <span className="text-xs">{t('destinationsSection.flexibleCancellation')}</span>
                     </div>
                   </div>
 

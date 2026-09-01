@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Facebook, Twitter, Instagram, Youtube, Mail, Linkedin, Download } from "lucide-react";
-import logoDark from "@/assets/logo-dark.png";
-import logoLight from "@/assets/logo-light.png";
+import Logo from "./Logo";
 import { useState } from "react";
 import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
 import { toast } from "sonner";
@@ -57,18 +56,25 @@ const Footer = () => {
     }
   };
 
+  // Fond marine fixe : bg-primary/border-primary-light basculeraient vers le vert
+  // accent en mode sombre, ce footer doit garder la même identité dans les deux modes.
   return (
-    <footer className="bg-primary border-t border-primary-light w-full">
+    <footer className="bg-[hsl(225,45%,18%)] border-t border-[hsl(225,45%,28%)] w-full">
       <div className="site-container py-8 md:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
           {/* Brand Section */}
           <div className="space-y-3 md:space-y-4 text-center sm:text-left">
             <div className="flex items-center gap-2 md:gap-3 justify-center sm:justify-start">
-              <img 
-                src={config.branding.logoLight || logoLight} 
-                alt={`${config.branding.siteName} Logo`} 
-                className="h-10 md:h-12 w-auto" 
-              />
+              {config.branding.logoLight ? (
+                <img
+                  src={config.branding.logoLight}
+                  alt={`${config.branding.siteName} Logo`}
+                  className="h-10 md:h-12 w-auto"
+                  loading="lazy"
+                />
+              ) : (
+                <Logo variant="light" showWordmark={false} className="h-10 md:h-12 w-auto" />
+              )}
               <span className="text-xl md:text-2xl font-bold text-white">
                 {config.branding.siteName}
               </span>
@@ -137,12 +143,12 @@ const Footer = () => {
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.services")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
-                <Link to="/flights" className="text-white/80 hover:text-secondary transition-smooth">
+                <a href="https://vols.bossiz.com/" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.flights")}
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/hotels" className="text-white/80 hover:text-secondary transition-smooth">
+                <Link to="/hotels-partenaires" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.hotels")}
                 </Link>
               </li>
@@ -174,17 +180,22 @@ const Footer = () => {
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.support")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
-                <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
+                <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.help")}
                 </Link>
               </li>
               <li>
-                <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
+                <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.faq")}
                 </Link>
               </li>
               <li>
                 <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
+                  {t("nav.support")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.contact")}
                 </Link>
               </li>
@@ -201,7 +212,7 @@ const Footer = () => {
               <li>
                 <Button 
                   onClick={handleAppInstall}
-                  className="bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-bold py-3 px-4 border-2 border-white hover:border-gray-200 rounded-lg animate-pulse hover:animate-none text-sm"
+                  className="bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-colors duration-300 shadow-lg font-bold py-3 px-4 border-2 border-white hover:border-gray-200 rounded-lg text-sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t("common.install")}
@@ -256,11 +267,14 @@ const Footer = () => {
             <Link to="/privacy" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.privacy")}
             </Link>
-            <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
+            <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.help")}
             </Link>
             <Link to="/install" className="text-secondary hover:text-secondary/80 transition-smooth font-semibold">
               📱 {t("common.install")}
+            </Link>
+            <Link to="/bossiz-portal" className="text-white/80 hover:text-secondary transition-smooth">
+              {t("footer.bossizGroup")}
             </Link>
           </div>
         </div>

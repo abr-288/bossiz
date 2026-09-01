@@ -218,10 +218,7 @@ CREATE POLICY "Users can insert their own subscriptions" ON public.majestic_subs
 
 CREATE POLICY "Admins can manage all subscriptions" ON public.majestic_subscriptions
   FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.user_roles 
-      WHERE user_id = auth.uid() AND role = 'admin'
-    )
+    auth.jwt() ->> 'role' = 'admin'
   );
 
 -- BOOKINGS POLICIES
@@ -348,7 +345,7 @@ ON CONFLICT DO NOTHING;
 
 -- Insert sample off-market properties
 INSERT INTO public.majestic_properties (title, description, location, price, property_type, bedrooms, bathrooms, area_sqm, images, access_level, metadata) VALUES
-('Villa Azure', 'Stunning beachfront villa with private beach access', 'Abidjan, Riviera', 250000000, 'villa', 6, 8, 1200, '{"main": "https://example.com/villa1.jpg"}', 'vip', '{"features": ["private_beach", "infinity_pool", "home_cinema", "wine_cellar"]}'),
-('Penthouse Gold', 'Luxury penthouse with panoramic city views', 'Abidjan, Plateau', 180000000, 'penthouse', 4, 5, 800, '{"main": "https://example.com/penthouse1.jpg"}', 'vip', '{"features": ["rooftop_terrace", "private_elevator", "smart_home", "concierge_service"]}'),
-('Mansion Noir', 'Exclusive black card members only property', 'Abidjan, Cocody', 500000000, 'mansion', 10, 12, 2500, '{"main": "https://example.com/mansion1.jpg"}', 'black', '{"features": ["private_cinema", "indoor_pool", "tennis_court", "helipad", "butler_service"]}')
+('Villa Azure', 'Stunning beachfront villa with private beach access', 'Abidjan, Riviera', 250000000, 'villa', 6, 8, 1200, ARRAY['https://example.com/villa1.jpg'], 'vip', '{"features": ["private_beach", "infinity_pool", "home_cinema", "wine_cellar"]}'),
+('Penthouse Gold', 'Luxury penthouse with panoramic city views', 'Abidjan, Plateau', 180000000, 'penthouse', 4, 5, 800, ARRAY['https://example.com/penthouse1.jpg'], 'vip', '{"features": ["rooftop_terrace", "private_elevator", "smart_home", "concierge_service"]}'),
+('Mansion Noir', 'Exclusive black card members only property', 'Abidjan, Cocody', 500000000, 'mansion', 10, 12, 2500, ARRAY['https://example.com/mansion1.jpg'], 'black', '{"features": ["private_cinema", "indoor_pool", "tennis_court", "helipad", "butler_service"]}')
 ON CONFLICT DO NOTHING;

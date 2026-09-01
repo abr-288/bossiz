@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/integrations.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,17 +15,8 @@ serve(async (req) => {
   try {
     const { bookingId } = await req.json();
     
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!resendApiKey) {
-      console.log('RESEND_API_KEY not configured, skipping email');
-      return new Response(
-        JSON.stringify({ success: true, message: 'Email skipped (API key not configured)' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('Supabase configuration missing');
@@ -70,33 +62,31 @@ serve(async (req) => {
       );
     }
 
-    // Send email with ticket attachment via Resend
+    // Send email with ticket attachment via le prestataire actif (Resend ou SMTP)
     const emailHtml = generateTicketEmailHtml(booking, passengers || []);
 
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: 'B-Reserve <noreply@b-reserve.com>',
-        to: [booking.customer_email],
-        subject: `Your Flight Ticket - ${booking.external_ref || 'Pending'}`,
-        html: emailHtml,
-        attachments: [
-          {
-            filename: `ticket-${booking.id}.pdf`,
-            content: ticketData.ticketBase64, // Assuming the ticket function returns base64
-            type: 'application/pdf'
-          }
-        ]
-      }),
+    const result = await sendEmail(supabase, {
+      from: 'B-Reserve <noreply@bossiz.com>',
+      to: [booking.customer_email],
+      subject: `Your Flight Ticket - ${booking.external_ref || 'Pending'}`,
+      html: emailHtml,
+      attachments: [
+        {
+          filename: `ticket-${booking.id}.pdf`,
+          content: ticketData.ticketBase64, // Assuming the ticket function returns base64
+        },
+      ],
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Resend API error:', response.status, errorText);
+    if (!result.ok) {
+      if (result.error === 'RESEND_API_KEY not configured') {
+        console.log('Aucun prestataire email configuré, envoi ignoré');
+        return new Response(
+          JSON.stringify({ success: true, message: 'Email skipped (no provider configured)' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.error('Email send error:', result.error);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to send email' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

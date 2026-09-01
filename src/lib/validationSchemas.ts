@@ -204,10 +204,10 @@ export const paymentSchema = z.object({
     .max(100, "Le nom est trop long")
     .trim(),
   customerEmail: z.string()
-    .email("Adresse email invalide")
-    .max(255, "L'email est trop long")
     .trim()
-    .toLowerCase(),
+    .toLowerCase()
+    .email("Adresse email invalide")
+    .max(255, "L'email est trop long"),
   customerPhone: phoneNumber,
   customerAddress: z.string()
     .max(200, "L'adresse est trop longue")

@@ -74,7 +74,7 @@ const InstallDropdown: React.FC<InstallDropdownProps> = ({ className, size = 'de
           </div>
           <div className="flex-1">
             <div className="font-semibold text-gray-900">Android</div>
-            <div className="text-sm text-gray-500">Installation PWA ou Play Store</div>
+            <div className="text-sm text-gray-500">APK direct ou installation PWA</div>
           </div>
         </DropdownMenuItem>
         

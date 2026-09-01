@@ -3,11 +3,47 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
-  ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
-      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
-    </div>
-  ),
+  ({ className, ...props }, ref) => {
+    const scrollRef = React.useRef<HTMLDivElement>(null);
+    // On narrow screens a wide table (many columns) overflows its container;
+    // overflow-auto already makes it swipeable, but nothing hints that more
+    // columns exist off-screen. This fade only shows while there's actually
+    // more to scroll to, and disappears once fully scrolled to the end.
+    const [showScrollFade, setShowScrollFade] = React.useState(false);
+
+    const checkOverflow = React.useCallback(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      setShowScrollFade(el.scrollWidth - el.clientWidth - el.scrollLeft > 4);
+    }, []);
+
+    React.useEffect(() => {
+      checkOverflow();
+      const el = scrollRef.current;
+      if (!el) return;
+      el.addEventListener("scroll", checkOverflow, { passive: true });
+      const resizeObserver = new ResizeObserver(checkOverflow);
+      resizeObserver.observe(el);
+      return () => {
+        el.removeEventListener("scroll", checkOverflow);
+        resizeObserver.disconnect();
+      };
+    }, [checkOverflow]);
+
+    return (
+      <div className="relative">
+        <div className="w-full overflow-auto" ref={scrollRef}>
+          <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
+        </div>
+        {showScrollFade && (
+          <div
+            className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent"
+            aria-hidden="true"
+          />
+        )}
+      </div>
+    );
+  },
 );
 Table.displayName = "Table";
 

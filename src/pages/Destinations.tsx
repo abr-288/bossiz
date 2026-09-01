@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,10 +10,11 @@ import { Search, MapPin, Star, TrendingUp, Calendar, Users, Plane, Heart, Globe,
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { VOLS_BOSSIZ_URL } from "@/lib/volsBossiz";
+import destinationsHero from "@/assets/destination-hotel.jpg";
 
 const Destinations = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -256,7 +256,7 @@ const Destinations = () => {
             </span>
             <Button
               size="sm"
-              onClick={() => navigate(`/flights?to=${dest.city}`)}
+              onClick={() => { window.location.href = VOLS_BOSSIZ_URL; }}
             >
               <Plane className="mr-2 h-4 w-4" />
               Voir les vols
@@ -274,8 +274,8 @@ const Destinations = () => {
       {/* Hero Section with Search Form */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
-          src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920"
-          alt="Destinations"
+          src={destinationsHero}
+          alt={t("destinations.title", "Explorez le Monde")}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
@@ -301,7 +301,7 @@ const Destinations = () => {
                 className="pl-12 py-7 text-lg bg-white/95 backdrop-blur-sm border-white/20 shadow-2xl rounded-2xl focus-visible:ring-primary/20 transition-all"
               />
               <Button className="absolute right-2 top-1/2 -translate-y-1/2 h-11 px-6 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all">
-                Rechercher
+                {t("search.search")}
               </Button>
             </div>
           </div>
@@ -316,28 +316,28 @@ const Destinations = () => {
               <CardContent className="pt-2">
                 <Globe className="w-8 h-8 text-primary mx-auto mb-2" />
                 <p className="text-2xl font-bold">150+</p>
-                <p className="text-sm text-muted-foreground">Destinations</p>
+                <p className="text-sm text-muted-foreground">{t("destinations.stats.destinations")}</p>
               </CardContent>
             </Card>
             <Card className="text-center p-4">
               <CardContent className="pt-2">
                 <Compass className="w-8 h-8 text-primary mx-auto mb-2" />
                 <p className="text-2xl font-bold">50+</p>
-                <p className="text-sm text-muted-foreground">Pays</p>
+                <p className="text-sm text-muted-foreground">{t("destinations.stats.countries")}</p>
               </CardContent>
             </Card>
             <Card className="text-center p-4">
               <CardContent className="pt-2">
                 <Users className="w-8 h-8 text-primary mx-auto mb-2" />
                 <p className="text-2xl font-bold">100K+</p>
-                <p className="text-sm text-muted-foreground">Voyageurs</p>
+                <p className="text-sm text-muted-foreground">{t("destinations.stats.travelers")}</p>
               </CardContent>
             </Card>
             <Card className="text-center p-4">
               <CardContent className="pt-2">
                 <Mountain className="w-8 h-8 text-primary mx-auto mb-2" />
                 <p className="text-2xl font-bold">4.8</p>
-                <p className="text-sm text-muted-foreground">Note moyenne</p>
+                <p className="text-sm text-muted-foreground">{t("destinations.stats.avgRating")}</p>
               </CardContent>
             </Card>
           </div>
@@ -404,11 +404,11 @@ const Destinations = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <Input 
               type="email" 
-              placeholder="Votre email" 
+              placeholder={t("footer.newsletter.placeholder")}
               className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
             />
             <Button variant="secondary">
-              S'inscrire
+              {t("pages.support.subscribe")}
             </Button>
           </div>
         </div>

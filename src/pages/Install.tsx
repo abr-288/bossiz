@@ -8,6 +8,8 @@ import { usePWA } from "@/hooks/usePWA";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/Logo";
+import heroImage from "@/assets/ordinateur.jpg";
 
 const Install = () => {
   const { isInstallable, isInstalled, install } = usePWA();
@@ -75,6 +77,8 @@ const Install = () => {
       
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white py-16 md:py-24 overflow-hidden">
+        <img src={heroImage} alt="Installer B-Reserve" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/85 to-primary/80" />
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ 
@@ -97,11 +101,7 @@ const Install = () => {
               transition={{ delay: 0.2, type: "spring" }}
               className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-3xl shadow-2xl mx-auto mb-8 flex items-center justify-center"
             >
-              <img 
-                src="https://storage.googleapis.com/gpt-engineer-file-uploads/eELbhqThzPVCUnExIw7dfxcDOAj2/uploads/1761678567741-new_logo_bossizG.png"
-                alt="B-Reserve"
-                className="w-16 h-16 md:w-24 md:h-24 object-contain"
-              />
+              <Logo variant="dark" showWordmark={false} className="w-16 h-16 md:w-24 md:h-24" />
             </motion.div>
 
             <h1 className="text-3xl md:text-5xl font-bold mb-4">

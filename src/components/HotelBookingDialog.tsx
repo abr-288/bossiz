@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { bookingSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
+import { useCreateBooking } from "@/hooks/useCreateBooking";
+import { splitFullName } from "@/utils/splitFullName";
 
 interface HotelBookingDialogProps {
   open: boolean;
@@ -15,19 +17,40 @@ interface HotelBookingDialogProps {
     name: string;
     location: string;
     price: number;
+    currency?: string;
+    description?: string;
+    amenities?: string[];
+    rating?: number;
+    images?: string[];
+    offerSignature?: string;
+    offerExpiresAt?: string;
   };
 }
 
 export const HotelBookingDialog = ({ open, onOpenChange, hotel }: HotelBookingDialogProps) => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const [checkIn, setCheckIn] = useState<Date>();
   const [checkOut, setCheckOut] = useState<Date>();
   const navigate = useNavigate();
+  const { createBooking, loading } = useCreateBooking();
+
+  // Checked as soon as the dialog opens, not after the user has filled out
+  // the whole form - avoids sending someone through 8 fields only to tell
+  // them at submit time that they needed to be logged in.
+  useEffect(() => {
+    if (!open) return;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        onOpenChange(false);
+        toast.error(t('booking.validation.mustBeLoggedIn'));
+        navigate("/auth");
+      }
+    })();
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const rooms = parseInt(formData.get("rooms") as string);
@@ -48,7 +71,6 @@ export const HotelBookingDialog = ({ open, onOpenChange, hotel }: HotelBookingDi
       });
     } catch (error: any) {
       toast.error(error.errors?.[0]?.message || t('booking.validation.checkInfo'));
-      setLoading(false);
       return;
     }
 
@@ -56,87 +78,68 @@ export const HotelBookingDialog = ({ open, onOpenChange, hotel }: HotelBookingDi
 
     if (!user) {
       toast.error(t('booking.validation.mustBeLoggedIn'));
-      setLoading(false);
+      navigate("/auth");
       return;
     }
 
     if (!checkIn || !checkOut) {
       toast.error(t('booking.validation.selectCheckInOut'));
-      setLoading(false);
+      return;
+    }
+
+    if (!hotel.offerSignature || !hotel.offerExpiresAt) {
+      toast.error(t('booking.validation.offerExpired', "Cette offre n'est plus valide, veuillez relancer une recherche."));
       return;
     }
 
     // Calculate nights
     const nights = Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)));
-    
+
     if (nights < 1) {
       toast.error(t('booking.validation.checkOutAfterCheckIn'));
-      setLoading(false);
-      return;
-    }
-
-    // Create service
-    const { data: newService, error: serviceError } = await supabase
-      .from("services")
-      .insert({
-        name: hotel.name,
-        type: "hotel",
-        price_per_unit: hotel.price,
-        currency: "EUR",
-        location: hotel.location,
-        destination: hotel.location,
-        available: true,
-      })
-      .select()
-      .single();
-
-    if (serviceError) {
-      console.error("Service creation error:", serviceError);
-      toast.error(t('booking.error.createService') + ": " + serviceError.message);
-      setLoading(false);
       return;
     }
 
     const totalPrice = hotel.price * rooms * nights;
     const totalGuests = adults + children;
+    const { first_name, last_name } = splitFullName(customerName);
 
-    const { data: booking, error } = await supabase.from("bookings").insert({
-      user_id: user.id,
-      service_id: newService.id,
+    const bookingId = await createBooking({
+      service_type: "hotel",
+      service_name: hotel.name,
+      service_description: hotel.description || `Hôtel ${hotel.name} situé à ${hotel.location}. ${hotel.amenities ? `Équipements: ${hotel.amenities.join(', ')}.` : ''} ${hotel.rating ? `Note: ${hotel.rating}/5.` : ''}`,
+      location: hotel.location,
       start_date: checkIn.toISOString().split('T')[0],
       end_date: checkOut.toISOString().split('T')[0],
       guests: totalGuests,
       total_price: totalPrice,
+      currency: hotel.currency || "EUR",
+      unit_price: hotel.price,
+      offer_signature: hotel.offerSignature,
+      offer_expires_at: hotel.offerExpiresAt,
       customer_name: customerName,
       customer_email: customerEmail,
       customer_phone: customerPhone,
       notes: notes ? `${rooms} chambre(s), ${adults} adulte(s), ${children} enfant(s)\n${notes}` : `${rooms} chambre(s), ${adults} adulte(s), ${children} enfant(s)`,
-      currency: "EUR",
-      status: "pending",
-      payment_status: "pending",
-    }).select().single();
+      passengers: [{ first_name, last_name }],
+      booking_details: { rooms, adults, children },
+    });
 
-    if (error) {
-      console.error("Booking error:", error);
-      toast.error("Erreur lors de la création de la réservation: " + error.message);
-      setLoading(false);
-      return;
-    }
+    if (!bookingId) return;
 
-    toast.success("Réservation créée avec succès");
     onOpenChange(false);
-    navigate(`/payment?bookingId=${booking.id}`);
+    navigate(`/payment?bookingId=${bookingId}`);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Réserver {hotel.name}</DialogTitle>
-          <DialogDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Réserver {hotel.name}</SheetTitle>
+          <SheetDescription>
             Complétez votre réservation d'hôtel à {hotel.location}
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
         <UnifiedForm onSubmit={handleSubmit} variant="booking" loading={loading}>
           <div className="space-y-6">
@@ -217,16 +220,16 @@ export const HotelBookingDialog = ({ open, onOpenChange, hotel }: HotelBookingDi
                 label="Demandes spéciales"
                 name="notes"
                 type="textarea"
-                placeholder="Préférences, allergies, demandes particulières..."
+                placeholder={t('booking.dialog.hotel.specialRequestsPlaceholder')}
               />
             </div>
 
             <UnifiedSubmitButton variant="booking" loading={loading} fullWidth>
-              Confirmer la réservation
+              {t('booking.summary.confirm')}
             </UnifiedSubmitButton>
           </div>
         </UnifiedForm>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };

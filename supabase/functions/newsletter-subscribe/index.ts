@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/integrations.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,7 +14,7 @@ serve(async (req) => {
 
   try {
     const { email } = await req.json();
-    
+
     if (!email) {
       return new Response(
         JSON.stringify({ success: false, error: 'Email is required' }),
@@ -23,11 +24,6 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const smtpHost = Deno.env.get('SMTP_HOST');
-    const smtpPort = Deno.env.get('SMTP_PORT');
-    const smtpUser = Deno.env.get('SMTP_USER');
-    const smtpPassword = Deno.env.get('SMTP_PASSWORD');
-    const smtpFrom = Deno.env.get('SMTP_FROM');
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('Supabase configuration missing');
@@ -59,7 +55,6 @@ serve(async (req) => {
       .insert({
         email,
         subscribed_at: new Date().toISOString(),
-        status: 'active'
       });
 
     if (insertError) {
@@ -70,20 +65,21 @@ serve(async (req) => {
       );
     }
 
-    // Send confirmation email if SMTP is configured
-    if (smtpHost && smtpUser && smtpPassword && smtpFrom) {
-      try {
-        await sendConfirmationEmail(email, smtpHost, smtpPort, smtpUser, smtpPassword, smtpFrom);
-      } catch (emailError) {
-        console.warn('Failed to send confirmation email:', emailError);
-        // Don't fail the subscription if email fails
+    // Send confirmation email if a provider is configured
+    try {
+      const result = await sendConfirmationEmail(supabase, email);
+      if (!result.ok) {
+        console.warn('Failed to send confirmation email:', result.error);
       }
+    } catch (emailError) {
+      console.warn('Failed to send confirmation email:', emailError);
+      // Don't fail the subscription if email fails
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Successfully subscribed to newsletter' 
+      JSON.stringify({
+        success: true,
+        message: 'Successfully subscribed to newsletter'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -96,44 +92,25 @@ serve(async (req) => {
   }
 });
 
-async function sendConfirmationEmail(
-  email: string,
-  smtpHost: string,
-  smtpPort: string,
-  smtpUser: string,
-  smtpPassword: string,
-  smtpFrom: string
-) {
-  // Using SMTP relay service (e.g., SendGrid, Mailgun, or direct SMTP)
-  const response = await fetch('https://api.smtprelay.com/v1/send', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${smtpPassword}`,
-    },
-    body: JSON.stringify({
-      from: smtpFrom,
-      to: email,
-      subject: 'Welcome to B-Reserve Newsletter',
-      html: `
-        <h1>Welcome to B-Reserve!</h1>
-        <p>Thank you for subscribing to our newsletter.</p>
-        <p>You'll receive the latest travel deals, destination recommendations, and exclusive offers.</p>
-        <p>Best regards,<br>The B-Reserve Team</p>
-      `,
-      text: `
-        Welcome to B-Reserve!
-        
-        Thank you for subscribing to our newsletter.
-        You'll receive the latest travel deals, destination recommendations, and exclusive offers.
-        
-        Best regards,
-        The B-Reserve Team
-      `
-    }),
-  });
+function sendConfirmationEmail(supabase: ReturnType<typeof createClient>, email: string) {
+  return sendEmail(supabase, {
+    from: 'B-Reserve <noreply@bossiz.com>',
+    to: [email],
+    subject: 'Bienvenue à la newsletter B-Reserve',
+    html: `
+      <h1>Bienvenue chez B-Reserve !</h1>
+      <p>Merci de vous être inscrit à notre newsletter.</p>
+      <p>Vous recevrez nos meilleures offres de voyage, recommandations de destinations et promotions exclusives.</p>
+      <p>À bientôt,<br>L'équipe B-Reserve</p>
+    `,
+    text: `
+      Bienvenue chez B-Reserve !
 
-  if (!response.ok) {
-    throw new Error('Failed to send confirmation email');
-  }
+      Merci de vous être inscrit à notre newsletter.
+      Vous recevrez nos meilleures offres de voyage, recommandations de destinations et promotions exclusives.
+
+      À bientôt,
+      L'équipe B-Reserve
+    `,
+  });
 }

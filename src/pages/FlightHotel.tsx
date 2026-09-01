@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Plane, Hotel, MapPin, Calendar, Users, Check, Loader2, Star, Package, AlertTriangle,
   Briefcase, Luggage, Clock, ArrowRight, Wifi, Coffee, Car, Waves, UtensilsCrossed,
-  Filter, SortAsc, ChevronDown, Award, Sparkles
+  Filter, SortAsc, ChevronDown, Award, Wind
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -61,7 +61,7 @@ const amenityIcons: Record<string, any> = {
   'restaurant': UtensilsCrossed, 'dining': UtensilsCrossed,
   'parking': Car, 'car park': Car,
   'petit-déjeuner': Coffee, 'breakfast': Coffee,
-  'climatisation': Sparkles, 'air conditioning': Sparkles,
+  'climatisation': Wind, 'air conditioning': Wind,
 };
 
 const getAmenityIcon = (amenity: string) => {
@@ -69,7 +69,7 @@ const getAmenityIcon = (amenity: string) => {
   for (const [key, Icon] of Object.entries(amenityIcons)) {
     if (lowerAmenity.includes(key)) return Icon;
   }
-  return Sparkles;
+  return Check;
 };
 
 const FlightHotel = () => {
@@ -172,7 +172,7 @@ const FlightHotel = () => {
         <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
           <LazyImage
             src={bannerFlightHotel}
-            alt="Forfaits Vol + Hôtel"
+            alt={t('pages.flightHotel.title')}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
@@ -180,7 +180,7 @@ const FlightHotel = () => {
             <div className="text-center mb-8 animate-fade-in">
 
               <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-                Forfaits Vol + Hôtel
+                {t('pages.flightHotel.title')}
               </h1>
               <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
                 Réservez votre vol et votre hébergement en un seul forfait et économisez jusqu'à 30%
@@ -204,7 +204,7 @@ const FlightHotel = () => {
             <div className="text-center py-20">
               <Package className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
               <p className="text-xl text-muted-foreground">
-                Utilisez le formulaire ci-dessus pour rechercher des vols et hôtels
+                {t('pages.flightHotel.noResults')}
               </p>
             </div>
           )}
@@ -396,10 +396,11 @@ const FlightHotel = () => {
                       >
                         {/* Hotel Image */}
                         <div className="relative h-48 overflow-hidden">
-                          <img 
-                            src={hotel.image} 
+                          <img
+                            src={hotel.image}
                             alt={hotel.name}
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945';
                             }}
@@ -507,7 +508,7 @@ const FlightHotel = () => {
                     <CardTitle className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <Package className="h-5 w-5 text-primary" />
-                        Votre forfait
+                        {t('pages.flightHotel.yourPackage')}
                       </span>
                       {selectedFlight && selectedHotel && searchParams && (
                         <span className="text-sm font-normal text-muted-foreground">
@@ -541,7 +542,7 @@ const FlightHotel = () => {
                       <div className="space-y-2">
                         <h3 className="font-semibold flex items-center gap-2 text-sm">
                           <Hotel className="h-4 w-4 text-primary" />
-                          Hôtel
+                          {t('confirmation.serviceTypes.hotel')}
                         </h3>
                         {selectedHotel ? (
                           <div className="text-sm bg-muted/50 p-3 rounded-lg">
@@ -579,7 +580,7 @@ const FlightHotel = () => {
                       <Alert className="mt-4 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
                         <AlertTriangle className="h-4 w-4 text-amber-600" />
                         <AlertDescription className="text-amber-800 dark:text-amber-300 text-sm">
-                          Les disponibilités sont vérifiées lors de la confirmation.
+                          {t('pages.flightHotel.availabilityNote')}
                         </AlertDescription>
                       </Alert>
                     )}
@@ -591,7 +592,7 @@ const FlightHotel = () => {
                       onClick={handleBooking}
                       disabled={!selectedFlight || !selectedHotel}
                     >
-                      Continuer la réservation
+                      {t('pages.flightHotel.continueBooking')}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardFooter>

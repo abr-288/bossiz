@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { applyMarkup } from "../_shared/pricing.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -369,6 +370,13 @@ serve(async (req) => {
       } else {
         allTrains = getMockTrains(origin, destination, departureDate, travelClass);
       }
+    }
+
+    // Apply retail markup on top of the raw supplier/estimated price so the
+    // platform earns a margin on this vertical too (previously the exact
+    // supplier price was passed straight through with zero markup).
+    for (const train of allTrains) {
+      train.price = applyMarkup(train.price);
     }
 
     // Sort by price

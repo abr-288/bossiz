@@ -8,14 +8,7 @@ import { toast } from "sonner";
 import { Car, Lock, CheckCircle } from "lucide-react";
 import { z } from "zod";
 import authBg from "@/assets/hero-slide-1.jpg";
-
-const passwordSchema = z.object({
-  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
-});
+import { updatePasswordSchema } from "@/lib/authValidation";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -45,7 +38,7 @@ export default function ResetPassword() {
     e.preventDefault();
     
     try {
-      const validated = passwordSchema.parse({ password, confirmPassword });
+      const validated = updatePasswordSchema.parse({ password, confirmPassword });
       setLoading(true);
 
       const { error } = await supabase.auth.updateUser({
@@ -60,7 +53,7 @@ export default function ResetPassword() {
       // Sign out and redirect to login after 3 seconds
       setTimeout(async () => {
         await supabase.auth.signOut();
-        navigate("/login");
+        navigate("/auth");
       }, 3000);
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -79,7 +72,7 @@ export default function ResetPassword() {
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img 
           src={authBg} 
-          alt="Luxury vehicles" 
+          alt="B-Reserve"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-accent/80" />
@@ -108,7 +101,7 @@ export default function ResetPassword() {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Lock className="h-4 w-4" />
-                <span>Minimum 6 caractères</span>
+                <span>8 caractères minimum, avec majuscule, minuscule et chiffre</span>
               </div>
             </div>
           </div>

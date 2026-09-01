@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,10 @@ interface UserOption {
 export default function AdminAgencies() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const location = useLocation();
+  const prefillApplication = location.state?.prefillApplication as
+    | { id: string; name: string; description: string | null; contact_email: string | null; contact_phone: string | null; logo_url: string | null }
+    | undefined;
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,6 +87,20 @@ export default function AdminAgencies() {
     fetchAgencies();
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (prefillApplication) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prefillApplication.name || "",
+        description: prefillApplication.description || "",
+        contact_email: prefillApplication.contact_email || "",
+        contact_phone: prefillApplication.contact_phone || "",
+        logo_url: prefillApplication.logo_url || "",
+      }));
+      setIsDialogOpen(true);
+    }
+  }, [prefillApplication]);
 
   const fetchAgencies = async () => {
     try {
@@ -199,6 +218,13 @@ export default function AdminAgencies() {
 
         if (roleError && !roleError.message.includes("duplicate")) {
           console.error("Error adding role:", roleError);
+        }
+
+        if (prefillApplication?.id) {
+          await supabase
+            .from("partner_applications")
+            .update({ status: "approved" })
+            .eq("id", prefillApplication.id);
         }
 
         toast({
@@ -488,6 +514,7 @@ export default function AdminAgencies() {
                             src={agency.logo_url}
                             alt={agency.name}
                             className="h-10 w-10 rounded-lg object-cover"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">

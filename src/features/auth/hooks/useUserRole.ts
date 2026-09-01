@@ -19,16 +19,12 @@ export function useUserRole() {
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
+          .eq('user_id', user.id);
 
         if (error) throw error;
-        
-        if (data) {
-          setRole(data.role as 'admin' | 'user');
-        } else {
-          setRole('user');
-        }
+
+        const roles = (data ?? []).map((r) => r.role);
+        setRole(roles.includes('admin') ? 'admin' : 'user');
       } catch (error) {
         console.error('Error fetching user role:', error);
         setRole('user');

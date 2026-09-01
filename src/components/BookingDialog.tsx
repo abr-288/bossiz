@@ -57,7 +57,7 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
             {t('booking.dialog.generic.title')} {service.name}
           </DialogTitle>
           <DialogDescription>
-            Préparez-vous à réserver ce service en quelques étapes simples
+            {t('booking.dialog.generic.prepareDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -122,7 +122,7 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
               onClick={handleStartBooking}
               className="flex-1 gradient-primary"
             >
-              Commencer la réservation
+              {t('booking.dialog.generic.startBooking')}
             </Button>
           </div>
         </div>

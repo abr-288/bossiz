@@ -48,8 +48,12 @@ const FeaturesSection = () => {
                   <IconComponent className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground mb-1">{feature.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
+                  <h3 className="text-sm font-bold text-foreground mb-1">
+                    {t(`homepage.features.${feature.id}.title`, feature.title)}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {t(`homepage.features.${feature.id}.description`, feature.description)}
+                  </p>
                 </div>
               </div>
             );

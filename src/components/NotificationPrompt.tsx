@@ -42,7 +42,7 @@ export const NotificationPrompt = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-md animate-in slide-in-from-bottom-5">
+    <div className="fixed bottom-4 left-4 z-50 max-w-md animate-in slide-in-from-bottom-5">
       <Card>
         <CardHeader className="relative pb-3">
           <Button

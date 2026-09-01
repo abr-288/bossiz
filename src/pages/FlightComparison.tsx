@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { format, addDays, eachDayOfInterval } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
@@ -18,6 +18,7 @@ import { Loader2, TrendingDown, TrendingUp, Plane, ArrowRight } from "lucide-rea
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Price } from "@/components/ui/price";
+import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 
 interface FlightData {
   airline: string;
@@ -46,7 +47,6 @@ const CHART_COLORS = [
 
 const FlightComparison = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { searchFlights, loading, error } = useFlightSearch();
   const [flights, setFlights] = useState<FlightData[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -600,10 +600,21 @@ const FlightComparison = () => {
                             </td>
                             <td className="text-right py-3 px-4">{stat.count}</td>
                             <td className="text-right py-3 px-4">
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
-                                onClick={() => navigate(`/flights?${searchParams.toString()}`)}
+                                onClick={() => {
+                                  const searchUrl = buildVolsBossizSearchUrl({
+                                    origin: searchParams.get("from") || "",
+                                    destination: searchParams.get("to") || "",
+                                    departureDate: searchParams.get("date") || "",
+                                    returnDate: searchParams.get("returnDate") || undefined,
+                                    adults: parseInt(searchParams.get("adults") || "1", 10),
+                                    children: parseInt(searchParams.get("children") || "0", 10),
+                                    travelClass: searchParams.get("class") || "economy",
+                                  });
+                                  window.location.href = searchUrl;
+                                }}
                               >
                                 Voir <ArrowRight className="ml-2 h-4 w-4" />
                               </Button>

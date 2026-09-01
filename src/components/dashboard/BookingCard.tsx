@@ -1,6 +1,5 @@
 import { useState, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,6 +20,7 @@ import {
 import { MapPin, Calendar, Users, MoreVertical, Edit, Trash2, CheckCircle, XCircle, FileDown, Loader2, Ticket } from "lucide-react";
 import { useBookingPDF } from "@/hooks/useBookingPDF";
 import { Price } from "@/components/ui/price";
+import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 
 interface Booking {
   id: string;
@@ -56,51 +56,6 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const { generatePDF, downloadPDF, isGenerating } = useBookingPDF();
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "bg-green-500";
-      case "pending":
-        return "bg-yellow-500";
-      case "completed":
-        return "bg-blue-500";
-      case "cancelled":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "Confirmée";
-      case "pending":
-        return "En attente";
-      case "completed":
-        return "Terminée";
-      case "cancelled":
-        return "Annulée";
-      default:
-        return status;
-    }
-  };
-
-  const getPaymentLabel = (status: string) => {
-    switch (status) {
-      case "paid":
-        return "Payé";
-      case "pending":
-        return "En attente";
-      case "failed":
-        return "Échoué";
-      case "refunded":
-        return "Remboursé";
-      default:
-        return status;
-    }
-  };
 
   const canConfirm = booking.status === "pending";
   const canCancel = booking.status !== "cancelled" && booking.status !== "completed";
@@ -196,10 +151,8 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
 
           <div className="flex items-center justify-between pt-4 border-t">
             <div className="flex gap-2">
-              <Badge className={getStatusColor(booking.status)}>
-                {getStatusLabel(booking.status)}
-              </Badge>
-              <Badge variant="outline">{getPaymentLabel(booking.payment_status)}</Badge>
+              <BookingStatusBadge status={booking.status} />
+              <PaymentStatusBadge status={booking.payment_status} />
             </div>
             <div className="text-lg font-bold">
               <Price amount={Number(booking.total_price)} fromCurrency={booking.currency} showLoader />

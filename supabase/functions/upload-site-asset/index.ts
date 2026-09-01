@@ -39,17 +39,17 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin
-    const { data: roleData, error: roleError } = await userClient
+    // Check if user is admin or a sub-agency owner (agencies upload their own
+    // service photos - e.g. car listing photos - through this same endpoint).
+    const { data: rolesData, error: roleError } = await userClient
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .eq("role", "admin")
-      .single();
+      .in("role", ["admin", "sub_agency"]);
 
-    if (roleError || !roleData) {
+    if (roleError || !rolesData || rolesData.length === 0) {
       return new Response(
-        JSON.stringify({ error: "Accès refusé - Admin requis" }),
+        JSON.stringify({ error: "Accès refusé - Admin ou agence requis" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

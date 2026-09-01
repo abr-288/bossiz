@@ -104,7 +104,7 @@ const Confirmation = () => {
 
   const loadBooking = async () => {
     if (!bookingId) {
-      setError("ID de réservation manquant");
+      setError(t('confirmation.missingBookingId'));
       setLoading(false);
       return;
     }
@@ -141,13 +141,21 @@ const Confirmation = () => {
   };
 
   const getStatusConfig = () => {
-    if (booking?.status === 'confirmed' || booking?.payment_status === 'paid') {
+    if (booking?.status === 'confirmed') {
       return {
         icon: <CheckCircle2 className="h-20 w-20 text-green-500" />,
         title: t('confirmation.confirmed'),
         description: t('confirmation.confirmedDesc'),
         bgClass: "from-green-500/20 to-green-500/5",
         borderClass: "border-green-500/30",
+      };
+    } else if (booking?.status === 'cancelled' && booking?.payment_status === 'refunded') {
+      return {
+        icon: <XCircle className="h-20 w-20 text-amber-500" />,
+        title: t('confirmation.cancelled'),
+        description: t('confirmation.cancelledDesc'),
+        bgClass: "from-amber-500/20 to-amber-500/5",
+        borderClass: "border-amber-500/30",
       };
     } else if (booking?.status === 'failed' || booking?.payment_status === 'failed') {
       return {
@@ -156,6 +164,17 @@ const Confirmation = () => {
         description: t('confirmation.failedDesc'),
         bgClass: "from-destructive/20 to-destructive/5",
         borderClass: "border-destructive/30",
+      };
+    } else if (booking?.payment_status === 'paid' && booking?.status === 'pending') {
+      // Paid but a flight booking still awaiting a real PNR from the
+      // supplier (see create-pnr) - never shown as a green success yet,
+      // since it may still automatically resolve to a refund.
+      return {
+        icon: <Clock className="h-20 w-20 text-amber-500 animate-pulse" />,
+        title: t('confirmation.processingSupplier'),
+        description: t('confirmation.processingSupplierDesc'),
+        bgClass: "from-amber-500/20 to-amber-500/5",
+        borderClass: "border-amber-500/30",
       };
     } else if (booking?.payment_status === 'pending') {
       return {
@@ -195,8 +214,8 @@ const Confirmation = () => {
 
   const handleShare = async () => {
     const shareData = {
-      title: "Ma réservation Bossiz",
-      text: `Réservation ${generateBookingRef()} - ${booking?.services?.name}`,
+      title: t('confirmation.shareTitle'),
+      text: `${t('confirmation.bookingNumber')} ${generateBookingRef()} - ${booking?.services?.name}`,
       url: window.location.href,
     };
 
@@ -208,7 +227,7 @@ const Confirmation = () => {
       }
     } else {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success("Lien copié dans le presse-papier !");
+      toast.success(t('confirmation.linkCopied'));
     }
   };
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useCreateBooking } from './useCreateBooking';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -29,7 +29,7 @@ describe('useCreateBooking', () => {
   });
 
   it('should create a booking successfully', async () => {
-    const mockSession = { session: { user: { id: 'user-123' } } };
+    const mockSession = { data: { session: { user: { id: 'user-123' } } } };
     (supabase.auth.getSession as any).mockResolvedValue(mockSession);
     (supabase.functions.invoke as any).mockResolvedValue({
       data: { success: true, booking_id: 'booking-123' },
@@ -52,7 +52,10 @@ describe('useCreateBooking', () => {
       passengers: [{ first_name: 'Jean', last_name: 'Dupont' }],
     };
 
-    const bookingId = await result.current.createBooking(bookingParams);
+    let bookingId: string | null = null;
+    await act(async () => {
+      bookingId = await result.current.createBooking(bookingParams);
+    });
 
     await waitFor(() => {
       expect(bookingId).toBe('booking-123');
@@ -63,7 +66,7 @@ describe('useCreateBooking', () => {
   });
 
   it('should return null if user is not authenticated', async () => {
-    (supabase.auth.getSession as any).mockResolvedValue({ session: null });
+    (supabase.auth.getSession as any).mockResolvedValue({ data: { session: null } });
 
     const { result } = renderHook(() => useCreateBooking());
 
@@ -90,7 +93,7 @@ describe('useCreateBooking', () => {
   });
 
   it('should handle booking creation errors', async () => {
-    const mockSession = { session: { user: { id: 'user-123' } } };
+    const mockSession = { data: { session: { user: { id: 'user-123' } } } };
     (supabase.auth.getSession as any).mockResolvedValue(mockSession);
     (supabase.functions.invoke as any).mockResolvedValue({
       data: { success: false, error: 'Booking failed' },
@@ -121,7 +124,7 @@ describe('useCreateBooking', () => {
   });
 
   it('should set loading state during booking creation', async () => {
-    const mockSession = { session: { user: { id: 'user-123' } } };
+    const mockSession = { data: { session: { user: { id: 'user-123' } } } };
     (supabase.auth.getSession as any).mockResolvedValue(mockSession);
     (supabase.functions.invoke as any).mockImplementation(
       () => new Promise(resolve => 
@@ -147,10 +150,13 @@ describe('useCreateBooking', () => {
 
     expect(result.current.loading).toBe(false);
 
-    const promise = result.current.createBooking(bookingParams);
-    expect(result.current.loading).toBe(true);
+    let promise: Promise<string | null>;
+    act(() => {
+      promise = result.current.createBooking(bookingParams);
+    });
+    await waitFor(() => expect(result.current.loading).toBe(true));
 
-    await promise;
+    await act(async () => { await promise!; });
     expect(result.current.loading).toBe(false);
   });
 });

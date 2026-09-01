@@ -6,6 +6,7 @@ export interface CarRentalParams {
   dropoffLocation?: string;
   pickupDate: string;
   dropoffDate: string;
+  partnerOnly?: boolean;
 }
 
 export const useCarRental = () => {

@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import ErrorBoundary, { ErrorFallback } from "@/components/ErrorBoundary";
 import PaymentMethodSelector from "@/components/PaymentMethodSelector";
 import { Price } from "@/components/ui/price";
-import CinetPayService from "@/services/cinetpay";
+import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +31,7 @@ export default function Payment() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const bookingId = searchParams.get("bookingId");
 
   const [loading, setLoading] = useState(true);
@@ -174,8 +175,8 @@ export default function Payment() {
       // Accès safe aux erreurs après vérification explicite
       setValidationErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
@@ -377,14 +378,14 @@ export default function Payment() {
   }
 
   return (
-    <ErrorBoundary fallback={<ErrorFallback title="Erreur de paiement" description="Impossible de charger la page de paiement" />}>
+    <ErrorBoundary fallback={<ErrorFallback title={t('payment.errors.paymentErrorTitle')} description={t('payment.errors.loadPageDescription')} />}>
       <div className="min-h-screen flex flex-col pt-16">
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
           <div className="max-w-2xl mx-auto">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Paiement</h1>
             <p className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8">
-              Complétez votre réservation en effectuant le paiement
+              {t('payment.subtitle')}
             </p>
 
             {generalError && (
@@ -399,7 +400,7 @@ export default function Payment() {
               <Alert className="mb-6 border-primary/30 bg-primary/5">
                 <Smartphone className="h-4 w-4 text-primary" />
                 <AlertDescription className="text-foreground">
-                  La demande de paiement sera envoyée au numéro: <strong>{customerPhone}</strong>
+                  {t('payment.mobileRequestNote')} <strong>{customerPhone}</strong>
                 </AlertDescription>
               </Alert>
             )}
@@ -503,7 +504,7 @@ export default function Payment() {
               {/* Payment Method */}
               <div>
                 <Label className="text-base font-medium mb-3 block">
-                  Méthode de paiement
+                  {t('payment.method')}
                 </Label>
                 <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
               </div>
@@ -524,7 +525,7 @@ export default function Payment() {
                         });
                       }
                     }}
-                    placeholder="Votre nom complet"
+                    placeholder={t('payment.fullNamePlaceholder')}
                     className={validationErrors.customerName ? "border-destructive" : ""}
                     aria-invalid={!!validationErrors.customerName}
                     aria-describedby={validationErrors.customerName ? "customerName-error" : undefined}
@@ -551,7 +552,7 @@ export default function Payment() {
                         });
                       }
                     }}
-                    placeholder="votre@email.com"
+                    placeholder={t('payment.emailPlaceholder')}
                     className={validationErrors.customerEmail ? "border-destructive" : ""}
                     aria-invalid={!!validationErrors.customerEmail}
                     aria-describedby={validationErrors.customerEmail ? "customerEmail-error" : undefined}
@@ -589,7 +590,7 @@ export default function Payment() {
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
-                    Ce numéro sera utilisé pour le paiement mobile
+                    {t('payment.phoneNote')}
                   </p>
                 </div>
 
@@ -599,7 +600,7 @@ export default function Payment() {
                     id="customerAddress"
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
-                    placeholder="Votre adresse"
+                    placeholder={t('payment.addressPlaceholder')}
                   />
                 </div>
 
@@ -647,7 +648,7 @@ export default function Payment() {
               </Button>
 
               <p className="text-sm text-center text-muted-foreground">
-                Paiement sécurisé par CinetPay
+                {t('payment.securedBy')}
               </p>
             </div>
           </Card>

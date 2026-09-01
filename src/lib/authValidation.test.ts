@@ -159,6 +159,23 @@ describe("authValidation", () => {
       });
       expect(result.valid).toBe(false);
     });
+
+    it("should reject a 6-character password with no uppercase/digit", () => {
+      const result = validateForm(updatePasswordSchema, {
+        password: "abcdef",
+        confirmPassword: "abcdef",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors.password).toBeDefined();
+    });
+
+    it("should accept an 8+ character password with upper/lower/digit", () => {
+      const result = validateForm(updatePasswordSchema, {
+        password: "Abcdef12",
+        confirmPassword: "Abcdef12",
+      });
+      expect(result.valid).toBe(true);
+    });
   });
 
   describe("getPasswordStrength", () => {

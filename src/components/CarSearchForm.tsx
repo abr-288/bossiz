@@ -134,8 +134,8 @@ export const CarSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
@@ -208,14 +208,14 @@ export const CarSearchForm = () => {
             {/* Pickup Location */}
             <div className="space-y-1">
               <UnifiedAutocomplete
-                label="Lieu de prise en charge"
+                label={t('cars.pickupLocation')}
                 type="location"
                 value={pickupLocation}
                 onChange={(value) => {
                   setPickupLocation(value);
                   handleBlur("pickupLocation");
                 }}
-                placeholder="Ville, aéroport ou adresse"
+                placeholder={t('cars.cityOrAirport')}
                 required
                 className={errors.pickupLocation && touched.pickupLocation ? "border-destructive" : ""}
               />
@@ -252,14 +252,14 @@ export const CarSearchForm = () => {
                   className="space-y-1"
                 >
                   <UnifiedAutocomplete
-                    label="Lieu de restitution"
+                    label={t('cars.dropoffLocation')}
                     type="location"
                     value={dropoffLocation}
                     onChange={(value) => {
                       setDropoffLocation(value);
                       handleBlur("dropoffLocation");
                     }}
-                    placeholder="Ville, aéroport ou adresse"
+                    placeholder={t('cars.cityOrAirport')}
                     required
                     className={errors.dropoffLocation && touched.dropoffLocation ? "border-destructive" : ""}
                   />
@@ -280,7 +280,7 @@ export const CarSearchForm = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label="Date de prise en charge"
+                label={t('cars.pickupDate')}
                 value={pickupDate}
                 onChange={(date) => {
                   setPickupDate(date);
@@ -298,7 +298,7 @@ export const CarSearchForm = () => {
             <div className="space-y-1">
               <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4" />
-                Heure
+                {t('search.time')}
               </Label>
               <Select value={pickupTime} onValueChange={setPickupTime}>
                 <SelectTrigger className="h-11">
@@ -317,7 +317,7 @@ export const CarSearchForm = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label="Date de restitution"
+                label={t('cars.dropoffDate')}
                 value={returnDate}
                 onChange={(date) => {
                   setReturnDate(date);
@@ -335,7 +335,7 @@ export const CarSearchForm = () => {
             <div className="space-y-1">
               <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4" />
-                Heure
+                {t('search.time')}
               </Label>
               <Select value={returnTime} onValueChange={setReturnTime}>
                 <SelectTrigger className="h-11">

@@ -14,14 +14,24 @@ const detectBrowserLanguage = (): string => {
   return supportedLanguages.includes(langCode) ? langCode : 'fr';
 };
 
-// Récupérer la langue: localStorage > navigateur > défaut
+// Récupérer la langue: localStorage (choix explicite de l'utilisateur) >
+// navigateur > défaut. On ne persiste PAS la détection navigateur dans
+// localStorage : ça permet à applyDefaultLanguage() de savoir si
+// l'utilisateur a fait un choix explicite ou non, et donc d'appliquer la
+// langue par défaut configurée en admin tant qu'aucun choix n'a été fait.
 const getInitialLanguage = (): string => {
   const storedLang = localStorage.getItem('language');
   if (storedLang) return storedLang;
-  
-  const detectedLang = detectBrowserLanguage();
-  localStorage.setItem('language', detectedLang);
-  return detectedLang;
+  return detectBrowserLanguage();
+};
+
+// Applique la langue par défaut définie dans la configuration admin
+// (site_config.locale.defaultLanguage) si l'utilisateur n'a jamais fait de
+// choix explicite via le sélecteur de langue.
+export const applyDefaultLanguage = (defaultLanguage: string) => {
+  if (localStorage.getItem('language')) return; // choix explicite déjà fait
+  if (!defaultLanguage || defaultLanguage === i18n.language) return;
+  i18n.changeLanguage(defaultLanguage);
 };
 
 i18n

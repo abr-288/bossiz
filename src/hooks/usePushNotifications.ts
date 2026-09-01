@@ -58,13 +58,16 @@ export const usePushNotifications = () => {
         return existingSubscription;
       }
       
+      const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+      if (!vapidPublicKey) {
+        console.error('VITE_VAPID_PUBLIC_KEY is not configured — cannot subscribe to push notifications');
+        return null;
+      }
+
       // Create a subscription
       const sub = await (registration as any).pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          // VAPID public key - you should replace this with your own
-          'BEl62iUYgUivxIkv69yViEuiBIa-Ib37J8xQmrEcxWtbDw9mVOo4kZZ_tGQ8w3_FOh0lPw8tYDpPz5s1PW7HFBc'
-        )
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
       });
       
       setSubscription(sub);

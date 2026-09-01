@@ -8,9 +8,14 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface UserDashboardLayoutProps {
   children: ReactNode;
+  /** Removes the default padding around `children` so dark, full-bleed
+   * content can span edge-to-edge instead of floating as an inset box
+   * inside the light shell's padding. */
+  fullBleed?: boolean;
 }
 
 interface UserProfile {
@@ -19,7 +24,7 @@ interface UserProfile {
   avatar_url?: string;
 }
 
-export function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
+export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayoutProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -70,7 +75,7 @@ export function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
             <div className="flex items-center gap-2">
               <SidebarTrigger />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" aria-label="Accueil" className="h-8 w-8">
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>
@@ -81,7 +86,7 @@ export function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 md:p-6 overflow-auto">
+          <main className={cn("flex-1 overflow-auto", fullBleed ? "p-0" : "p-4 md:p-6")}>
             {children}
           </main>
         </div>

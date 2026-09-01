@@ -20,7 +20,6 @@ import {
   MessageCircle,
   ArrowRight,
   Star,
-  Sparkles,
   Users,
   Briefcase,
   GraduationCap,
@@ -233,7 +232,6 @@ const FeaturedSubscriptions = () => {
         >
           <div className="inline-block mb-4">
             <span className="px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold">
-              <Sparkles className="w-4 h-4 inline mr-2" />
               {t("subscriptions.badge", "Bossiz Conciergerie")}
             </span>
           </div>
@@ -257,7 +255,7 @@ const FeaturedSubscriptions = () => {
           <button
             onClick={prevPage}
             className="absolute left-1 sm:left-0 top-1/2 -translate-y-1/2 sm:-translate-x-2 md:-translate-x-6 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-            aria-label="Previous"
+            aria-label={t('common.previous')}
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
           </button>
@@ -265,7 +263,7 @@ const FeaturedSubscriptions = () => {
           <button
             onClick={nextPage}
             className="absolute right-1 sm:right-0 top-1/2 -translate-y-1/2 sm:translate-x-2 md:translate-x-6 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-            aria-label="Next"
+            aria-label={t('common.next')}
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
           </button>
@@ -376,18 +374,6 @@ const FeaturedSubscriptions = () => {
               />
             ))}
           </div>
-        </div>
-
-        <div className="text-center mt-12">
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={() => navigate('/subscriptions')}
-            className="gap-2"
-          >
-            {t("subscriptions.viewAll", "Voir Toutes les Offres")}
-            <ArrowRight className="w-4 h-4" />
-          </Button>
         </div>
       </div>
 

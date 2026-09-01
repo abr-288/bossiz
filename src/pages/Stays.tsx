@@ -3,12 +3,13 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Star, Sparkles, Loader2, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clock, Heart, Users, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Star, Loader2, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clock, Heart, Users, CheckCircle } from "lucide-react";
 import { WeatherWidget } from "@/components/WeatherWidget";
 
 import { StaySearchForm } from "@/components/StaySearchForm";
 import { BookingDialog } from "@/components/BookingDialog";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Price } from "@/components/ui/price";
 import { useStaySearch } from "@/hooks/useStaySearch";
 import { LazyImage } from "@/components/ui/lazy-image";
@@ -18,32 +19,40 @@ import { cn } from "@/lib/utils";
 import bannerStays from "@/assets/banner-stays.jpg";
 
 // Types de séjours
-const stayTypes = [
-  { id: "villa", name: "Villas", icon: Palmtree, color: "bg-green-500" },
-  { id: "apartment", name: "Appartements", icon: Coffee, color: "bg-blue-500" },
-  { id: "beach", name: "Bord de mer", icon: Waves, color: "bg-cyan-500" },
-  { id: "luxury", name: "Luxe", icon: Star, color: "bg-amber-500" },
-];
-
-// Features des séjours
-const stayFeatures = [
-  { icon: Shield, title: "Réservation sécurisée", description: "Paiement 100% sécurisé" },
-  { icon: Clock, title: "Annulation gratuite", description: "Jusqu'à 48h avant" },
-  { icon: Users, title: "Support 24/7", description: "À votre écoute" },
-  { icon: CheckCircle, title: "Qualité vérifiée", description: "Tous nos hébergements sont inspectés" },
+const STAY_TYPE_ICONS = [
+  { id: "villa", icon: Palmtree, color: "bg-green-500" },
+  { id: "apartment", icon: Coffee, color: "bg-blue-500" },
+  { id: "beach", icon: Waves, color: "bg-cyan-500" },
+  { id: "luxury", icon: Star, color: "bg-amber-500" },
 ];
 
 const Stays = () => {
   const { t } = useTranslation();
+
+  const stayTypes = STAY_TYPE_ICONS.map((type) => ({
+    ...type,
+    name: t(`pages.stays.types.${type.id}`),
+  }));
+
+  const stayFeatures = [
+    { icon: Shield, title: t('pages.stays.features.secureBooking.title'), description: t('pages.stays.features.secureBooking.description') },
+    { icon: Clock, title: t('pages.hotels.badges.freeCancellation'), description: t('pages.stays.features.freeCancellation.description') },
+    { icon: Users, title: t('pages.stays.features.support.title'), description: t('pages.stays.features.support.description') },
+    { icon: CheckCircle, title: t('pages.stays.features.quality.title'), description: t('pages.stays.features.quality.description') },
+  ];
+  const [searchParams] = useSearchParams();
   const [selectedStay, setSelectedStay] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(searchParams.get("type"));
   const [favorites, setFavorites] = useState<string[]>([]);
   const { stays, loading, searchStays } = useStaySearch();
 
   useEffect(() => {
-    searchStays();
-  }, []);
+    const destination = searchParams.get("destination") || undefined;
+    const type = searchParams.get("type") || undefined;
+    setSelectedType(type || null);
+    searchStays({ location: destination, type });
+  }, [searchParams]);
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev =>
@@ -63,7 +72,7 @@ const Stays = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerStays}
-          alt="Séjours et Escapades"
+          alt={t("stays.title", "Séjours et Escapades")}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background/20"></div>
@@ -87,7 +96,7 @@ const Stays = () => {
       <section className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-border py-4 shadow-sm lg:hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-sm font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap mr-2">Filtrer par :</span>
+            <span className="text-sm font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap mr-2">{t('pages.stays.filterBy')}</span>
             <Button
               variant={selectedType === null ? "default" : "outline"}
               className="rounded-full h-10 px-6 font-bold"
@@ -216,7 +225,6 @@ const Stays = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="absolute top-4 left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
                       {stay.type}
                     </div>
                     <Button

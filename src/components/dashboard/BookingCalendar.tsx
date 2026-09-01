@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -22,6 +21,8 @@ import { fr } from "date-fns/locale";
 import { Calendar as CalendarIcon, Filter, MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Price } from "@/components/ui/price";
+import { useTranslation } from "react-i18next";
+import { BookingStatusBadge, BOOKING_STATUS_DOT_COLOR } from "@/components/dashboard/BookingStatusBadge";
 
 interface Booking {
   id: string;
@@ -48,21 +49,8 @@ interface BookingCalendarProps {
   bookings: Booking[];
 }
 
-const statusColors = {
-  pending: "bg-amber-500",
-  confirmed: "bg-emerald-500",
-  completed: "bg-blue-500",
-  cancelled: "bg-red-500",
-};
-
-const statusLabels = {
-  pending: "En attente",
-  confirmed: "Confirmée",
-  completed: "Terminée",
-  cancelled: "Annulée",
-};
-
 export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -248,15 +236,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                           {booking.services.location}
                         </p>
                       </div>
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "text-white",
-                          statusColors[booking.status as keyof typeof statusColors]
-                        )}
-                      >
-                        {statusLabels[booking.status as keyof typeof statusLabels]}
-                      </Badge>
+                      <BookingStatusBadge status={booking.status} />
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="flex items-center gap-1 text-muted-foreground">
@@ -303,15 +283,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Statut</label>
-                  <Badge
-                    variant="secondary"
-                    className={cn(
-                      "text-white",
-                      statusColors[selectedBooking.status as keyof typeof statusColors]
-                    )}
-                  >
-                    {statusLabels[selectedBooking.status as keyof typeof statusLabels]}
-                  </Badge>
+                  <BookingStatusBadge status={selectedBooking.status} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Date de début</label>
@@ -358,11 +330,11 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            {Object.entries(statusColors).map(([status, color]) => (
+            {Object.entries(BOOKING_STATUS_DOT_COLOR).map(([status, color]) => (
               <div key={status} className="flex items-center gap-2">
                 <div className={cn("w-3 h-3 rounded-full", color)} />
                 <span className="text-sm">
-                  {statusLabels[status as keyof typeof statusLabels]}
+                  {t(`booking.status.${status}`, status)}
                 </span>
               </div>
             ))}

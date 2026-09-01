@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -44,6 +45,8 @@ interface Service {
   currency: string;
   available: boolean;
   image_url: string | null;
+  images: string[] | null;
+  specifications: Record<string, any> | null;
   created_at: string;
 }
 
@@ -52,6 +55,26 @@ const serviceTypes = [
   { value: "hotel", label: "Hôtel" },
   { value: "car", label: "Voiture" },
 ];
+
+const carCategories = ["Mini", "Économique", "Compacte", "Berline", "SUV", "Luxe", "Monospace"];
+const carTransmissions = ["Automatique", "Manuelle"];
+const carFuels = ["Essence", "Diesel", "Hybride", "Électrique"];
+
+const emptyCarSpecs = {
+  brand: "",
+  model: "",
+  category: "Berline",
+  seats: "5",
+  doors: "4",
+  transmission: "Automatique",
+  fuel: "Essence",
+  luggage: "3",
+  year: new Date().getFullYear().toString(),
+  unlimitedMileage: false,
+  freeCancellation: false,
+};
+
+const emptyCarPhotos = { front: "", back: "", left: "", right: "", interior1: "", interior2: "" };
 
 export default function AgencyServices() {
   const { toast } = useToast();
@@ -70,6 +93,8 @@ export default function AgencyServices() {
     currency: "EUR",
     available: true,
     image_url: "",
+    carSpecs: emptyCarSpecs,
+    carPhotos: emptyCarPhotos,
   });
 
   useEffect(() => {
@@ -107,7 +132,46 @@ export default function AgencyServices() {
     e.preventDefault();
     if (!agencyId) return;
 
+    const isCarType = formData.type === "car";
+    if (isCarType) {
+      const { front, back, left, right, interior1, interior2 } = formData.carPhotos;
+      if (!front || !back || !left || !right || !interior1 || !interior2) {
+        toast({
+          title: "Photos manquantes",
+          description: "Les 4 photos extérieures et les 2 photos intérieures sont obligatoires.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     try {
+      const isCar = formData.type === "car";
+      const carPhotos = [
+        formData.carPhotos.front,
+        formData.carPhotos.back,
+        formData.carPhotos.left,
+        formData.carPhotos.right,
+        formData.carPhotos.interior1,
+        formData.carPhotos.interior2,
+      ].filter(Boolean);
+
+      const specifications = isCar
+        ? {
+            brand: formData.carSpecs.brand,
+            model: formData.carSpecs.model,
+            category: formData.carSpecs.category,
+            seats: parseInt(formData.carSpecs.seats) || 5,
+            doors: parseInt(formData.carSpecs.doors) || 4,
+            transmission: formData.carSpecs.transmission,
+            fuel: formData.carSpecs.fuel,
+            luggage: parseInt(formData.carSpecs.luggage) || 3,
+            year: parseInt(formData.carSpecs.year) || new Date().getFullYear(),
+            unlimitedMileage: formData.carSpecs.unlimitedMileage,
+            freeCancellation: formData.carSpecs.freeCancellation,
+          }
+        : null;
+
       const serviceData = {
         name: formData.name,
         type: formData.type as any,
@@ -116,7 +180,9 @@ export default function AgencyServices() {
         price_per_unit: parseFloat(formData.price_per_unit),
         currency: formData.currency,
         available: formData.available,
-        image_url: formData.image_url || null,
+        image_url: isCar ? (carPhotos[0] || null) : (formData.image_url || null),
+        images: isCar && carPhotos.length > 0 ? carPhotos : null,
+        specifications,
         agency_id: agencyId,
       };
 
@@ -151,6 +217,8 @@ export default function AgencyServices() {
 
   const handleEdit = (service: Service) => {
     setEditingService(service);
+    const specs = service.specifications || {};
+    const images = service.images || [];
     setFormData({
       name: service.name,
       type: service.type,
@@ -160,6 +228,31 @@ export default function AgencyServices() {
       currency: service.currency,
       available: service.available,
       image_url: service.image_url || "",
+      carSpecs: service.type === "car"
+        ? {
+            brand: specs.brand || "",
+            model: specs.model || "",
+            category: specs.category || "Berline",
+            seats: (specs.seats ?? 5).toString(),
+            doors: (specs.doors ?? 4).toString(),
+            transmission: specs.transmission || "Automatique",
+            fuel: specs.fuel || "Essence",
+            luggage: (specs.luggage ?? 3).toString(),
+            year: (specs.year ?? new Date().getFullYear()).toString(),
+            unlimitedMileage: !!specs.unlimitedMileage,
+            freeCancellation: !!specs.freeCancellation,
+          }
+        : emptyCarSpecs,
+      carPhotos: service.type === "car"
+        ? {
+            front: images[0] || "",
+            back: images[1] || "",
+            left: images[2] || "",
+            right: images[3] || "",
+            interior1: images[4] || "",
+            interior2: images[5] || "",
+          }
+        : emptyCarPhotos,
     });
     setIsDialogOpen(true);
   };
@@ -187,6 +280,8 @@ export default function AgencyServices() {
       currency: "EUR",
       available: true,
       image_url: "",
+      carSpecs: emptyCarSpecs,
+      carPhotos: emptyCarPhotos,
     });
   };
 
@@ -209,7 +304,7 @@ export default function AgencyServices() {
             <DialogTrigger asChild>
               <Button><Plus className="h-4 w-4 mr-2" />Nouveau Service</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingService ? "Modifier le service" : "Nouveau service"}
@@ -281,13 +376,189 @@ export default function AgencyServices() {
                     rows={2}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>URL Image</Label>
-                  <Input
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  />
-                </div>
+                {formData.type === "car" ? (
+                  <div className="space-y-4 border-t pt-4">
+                    <p className="text-sm font-medium">Caractéristiques du véhicule</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Marque *</Label>
+                        <Input
+                          placeholder="Ex: Toyota"
+                          value={formData.carSpecs.brand}
+                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, brand: e.target.value } })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Modèle *</Label>
+                        <Input
+                          placeholder="Ex: Corolla"
+                          value={formData.carSpecs.model}
+                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, model: e.target.value } })}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Catégorie *</Label>
+                        <Select
+                          value={formData.carSpecs.category}
+                          onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, category: v } })}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {carCategories.map((c) => (
+                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Année</Label>
+                        <Input
+                          type="number"
+                          min="1990"
+                          max={new Date().getFullYear() + 1}
+                          value={formData.carSpecs.year}
+                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, year: e.target.value } })}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Transmission *</Label>
+                        <Select
+                          value={formData.carSpecs.transmission}
+                          onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, transmission: v } })}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {carTransmissions.map((t) => (
+                              <SelectItem key={t} value={t}>{t}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Carburant *</Label>
+                        <Select
+                          value={formData.carSpecs.fuel}
+                          onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, fuel: v } })}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {carFuels.map((f) => (
+                              <SelectItem key={f} value={f}>{f}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Places *</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={formData.carSpecs.seats}
+                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, seats: e.target.value } })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Portes</Label>
+                        <Input
+                          type="number"
+                          min="2"
+                          value={formData.carSpecs.doors}
+                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, doors: e.target.value } })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Bagages</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={formData.carSpecs.luggage}
+                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, luggage: e.target.value } })}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={formData.carSpecs.unlimitedMileage}
+                          onCheckedChange={(c) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, unlimitedMileage: c } })}
+                        />
+                        <Label>Kilométrage illimité</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={formData.carSpecs.freeCancellation}
+                          onCheckedChange={(c) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, freeCancellation: c } })}
+                        />
+                        <Label>Annulation gratuite</Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-2">
+                      <p className="text-sm font-medium">Photos extérieures (4 côtés) *</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <ImageUpload
+                          label="Avant"
+                          folder="agency-cars"
+                          value={formData.carPhotos.front}
+                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, front: url } })}
+                        />
+                        <ImageUpload
+                          label="Arrière"
+                          folder="agency-cars"
+                          value={formData.carPhotos.back}
+                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, back: url } })}
+                        />
+                        <ImageUpload
+                          label="Côté gauche"
+                          folder="agency-cars"
+                          value={formData.carPhotos.left}
+                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, left: url } })}
+                        />
+                        <ImageUpload
+                          label="Côté droit"
+                          folder="agency-cars"
+                          value={formData.carPhotos.right}
+                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, right: url } })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-2">
+                      <p className="text-sm font-medium">Photos intérieures (2 photos) *</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <ImageUpload
+                          label="Intérieur 1"
+                          folder="agency-cars"
+                          value={formData.carPhotos.interior1}
+                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior1: url } })}
+                        />
+                        <ImageUpload
+                          label="Intérieur 2"
+                          folder="agency-cars"
+                          value={formData.carPhotos.interior2}
+                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior2: url } })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label>URL Image</Label>
+                    <Input
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    />
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.available}

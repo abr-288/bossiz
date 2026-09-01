@@ -18,12 +18,20 @@
     "profile": "My Profile",
     "others": "Others",
     "destinations": "Destinations",
-    "stays": "Stays"
+    "stays": "Stays",
+    "help": "Help Center",
+    "register": "Sign Up",
+    "tours": "Tours",
+    "chooseLanguage": "Choose your language",
+    "chooseLanguageDescription": "Select the site's display language",
+    "searchLanguage": "Search for a language...",
+    "noLanguageFound": "No language found"
   },
   "hero": {
     "title": "Travel anywhere, book in one click",
     "subtitle": "Find the best deals for your flights, hotels, trains and much more",
-    "search": "Search"
+    "search": "Search",
+    "searchPlaceholder": "Search flights, hotels, destinations..."
   },
   "flights": {
     "from": "From where?",
@@ -74,16 +82,22 @@
     "category": "Category",
     "allCategories": "All categories",
     "cityOrAirport": "City or airport",
+    "departureCityPlaceholder": "Departure city",
+    "arrivalCityPlaceholder": "Arrival city",
     "cityRegionCountry": "City, region or country",
     "guests": "Guests",
     "duration": "Duration",
     "days": "days",
     "type": "Type",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "chooseDate": "Choose date"
   },
   "features": {
     "title": "Why Choose B-Reserve?",
-    "bestPrices": "Best Prices",
+    "bestPrices": {
+      "title": "Best Prices Guaranteed",
+      "description": "We guarantee you the best rates on the market"
+    },
     "bestPricesDesc": "Guaranteed lowest prices",
     "support": "24/7 Support",
     "supportDesc": "Assistance available anytime",
@@ -94,10 +108,6 @@
     "secureBooking": {
       "title": "Secure Booking",
       "description": "100% secure payments with data protection"
-    },
-    "bestPrices": {
-      "title": "Best Prices Guaranteed",
-      "description": "We guarantee you the best rates on the market"
     },
     "support247": {
       "title": "24/7 Support",
@@ -111,7 +121,16 @@
     "book": "Book",
     "perNight": "per night",
     "reviews": "reviews",
-    "viewAll": "View All Destinations"
+    "viewAll": "View All Destinations",
+    "searchPlaceholder": "Search a destination...",
+    "stats": {
+      "destinations": "Destinations",
+      "countries": "Countries",
+      "travelers": "Travelers",
+      "avgRating": "Average rating"
+    },
+    "newsletter": "Stay informed of our best deals",
+    "newsletterSubtitle": "Receive our exclusive offers directly in your inbox."
   },
   "testimonials": {
     "title": "What Our Customers Say",
@@ -159,6 +178,7 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "rights": "All rights reserved",
+    "bossizGroup": "Bossiz Group",
     "newsletter": {
       "title": "Newsletter",
       "description": "Get our latest offers and news",
@@ -216,7 +236,8 @@
       "paid": "Paid",
       "pending": "Pending",
       "failed": "Failed",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "processing": "Processing"
     },
     "actions": {
       "confirm": "Confirm",
@@ -251,6 +272,131 @@
       "totalPrice": "Total amount",
       "paymentStatus": "Payment status",
       "serviceType": "Service type"
+    },
+    "dialog": {
+      "flight": {
+        "title": "Book this flight",
+        "description": "Fill in the information below to complete your booking",
+        "tripType": "Trip type",
+        "oneWay": "One way",
+        "roundTrip": "Round trip",
+        "summary": "Booking summary",
+        "flightDetails": "Flight details",
+        "passengerInfo": "Passenger information",
+        "confirmBooking": "Confirm booking",
+        "backToForm": "Back"
+      },
+      "hotel": {
+        "title": "Book",
+        "description": "Fill in the information below to complete your booking",
+        "rooms": "Number of rooms",
+        "adults": "Adults",
+        "children": "Children",
+        "specialRequestsPlaceholder": "Preferences, allergies, special requests..."
+      },
+      "car": {
+        "title": "Book",
+        "description": "Fill in the information below to complete your booking",
+        "pickupInfo": "Pickup information",
+        "dropoffInfo": "Drop-off information",
+        "pickupDate": "Pickup date",
+        "pickupTime": "Pickup time",
+        "pickupLocation": "Pickup location",
+        "dropoffDate": "Drop-off date",
+        "dropoffTime": "Drop-off time",
+        "dropoffLocation": "Drop-off location",
+        "driverLicense": "Driver's license number",
+        "locationPlaceholder": "Abidjan - Airport",
+        "specialRequestsPlaceholder": "Special requests, additional equipment..."
+      },
+      "generic": {
+        "title": "Book",
+        "description": "Fill in the information below to complete your booking",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "guests": "Number of guests",
+        "prepareDescription": "Get ready to book this service in a few simple steps",
+        "startBooking": "Start booking"
+      }
+    },
+    "form": {
+      "passengers": "Number of passengers",
+      "customerInfo": "Traveler information",
+      "customerName": "Full name",
+      "customerEmail": "Email",
+      "customerPhone": "Phone",
+      "passportNumber": "Passport number",
+      "passportIssueDate": "Passport issue date",
+      "passportExpiryDate": "Passport expiry date",
+      "notes": "Additional notes",
+      "specialRequests": "Special requests, preferences...",
+      "driverInfo": "Driver information"
+    },
+    "summary": {
+      "flightDetails": "Flight details",
+      "hotelDetails": "Hotel details",
+      "carDetails": "Car details",
+      "from": "From",
+      "to": "To",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "class": "Class",
+      "airline": "Airline",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "night(s)",
+      "location": "Location",
+      "category": "Category",
+      "transmission": "Transmission",
+      "seats": "Seats",
+      "pickupDate": "Pickup date",
+      "dropoffDate": "Drop-off date",
+      "days": "day(s)",
+      "passengerInfo": "Passenger information",
+      "totalPrice": "Total price",
+      "modify": "Modify",
+      "confirm": "Confirm booking",
+      "confirming": "Confirming...",
+      "downloadTicket": "Download ticket",
+      "proceedToPayment": "Proceed to payment",
+      "continueToPayment": "Continue to payment",
+      "route": "Route",
+      "type": "Type",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "validation": {
+      "checkInfo": "Please check your information",
+      "mustBeLoggedIn": "You must be logged in to book",
+      "selectDates": "Please select dates",
+      "selectCheckInOut": "Please select check-in and check-out dates",
+      "checkOutAfterCheckIn": "Check-out date must be after check-in date",
+      "dropoffAfterPickup": "Drop-off date must be after pickup date",
+      "confirmFirst": "Please confirm the booking first",
+      "offerExpired": "This offer is no longer valid, please search again."
+    },
+    "success": {
+      "created": "Booking created",
+      "description": "Your booking has been created successfully",
+      "emailSent": "Confirmation email sent",
+      "ticketGenerated": "Ticket generated successfully",
+      "ticketDownloaded": "Ticket downloaded successfully"
+    },
+    "loginDialog": {
+      "title": "Login required",
+      "description": "You must be logged in to proceed to payment for your booking.",
+      "benefitsIntro": "By logging in, you'll be able to:"
+    },
+    "error": {
+      "createService": "Unable to create service",
+      "createBooking": "Unable to create booking",
+      "sendEmail": "Error sending confirmation email",
+      "generateTicket": "Error generating ticket",
+      "downloadTicket": "Error downloading ticket"
+    },
+    "loading": {
+      "generatingTicket": "Generating ticket..."
     }
   },
   "payment": {
@@ -274,7 +420,11 @@
     "email": "Email",
     "phone": "Phone",
     "phoneNote": "This number will be used for mobile payment",
+    "mobileRequestNote": "The payment request will be sent to the number:",
+    "fullNamePlaceholder": "Your full name",
+    "emailPlaceholder": "your@email.com",
     "address": "Address",
+    "addressPlaceholder": "Your address",
     "city": "City",
     "payButton": "Pay",
     "processing": "Processing...",
@@ -286,7 +436,11 @@
       "alreadyPaid": "Payment already completed",
       "bookingNotFound": "Booking not found or access denied",
       "bookingCancelled": "This booking has been cancelled and cannot be paid",
-      "paymentFailed": "Error processing payment"
+      "paymentFailed": "Error processing payment",
+      "timeoutTitle": "Timeout",
+      "timeoutDescription": "Payment processing took too long. Please try again.",
+      "paymentErrorTitle": "Payment error",
+      "loadPageDescription": "Unable to load the payment page"
     },
     "success": {
       "title": "Payment successful",
@@ -393,7 +547,17 @@
     "updatePassword": "New password",
     "updatePasswordDesc": "Enter your new password below",
     "confirmNewPassword": "Confirm new password",
-    "updateBtn": "Update"
+    "updateBtn": "Update",
+    "emailPlaceholder": "your@email.com",
+    "namePlaceholder": "John Smith",
+    "passwordStrengthLabel": "Password strength",
+    "facebookComingSoon": "Facebook login coming soon",
+    "appleComingSoon": "Apple login coming soon",
+    "backToHome": "Back to home",
+    "mfaVerificationSuccess": "Verification successful",
+    "resetPasswordBtn": "Reset password",
+    "termsRequired": "You must accept the terms of use and privacy policy",
+    "logout": "Logout"
   },
   "errors": {
     "generic": "An error occurred",
@@ -427,17 +591,31 @@
     "success": "Success",
     "error": "Error",
     "warning": "Warning",
-    "info": "Information",
+    "info": "Info",
     "install": "Install app",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
     "systemMode": "System",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "book": "Book",
+    "from": "From",
+    "tryAgain": "An error occurred. Please try again.",
+    "viewDetails": "View more",
+    "learnMore": "Learn more",
+    "menu": "Menu"
   },
   "pages": {
     "index": {
       "aiTitle": "Plan your trip with AI",
-      "aiSubtitle": "Get personalized recommendations for your next destination"
+      "aiSubtitle": "Get personalized recommendations for your next destination",
+      "seasonalTitle": "Seasonal Suggestions",
+      "seasonalSubtitle": "Discover the best times to travel",
+      "bossiz": {
+        "badge": "Premium Services",
+        "servicesLabel": "Services:",
+        "visit": "Visit",
+        "viewPortal": "View Full Portal"
+      }
     },
     "flights": {
       "title": "Search Flights",
@@ -466,6 +644,17 @@
         "duration": "Duration",
         "stops": "stops",
         "direct": "Direct"
+      },
+      "comparePrices": "Compare prices",
+      "popularFromAbidjan": "Popular destinations from Abidjan:",
+      "loadingPopular": "Loading popular flights...",
+      "featured": {
+        "title": "Featured flights: Abidjan → Paris",
+        "subtitle": "Discover the best deals for this popular destination. Use the search form above for other routes.",
+        "trending": "Trending this week"
+      },
+      "sort": {
+        "best": "Best"
       }
     },
     "hotels": {
@@ -486,7 +675,7 @@
         "priceLow": "Price ascending",
         "priceHigh": "Price descending",
         "rating": "Rating",
-        "stars": "Stars"
+        "allAmenities": "All"
       },
       "results": {
         "showing": "Showing",
@@ -495,16 +684,65 @@
         "hotels": "hotels",
         "night": "per night",
         "reviews": "reviews",
-        "noResults": "No results",
-        "noResultsDesc": "Modify your search criteria",
+        "noResults": "No hotels match your criteria",
+        "noResultsDesc": "Try changing your filters or search",
         "compare": "Compare",
         "comparing": "Comparing",
-        "viewComparison": "View comparison"
-      }
+        "viewComparison": "View comparison",
+        "foundCount": "{{count}} hotel(s) found"
+      },
+      "destinationPlaceholder": "Search a city...",
+      "suggestionsTitle": "Accommodation suggestions in Abidjan",
+      "suggestionsHint": "Use the search form above to see real prices and availability in real time.",
+      "realTimeData": "Real-time live data",
+      "realHotelsWorldwide": "Real hotels from around the world",
+      "pricesUpdatedFrom": "Prices and availability updated from {{count}} source(s): {{sources}}",
+      "hotelsLoadedFrom": "{{count}} hotels loaded from several popular destinations with real prices and details",
+      "qualifiers": {
+        "exceptional": "Exceptional",
+        "excellent": "Excellent",
+        "veryGood": "Very good",
+        "good": "Good",
+        "fair": "Fair"
+      },
+      "badges": {
+        "topRated": "Top rated",
+        "popular": "Popular",
+        "freeCancellation": "Free cancellation",
+        "breakfastIncluded": "Breakfast included",
+        "othersAmenities": "more"
+      },
+      "startingFrom": "Starting from",
+      "perNightTaxesIncluded": "per night • Taxes included",
+      "viewRooms": "View rooms"
     },
     "support": {
       "title": "Support Center",
       "subtitle": "We're here to help you 24/7",
+      "categories": {
+        "sectionTitle": "How can we help you?",
+        "sectionSubtitle": "Choose a category to quickly find an answer",
+        "allCategories": "All categories",
+        "booking": { "title": "Bookings & Modifications", "description": "Modify, view or manage your booking" },
+        "payment": { "title": "Payment & Billing", "description": "Payment methods, invoices and transactions" },
+        "refunds": { "title": "Refunds & Cancellations", "description": "Request a refund or cancel a trip" },
+        "baggage": { "title": "Baggage", "description": "Allowance, extra baggage and prohibited items" },
+        "children": { "title": "Travelling with children", "description": "Fares, conditions and minor travel support" },
+        "documents": { "title": "Travel documents", "description": "Passport, visa and required ID" },
+        "delays": { "title": "Flight delays & cancellations", "description": "What to do if your flight is disrupted" }
+      },
+      "manageBooking": {
+        "title": "Manage my booking",
+        "description": "View, modify or cancel your booking in a few clicks",
+        "cta": "Go to my bookings"
+      },
+      "search": {
+        "placeholder": "Search help (e.g. baggage, refund...)",
+        "noResults": "No results for \"{{query}}\". Try another keyword or contact us.",
+        "resultsCount": "{{count}} result(s) found"
+      },
+      "stillNeedHelp": "Can't find your answer?",
+      "stillNeedHelpDesc": "Our team is available to help you",
       "contact": {
         "phone": "Phone",
         "phoneDesc": "Available 24/7",
@@ -538,125 +776,164 @@
         "q6": "What to do in case of flight delay or cancellation?",
         "a6": "In case of delay or cancellation, contact our customer service immediately available 24/7. We will assist you in finding an alternative solution or processing your refund."
       },
+      "categoryPage": {
+        "breadcrumbHome": "Support",
+        "backToSupport": "Back to support",
+        "otherCategoriesTitle": "Other categories",
+        "searchPlaceholder": "Search this category..."
+      },
+      "faqByCategory": {
+        "booking": {
+          "q1": "How can I modify my booking?",
+          "a1": "You can modify your booking by logging into your account and accessing 'My Bookings'. Click on the relevant booking and select 'Modify'. Note that fees may apply depending on fare conditions.",
+          "q2": "How can I check my booking status?",
+          "a2": "Go to 'My Bookings' from your dashboard: each booking shows its status (confirmed, pending, cancelled) along with all your trip details.",
+          "q3": "Can I cancel my booking online?",
+          "a3": "Yes, cancellation is done directly from 'My Bookings' by selecting 'Cancel'. Cancellation conditions and any fees depend on the fare chosen at booking time.",
+          "q4": "Do I need an account to book?",
+          "a4": "An account isn't required to book, but it lets you easily find your bookings, receive price alerts, and speed up future bookings."
+        },
+        "payment": {
+          "q1": "What payment methods are accepted?",
+          "a1": "We accept credit cards (Visa, Mastercard), Mobile Money (Orange Money, MTN Money, Moov Money), and bank transfers. Cash payment is possible at our agencies.",
+          "q2": "What should I do if I get a payment error?",
+          "a2": "If your payment fails, check the balance and details of your payment method and try again. If the issue persists, contact our support with your booking reference.",
+          "q3": "How can I get my invoice?",
+          "a3": "Your invoice is available in 'My Bookings' once payment is confirmed, and is also sent to you by email. You can download it as a PDF at any time.",
+          "q4": "Is my payment information secure?",
+          "a4": "Yes, all payments are processed via CinetPay with secure encryption. We never store your card details on our servers."
+        },
+        "refunds": {
+          "q1": "How can I get a refund?",
+          "a1": "Refund requests must be submitted through your account within 24h after cancellation. Processing time is 7 to 14 business days depending on your bank.",
+          "q2": "What are the cancellation fees?",
+          "a2": "Cancellation fees vary depending on the fare booked (refundable, semi-flexible or non-refundable) and how far ahead of departure you cancel. Details are shown before you confirm your booking.",
+          "q3": "How long does a refund take?",
+          "a3": "Refunds are processed within 7 to 14 business days after your request is validated; the final timing depends on your bank or Mobile Money operator.",
+          "q4": "Can I cancel only part of my booking?",
+          "a4": "Yes, for multi-item bookings (several passengers or combined services), you can cancel partially from 'My Bookings' or by contacting our support."
+        },
+        "baggage": {
+          "q1": "What baggage allowance is included?",
+          "a1": "The baggage allowance depends on the fare and carrier chosen; it's detailed at booking time and on your flight confirmation.",
+          "q2": "How do I add extra baggage?",
+          "a2": "You can add extra baggage from 'My Bookings' before departure, or directly through our support for special cases.",
+          "q3": "What should I do if my baggage is lost or damaged?",
+          "a3": "Report the issue immediately at the airport baggage counter before leaving the claim area, then contact our support with your booking reference for follow-up.",
+          "q4": "What items are prohibited in checked or carry-on baggage?",
+          "a4": "Sharp objects, flammable liquids and loose lithium batteries are prohibited in carry-on baggage; some hazardous items are also prohibited in checked baggage. Check your carrier's rules before packing."
+        },
+        "children": {
+          "q1": "Can I travel with children?",
+          "a1": "Yes, children are welcome. Reduced rates are available for children under 12. Some services offer free travel for children under 2.",
+          "q2": "Can a child travel alone?",
+          "a2": "Unaccompanied minors can travel under certain conditions depending on the carrier, with a parental authorization form and sometimes a paid escort service.",
+          "q3": "Does a minor need a special document?",
+          "a3": "A minor travelling alone or with only one parent may need an exit authorization signed by both parents or the legal guardian, depending on the destination.",
+          "q4": "Are baby seats available?",
+          "a4": "Baby seats and bassinet options are available on request with some partner carriers and hotels; mention this need when booking."
+        },
+        "documents": {
+          "q1": "What documents are needed for travel?",
+          "a1": "For international flights, a valid passport is mandatory. Depending on the destination, a visa may be required. For domestic flights, an ID card is sufficient. Check our destination guide for more information.",
+          "q2": "How do I get a visa for my destination?",
+          "a2": "Visa requirements vary by nationality and destination. Check with the relevant embassy or consulate, or our concierge service, which can assist with the process.",
+          "q3": "Does my passport need a minimum validity period?",
+          "a3": "Most countries require a passport valid for at least 6 months after the planned return date. Always check the specific requirements for your destination before travelling.",
+          "q4": "Is an ID card enough for a domestic flight?",
+          "a4": "Yes, for domestic flights within Côte d'Ivoire, a valid national ID card is sufficient for boarding."
+        },
+        "delays": {
+          "q1": "What to do in case of flight delay or cancellation?",
+          "a1": "In case of delay or cancellation, contact our customer service immediately available 24/7. We will assist you in finding an alternative solution or processing your refund.",
+          "q2": "Am I entitled to compensation for a delay?",
+          "a2": "Compensation eligibility depends on the carrier, the length of the delay and its cause. Our support team helps you check your eligibility and submit your claim.",
+          "q3": "How can I track my flight status in real time?",
+          "a3": "Your flight status is visible in 'My Bookings', with automatic notifications for schedule or gate changes.",
+          "q4": "What should I do if I miss my connection due to a delay?",
+          "a4": "Go immediately to your carrier's counter at the airport to be rebooked on the next available flight, and inform our support so we can follow up on your case."
+        }
+      },
       "hours": {
-        "title": "Opening Hours",
-        "247": "Service available 24/7"
-      }
-    }
-  },
-  "booking": {
-    "dialog": {
-      "flight": {
-        "title": "Book this flight",
-        "description": "Fill in the information below to complete your booking",
-        "tripType": "Trip type",
-        "oneWay": "One way",
-        "roundTrip": "Round trip",
-        "summary": "Booking summary",
-        "flightDetails": "Flight details",
-        "passengerInfo": "Passenger information",
-        "confirmBooking": "Confirm booking",
-        "backToForm": "Back"
+        "247": "Service available 24/7",
+        "title": "Opening Hours"
       },
-      "hotel": {
-        "title": "Book",
-        "description": "Fill in the information below to complete your booking",
-        "rooms": "Number of rooms",
-        "adults": "Adults",
-        "children": "Children"
-      },
-      "car": {
-        "title": "Book",
-        "description": "Fill in the information below to complete your booking",
-        "pickupInfo": "Pickup information",
-        "dropoffInfo": "Drop-off information",
-        "pickupDate": "Pickup date",
-        "pickupTime": "Pickup time",
-        "pickupLocation": "Pickup location",
-        "dropoffDate": "Drop-off date",
-        "dropoffTime": "Drop-off time",
-        "dropoffLocation": "Drop-off location",
-        "driverLicense": "Driver's license number"
-      },
-      "generic": {
-        "title": "Book",
-        "description": "Fill in the information below to complete your booking",
-        "startDate": "Start date",
-        "endDate": "End date",
-        "guests": "Number of guests"
+      "callUs": "Call us",
+      "globalVoiceSupport": "Global voice support",
+      "writeToUs": "Write to us",
+      "technicalBillingSupport": "Technical & billing support",
+      "responseWithin24h": "Response within 12-24h",
+      "agentsAvailable": "Agents available",
+      "instantResponse": "Instant response",
+      "startChat": "Start chat",
+      "namePlaceholder": "Your name",
+      "subjectPlaceholder": "Subject of your request",
+      "referencePlaceholder": "E.g. BK123456",
+      "messagePlaceholder": "Describe your issue or question...",
+      "sendMessage": "Send message",
+      "phoneSupport": "Phone support",
+      "agencies": "Agencies",
+      "agenciesHours": "Mon-Fri 8am-6pm, Sat 9am-1pm",
+      "onlineChat": "Online chat",
+      "exclusivePerks": "Exclusive perks",
+      "followNews": "Follow the news",
+      "subscribe": "Subscribe",
+      "newsletterDisclaimer": "By subscribing, you agree to our privacy policy."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subtitle": "Every way to reach us, all in one place",
+      "formTitle": "Send us a message",
+      "agenciesTitle": "Our agencies",
+      "socialTitle": "Follow us",
+      "helpRedirect": "Looking for a quick answer? Check our help center or manage your booking directly.",
+      "channels": {
+        "phone": { "title": "Phone", "description": "Support available 24/7" },
+        "whatsapp": { "title": "WhatsApp", "description": "Fast response, seven days a week" },
+        "email": { "title": "Email", "description": "Response within 24h" },
+        "chat": { "title": "Live Chat", "description": "Immediate response, assistant available around the clock", "cta": "Start a conversation" }
       }
     },
-    "form": {
-      "passengers": "Number of passengers",
-      "customerInfo": "Traveler information",
-      "customerName": "Full name",
-      "customerEmail": "Email",
-      "customerPhone": "Phone",
-      "passportNumber": "Passport number",
-      "passportIssueDate": "Passport issue date",
-      "passportExpiryDate": "Passport expiry date",
-      "notes": "Additional notes",
-      "specialRequests": "Special requests, preferences...",
-      "driverInfo": "Driver information"
+    "stays": {
+      "types": {
+        "villa": "Villas",
+        "apartment": "Apartments",
+        "beach": "Beachfront",
+        "luxury": "Luxury"
+      },
+      "features": {
+        "secureBooking": {
+          "title": "Secure booking",
+          "description": "100% secure payment"
+        },
+        "freeCancellation": {
+          "description": "Up to 48h before"
+        },
+        "support": {
+          "title": "24/7 Support",
+          "description": "Here for you"
+        },
+        "quality": {
+          "title": "Verified quality",
+          "description": "All our accommodations are inspected"
+        }
+      },
+      "filterBy": "Filter by:"
     },
-    "summary": {
-      "flightDetails": "Flight details",
-      "hotelDetails": "Hotel details",
-      "carDetails": "Car details",
-      "from": "From",
-      "to": "To",
-      "departure": "Departure",
-      "arrival": "Arrival",
-      "class": "Class",
-      "airline": "Airline",
-      "checkIn": "Check-in",
-      "checkOut": "Check-out",
-      "nights": "night(s)",
-      "location": "Location",
-      "category": "Category",
-      "transmission": "Transmission",
-      "seats": "Seats",
-      "pickupDate": "Pickup date",
-      "dropoffDate": "Drop-off date",
-      "days": "day(s)",
-      "passengerInfo": "Passenger information",
-      "totalPrice": "Total price",
-      "modify": "Modify",
-      "confirm": "Confirm booking",
-      "confirming": "Confirming...",
-      "downloadTicket": "Download ticket",
-      "proceedToPayment": "Proceed to payment",
-      "route": "Route",
-      "type": "Type",
-      "name": "Name",
-      "email": "Email",
-      "phone": "Phone"
+    "orderSummary": {
+      "downloadPdf": "Download PDF",
+      "title": "Order Summary",
+      "financialSummary": "Financial Summary"
     },
-    "validation": {
-      "checkInfo": "Please check your information",
-      "mustBeLoggedIn": "You must be logged in to book",
-      "selectDates": "Please select dates",
-      "selectCheckInOut": "Please select check-in and check-out dates",
-      "checkOutAfterCheckIn": "Check-out date must be after check-in date",
-      "dropoffAfterPickup": "Drop-off date must be after pickup date",
-      "confirmFirst": "Please confirm the booking first"
+    "flightHotelBookingProcess": {
+      "backToSearch": "Back to search"
     },
-    "success": {
-      "created": "Booking created",
-      "description": "Your booking has been created successfully",
-      "emailSent": "Confirmation email sent",
-      "ticketGenerated": "Ticket generated successfully",
-      "ticketDownloaded": "Ticket downloaded successfully"
-    },
-    "error": {
-      "createService": "Unable to create service",
-      "createBooking": "Unable to create booking",
-      "sendEmail": "Error sending confirmation email",
-      "generateTicket": "Error generating ticket",
-      "downloadTicket": "Error downloading ticket"
-    },
-    "loading": {
-      "generatingTicket": "Generating ticket..."
+    "flightHotel": {
+      "title": "Flight + Hotel Packages",
+      "noResults": "Use the form above to search for flights and hotels",
+      "yourPackage": "Your package",
+      "availabilityNote": "Availability is verified upon confirmation.",
+      "continueBooking": "Continue booking"
     }
   },
   "notFound": {
@@ -709,7 +986,12 @@
       "rating": "Best rated"
     },
     "carsFound": "cars found",
-    "displayLocal": "Displaying locally available cars"
+    "displayLocal": "Displaying locally available cars",
+    "pickupDate": "Pickup date",
+    "dropoffDate": "Return date",
+    "dropoffLocation": "Drop-off location",
+    "useFormToSearch": "Use the form to search for vehicles",
+    "vehiclesFoundToast": "{{count}} vehicles found"
   },
   "bookingHistory": {
     "title": "My Bookings",
@@ -736,7 +1018,8 @@
     "loadingError": "Error loading your bookings",
     "ticketGenerating": "Generating ticket...",
     "ticketSuccess": "Ticket sent by email! Use Ctrl+P to save as PDF",
-    "ticketError": "Error downloading ticket"
+    "ticketError": "Error downloading ticket",
+    "modifyNotAvailable": "Online modification is not yet available. Our support team can help you."
   },
   "subscriptions": {
     "title": "Our Subscription Plans",
@@ -763,7 +1046,24 @@
       "successDesc": "Our team will contact you within 24h.",
       "error": "Error sending",
       "errorDesc": "Please try again later."
-    }
+    },
+    "badge": "Bossiz Conciergerie",
+    "featuredTitle": "Our Subscriptions",
+    "featuredSubtitle": "Discover our plans tailored to your needs",
+    "requestInfo": "Request a quote",
+    "subscribeDirect": "Subscribe",
+    "viewAll": "View All Offers",
+    "subscribeTo": "Subscribe to",
+    "fillForm": "Fill out this form and our team will contact you shortly.",
+    "fullName": "Full name",
+    "phone": "Phone",
+    "email": "Email",
+    "messageOptional": "Message (optional)",
+    "specifyNeeds": "Specify your needs...",
+    "sendRequest": "Send request",
+    "sending": "Sending...",
+    "requestSent": "Request sent!",
+    "contactSoon": "Our team will contact you as soon as possible."
   },
   "confirmation": {
     "loading": "Loading your booking...",
@@ -809,7 +1109,16 @@
       "main": "Main",
       "other": "Passenger"
     },
-    "bornOn": "Born on"
+    "bornOn": "Born on",
+    "missingBookingId": "Missing booking ID",
+    "shareTitle": "My Bossiz booking",
+    "linkCopied": "Link copied to clipboard!",
+    "bookingConfirmed": "Booking confirmed",
+    "paymentReceived": "Payment received",
+    "cancelled": "Booking cancelled and refunded",
+    "cancelledDesc": "This booking has been cancelled and the payment has been fully refunded.",
+    "processingSupplier": "Payment received, confirming your booking",
+    "processingSupplierDesc": "Your payment has been received. We are finalizing the confirmation with the carrier, this may take a moment."
   },
   "dashboardPage": {
     "title": "My Dashboard",
@@ -857,6 +1166,1000 @@
       "confirmError": "Unable to confirm booking",
       "cancelError": "Unable to cancel booking",
       "deleteError": "Unable to delete booking"
+    },
+    "sidebar": {
+      "main": "Main",
+      "overview": "Overview",
+      "bookings": "Bookings",
+      "priceAlerts": "Price alerts",
+      "explore": "Explore",
+      "account": "Account",
+      "support": "Support"
+    }
+  },
+  "aiTravelAdvisor": {
+    "title": "AI Travel Advisor",
+    "destination": "Destination",
+    "destinationPlaceholder": "E.g. Paris, Tokyo, Marrakech...",
+    "interests": "Interests",
+    "interestsPlaceholder": "E.g. culture, nature, food...",
+    "budget": "Budget",
+    "budgetPlaceholder": "E.g. budget, mid-range, luxury...",
+    "duration": "Trip duration",
+    "durationPlaceholder": "E.g. 3 days, one week...",
+    "generating": "Generating...",
+    "submit": "Get AI recommendations",
+    "resultsTitle": "Personalized recommendations",
+    "success": "Recommendations generated successfully!",
+    "errors": {
+      "destinationRequired": "Please enter a destination",
+      "generic": "Error generating recommendations"
+    }
+  },
+  "carCard": {
+    "deposit": "Deposit",
+    "totalPrice": "Total price"
+  },
+  "carDetails": {
+    "passengers": "Passengers",
+    "luggage": "Luggage",
+    "doors": "Doors",
+    "vehicleSpecs": "Vehicle specifications",
+    "brand": "Brand",
+    "model": "Model",
+    "engine": "Engine",
+    "airConditioning": "Air conditioning",
+    "year": "Year",
+    "rentalConditions": "Rental conditions",
+    "mileage": "Mileage",
+    "unlimited": "Unlimited",
+    "limited": "Limited (check conditions)",
+    "fuelPolicy": "Fuel policy",
+    "fuelPolicyFullToFull": "Full to full",
+    "fuelPolicySameToSame": "Same to same",
+    "fuelPolicyFullToEmpty": "Full to empty (prepaid fuel)",
+    "cancellation": "Cancellation",
+    "freeCancellationUntil48h": "Free cancellation up to 48h before",
+    "cancellationTermsApply": "Cancellation terms apply",
+    "depositRequired": "Deposit required",
+    "blockedOnCard": "held on your card",
+    "featuresIncluded": "Included features and services",
+    "totalPricePerDay": "Total price per day",
+    "day": "day",
+    "taxesIncluded": "Taxes and fees included",
+    "bookNow": "Book now"
+  },
+  "carFilters": {
+    "brandModelPlaceholder": "Brand, model..."
+  },
+  "destinationsSection": {
+    "upToPersons": "Up to {{count}} people",
+    "flexibleCancellation": "Flexible cancellation"
+  },
+  "flightCard": {
+    "directFlight": "Direct flight",
+    "seatsAvailable": "Seats available"
+  },
+  "flightFilters": {
+    "priceAlerts": {
+      "title": "Create price alerts",
+      "description": "Get notified when prices for this route change."
+    },
+    "baggage": {
+      "title": "Baggage",
+      "hand": "Hand baggage",
+      "checked": "Checked baggage"
+    },
+    "upToOneStop": "Up to 1 stop",
+    "upToTwoStops": "Up to 2 stops",
+    "allowOvernight": "Allow overnight stops"
+  },
+  "iosDownload": {
+    "badge": "Mobile App",
+    "title": "Download B-Reserve",
+    "titleHighlight": "ON YOUR MOBILE",
+    "subtitle": "Access all our booking services directly from your smartphone",
+    "detected": {
+      "ios": "iOS detected",
+      "android": "Android detected",
+      "windows": "Windows detected",
+      "mac": "macOS detected",
+      "linux": "Linux detected",
+      "unknown": "Unknown system"
+    },
+    "smart": {
+      "title": "Smart Download",
+      "subtitle": "Automatically detects your system",
+      "ctaIOS": "Install on iOS",
+      "ctaAndroid": "Install on Android",
+      "ctaGeneric": "Download the App",
+      "hintIOS": "Redirecting to the App Store",
+      "hintAndroid": "Redirecting to Google Play",
+      "hintGeneric": "Choose your platform below"
+    },
+    "ios": {
+      "devices": "iPhone & iPad",
+      "scanQR": "Scan QR Code",
+      "hideQR": "Hide QR Code",
+      "qrHint": "Scan this QR Code with your iOS device",
+      "qrAlt": "QR Code to download B-Reserve on iOS"
+    },
+    "android": {
+      "devices": "Phones & Tablets",
+      "ctaDownload": "Download on Google Play",
+      "ctaView": "View on Google Play"
+    },
+    "downloadsCount": "{{count}} downloads",
+    "features": {
+      "fast": {
+        "title": "Fast",
+        "description": "Optimized performance for all devices"
+      },
+      "secure": {
+        "title": "Secure",
+        "description": "Secure payments and data protection"
+      },
+      "reliable": {
+        "title": "Reliable",
+        "description": "Available 24/7 wherever you are"
+      }
+    },
+    "instructions": {
+      "title": "How to install?",
+      "iosTitle": "iOS (iPhone/iPad)",
+      "iosSteps": [
+        "Scan the QR Code with your camera",
+        "Tap \"Open in App Store\"",
+        "Tap \"Get\" to install",
+        "The B-Reserve icon will appear on your home screen"
+      ],
+      "androidSteps": [
+        "Click the download button",
+        "Follow the Google Play instructions",
+        "Accept the required permissions",
+        "The app will install automatically"
+      ]
+    },
+    "alerts": {
+      "redirectAppStore": "Redirecting to the App Store...\nInstallation will start automatically!",
+      "redirectPlayStore": "Redirecting to Google Play...\nInstallation will start automatically!",
+      "choosePlatform": "Choose your mobile platform:\n\n1. iOS (iPhone/iPad)\n2. Android\n\nOr scan the matching QR Code!\n\nClick OK for iOS, or Cancel for Android.",
+      "iosOnly": "This app is only available on iOS devices (iPhone/iPad).\nPlease use an iOS device to install this app."
+    }
+  },
+  "promoBanner": {
+    "bannerLabel": "Banner",
+    "close": "Close banner",
+    "viewShort": "View",
+    "flights": {
+      "title": "-20% on all flights",
+      "subtitle": "Limited offer until January 31",
+      "badge": "Deal",
+      "ctaText": "Book"
+    },
+    "hotels": {
+      "title": "3rd night free",
+      "subtitle": "On a selection of partner hotels",
+      "badge": "Exclusive",
+      "ctaText": "Discover"
+    },
+    "cars": {
+      "title": "Rental from 15,000 FCFA/day",
+      "subtitle": "Comprehensive insurance included",
+      "badge": "New",
+      "ctaText": "Rent"
+    },
+    "pack": {
+      "title": "Flight + Hotel Pack -30%",
+      "subtitle": "Save on your combined trips",
+      "badge": "Best Deal",
+      "ctaText": "Grab it"
+    }
+  },
+  "quickSearch": {
+    "subtitle": "Quickly find what you're looking for"
+  },
+  "multiCityFlightForm": {
+    "addFlight": "Add a flight (max 5)"
+  },
+  "nationalitySelect": {
+    "placeholder": "Select a nationality"
+  },
+  "passengersForm": {
+    "nationalityPlaceholder": "French"
+  },
+  "flightBookingDialog": {
+    "cancelPolicyNote": "This depends on the airline's rules and applicable laws",
+    "changePolicyNote": "This depends on the airline's rules",
+    "benefitsDescription": "Travel with complete peace of mind, with exclusive benefits and full protection."
+  },
+  "baggageInfo": {
+    "realDataBadge": "Real-time data",
+    "lowCostWarning": "Low-cost airline: no checked baggage included by default",
+    "confirmationNote": "Check the exact conditions upon confirmation."
+  },
+  "passengerStep": {
+    "firstNameLabel": "First name *",
+    "firstNamePlaceholder": "First name",
+    "documentNumberLabel": "Document number *",
+    "documentIssueDateLabel": "Issue date"
+  },
+  "preferencesStep": {
+    "legend": "Legend",
+    "floorPreferenceLabel": "Floor preference",
+    "choosePreferencePlaceholder": "Choose a preference",
+    "estimatedArrivalTimeLabel": "Estimated arrival time",
+    "selectPlaceholder": "Select",
+    "hotelSpecialRequestsLabel": "Special requests",
+    "hotelSpecialRequestsPlaceholder": "E.g.: Quiet room, away from the elevator, birthday celebration...",
+    "selectTimePlaceholder": "Select a time",
+    "carNotesPlaceholder": "E.g.: Need an automatic vehicle, child booster seat required...",
+    "desiredDepartureTimeLabel": "Preferred departure time",
+    "dietaryPreferencesLabel": "Dietary preferences",
+    "particularRequestsLabel": "Special requests",
+    "genericSpecialRequestsPlaceholder": "Share your expectations or special needs..."
+  },
+  "seasonalSuggestions": {
+    "title": "Smart Travel Suggestions",
+    "subtitle": "Discover the best times to travel based on weather, events and seasonality",
+    "placeholder": "Enter a destination (e.g. Paris, Tokyo, New York)",
+    "analyze": "Analyze",
+    "tabs": {
+      "seasonal": "Seasons",
+      "weather": "Weather",
+      "events": "Events",
+      "ai": "AI"
+    },
+    "current": "Current",
+    "advantagesLabel": "Advantages",
+    "temperature": "Temperature",
+    "rainfall": "Rainfall",
+    "weatherAt": "Current weather in {{location}}",
+    "feelsLike": "Feels like",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "weatherError": "Unable to retrieve weather data for this destination",
+    "eventsEmpty": "No events found for this destination",
+    "aiRecommendationsFor": "Personalized recommendations for {{destination}}",
+    "aiError": "Unable to generate recommendations for this destination",
+    "seasons": {
+      "spring": {
+        "name": "Spring",
+        "months": [
+          "March",
+          "April",
+          "May"
+        ],
+        "description": "Mild climate and blooming nature",
+        "advantages": [
+          "Pleasant temperatures",
+          "Fewer tourists",
+          "Good prices"
+        ],
+        "temperature": "15-25°C",
+        "rainfall": "Moderate"
+      },
+      "summer": {
+        "name": "Summer",
+        "months": [
+          "June",
+          "July",
+          "August"
+        ],
+        "description": "High season with lots of activities",
+        "advantages": [
+          "Many events",
+          "Active nightlife",
+          "All services open"
+        ],
+        "temperature": "25-35°C",
+        "rainfall": "Low"
+      },
+      "autumn": {
+        "name": "Autumn",
+        "months": [
+          "September",
+          "October",
+          "November"
+        ],
+        "description": "Peaceful and authentic atmosphere",
+        "advantages": [
+          "Mild temperatures",
+          "Beautiful colors",
+          "Reduced rates"
+        ],
+        "temperature": "15-25°C",
+        "rainfall": "Moderate to high"
+      },
+      "winter": {
+        "name": "Winter",
+        "months": [
+          "December",
+          "January",
+          "February"
+        ],
+        "description": "Calm and cultural discovery",
+        "advantages": [
+          "Few tourists",
+          "Very attractive prices",
+          "Local authenticity"
+        ],
+        "temperature": "5-15°C",
+        "rainfall": "High"
+      }
+    }
+  },
+  "stays": {
+    "title": "Stays and Getaways",
+    "subtitle": "Discover our all-inclusive stay packages and custom trips",
+    "filters": "Filter",
+    "available": "Available stays",
+    "results": "Accommodations",
+    "results_desc": "Discover our exclusive hand-picked selection for your next vacation.",
+    "noResults": "No stays available",
+    "highlights": "Highlights",
+    "whyUs": "Why book with us?"
+  },
+  "support": {
+    "title": "We're here to help",
+    "subtitle": "Our team of experts is available 24/7 to answer all your questions and support you."
+  },
+  "validation": {
+    "errorTitle": "Validation error",
+    "errorDescription": "Please correct the errors in the form"
+  },
+  "homepage": {
+    "features": {
+      "secure-booking": {
+        "title": "Secure Booking",
+        "description": "Book with confidence with our secure payment system and data protection."
+      },
+      "best-prices": {
+        "title": "Best Prices Guaranteed",
+        "description": "Find the best deals on flights, hotels and car rentals."
+      },
+      "support-247": {
+        "title": "24/7 Support",
+        "description": "Our support team is available at all times to help you."
+      }
+    }
+  },
+  "bossizPortal": {
+    "nav": {
+      "sites": "Our Sites",
+      "services": "Services",
+      "values": "Values",
+      "contact": "Contact"
+    },
+    "headerTagline": "Concierge Portal",
+    "reservations": "Reservations",
+    "visitSite": "Visit the site",
+    "visit": "Visit",
+    "hero": {
+      "eyebrow": "International Excellence",
+      "title": "BOSSIZ Group",
+      "subtitle": "Your Concierge Portal",
+      "description": "Premium concierge excellence in West Africa"
+    },
+    "stats": {
+      "0": "Years of Excellence",
+      "1": "Satisfied Clients",
+      "2": "Premium Partners",
+      "3": "Premium Support"
+    },
+    "sites": {
+      "eyebrow": "Our sites",
+      "title": "Two countries, one excellence",
+      "subtitle": "Each BOSSIZ site offers an experience tailored to the cultural specifics and needs of its region.",
+      "cote-d-ivoire": {
+        "title": "Bossiz Côte d'Ivoire",
+        "subtitle": "Concierge Excellence",
+        "tagline": "Ivorian elegance in the service of excellence",
+        "description": "Discover a unique concierge experience in Côte d'Ivoire, where tradition and modernity meet to offer exceptional services.",
+        "location": "Abidjan, Yamoussoukro, San Pedro",
+        "features": {
+          "0": "Premium Travel & Tourism",
+          "1": "Luxury Real Estate",
+          "2": "VIP Transport & Private Jets",
+          "3": "Corporate Events",
+          "4": "Personalized Services",
+          "5": "24/7 Assistance",
+          "6": "Gastronomy & Wellness",
+          "7": "Private Shopping"
+        },
+        "stats": {
+          "0": "Years of Excellence",
+          "1": "Satisfied Clients",
+          "2": "Premium Partners",
+          "3": "Satisfaction"
+        }
+      },
+      "senegal": {
+        "title": "Bossiz Senegal",
+        "subtitle": "Exceptional Concierge",
+        "tagline": "Senegalese tradition in the service of luxury",
+        "description": "Experience exceptional concierge service in Senegal, combining local expertise with international standards for unmatched services.",
+        "location": "Dakar, Thiès, Saint-Louis",
+        "features": {
+          "0": "Business Travel",
+          "1": "Real Estate Management",
+          "2": "Premium Transport",
+          "3": "Event Organization",
+          "4": "Business Services",
+          "5": "Digital Concierge",
+          "6": "Wellness & Leisure",
+          "7": "Premium Shopping"
+        },
+        "stats": {
+          "0": "Years of Expertise",
+          "1": "Satisfied Clients",
+          "2": "Premium Partners",
+          "3": "Satisfaction"
+        }
+      }
+    },
+    "services": {
+      "title": "A range of exceptional services",
+      "subtitle": "A complete offering available across all our sites to meet all your requirements.",
+      "voyage": {
+        "title": "Travel & Tourism",
+        "description": "Premium ticketing, luxury accommodations, exclusive tours",
+        "features": {
+          "0": "Private jets",
+          "1": "5* Hotels",
+          "2": "VIP tours",
+          "3": "Travel assistance"
+        }
+      },
+      "immobilier": {
+        "title": "Real Estate & Assets",
+        "description": "Management, rental, asset advisory and premium transactions",
+        "features": {
+          "0": "Luxury villas",
+          "1": "Rental management",
+          "2": "Asset advisory",
+          "3": "Investments"
+        }
+      },
+      "transport": {
+        "title": "Premium Transport",
+        "description": "Luxury vehicles, private jets, yachts and VIP services",
+        "features": {
+          "0": "Luxury cars",
+          "1": "Private jets",
+          "2": "Yachts",
+          "3": "VIP chauffeurs"
+        }
+      },
+      "evenements": {
+        "title": "Events & Celebrations",
+        "description": "Wedding planners, corporate events, galas and prestigious parties",
+        "features": {
+          "0": "Weddings",
+          "1": "Corporate events",
+          "2": "Galas",
+          "3": "Private parties"
+        }
+      },
+      "hotellerie": {
+        "title": "Hospitality & Dining",
+        "description": "Exclusive reservations, private chefs, gastronomic experiences",
+        "features": {
+          "0": "VIP reservations",
+          "1": "Private chefs",
+          "2": "Gastronomy",
+          "3": "Tastings"
+        }
+      },
+      "services-vip": {
+        "title": "VIP Services",
+        "description": "Personalized 24/7 assistance, dedicated manager, tailor-made services",
+        "features": {
+          "0": "Personal assistant",
+          "1": "Dedicated manager",
+          "2": "24/7 services",
+          "3": "Private concierge"
+        }
+      }
+    },
+    "values": {
+      "title": "The pillars of our excellence",
+      "subtitle": "The values that guide our commitment to our clients every day.",
+      "confiance": {
+        "title": "Absolute Trust",
+        "description": "Discretion and confidentiality guaranteed for all our clients."
+      },
+      "excellence": {
+        "title": "Excellence",
+        "description": "Standards of excellence in every service provided."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "Modern solutions and cutting-edge technology."
+      },
+      "passion": {
+        "title": "Passion",
+        "description": "A passionate commitment to your satisfaction."
+      }
+    },
+    "contact": {
+      "title": "Contact BOSSIZ excellence",
+      "subtitle": "Ready to discover an unmatched concierge experience? Contact our experts today."
+    },
+    "quickAccess": {
+      "title": "Quick access to reservations",
+      "subtitle": "Access our platform directly to plan your premium experiences.",
+      "cta": "Access reservations"
+    },
+    "footer": {
+      "groupTagline": "Group Portal",
+      "description": "Your gateway to premium concierge excellence in West Africa.",
+      "contactGroup": "Group Contact",
+      "allRightsReserved": "All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfUse": "Terms of Use"
+    }
+  },
+  "bossizSite": {
+    "back": "Back to Bossiz.com",
+    "backToPortal": "Back to Bossiz.com",
+    "backToPortalBossiz": "Back to Bossiz.com",
+    "book": "Book",
+    "conciergerie": "Concierge",
+    "brandNameByCountry": {
+      "ci": "Bossiz Concierge",
+      "sn": "Bossiz Senegal"
+    },
+    "tagline": "Premium concierge excellence",
+    "footer": {
+      "siteLabel": "Site",
+      "companyLabel": "Company"
+    },
+    "countries": {
+      "ci": "Côte d'Ivoire",
+      "sn": "Senegal"
+    },
+    "nav": {
+      "home": "Home",
+      "services": "Services",
+      "about": "About",
+      "plans": "Plans"
+    },
+    "recommended": "Recommended",
+    "requestQuote": "Request a quote",
+    "monthlyPlans": "Monthly plans",
+    "shortStayPlansLabel": "Short-stay plans",
+    "plansTitle": "Our concierge plans",
+    "plansSubtitle": "Plans tailored to every profile, from a flying visit to a permanent residence.",
+    "servicesEyebrow": "Our services",
+    "servicesTitle": "Tailor-made service, in every circumstance",
+    "servicesSubtitle": "Travel, real estate, transport, events: our team orchestrates every detail of your daily life with rigor and discretion.",
+    "testimonialsTitle": "They trust us",
+    "philosophy": "Excellence is not an act, but a habit we cultivate for you every day.",
+    "about": {
+      "title": "Our commitment",
+      "description": "Bossiz Concierge supports a demanding clientele with impeccable expertise, full availability and absolute discretion.",
+      "cta": "Discover our plans",
+      "values": {
+        "trust": {
+          "title": "Trust",
+          "text": "A relationship built on confidentiality and transparency."
+        },
+        "availability": {
+          "title": "Availability",
+          "text": "A team reachable at any time, every day of the year."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "text": "A constant demand for excellence in every detail of our services."
+        }
+      }
+    },
+    "contactCta": {
+      "title": "Let's talk about your next project",
+      "button": "Contact our team"
+    },
+    "contact": {
+      "ci": {
+        "address": "Abidjan, Côte d'Ivoire"
+      },
+      "sn": {
+        "address": "Dakar, Senegal"
+      }
+    },
+    "hero": {
+      "eyebrow": "Private concierge",
+      "titleLine1": "The art of living",
+      "titleLine2": "without compromise",
+      "subtitle": "A premium concierge service designed to anticipate every one of your needs.",
+      "ctaServices": "Discover our services",
+      "ctaPlans": "View plans",
+      "stats": {
+        "clients": "Privileged clients",
+        "partners": "Premium partners",
+        "availability": "Availability"
+      }
+    },
+    "services": {
+      "voyage": {
+        "title": "Travel & Stays",
+        "description": "Complete organization of your trips: flights, accommodation and tailor-made itineraries.",
+        "features": [
+          "Flight & hotel bookings",
+          "Personalized itineraries",
+          "VIP airport welcome"
+        ]
+      },
+      "immobilier": {
+        "title": "Real Estate",
+        "description": "Search, rental management and monitoring of your real estate properties with complete peace of mind.",
+        "features": [
+          "Property search",
+          "Rental management",
+          "Administrative follow-up"
+        ]
+      },
+      "transport": {
+        "title": "Private Transport",
+        "description": "Private chauffeurs, prestige vehicles and transfers available at all hours.",
+        "features": [
+          "Private chauffeur",
+          "Prestige vehicles",
+          "24/7 transfers"
+        ]
+      },
+      "evenementiel": {
+        "title": "Events",
+        "description": "Design and organization of exceptional private or professional events.",
+        "features": [
+          "Private events",
+          "Seminars & receptions",
+          "Full coordination"
+        ]
+      }
+    },
+    "servicesSN": {
+      "voyage": {
+        "features": [
+          "Flights & hotels in Senegal",
+          "Gorée & Saint-Louis excursions",
+          "VIP welcome in Dakar"
+        ]
+      },
+      "immobilier": {
+        "features": [
+          "Property search in Dakar",
+          "Rental management",
+          "Administrative follow-up"
+        ]
+      },
+      "transport": {
+        "features": [
+          "Private chauffeur",
+          "Prestige vehicles",
+          "Dakar Rally transfers"
+        ]
+      },
+      "evenementiel": {
+        "features": [
+          "Private events",
+          "Saly excursions",
+          "Full coordination"
+        ]
+      }
+    },
+    "additionalServices": {
+      "personnel": {
+        "title": "Personal Assistant",
+        "items": [
+          "Schedule management",
+          "Errands & procedures",
+          "Dedicated assistance"
+        ]
+      },
+      "quotidien": {
+        "title": "Daily Assistance",
+        "items": [
+          "Housekeeping & maintenance",
+          "Bill management",
+          "Supplier coordination"
+        ]
+      },
+      "bien-etre": {
+        "title": "Wellness",
+        "items": [
+          "Spa & massages",
+          "Personal trainer",
+          "Health appointments"
+        ]
+      },
+      "loisirs": {
+        "title": "Leisure",
+        "items": [
+          "Cultural bookings",
+          "Tailor-made activities",
+          "VIP access"
+        ]
+      },
+      "gastronomie": {
+        "title": "Gastronomy",
+        "items": [
+          "Private chef",
+          "Restaurant reservations",
+          "Tailored wine cellar"
+        ]
+      },
+      "shopping": {
+        "title": "Shopping",
+        "items": [
+          "Personal shopper",
+          "Express delivery",
+          "Access to private boutiques"
+        ]
+      }
+    },
+    "additionalServicesSN": {
+      "personnel": {
+        "items": [
+          "Schedule management",
+          "Errands & procedures",
+          "Dedicated assistance in Dakar"
+        ]
+      },
+      "quotidien": {
+        "items": [
+          "Housekeeping & maintenance",
+          "Bill management",
+          "Supplier coordination"
+        ]
+      },
+      "bien-etre": {
+        "items": [
+          "Spa & massages",
+          "Personal trainer",
+          "Health appointments"
+        ]
+      },
+      "loisirs": {
+        "items": [
+          "Gorée & Saint-Louis excursions",
+          "Tailor-made activities",
+          "VIP access"
+        ]
+      },
+      "gastronomie": {
+        "items": [
+          "Private chef",
+          "Restaurant reservations",
+          "Local gastronomy discovery"
+        ]
+      },
+      "shopping": {
+        "items": [
+          "Personal shopper",
+          "Express delivery",
+          "Access to local markets & boutiques"
+        ]
+      }
+    },
+    "plans": {
+      "premium": {
+        "name": "Premium",
+        "detail": "The essentials of concierge service for an easier daily life."
+      },
+      "privilege": {
+        "name": "Privilege",
+        "detail": "Extended support with priority access to our services."
+      },
+      "excellence": {
+        "name": "Excellence",
+        "detail": "The ultimate concierge experience, without any limits."
+      }
+    },
+    "shortStayPlans": {
+      "3days": {
+        "name": "3 Days",
+        "detail": "Ideal for a short business or private trip."
+      },
+      "1week": {
+        "name": "1 Week",
+        "detail": "Comprehensive support for a one-week stay."
+      },
+      "1month": {
+        "name": "1 Month",
+        "detail": "The ideal plan for a prolonged stay with complete peace of mind."
+      }
+    },
+    "testimonials": {
+      "ci": {
+        "kouadio": {
+          "name": "Mr. Kouadio",
+          "role": "Business owner",
+          "content": "Impeccable service, always attentive to my most demanding needs.",
+          "location": "Abidjan"
+        },
+        "toure": {
+          "name": "Mrs. Touré",
+          "role": "Senior executive",
+          "content": "The responsiveness and discretion of the Bossiz team are exceptional.",
+          "location": "Abidjan"
+        },
+        "bamba": {
+          "name": "Mr. Bamba",
+          "role": "Investor",
+          "content": "Thanks to Bossiz, I can focus on what matters with complete confidence.",
+          "location": "Abidjan"
+        }
+      },
+      "sn": {
+        "diop": {
+          "name": "Mr. Diop",
+          "role": "Business owner",
+          "content": "An exceptional team, always available and highly discreet.",
+          "location": "Dakar"
+        },
+        "fall": {
+          "name": "Mrs. Fall",
+          "role": "Senior executive",
+          "content": "Bossiz transformed my daily life in Dakar with impeccable service.",
+          "location": "Dakar"
+        },
+        "samba": {
+          "name": "Mr. Samba",
+          "role": "Investor",
+          "content": "Very high-quality support, at every moment.",
+          "location": "Dakar"
+        }
+      }
+    }
+  },
+  "events": {
+    "title": "Events & Tickets",
+    "subtitle": "Discover and book the best events near you.",
+    "categories": "Categories",
+    "categoryNames": {
+      "concert": "Concerts",
+      "sport": "Sports",
+      "theater": "Theater",
+      "festival": "Festivals"
+    },
+    "popular": "Popular events",
+    "popularSubtitle": "The most sought-after events of the moment.",
+    "viewAll": "View all",
+    "whyUs": "Why choose us",
+    "bestPrices": {
+      "title": "Best prices guaranteed",
+      "description": "We guarantee the best rates on all our tickets."
+    },
+    "authenticTickets": {
+      "title": "Authentic tickets",
+      "description": "All our tickets are guaranteed authentic and verified."
+    },
+    "support": {
+      "description": "Our team is available at all times to assist you."
+    }
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Every answer to your questions, organized by topic",
+    "searchPlaceholder": "Search for a question...",
+    "categoriesTitle": "Browse by topic",
+    "questionsCount": "{{count}} questions",
+    "searchResultsCount": "{{count}} result(s) for \"{{query}}\"",
+    "allQuestionsTitle": "All questions by topic",
+    "noResults": {
+      "title": "No results found",
+      "description": "Try other keywords or contact our support."
+    },
+    "contactSupport": "Contact support",
+    "ctaTitle": "Can't find an answer?",
+    "ctaSubtitle": "Our support team is available to help you.",
+    "categories": {
+      "flights": {
+        "title": "Flights",
+        "description": "Flight booking, changes and cancellations."
+      },
+      "hotels": {
+        "title": "Hotels",
+        "description": "Booking and managing your hotel stays."
+      },
+      "cars": {
+        "title": "Car rental",
+        "description": "Everything about vehicle rentals."
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "Payment methods and billing."
+      },
+      "security": {
+        "title": "Security",
+        "description": "Protection of your data and transactions."
+      }
+    },
+    "faqCategories": {
+      "general": {
+        "label": "General",
+        "q0": {
+          "question": "How do I create an account on B-Reserve?",
+          "answer": "Click \"Login\" at the top of the page then \"Create an account\". Fill in your information and confirm your email."
+        },
+        "q1": {
+          "question": "How do I contact customer support?",
+          "answer": "You can contact us via the form on the Support page, by email or by phone, available 24/7."
+        },
+        "q2": {
+          "question": "Can I edit my personal information?",
+          "answer": "Yes, go to your dashboard, \"Account\" section, to edit your information at any time."
+        }
+      },
+      "flights": {
+        "label": "Flights",
+        "q0": {
+          "question": "How do I book a flight?",
+          "answer": "Use the flight search engine on the homepage, select your dates and destinations, then choose the offer that suits you."
+        },
+        "q1": {
+          "question": "Can I change or cancel my flight?",
+          "answer": "Changes and cancellations depend on your ticket's fare conditions. Check your booking in your dashboard."
+        },
+        "q2": {
+          "question": "How do I get my boarding pass?",
+          "answer": "Your boarding pass is sent by email after check-in, and is also available in your bookings area."
+        },
+        "q3": {
+          "question": "What is the baggage policy?",
+          "answer": "The baggage policy varies depending on the airline and fare selected. It is shown during booking."
+        }
+      },
+      "hotels": {
+        "label": "Hotels",
+        "q0": {
+          "question": "How do I book a hotel?",
+          "answer": "Search for your destination, select your dates and number of travelers, then choose your preferred accommodation."
+        },
+        "q1": {
+          "question": "Can I cancel my hotel booking?",
+          "answer": "This depends on the property's cancellation policy, shown before your booking is confirmed."
+        },
+        "q2": {
+          "question": "How do I contact the hotel before my arrival?",
+          "answer": "The hotel's contact details are in your confirmation email and in your booking details."
+        }
+      },
+      "payment": {
+        "label": "Payment",
+        "q0": {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept credit cards, mobile money and transfers via our secure payment partners."
+        },
+        "q1": {
+          "question": "Are my payments secure?",
+          "answer": "Yes, all transactions are encrypted and processed by certified payment providers."
+        },
+        "q2": {
+          "question": "Can I get an invoice?",
+          "answer": "Yes, an invoice is available in your bookings area after each confirmed payment."
+        },
+        "q3": {
+          "question": "What should I do if a payment fails?",
+          "answer": "Check your banking information and try again. If the problem persists, contact our support."
+        }
+      },
+      "carRental": {
+        "label": "Car rental",
+        "q0": {
+          "question": "What documents are needed to rent a car?",
+          "answer": "A valid driver's license, an ID and a credit card in the driver's name are required."
+        },
+        "q1": {
+          "question": "Is insurance included?",
+          "answer": "Basic insurance is included; additional options are available during booking."
+        },
+        "q2": {
+          "question": "Can I return the vehicle in another city?",
+          "answer": "This depends on the rental agency; this option is shown during booking if available."
+        }
+      }
     }
   }
 }

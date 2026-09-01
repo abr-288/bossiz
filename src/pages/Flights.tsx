@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Loader2, TrendingUp, Plane, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { TrendingUp, Plane, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { FlightSearchForm } from "@/components/FlightSearchForm";
@@ -8,6 +9,7 @@ import { useFlightSearch } from "@/hooks/useFlightSearch";
 import { FlightBookingDialog } from "@/components/FlightBookingDialog";
 import { getAirlineName } from "@/utils/airlineNames";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FlightCardSkeleton } from "@/components/ui/search-result-skeletons";
 import { PriceCalendar } from "@/components/flights/PriceCalendar";
 import { FlightFilters } from "@/components/flights/FlightFilters";
 import { FlightCard } from "@/components/flights/FlightCard";
@@ -18,6 +20,7 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import { useDestinations } from "@/hooks/useDestinations";
 import { getIataByCity, getCountryFlag } from "@/utils/airportNames";
 import bannerFlights from "@/assets/banner-flights.jpg";
+import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 
 interface MappedFlight {
   id: string;
@@ -43,6 +46,7 @@ interface MappedFlight {
 }
 
 const Flights = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { searchFlights, loading, error } = useFlightSearch();
   const [flights, setFlights] = useState<MappedFlight[]>([]);
@@ -258,16 +262,16 @@ const Flights = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerFlights}
-          alt="Recherche de vols"
+          alt={t('pages.flights.title')}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
 
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Recherche de vols</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t('pages.flights.title')}</h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
-              Trouvez les meilleurs prix pour votre voyage
+              {t('pages.flights.subtitle')}
             </p>
           </div>
           {hasSearched && (
@@ -275,7 +279,7 @@ const Flights = () => {
               <Link to={`/flight-comparison?${searchParams.toString()}`}>
                 <Button variant="secondary" className="gap-2">
                   <TrendingUp className="h-4 w-4" />
-                  Comparer les prix
+                  {t('pages.flights.comparePrices')}
                 </Button>
               </Link>
             </div>
@@ -286,7 +290,7 @@ const Flights = () => {
 
           {/* Popular Destinations */}
           <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <p className="text-white/80 text-sm mb-3 text-center">Destinations populaires au départ d'Abidjan :</p>
+            <p className="text-white/80 text-sm mb-3 text-center">{t('pages.flights.popularFromAbidjan')}</p>
             {loadingTrends ? (
               <div className="flex justify-center gap-2">
                 {[1, 2, 3, 4].map(i => (
@@ -299,15 +303,22 @@ const Flights = () => {
                   const futureDate = new Date();
                   futureDate.setDate(futureDate.getDate() + 14);
                   const dateStr = futureDate.toISOString().split('T')[0];
+                  const searchUrl = buildVolsBossizSearchUrl({
+                    origin: route.from,
+                    destination: route.to,
+                    departureDate: dateStr,
+                    adults: 1,
+                    travelClass: "economy",
+                  });
                   return (
-                    <Link
+                    <a
                       key={route.to}
-                      to={`/flights?from=${route.from}&to=${route.to}&date=${dateStr}&adults=1&class=ECONOMY`}
+                      href={searchUrl}
                       className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium transition-all hover:scale-105 flex items-center gap-2 border border-white/20"
                     >
                       <span>{route.flag}</span>
                       <span>{route.toCity}</span>
-                    </Link>
+                    </a>
                   );
                 })}
               </div>
@@ -332,8 +343,10 @@ const Flights = () => {
       <div className="flex-1 bg-gradient-to-b from-muted/30 to-background">
         <div className="container mx-auto px-4 py-10 md:py-16">
           {loading && (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <FlightCardSkeleton key={i} />
+              ))}
             </div>
           )}
 
@@ -344,17 +357,19 @@ const Flights = () => {
           )}
 
           {!hasSearched && !loading && !isDefaultResults && flights.length === 0 && (
-            <div className="text-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                Chargement des vols populaires...
+            <div className="space-y-4">
+              <p className="text-center text-muted-foreground mb-4">
+                {t('pages.flights.loadingPopular')}
               </p>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <FlightCardSkeleton key={i} />
+              ))}
             </div>
           )}
 
           {(hasSearched || isDefaultResults) && !loading && filteredAndSortedFlights.length === 0 && (
             <div className="text-center py-20">
-              <p className="text-muted-foreground">Aucun vol trouvé pour cette recherche</p>
+              <p className="text-muted-foreground">{t('pages.flights.results.noResultsDesc')}</p>
             </div>
           )}
 
@@ -366,15 +381,15 @@ const Flights = () => {
               </div>
               <div className="text-center md:text-left">
                 <h2 className="text-xl md:text-2xl font-bold text-foreground">
-                  Vols à la une : Abidjan → Paris
+                  {t('pages.flights.featured.title')}
                 </h2>
                 <p className="text-muted-foreground mt-2 max-w-xl">
-                  Découvrez les meilleures offres pour cette destination populaire. Utilisez le formulaire de recherche ci-dessus pour d'autres trajets.
+                  {t('pages.flights.featured.subtitle')}
                 </p>
               </div>
               <div className="md:ml-auto">
                 <Badge variant="secondary" className="px-4 py-2 rounded-full font-semibold">
-                  Tendance cette semaine
+                  {t('pages.flights.featured.trending')}
                 </Badge>
               </div>
             </div>
@@ -404,7 +419,7 @@ const Flights = () => {
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">Le meilleur</span>
+                        <span className="font-semibold text-sm">{t('pages.flights.sort.best')}</span>
                         <span className="text-xs text-muted-foreground">
                           <Price amount={filteredAndSortedFlights[0]?.price || 0} fromCurrency="EUR" /> · {filteredAndSortedFlights[0]?.duration}
                         </span>
@@ -415,7 +430,7 @@ const Flights = () => {
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">Le moins cher</span>
+                        <span className="font-semibold text-sm">{t('pages.flights.filters.cheapest')}</span>
                         <span className="text-xs text-muted-foreground">
                           <Price amount={Math.min(...filteredAndSortedFlights.map(f => f.price))} fromCurrency="EUR" />
                         </span>
@@ -426,7 +441,7 @@ const Flights = () => {
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">Le plus court</span>
+                        <span className="font-semibold text-sm">{t('pages.flights.filters.fastest')}</span>
                         <span className="text-xs text-muted-foreground">
                           {filteredAndSortedFlights.sort((a, b) => parseDuration(a.duration) - parseDuration(b.duration))[0]?.duration}
                         </span>

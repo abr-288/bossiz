@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ArrowRightLeft, AlertCircle, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
@@ -19,6 +18,7 @@ import { safeValidate } from "@/lib/formHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PriceCalendar } from "@/components/flights/PriceCalendar";
+import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 
 /**
  * FlightSearchForm - Recherche de vols avec UnifiedForm
@@ -28,7 +28,6 @@ import { PriceCalendar } from "@/components/flights/PriceCalendar";
 export const FlightSearchForm = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [tripType, setTripType] = useState<"round-trip" | "one-way">("round-trip");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -145,22 +144,20 @@ export const FlightSearchForm = () => {
       description: "Nous recherchons les meilleurs vols pour vous...",
     });
 
-    // Construire les paramètres de recherche
-    const params = new URLSearchParams({
-      from: validation.data.origin,
-      to: validation.data.destination,
-      date: validation.data.departureDate,
-      ...(validation.data.returnDate && { returnDate: validation.data.returnDate }),
-      adults: validation.data.adults.toString(),
-      children: validation.data.children.toString(),
-      infants: validation.data.infants.toString(),
-      class: validation.data.travelClass,
-      tripType: validation.data.tripType,
+    // Rediriger vers vols.bossiz.com avec les critères de recherche
+    const searchUrl = buildVolsBossizSearchUrl({
+      origin: validation.data.origin,
+      destination: validation.data.destination,
+      departureDate: validation.data.departureDate,
+      returnDate: validation.data.returnDate,
+      adults: validation.data.adults,
+      children: validation.data.children,
+      infants: validation.data.infants,
+      travelClass: validation.data.travelClass,
     });
 
-    // Rediriger vers la page des résultats avec animation
     setTimeout(() => {
-      navigate(`/flights?${params.toString()}`);
+      window.location.href = searchUrl;
     }, 300);
   };
 

@@ -31,11 +31,9 @@ import {
   Smartphone,
   CreditCard,
   Database,
-  Sparkles,
   Percent,
   Lock
 } from "lucide-react";
-import CinetPayService from "@/services/cinetpay";
 import { motion, AnimatePresence } from "framer-motion";
 import { autoConvertAndFormat } from "@/utils/currencyConverter";
 
@@ -47,9 +45,6 @@ const getDefaultPrice = (planId: string): number => {
     'premium': 25000, // 25 000 XOF mensuel
     'business': 50000, // 50 000 XOF mensuel
     'corporate': 100000, // 100 000 XOF mensuel
-    'majestic_access': 100000, // 100 000 XOF mensuel
-    'majestic_prive': 200000, // 200 000 XOF mensuel
-    'majestic_black': 500000 // 500 000 XOF mensuel
   };
   return prices[planId] || 15000;
 };
@@ -61,9 +56,6 @@ const getDefaultTrialDays = (planId: string, billingCycle: string): number => {
     'premium': { monthly: 0, yearly: 14 },
     'business': { monthly: 0, yearly: 30 },
     'corporate': { monthly: 0, yearly: 60 },
-    'majestic_access': { monthly: 7, yearly: 14 },
-    'majestic_prive': { monthly: 14, yearly: 30 },
-    'majestic_black': { monthly: 30, yearly: 60 }
   };
   
   return trials[planId]?.[billingCycle] || 0;
@@ -119,7 +111,7 @@ const ModernSubscriptionPayment = () => {
           description: 'Aucun plan d\'abonnement spécifié',
           variant: 'destructive',
         });
-        navigate('/subscriptions');
+        navigate('/');
         return;
       }
 
@@ -215,7 +207,7 @@ const ModernSubscriptionPayment = () => {
           description: error.message || 'Impossible de charger les données du plan',
           variant: 'destructive',
         });
-        navigate('/subscriptions');
+        navigate('/');
       } finally {
         setLoading(false);
       }
@@ -287,10 +279,9 @@ const ModernSubscriptionPayment = () => {
         throw new Error('Utilisateur non connecté');
       }
 
-      // Generate transaction ID
-      const transactionId = CinetPayService.generateTransactionId();
-
-      // Create user subscription
+      // Créer l'abonnement en attente de paiement. Le montant et la devise
+      // enregistrés ici font foi côté serveur (process-payment les relit,
+      // il ne fait jamais confiance à un montant envoyé depuis le navigateur).
       const { data: subscription, error: subscriptionError } = await supabase
         .from('user_subscriptions' as any)
         .insert({
@@ -304,25 +295,12 @@ const ModernSubscriptionPayment = () => {
           amount_paid: planData.pricing.price,
           currency: planData.pricing.currency,
           payment_method: 'cinetpay',
-          transaction_id: transactionId
         })
         .select()
         .single();
 
       if (subscriptionError) throw subscriptionError;
 
-      // Create initial billing period
-      const { error: billingError } = await supabase
-        .rpc('create_billing_period' as any, { 
-          p_user_subscription_id: (subscription as any).id,
-          p_start_date: new Date().toISOString()
-        });
-
-      if (billingError) throw billingError;
-
-      // Initiate CinetPay payment
-      const cinetPayService = new CinetPayService();
-      
       // Get customer info from user profile
       const { data: profile } = await supabase
         .from('profiles' as any)
@@ -330,35 +308,29 @@ const ModernSubscriptionPayment = () => {
         .eq('id', user.id)
         .single();
 
-      const paymentData = {
-        amount: CinetPayService.formatAmount(planData.pricing.price, planData.pricing.currency),
-        currency: planData.pricing.currency === 'EUR' ? 'XOF' : planData.pricing.currency,
-        transaction_id: transactionId,
-        description: `Abonnement ${planData.plan.name} - ${billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}`,
-        customer_name: (profile as any)?.full_name || user.email?.split('@')[0] || 'Client',
-        customer_email: user.email || '',
-        customer_phone: (profile as any)?.phone || '+225000000000',
-        return_url: `http://localhost:8083/payment-success?subscription_id=${(subscription as any).id}`,
-        notify_url: `http://localhost:8083/api/cinetpay/notify`,
-        channels: selectedOperator ? [selectedOperator] : cinetPayService.getAvailableChannels()
-      };
+      const { data, error } = await supabase.functions.invoke('process-payment', {
+        body: {
+          subscriptionId: (subscription as any).id,
+          paymentMethod: selectedOperator || 'all',
+          customerInfo: {
+            name: (profile as any)?.full_name || user.email?.split('@')[0] || 'Client',
+            email: user.email || '',
+            phone: (profile as any)?.phone || '',
+          },
+        },
+      });
 
-      // Validate payment data
-      const validationErrors = CinetPayService.validatePaymentData(paymentData);
-      if (validationErrors.length > 0) {
-        throw new Error(validationErrors.join(', '));
+      if (error || !data?.success) {
+        throw new Error(data?.error || error?.message || 'Impossible d\'initier le paiement');
       }
-
-      const paymentResponse = await cinetPayService.initiatePayment(paymentData);
 
       toast({
         title: 'Redirection vers CinetPay',
         description: 'Vous allez être redirigé vers la page de paiement sécurisée.',
       });
 
-      // Redirect to CinetPay payment page
       setTimeout(() => {
-        cinetPayService.redirectToPayment(paymentResponse.payment_url);
+        window.location.href = data.payment_url;
       }, 1000);
 
     } catch (error: any) {
@@ -390,7 +362,7 @@ const ModernSubscriptionPayment = () => {
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Plan non trouvé</h2>
           <Button 
-            onClick={() => navigate('/subscriptions')}
+            onClick={() => navigate('/')}
             className="bg-indigo-500 hover:bg-indigo-600 text-white"
           >
             Retour aux abonnements
@@ -400,7 +372,6 @@ const ModernSubscriptionPayment = () => {
     );
   }
 
-  const isMajestic = planData.plan.subscription_type === 'majestic';
   const yearlyPricing = planData.pricing.billing_cycle === 'yearly';
   const monthlyPrice = planData.pricing.price;
   const yearlyPrice = planData.pricing.price;
@@ -448,9 +419,7 @@ const ModernSubscriptionPayment = () => {
             <Card className="shadow-xl border-0 bg-white">
               <CardHeader className="pb-6">
                 <div className="flex items-center gap-4">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
-                    isMajestic ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gradient-to-br from-indigo-500 to-purple-600'
-                  } shadow-lg`}>
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg">
                     <Crown className="w-8 h-8 text-white" />
                   </div>
                   <div>
@@ -465,14 +434,6 @@ const ModernSubscriptionPayment = () => {
                   </div>
                 </div>
 
-                {isMajestic && (
-                  <div className="mt-4">
-                    <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 text-sm font-semibold shadow-md">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Premium VIP Access
-                    </Badge>
-                  </div>
-                )}
               </CardHeader>
 
               <CardContent className="pt-0">

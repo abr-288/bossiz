@@ -13,6 +13,7 @@ import { UnifiedSubmitButton } from "@/components/forms/UnifiedSubmitButton";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Plane, Hotel, MapPin, Calendar, Clock, Users, Star,
   Check, ArrowLeft, CreditCard, LogIn
@@ -64,7 +65,8 @@ const FlightHotelBookingProcess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { createBooking, loading: bookingLoading } = useCreateBooking();
-  
+  const { t } = useTranslation();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile");
@@ -221,7 +223,7 @@ const FlightHotelBookingProcess = () => {
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour à la recherche
+            {t('pages.flightHotelBookingProcess.backToSearch')}
           </Button>
           
           <h1 className="text-2xl md:text-3xl font-bold">Réservation Vol + Hôtel</h1>
@@ -285,7 +287,7 @@ const FlightHotelBookingProcess = () => {
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Plane className="h-5 w-5 text-primary" />
-                    Détails du vol
+                    {t('booking.summary.flightDetails')}
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -320,7 +322,7 @@ const FlightHotelBookingProcess = () => {
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Hotel className="h-5 w-5 text-primary" />
-                    Détails de l'hôtel
+                    {t('booking.summary.hotelDetails')}
                   </h3>
                   <div className="flex gap-4">
                     <img 
@@ -398,7 +400,7 @@ const FlightHotelBookingProcess = () => {
                       Retour
                     </Button>
                     <Button onClick={() => setCurrentStep(3)} className="flex-1">
-                      Continuer vers le paiement
+                      {t('booking.summary.continueToPayment')}
                     </Button>
                   </div>
                 )}
@@ -457,7 +459,7 @@ const FlightHotelBookingProcess = () => {
                         onClick={handlePayment}
                         className="flex-1"
                       >
-                        Procéder au paiement
+                        {t('booking.summary.proceedToPayment')}
                       </UnifiedSubmitButton>
                     </div>
                   </Card>
@@ -492,7 +494,7 @@ const FlightHotelBookingProcess = () => {
               <div className="mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
                   <Hotel className="h-4 w-4 text-primary" />
-                  Hôtel
+                  {t('confirmation.serviceTypes.hotel')}
                 </div>
                 <p className="text-sm">{hotelData.name}</p>
                 <p className="text-xs text-muted-foreground">
@@ -527,15 +529,15 @@ const FlightHotelBookingProcess = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <LogIn className="h-5 w-5 text-primary" />
-              Connexion requise
+              {t('booking.loginDialog.title')}
             </DialogTitle>
             <DialogDescription>
-              Vous devez être connecté pour procéder au paiement de votre réservation.
+              {t('booking.loginDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground">
-              En vous connectant, vous pourrez :
+              {t('booking.loginDialog.benefitsIntro')}
             </p>
             <ul className="text-sm space-y-2 text-muted-foreground">
               <li className="flex items-center gap-2">

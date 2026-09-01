@@ -118,7 +118,7 @@ INSERT INTO vip_events (title, description, date, location, type, exclusive, max
 ('Sommet des Leaders Mondiaux', 'Rencontre privé avec des leaders internationaux', '2025-07-20 09:00:00+00:00', 'Genève, Suisse', 'conference', true, 50),
 ('Course de Formule 1 VIP', 'Accès paddock exclusif et loge privée', '2025-08-10 14:00:00+00:00', 'Monaco', 'sports', true, 30),
 ('Festival de Cannes Soirée', 'Invitation exclusive au festival et dîner', '2025-05-20 20:00:00+00:00', 'Cannes, France', 'cultural', true, 40),
-('Réseau d\\'Investisseurs', 'Rencontre privée avec des investisseurs de premier plan', '2025-09-05 18:00:00+00:00', 'Londres, UK', 'networking', true, 25),
+('Réseau d''Investisseurs', 'Rencontre privée avec des investisseurs de premier plan', '2025-09-05 18:00:00+00:00', 'Londres, UK', 'networking', true, 25),
 ('Dîner Dégustation 3 Étoiles', 'Expérience gastronomique avec chef Michelin', '2025-10-12 19:30:00+00:00', 'Lyon, France', 'dining', true, 20)
 ON CONFLICT DO NOTHING;
 

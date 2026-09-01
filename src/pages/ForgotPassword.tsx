@@ -50,7 +50,7 @@ export default function ForgotPassword() {
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img 
           src={authBg} 
-          alt="Luxury vehicles" 
+          alt="B-Reserve" 
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-accent/80" />
@@ -152,7 +152,7 @@ export default function ForgotPassword() {
           )}
 
           <p className="text-center text-sm text-muted-foreground">
-            <Link to="/login" className="hover:text-primary transition-colors inline-flex items-center gap-2">
+            <Link to="/auth" className="hover:text-primary transition-colors inline-flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Retour à la connexion
             </Link>

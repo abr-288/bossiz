@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export interface Passenger {
   first_name: string;
@@ -28,6 +29,7 @@ export const PassengersForm = ({
   minPassengers = 1,
   maxPassengers = 9,
 }: PassengersFormProps) => {
+  const { t } = useTranslation();
   const addPassenger = () => {
     if (passengers.length < maxPassengers) {
       onChange([
@@ -132,7 +134,7 @@ export const PassengersForm = ({
                   id={`nationality_${index}`}
                   value={passenger.nationality || ""}
                   onChange={(e) => updatePassenger(index, "nationality", e.target.value)}
-                  placeholder="Française"
+                  placeholder={t('passengersForm.nationalityPlaceholder')}
                 />
               </div>
             </div>

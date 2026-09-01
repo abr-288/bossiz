@@ -1,16 +1,19 @@
 // Hook pour la gestion des paiements
 // Gère le traitement des paiements via CinetPay et la validation des données
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { paymentSchema, type PaymentInput } from "@/lib/validationSchemas";
 import { validateWithSchema, getUserFriendlyErrorMessage } from "@/lib/formHelpers";
+import { useTranslation } from "react-i18next";
 
 export const usePayment = () => {
   const [processing, setProcessing] = useState(false); // État de traitement du paiement
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({}); // Erreurs de validation
   const [generalError, setGeneralError] = useState<string | null>(null); // Erreur générale
   const { toast } = useToast();
+  const { t } = useTranslation();
+  const processingRef = useRef(false);
 
   // Fonction pour traiter un paiement
   const processPayment = async (
@@ -27,8 +30,8 @@ export const usePayment = () => {
     if (validation.success === false) {
       setValidationErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
@@ -41,17 +44,19 @@ export const usePayment = () => {
     const validatedData = validation.data;
 
     // Empêcher les traitements multiples
-    if (processing) return { success: false };
+    if (processingRef.current) return { success: false };
 
+    processingRef.current = true;
     setProcessing(true);
 
     // Timeout de 30 secondes pour le traitement du paiement
     const timeoutId = setTimeout(() => {
+      processingRef.current = false;
       setProcessing(false);
-      setGeneralError("Le délai de traitement du paiement a expiré. Veuillez réessayer.");
+      setGeneralError(t('payment.errors.timeoutDescription'));
       toast({
-        title: "Délai dépassé",
-        description: "Le traitement du paiement a pris trop de temps. Veuillez réessayer.",
+        title: t('payment.errors.timeoutTitle'),
+        description: t('payment.errors.timeoutDescription'),
         variant: "destructive",
       });
     }, 30000);
@@ -120,12 +125,17 @@ export const usePayment = () => {
       setGeneralError(userMessage);
       
       toast({
-        title: "Erreur de paiement",
+        title: t('payment.errors.paymentErrorTitle'),
         description: userMessage,
         variant: "destructive",
       });
+      processingRef.current = false;
       setProcessing(false);
       return { success: false };
+    } finally {
+      clearTimeout(timeoutId);
+      processingRef.current = false;
+      setProcessing(false);
     }
   };
 

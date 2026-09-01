@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useTranslation } from "react-i18next";
 
 interface Passenger {
   firstName: string;
@@ -106,6 +107,7 @@ export const PassengerStep = ({
   onNext,
   serviceType = "flight",
 }: PassengerStepProps) => {
+  const { t } = useTranslation();
   const totalPassengers = adultsCount + childrenCount;
 
   // Initialize form with react-hook-form and zod validation
@@ -201,12 +203,12 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <User className="w-4 h-4 text-primary" />
-                      Prénom *
+                      {t('passengerStep.firstNameLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Prénom"
+                        placeholder={t('passengerStep.firstNamePlaceholder')}
                         className="h-12 border-2"
                       />
                     </FormControl>
@@ -303,7 +305,7 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Globe className="w-4 h-4 text-primary" />
-                      Numéro de document *
+                      {t('passengerStep.documentNumberLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -324,7 +326,7 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-primary" />
-                      Date d'émission
+                      {t('passengerStep.documentIssueDateLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -385,12 +387,12 @@ export const PassengerStep = ({
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
                             <User className="w-4 h-4 text-primary" />
-                            Prénom *
+                            {t('passengerStep.firstNameLabel')}
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Prénom"
+                              placeholder={t('passengerStep.firstNamePlaceholder')}
                               className="h-12 border-2"
                             />
                           </FormControl>
@@ -487,7 +489,7 @@ export const PassengerStep = ({
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
                             <Globe className="w-4 h-4 text-primary" />
-                            Numéro de document *
+                            {t('passengerStep.documentNumberLabel')}
                           </FormLabel>
                           <FormControl>
                             <Input
