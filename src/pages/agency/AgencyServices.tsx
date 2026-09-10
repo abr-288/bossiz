@@ -54,6 +54,7 @@ const serviceTypes = [
   { value: "flight", label: "Vol" },
   { value: "hotel", label: "Hôtel" },
   { value: "car", label: "Voiture" },
+  { value: "tour", label: "Circuit touristique" },
 ];
 
 const carCategories = ["Mini", "Économique", "Compacte", "Berline", "SUV", "Luxe", "Monospace"];
@@ -76,10 +77,30 @@ const emptyCarSpecs = {
 
 const emptyCarPhotos = { front: "", back: "", left: "", right: "", interior1: "", interior2: "" };
 
+const tourCategories = ["Culture & Patrimoine", "Nature & Randonnée", "Aventure", "Plage & Détente", "Gastronomie", "Ville & Découverte"];
+const tourDifficulties = ["Facile", "Modéré", "Difficile"];
+
+const emptyTourSpecs = {
+  duration: "",
+  groupSizeMax: "10",
+  meetingPoint: "",
+  included: "",
+  excluded: "",
+  languages: "Français",
+  difficulty: "Facile",
+  category: "Culture & Patrimoine",
+};
+
+interface CarPlanLimit {
+  name: string;
+  max_vehicles: number | null;
+}
+
 export default function AgencyServices() {
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
+  const [carPlan, setCarPlan] = useState<CarPlanLimit | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -95,6 +116,7 @@ export default function AgencyServices() {
     image_url: "",
     carSpecs: emptyCarSpecs,
     carPhotos: emptyCarPhotos,
+    tourSpecs: emptyTourSpecs,
   });
 
   useEffect(() => {
@@ -107,12 +129,21 @@ export default function AgencyServices() {
 
     const { data: agency } = await supabase
       .from("agencies")
-      .select("id")
+      .select("id, car_plan_id")
       .eq("owner_id", user.id)
       .single();
 
     if (!agency) return;
     setAgencyId(agency.id);
+
+    if (agency.car_plan_id) {
+      const { data: plan } = await supabase
+        .from("car_partner_plans")
+        .select("name, max_vehicles")
+        .eq("plan_id", agency.car_plan_id)
+        .single();
+      if (plan) setCarPlan(plan);
+    }
 
     const { data, error } = await supabase
       .from("services")
@@ -143,6 +174,18 @@ export default function AgencyServices() {
         });
         return;
       }
+
+      if (!editingService && carPlan?.max_vehicles != null) {
+        const currentCarCount = services.filter((s) => s.type === "car").length;
+        if (currentCarCount >= carPlan.max_vehicles) {
+          toast({
+            title: "Limite du forfait atteinte",
+            description: `Votre forfait ${carPlan.name} autorise jusqu'à ${carPlan.max_vehicles} véhicules. Passez à un forfait supérieur pour en ajouter davantage.`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
     }
 
     try {
@@ -156,6 +199,7 @@ export default function AgencyServices() {
         formData.carPhotos.interior2,
       ].filter(Boolean);
 
+      const isTour = formData.type === "tour";
       const specifications = isCar
         ? {
             brand: formData.carSpecs.brand,
@@ -169,6 +213,17 @@ export default function AgencyServices() {
             year: parseInt(formData.carSpecs.year) || new Date().getFullYear(),
             unlimitedMileage: formData.carSpecs.unlimitedMileage,
             freeCancellation: formData.carSpecs.freeCancellation,
+          }
+        : isTour
+        ? {
+            duration: formData.tourSpecs.duration,
+            groupSizeMax: parseInt(formData.tourSpecs.groupSizeMax) || 10,
+            meetingPoint: formData.tourSpecs.meetingPoint,
+            included: formData.tourSpecs.included,
+            excluded: formData.tourSpecs.excluded,
+            languages: formData.tourSpecs.languages,
+            difficulty: formData.tourSpecs.difficulty,
+            category: formData.tourSpecs.category,
           }
         : null;
 
@@ -253,6 +308,18 @@ export default function AgencyServices() {
             interior2: images[5] || "",
           }
         : emptyCarPhotos,
+      tourSpecs: service.type === "tour"
+        ? {
+            duration: specs.duration || "",
+            groupSizeMax: (specs.groupSizeMax ?? 10).toString(),
+            meetingPoint: specs.meetingPoint || "",
+            included: specs.included || "",
+            excluded: specs.excluded || "",
+            languages: specs.languages || "Français",
+            difficulty: specs.difficulty || "Facile",
+            category: specs.category || "Culture & Patrimoine",
+          }
+        : emptyTourSpecs,
     });
     setIsDialogOpen(true);
   };
@@ -282,6 +349,7 @@ export default function AgencyServices() {
       image_url: "",
       carSpecs: emptyCarSpecs,
       carPhotos: emptyCarPhotos,
+      tourSpecs: emptyTourSpecs,
     });
   };
 
@@ -296,6 +364,14 @@ export default function AgencyServices() {
           <div>
             <h1 className="text-2xl font-bold">Mes Services</h1>
             <p className="text-muted-foreground">Gérez vos services de voyage</p>
+            {carPlan && (
+              <Badge variant="outline" className="mt-2 gap-1.5">
+                Forfait {carPlan.name} ·{" "}
+                {carPlan.max_vehicles
+                  ? `${services.filter((s) => s.type === "car").length} / ${carPlan.max_vehicles} véhicules`
+                  : "véhicules illimités"}
+              </Badge>
+            )}
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
@@ -548,6 +624,105 @@ export default function AgencyServices() {
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior2: url } })}
                         />
                       </div>
+                    </div>
+                  </div>
+                ) : formData.type === "tour" ? (
+                  <div className="space-y-4 border-t pt-4">
+                    <p className="text-sm font-medium">Détails du circuit</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Durée *</Label>
+                        <Input
+                          placeholder="Ex: 1 jour, 3 jours / 2 nuits"
+                          value={formData.tourSpecs.duration}
+                          onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, duration: e.target.value } })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Taille du groupe (max) *</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={formData.tourSpecs.groupSizeMax}
+                          onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, groupSizeMax: e.target.value } })}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Catégorie *</Label>
+                        <Select
+                          value={formData.tourSpecs.category}
+                          onValueChange={(v) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, category: v } })}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {tourCategories.map((c) => (
+                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Difficulté</Label>
+                        <Select
+                          value={formData.tourSpecs.difficulty}
+                          onValueChange={(v) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, difficulty: v } })}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {tourDifficulties.map((d) => (
+                              <SelectItem key={d} value={d}>{d}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Point de rendez-vous *</Label>
+                      <Input
+                        placeholder="Ex: Devant l'hôtel Ivoire, Abidjan"
+                        value={formData.tourSpecs.meetingPoint}
+                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, meetingPoint: e.target.value } })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Langues parlées</Label>
+                      <Input
+                        placeholder="Ex: Français, Anglais"
+                        value={formData.tourSpecs.languages}
+                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, languages: e.target.value } })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Inclus dans le prix</Label>
+                      <Textarea
+                        placeholder="Ex: Transport, guide, déjeuner"
+                        value={formData.tourSpecs.included}
+                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, included: e.target.value } })}
+                        rows={2}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Non inclus</Label>
+                      <Textarea
+                        placeholder="Ex: Boissons, pourboires"
+                        value={formData.tourSpecs.excluded}
+                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, excluded: e.target.value } })}
+                        rows={2}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Photo de couverture</Label>
+                      <ImageUpload
+                        label="Photo du circuit"
+                        folder="agency-tours"
+                        value={formData.image_url}
+                        onChange={(url) => setFormData({ ...formData, image_url: url })}
+                      />
                     </div>
                   </div>
                 ) : (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,311 +6,82 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Clock, Users, Map } from "lucide-react";
+import { Star, MapPin, Clock, Users, Map, Loader2 } from "lucide-react";
 import { BookingDialog } from "@/components/BookingDialog";
 import { TourSearchForm } from "@/components/TourSearchForm";
 import { Pagination } from "@/components/Pagination";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
+import { useTourServices } from "@/hooks/useTourServices";
 import bannerTours from "@/assets/banner-tours.jpg";
 
+const TOUR_CATEGORIES = ["Culture & Patrimoine", "Nature & Randonnée", "Aventure", "Plage & Détente", "Gastronomie", "Ville & Découverte"];
+
+// Best-effort: pull the first number of days out of a free-text duration
+// like "3 jours / 2 nuits" so the duration filter buckets can work without
+// forcing guides into a rigid duration field.
+const parseDurationDays = (duration: string): number | null => {
+  const match = duration.match(/(\d+)/);
+  return match ? parseInt(match[1], 10) : null;
+};
+
 const Tours = () => {
-  const [priceRange, setPriceRange] = useState([0, 1000000]);
+  const { tours, loading, error } = useTourServices();
+  const [priceRange, setPriceRange] = useState([0, 200]);
+  const [destinationFilter, setDestinationFilter] = useState("");
+  const [durationFilter, setDurationFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("popular");
   const [selectedTour, setSelectedTour] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  const tours = [
-    // Afrique
-    {
-      id: 1,
-      name: "Safari au Parc National de la Comoé",
-      location: "Côte d'Ivoire",
-      price: 250000,
-      duration: "3 jours / 2 nuits",
-      rating: 4.9,
-      reviews: 87,
-      image: "/placeholder.svg",
-      capacity: "2-8 personnes"
-    },
-    {
-      id: 2,
-      name: "Safari au Parc Kruger",
-      location: "Afrique du Sud",
-      price: 450000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.9,
-      reviews: 312,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    {
-      id: 3,
-      name: "Pyramides de Gizeh et Croisière sur le Nil",
-      location: "Égypte",
-      price: 520000,
-      duration: "7 jours / 6 nuits",
-      rating: 4.8,
-      reviews: 456,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    {
-      id: 4,
-      name: "Trek du Kilimandjaro",
-      location: "Tanzanie",
-      price: 780000,
-      duration: "8 jours / 7 nuits",
-      rating: 4.9,
-      reviews: 189,
-      image: "/placeholder.svg",
-      capacity: "4-10 personnes"
-    },
-    {
-      id: 5,
-      name: "Safari et Plages de Zanzibar",
-      location: "Tanzanie",
-      price: 620000,
-      duration: "6 jours / 5 nuits",
-      rating: 4.8,
-      reviews: 234,
-      image: "/placeholder.svg",
-      capacity: "2-8 personnes"
-    },
-    {
-      id: 6,
-      name: "Désert du Sahara et Marrakech",
-      location: "Maroc",
-      price: 380000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.7,
-      reviews: 278,
-      image: "/placeholder.svg",
-      capacity: "2-10 personnes"
-    },
-    // Europe
-    {
-      id: 7,
-      name: "Tour de Paris et Château de Versailles",
-      location: "France",
-      price: 420000,
-      duration: "4 jours / 3 nuits",
-      rating: 4.8,
-      reviews: 567,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    {
-      id: 8,
-      name: "Rome, Florence et Venise",
-      location: "Italie",
-      price: 550000,
-      duration: "7 jours / 6 nuits",
-      rating: 4.9,
-      reviews: 489,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    {
-      id: 9,
-      name: "Grèce Antique et Îles",
-      location: "Grèce",
-      price: 480000,
-      duration: "6 jours / 5 nuits",
-      rating: 4.8,
-      reviews: 345,
-      image: "/placeholder.svg",
-      capacity: "2-10 personnes"
-    },
-    {
-      id: 10,
-      name: "Barcelona et Costa Brava",
-      location: "Espagne",
-      price: 390000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.7,
-      reviews: 412,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    // Asie
-    {
-      id: 11,
-      name: "Temples d'Angkor et Plages de Sihanoukville",
-      location: "Cambodge",
-      price: 460000,
-      duration: "6 jours / 5 nuits",
-      rating: 4.8,
-      reviews: 298,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    {
-      id: 12,
-      name: "Tokyo et Mont Fuji",
-      location: "Japon",
-      price: 720000,
-      duration: "7 jours / 6 nuits",
-      rating: 4.9,
-      reviews: 423,
-      image: "/placeholder.svg",
-      capacity: "2-10 personnes"
-    },
-    {
-      id: 13,
-      name: "Bangkok, Chiang Mai et Îles Phi Phi",
-      location: "Thaïlande",
-      price: 510000,
-      duration: "8 jours / 7 nuits",
-      rating: 4.8,
-      reviews: 534,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    {
-      id: 14,
-      name: "Bali: Temples, Rizières et Plages",
-      location: "Indonésie",
-      price: 490000,
-      duration: "7 jours / 6 nuits",
-      rating: 4.9,
-      reviews: 612,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    {
-      id: 15,
-      name: "Taj Mahal et Palais du Rajasthan",
-      location: "Inde",
-      price: 430000,
-      duration: "6 jours / 5 nuits",
-      rating: 4.7,
-      reviews: 367,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    // Amériques
-    {
-      id: 16,
-      name: "Machu Picchu et Vallée Sacrée",
-      location: "Pérou",
-      price: 680000,
-      duration: "7 jours / 6 nuits",
-      rating: 4.9,
-      reviews: 445,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    {
-      id: 17,
-      name: "New York City Explorer",
-      location: "États-Unis",
-      price: 590000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.8,
-      reviews: 678,
-      image: "/placeholder.svg",
-      capacity: "2-20 personnes"
-    },
-    {
-      id: 18,
-      name: "Chutes du Niagara et Toronto",
-      location: "Canada",
-      price: 520000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.7,
-      reviews: 289,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    {
-      id: 19,
-      name: "Plages de Cancún et Pyramides Maya",
-      location: "Mexique",
-      price: 480000,
-      duration: "6 jours / 5 nuits",
-      rating: 4.8,
-      reviews: 523,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    {
-      id: 20,
-      name: "Rio de Janeiro et Iguazu",
-      location: "Brésil",
-      price: 610000,
-      duration: "7 jours / 6 nuits",
-      rating: 4.8,
-      reviews: 398,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    // Moyen-Orient
-    {
-      id: 21,
-      name: "Dubaï: Luxe et Désert",
-      location: "Émirats Arabes Unis",
-      price: 750000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.9,
-      reviews: 712,
-      image: "/placeholder.svg",
-      capacity: "2-10 personnes"
-    },
-    {
-      id: 22,
-      name: "Istanbul: Orient et Occident",
-      location: "Turquie",
-      price: 420000,
-      duration: "5 jours / 4 nuits",
-      rating: 4.8,
-      reviews: 456,
-      image: "/placeholder.svg",
-      capacity: "2-15 personnes"
-    },
-    {
-      id: 23,
-      name: "Petra et Wadi Rum",
-      location: "Jordanie",
-      price: 560000,
-      duration: "6 jours / 5 nuits",
-      rating: 4.9,
-      reviews: 234,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
-    },
-    // Océanie
-    {
-      id: 24,
-      name: "Sydney, Grande Barrière de Corail",
-      location: "Australie",
-      price: 920000,
-      duration: "10 jours / 9 nuits",
-      rating: 4.9,
-      reviews: 389,
-      image: "/placeholder.svg",
-      capacity: "2-10 personnes"
-    },
-    {
-      id: 25,
-      name: "Nouvelle-Zélande: Hobbiton et Fjords",
-      location: "Nouvelle-Zélande",
-      price: 850000,
-      duration: "9 jours / 8 nuits",
-      rating: 4.9,
-      reviews: 267,
-      image: "/placeholder.svg",
-      capacity: "2-12 personnes"
+  const maxPrice = useMemo(() => {
+    const highest = tours.reduce((max, tour) => Math.max(max, tour.price), 0);
+    return Math.max(200, Math.ceil((highest || 200) / 50) * 50);
+  }, [tours]);
+
+  useMemo(() => {
+    setPriceRange([0, maxPrice]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxPrice]);
+
+  const filteredTours = useMemo(() => {
+    let result = tours.filter(tour => tour.price >= priceRange[0] && tour.price <= priceRange[1]);
+
+    if (destinationFilter) {
+      const search = destinationFilter.toLowerCase();
+      result = result.filter(tour =>
+        tour.location.toLowerCase().includes(search) || tour.name.toLowerCase().includes(search)
+      );
     }
-  ];
 
-  // Filter tours by price
-  const filteredTours = tours.filter(tour => 
-    tour.price >= priceRange[0] && tour.price <= priceRange[1]
-  );
+    if (categoryFilter !== "all") {
+      result = result.filter(tour => tour.category === categoryFilter);
+    }
 
-  // Pagination
+    if (durationFilter !== "all") {
+      result = result.filter(tour => {
+        const days = parseDurationDays(tour.duration);
+        if (days === null) return true;
+        if (durationFilter === "1day") return days <= 1;
+        if (durationFilter === "2-3days") return days >= 2 && days <= 3;
+        if (durationFilter === "4plus") return days >= 4;
+        return true;
+      });
+    }
+
+    switch (sortBy) {
+      case "price-asc": result = [...result].sort((a, b) => a.price - b.price); break;
+      case "price-desc": result = [...result].sort((a, b) => b.price - a.price); break;
+      case "rating": result = [...result].sort((a, b) => b.rating - a.rating); break;
+      default: result = [...result].sort((a, b) => b.reviews - a.reviews);
+    }
+
+    return result;
+  }, [tours, priceRange, destinationFilter, categoryFilter, durationFilter, sortBy]);
+
   const totalPages = Math.ceil(filteredTours.length / itemsPerPage);
   const paginatedTours = filteredTours.slice(
     (currentPage - 1) * itemsPerPage,
@@ -320,7 +91,7 @@ const Tours = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
-      
+
       {/* Hero Section with Search Form */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
@@ -336,7 +107,7 @@ const Tours = () => {
               Circuits & Tours
             </h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto text-center">
-              Découvrez des expériences inoubliables
+              Découvrez des expériences inoubliables avec nos guides locaux
             </p>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -344,24 +115,28 @@ const Tours = () => {
           </div>
         </div>
       </div>
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filtres */}
           <aside className="lg:col-span-1 space-y-6">
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Filtres</h2>
-              
+
               <div className="space-y-6">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Destination</label>
-                  <Input placeholder="Rechercher une destination..." />
+                  <Input
+                    placeholder="Rechercher une destination..."
+                    value={destinationFilter}
+                    onChange={(e) => setDestinationFilter(e.target.value)}
+                  />
                 </div>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Durée</label>
-                  <Select>
+                  <Select value={durationFilter} onValueChange={setDurationFilter}>
                     <SelectTrigger>
                       <SelectValue placeholder="Toutes" />
                     </SelectTrigger>
@@ -380,8 +155,8 @@ const Tours = () => {
                   </label>
                   <Slider
                     min={0}
-                    max={1500}
-                    step={25}
+                    max={maxPrice}
+                    step={Math.max(5, Math.round(maxPrice / 40))}
                     value={priceRange}
                     onValueChange={setPriceRange}
                     className="mt-4"
@@ -391,26 +166,30 @@ const Tours = () => {
                 <div>
                   <label className="text-sm font-medium mb-2 block">Type d'activité</label>
                   <div className="space-y-2">
+                    {TOUR_CATEGORIES.map((cat) => (
+                      <label key={cat} className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="tour-category"
+                          className="rounded"
+                          checked={categoryFilter === cat}
+                          onChange={() => setCategoryFilter(cat)}
+                        />
+                        <span className="text-sm">{cat}</span>
+                      </label>
+                    ))}
                     <label className="flex items-center gap-2">
-                      <input type="checkbox" className="rounded" />
-                      <span className="text-sm">Safari & Nature</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" className="rounded" />
-                      <span className="text-sm">Culture & Histoire</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" className="rounded" />
-                      <span className="text-sm">Plages & Détente</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" className="rounded" />
-                      <span className="text-sm">Aventure</span>
+                      <input
+                        type="radio"
+                        name="tour-category"
+                        className="rounded"
+                        checked={categoryFilter === "all"}
+                        onChange={() => setCategoryFilter("all")}
+                      />
+                      <span className="text-sm">Toutes catégories</span>
                     </label>
                   </div>
                 </div>
-
-                <Button className="w-full">Appliquer les filtres</Button>
               </div>
             </Card>
           </aside>
@@ -418,8 +197,10 @@ const Tours = () => {
           {/* Liste des tours */}
           <div className="lg:col-span-3 space-y-6">
             <div className="flex justify-between items-center">
-              <p className="text-muted-foreground">{filteredTours.length} circuits trouvés</p>
-              <Select defaultValue="popular">
+              <p className="text-muted-foreground">
+                {loading ? "Chargement..." : `${filteredTours.length} circuit${filteredTours.length !== 1 ? "s" : ""} trouvé${filteredTours.length !== 1 ? "s" : ""}`}
+              </p>
+              <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
@@ -432,91 +213,115 @@ const Tours = () => {
               </Select>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {paginatedTours.map((tour) => (
-                <Card key={tour.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <img
-                    src={tour.image}
-                    alt={tour.name}
-                    className="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{tour.name}</h3>
-                    
-                    <div className="flex items-center gap-2 text-muted-foreground mb-3">
-                      <MapPin className="w-4 h-4" />
-                      <span className="text-sm">{tour.location}</span>
-                    </div>
+            {loading ? (
+              <div className="flex items-center justify-center py-24">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : error ? (
+              <Card className="p-12 text-center text-muted-foreground">
+                Impossible de charger les circuits pour le moment.
+              </Card>
+            ) : filteredTours.length === 0 ? (
+              <Card className="p-12 text-center">
+                <Map className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <p className="text-lg font-medium mb-2">Aucun circuit disponible pour le moment</p>
+                <p className="text-muted-foreground mb-6">Nos guides locaux ajoutent bientôt leurs circuits. Revenez vite !</p>
+                <Button variant="outline" asChild>
+                  <a href="/devenir-partenaire">Vous êtes guide touristique ? Rejoignez-nous</a>
+                </Button>
+              </Card>
+            ) : (
+              <>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {paginatedTours.map((tour) => (
+                    <Card key={tour.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <img
+                        src={tour.image}
+                        alt={tour.name}
+                        className="w-full h-48 object-cover"
+                        loading="lazy"
+                      />
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold mb-2">{tour.name}</h3>
 
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(tour.rating)
-                                ? "fill-accent text-accent"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {tour.rating} ({tour.reviews} avis)
-                      </span>
-                    </div>
+                        <div className="flex items-center gap-2 text-muted-foreground mb-3">
+                          <MapPin className="w-4 h-4" />
+                          <span className="text-sm">{tour.location}</span>
+                        </div>
 
-                    <div className="flex gap-4 mb-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{tour.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        <span>{tour.capacity}</span>
-                      </div>
-                    </div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                  i < Math.floor(tour.rating)
+                                    ? "fill-accent text-accent"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {tour.rating} ({tour.reviews} avis)
+                          </span>
+                        </div>
 
-                    <div className="flex justify-between items-center mt-4 pt-4 border-t">
-                      <div>
-                        <p className="text-sm text-muted-foreground">À partir de</p>
-                        <p className="text-2xl font-bold text-primary">
-                          <Price amount={tour.price} fromCurrency="XOF" />
-                        </p>
-                      </div>
-                      <Button onClick={() => {
-                        setSelectedTour({
-                          id: tour.id.toString(),
-                          name: tour.name,
-                          price_per_unit: tour.price,
-                          currency: "XOF",
-                          type: "tour"
-                        });
-                        setDialogOpen(true);
-                      }}>
-                        Réserver
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={filteredTours.length}
-            />
+                        <div className="flex gap-4 mb-4 text-sm text-muted-foreground">
+                          {tour.duration && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{tour.duration}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            <span>Jusqu'à {tour.groupSizeMax} personnes</span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                          <div>
+                            <p className="text-sm text-muted-foreground">À partir de</p>
+                            <p className="text-2xl font-bold text-primary">
+                              <Price amount={tour.price} fromCurrency={tour.currency} />
+                            </p>
+                          </div>
+                          <Button onClick={() => {
+                            setSelectedTour({
+                              id: tour.id,
+                              name: tour.name,
+                              price_per_unit: tour.price,
+                              currency: tour.currency,
+                              type: "tour",
+                              location: tour.location,
+                            });
+                            setDialogOpen(true);
+                          }}>
+                            Réserver
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={filteredTours.length}
+                />
+              </>
+            )}
           </div>
         </div>
       </main>
 
       {selectedTour && (
-        <BookingDialog 
-          open={dialogOpen} 
+        <BookingDialog
+          open={dialogOpen}
           onOpenChange={setDialogOpen}
           service={selectedTour}
         />

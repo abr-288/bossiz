@@ -1,16 +1,24 @@
 import { useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Handshake, BadgePercent, Users, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Handshake, BadgePercent, Users, TrendingUp, Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { partnerApplicationSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerBecomePartner from "@/assets/hero-slide-1.jpg";
+
+const carPlanLabels: Record<string, string> = {
+  decouverte: "Découverte",
+  pro: "Pro",
+  flotte: "Flotte",
+};
 
 const benefits = [
   {
@@ -32,6 +40,8 @@ const benefits = [
 
 const BecomePartner = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const requestedCarPlan = searchParams.get("plan");
   const [formData, setFormData] = useState({
     name: "",
     contactEmail: "",
@@ -58,6 +68,7 @@ const BecomePartner = () => {
       contact_phone: formData.contactPhone || null,
       description: formData.description || null,
       logo_url: formData.logoUrl || null,
+      requested_car_plan_id: requestedCarPlan || null,
     });
     setLoading(false);
 
@@ -91,7 +102,7 @@ const BecomePartner = () => {
             {t("pages.becomePartner.title", "Devenir partenaire")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
-            {t("pages.becomePartner.subtitle", "Listez votre hôtel sur B-Reserve et touchez de nouveaux clients")}
+            {t("pages.becomePartner.subtitle", "Hôtel, agence de location, guide touristique... Listez vos services sur B-Reserve et touchez de nouveaux clients")}
           </p>
         </div>
       </section>
@@ -128,6 +139,14 @@ const BecomePartner = () => {
                 "Chaque candidature est étudiée manuellement par notre équipe avant activation de votre espace partenaire."
               )}
             </p>
+            {!requestedCarPlan && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Vous louez des véhicules ?{" "}
+                <Link to="/partenaires/voitures" className="text-primary font-medium hover:underline">
+                  Voir nos forfaits pour partenaires voiture
+                </Link>
+              </p>
+            )}
           </div>
 
           {/* Application form */}
@@ -135,6 +154,12 @@ const BecomePartner = () => {
             <Card>
               <CardHeader>
                 <CardTitle>{t("pages.becomePartner.formTitle", "Votre candidature")}</CardTitle>
+                {requestedCarPlan && (
+                  <Badge variant="secondary" className="w-fit gap-1.5 mt-1">
+                    <Car className="w-3.5 h-3.5" />
+                    Forfait voiture demandé : {carPlanLabels[requestedCarPlan] || requestedCarPlan}
+                  </Badge>
+                )}
               </CardHeader>
               <CardContent>
                 <UnifiedForm onSubmit={handleSubmit} variant="contact" loading={loading}>
