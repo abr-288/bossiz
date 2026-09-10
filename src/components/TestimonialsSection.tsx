@@ -40,8 +40,8 @@ const TestimonialsSection = () => {
     const fetchTestimonials = async () => {
       const { data: reviews, error } = await supabase
         .from("reviews")
-        .select("id, user_id, rating, comment, reviewer_name" as any)
-        .eq("status" as any, "approved")
+        .select("id, user_id, rating, comment, reviewer_name")
+        .eq("status", "approved")
         .not("comment", "is", null)
         .order("rating", { ascending: false })
         .order("created_at", { ascending: false })
@@ -49,7 +49,7 @@ const TestimonialsSection = () => {
 
       if (error || !reviews || reviews.length === 0) return;
 
-      const userIds = [...new Set((reviews as any[]).map(r => r.user_id).filter(Boolean))];
+      const userIds = [...new Set(reviews.map(r => r.user_id).filter((id): id is string => !!id))];
       const profilesById = new Map<string, string>();
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
@@ -59,15 +59,15 @@ const TestimonialsSection = () => {
         (profiles || []).forEach(p => profilesById.set(p.id, p.full_name || ""));
       }
 
-      const real: Testimonial[] = (reviews as any[])
+      const real: Testimonial[] = reviews
         .map(r => {
-          const name = profilesById.get(r.user_id) || r.reviewer_name || "Client B-Reserve";
+          const name = (r.user_id && profilesById.get(r.user_id)) || r.reviewer_name || "Client B-Reserve";
           return {
             id: r.id,
             name,
             role: "testimonials.verifiedCustomer",
             rating: r.rating,
-            comment: r.comment,
+            comment: r.comment || "",
             avatar: getInitials(name),
           };
         })

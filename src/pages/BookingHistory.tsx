@@ -37,6 +37,17 @@ interface Booking {
   };
 }
 
+// Mirrors the reviews INSERT RLS check (see migration 20260910210000): a
+// booking is reviewable once it's paid, confirmed, and its service date has
+// actually passed - not on a 'completed' status nothing in this codebase
+// ever sets.
+const isReviewEligible = (booking: Booking) => {
+  if (booking.payment_status !== "paid") return false;
+  if (booking.status !== "confirmed" && booking.status !== "completed") return false;
+  const serviceDate = booking.end_date || booking.start_date;
+  return new Date(serviceDate) <= new Date();
+};
+
 const BookingHistory = () => {
   const { t, i18n } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -87,12 +98,12 @@ const BookingHistory = () => {
       if (error) throw error;
       setBookings(data || []);
 
-      const completedIds = (data || []).filter(b => b.status === "completed").map(b => b.id);
-      if (completedIds.length > 0) {
+      const eligibleIds = (data || []).filter(isReviewEligible).map(b => b.id);
+      if (eligibleIds.length > 0) {
         const { data: existingReviews } = await supabase
           .from("reviews")
           .select("booking_id")
-          .in("booking_id", completedIds);
+          .in("booking_id", eligibleIds);
         setReviewedBookingIds(new Set((existingReviews || []).map(r => r.booking_id).filter(Boolean)));
       }
     } catch (error) {
@@ -294,7 +305,7 @@ const BookingHistory = () => {
                             {t('bookingHistory.finalizePayment')}
                           </Button>
                         )}
-                        {booking.status === "completed" && (
+                        {isReviewEligible(booking) && (
                           reviewedBookingIds.has(booking.id) ? (
                             <Button variant="ghost" disabled className="gap-2 text-muted-foreground">
                               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -166,6 +166,8 @@ export type Database = {
       }
       agencies: {
         Row: {
+          car_plan_id: string | null
+          car_plan_started_at: string | null
           commission_rate: number | null
           contact_email: string | null
           contact_phone: string | null
@@ -180,6 +182,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          car_plan_id?: string | null
+          car_plan_started_at?: string | null
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
@@ -194,6 +198,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          car_plan_id?: string | null
+          car_plan_started_at?: string | null
           commission_rate?: number | null
           contact_email?: string | null
           contact_phone?: string | null
@@ -207,7 +213,15 @@ export type Database = {
           owner_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agencies_car_plan_id_fkey"
+            columns: ["car_plan_id"]
+            isOneToOne: false
+            referencedRelation: "car_partner_plans"
+            referencedColumns: ["plan_id"]
+          },
+        ]
       }
       assistance_logs: {
         Row: {
@@ -498,6 +512,63 @@ export type Database = {
           tagline?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      car_partner_plans: {
+        Row: {
+          commission_rate: number
+          created_at: string
+          currency: string
+          featured_slots: number
+          features: Json
+          id: string
+          is_active: boolean
+          max_vehicles: number | null
+          monthly_price: number
+          name: string
+          plan_id: string
+          sort_order: number
+          support_level: string
+          tagline: string | null
+          updated_at: string
+          yearly_price: number
+        }
+        Insert: {
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          featured_slots?: number
+          features?: Json
+          id?: string
+          is_active?: boolean
+          max_vehicles?: number | null
+          monthly_price?: number
+          name: string
+          plan_id: string
+          sort_order?: number
+          support_level?: string
+          tagline?: string | null
+          updated_at?: string
+          yearly_price?: number
+        }
+        Update: {
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          featured_slots?: number
+          features?: Json
+          id?: string
+          is_active?: boolean
+          max_vehicles?: number | null
+          monthly_price?: number
+          name?: string
+          plan_id?: string
+          sort_order?: number
+          support_level?: string
+          tagline?: string | null
+          updated_at?: string
+          yearly_price?: number
         }
         Relationships: []
       }
@@ -1029,10 +1100,44 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_credentials: {
+        Row: {
+          category: string
+          created_at: string
+          credentials: Json
+          id: string
+          is_active: boolean
+          label: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          credentials?: Json
+          id?: string
+          is_active?: boolean
+          label: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          credentials?: Json
+          id?: string
+          is_active?: boolean
+          label?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount: number
           billing_period_id: string | null
+          booking_id: string | null
           created_at: string | null
           currency: string
           due_date: string | null
@@ -1050,6 +1155,7 @@ export type Database = {
         Insert: {
           amount: number
           billing_period_id?: string | null
+          booking_id?: string | null
           created_at?: string | null
           currency?: string
           due_date?: string | null
@@ -1067,6 +1173,7 @@ export type Database = {
         Update: {
           amount?: number
           billing_period_id?: string | null
+          booking_id?: string | null
           created_at?: string | null
           currency?: string
           due_date?: string | null
@@ -1087,6 +1194,13 @@ export type Database = {
             columns: ["billing_period_id"]
             isOneToOne: false
             referencedRelation: "billing_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
@@ -1702,6 +1816,45 @@ export type Database = {
         }
         Relationships: []
       }
+      otp_codes: {
+        Row: {
+          attempts: number
+          channel: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          destination: string
+          expires_at: string
+          id: string
+          max_attempts: number
+          purpose: string
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          destination: string
+          expires_at: string
+          id?: string
+          max_attempts?: number
+          purpose?: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          destination?: string
+          expires_at?: string
+          id?: string
+          max_attempts?: number
+          purpose?: string
+        }
+        Relationships: []
+      }
       page_sections: {
         Row: {
           background_color: string | null
@@ -1765,6 +1918,7 @@ export type Database = {
           id: string
           logo_url: string | null
           name: string
+          requested_car_plan_id: string | null
           status: string
           updated_at: string
         }
@@ -1776,6 +1930,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name: string
+          requested_car_plan_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -1787,10 +1942,19 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name?: string
+          requested_car_plan_id?: string | null
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "partner_applications_requested_car_plan_id_fkey"
+            columns: ["requested_car_plan_id"]
+            isOneToOne: false
+            referencedRelation: "car_partner_plans"
+            referencedColumns: ["plan_id"]
+          },
+        ]
       }
       passengers: {
         Row: {
@@ -2200,9 +2364,12 @@ export type Database = {
           created_at: string
           id: string
           rating: number
+          reviewer_name: string | null
           service_id: string
+          source: string
+          status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           booking_id?: string | null
@@ -2210,9 +2377,12 @@ export type Database = {
           created_at?: string
           id?: string
           rating: number
+          reviewer_name?: string | null
           service_id: string
+          source?: string
+          status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           booking_id?: string | null
@@ -2220,9 +2390,12 @@ export type Database = {
           created_at?: string
           id?: string
           rating?: number
+          reviewer_name?: string | null
           service_id?: string
+          source?: string
+          status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -3022,12 +3195,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3051,11 +3224,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3076,11 +3249,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3101,11 +3274,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -3118,11 +3291,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
