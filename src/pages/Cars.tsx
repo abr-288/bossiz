@@ -249,19 +249,32 @@ const Cars = () => {
     return Array.from(providers) as string[];
   }, [apiCars]);
 
+  // Upper bound for the price filter, derived from the actual results so cars
+  // priced above a hardcoded ceiling (e.g. XOF prices) aren't silently hidden
+  const maxPrice = useMemo(() => {
+    const highest = apiCars.reduce((max, car) => Math.max(max, car.price), 0);
+    return Math.max(200, Math.ceil((highest || 200) / 50) * 50);
+  }, [apiCars]);
+
+  // Reset the price range whenever a new set of results comes in, so the
+  // previous (possibly narrower) range doesn't hide cars from a new search
+  useEffect(() => {
+    setPriceRange([0, maxPrice]);
+  }, [maxPrice]);
+
   // Count active filters
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (filterLocation) count++;
     if (filterCategory !== 'all') count++;
-    if (priceRange[0] > 0 || priceRange[1] < 200) count++;
+    if (priceRange[0] > 0 || priceRange[1] < maxPrice) count++;
     if (selectedTransmissions.length > 0) count++;
     if (selectedFuelTypes.length > 0) count++;
     if (selectedProviders.length > 0) count++;
     if (unlimitedMileageOnly) count++;
     if (freeCancellationOnly) count++;
     return count;
-  }, [filterLocation, filterCategory, priceRange, selectedTransmissions, selectedFuelTypes, selectedProviders, unlimitedMileageOnly, freeCancellationOnly]);
+  }, [filterLocation, filterCategory, priceRange, maxPrice, selectedTransmissions, selectedFuelTypes, selectedProviders, unlimitedMileageOnly, freeCancellationOnly]);
 
   // Filter and sort cars
   const filteredAndSortedCars = useMemo(() => {
@@ -356,6 +369,7 @@ const Cars = () => {
       setFilterCategory={setFilterCategory}
       priceRange={priceRange}
       setPriceRange={setPriceRange}
+      maxPrice={maxPrice}
       selectedTransmissions={selectedTransmissions}
       setSelectedTransmissions={setSelectedTransmissions}
       selectedFuelTypes={selectedFuelTypes}

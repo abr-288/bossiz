@@ -28,6 +28,7 @@ interface CarFiltersProps {
   setFilterCategory: (value: string) => void;
   priceRange: number[];
   setPriceRange: (value: number[]) => void;
+  maxPrice: number;
   selectedTransmissions: string[];
   setSelectedTransmissions: (value: string[]) => void;
   selectedFuelTypes: string[];
@@ -50,6 +51,7 @@ export const CarFilters = ({
   setFilterCategory,
   priceRange,
   setPriceRange,
+  maxPrice,
   selectedTransmissions,
   setSelectedTransmissions,
   selectedFuelTypes,
@@ -175,15 +177,15 @@ export const CarFilters = ({
           </Label>
           <Slider
             min={0}
-            max={200}
-            step={5}
+            max={maxPrice}
+            step={Math.max(5, Math.round(maxPrice / 40))}
             value={priceRange}
             onValueChange={setPriceRange}
             className="mt-4"
           />
           <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-            <span>0 €</span>
-            <span>200 €+</span>
+            <span>{formatPrice(0)}</span>
+            <span>{formatPrice(maxPrice)}+</span>
           </div>
         </div>
 
