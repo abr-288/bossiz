@@ -210,7 +210,17 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Button 
+                <Link to="/partenaires/voitures" className="text-white/80 hover:text-secondary transition-smooth">
+                  Devenir partenaire voiture
+                </Link>
+              </li>
+              <li>
+                <Link to="/entreprises" className="text-white/80 hover:text-secondary transition-smooth">
+                  Espace Entreprises
+                </Link>
+              </li>
+              <li>
+                <Button
                   onClick={handleAppInstall}
                   className="bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-colors duration-300 shadow-lg font-bold py-3 px-4 border-2 border-white hover:border-gray-200 rounded-lg text-sm"
                 >

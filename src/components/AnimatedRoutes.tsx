@@ -70,6 +70,8 @@ const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
 const AgencyRestaurants = lazy(() => import("@/pages/agency/AgencyRestaurants"));
 const Restaurants = lazy(() => import("@/pages/Restaurants"));
+const Companies = lazy(() => import("@/pages/Companies"));
+const CompanyDashboard = lazy(() => import("@/pages/company/CompanyDashboard"));
 const AgencyActivities = lazy(() => import("@/pages/agency/AgencyActivities"));
 const AgencyStays = lazy(() => import("@/pages/agency/AgencyStays"));
 const AgencyPromotions = lazy(() => import("@/pages/agency/AgencyPromotions"));
@@ -136,6 +138,8 @@ const AnimatedRoutes = () => {
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
           <Route path="/tours" element={<PageTransition><Tours /></PageTransition>} />
           <Route path="/restaurants" element={<PageTransition><Restaurants /></PageTransition>} />
+          <Route path="/entreprises" element={<PageTransition><Companies /></PageTransition>} />
+          <Route path="/company/dashboard" element={<PageTransition><CompanyDashboard /></PageTransition>} />
           <Route path="/destinations" element={<PageTransition><Destinations /></PageTransition>} />
           <Route path="/destinations/:id" element={<PageTransition><DestinationDetail /></PageTransition>} />
           <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />

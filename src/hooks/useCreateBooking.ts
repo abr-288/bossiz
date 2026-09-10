@@ -34,6 +34,10 @@ interface CreateBookingParams {
   offer_expires_at?: string;
   // Flights only: real base_fare from the signed checkout price breakdown
   supplier_cost?: number;
+  // Present when the employee chose "bill to my company" - the booking is
+  // created as usual but payment is settled later by the company's billing
+  // admin from /company/dashboard instead of immediately by this user.
+  company_id?: string;
 }
 
 export const useCreateBooking = () => {

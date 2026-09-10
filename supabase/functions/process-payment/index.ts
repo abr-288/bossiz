@@ -226,11 +226,16 @@ serve(async (req) => {
       targetType = 'booking';
       targetId = body.bookingId;
 
+      // Scoped to the caller's own JWT (not adminSupabase): RLS on `bookings`
+      // is what actually enforces who may pay here - the booking's own
+      // owner, or a company billing admin for a booking billed to their
+      // company (see migration 20260910230000_create_companies.sql). No
+      // .eq('user_id', ...) filter is added on top - if RLS doesn't expose
+      // the row to this caller, .single() below simply finds nothing.
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
-        .select('id, user_id, total_price, currency, payment_status')
+        .select('id, user_id, company_id, total_price, currency, payment_status')
         .eq('id', targetId)
-        .eq('user_id', user.id)
         .single();
 
       if (bookingError || !booking) {

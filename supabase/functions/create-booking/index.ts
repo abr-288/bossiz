@@ -60,6 +60,11 @@ interface BookingRequest {
   // Flights only: the real base_fare from the signed prebook/checkout price
   // breakdown (supplier cost excluding taxes/service fee), for reconciliation.
   supplier_cost?: number;
+  // Present when the caller chose "bill to my company" - the RLS INSERT
+  // policy on bookings independently verifies the caller is actually a
+  // member of this company before allowing the row through, so a stranger
+  // company_id here is rejected at the database level regardless.
+  company_id?: string;
 }
 
 serve(async (req) => {
@@ -201,7 +206,25 @@ serve(async (req) => {
     // already refers to the generic `services` table can be reused as-is.
     let serviceId = (requestData.service_id && !catalogTable) ? requestData.service_id : undefined;
 
-    if (serviceId) {
+    if (serviceId && SIGNED_OFFER_SERVICE_TYPES.has(requestData.service_type)) {
+      // Signed-offer types (hotel/car) already had verifiedTotalPrice computed
+      // above from the signed unit_price × duration - that calculation (days,
+      // not `guests`) is the correct one for a nightly/daily rate, so it must
+      // NOT be overwritten by price_per_unit * guests below. Just confirm the
+      // referenced service (e.g. a partner's car listing) still exists, so
+      // bookings.service_id stays valid and downstream commission attribution
+      // (see postPaymentSuccess.ts) can find the right agency.
+      const { data: existingService, error: existingServiceError } = await supabase
+        .from('services')
+        .select('id')
+        .eq('id', serviceId)
+        .single();
+
+      if (existingServiceError || !existingService) {
+        console.error('Referenced service not found - Code:', existingServiceError?.code);
+        throw new Error('Referenced service not found');
+      }
+    } else if (serviceId) {
       // A service_id was supplied that refers to the generic services table:
       // its own stored price is the source of truth, never the client's total.
       const { data: existingService, error: existingServiceError } = await supabase
@@ -266,6 +289,7 @@ serve(async (req) => {
         customer_phone: requestData.customer_phone,
         notes: requestData.notes,
         booking_details: requestData.booking_details,
+        company_id: requestData.company_id || null,
       })
       .select()
       .single();

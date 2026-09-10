@@ -84,6 +84,8 @@ export const SummaryStep = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [remainingTime, setRemainingTime] = useState<number>(0);
   const [isPrebookingDone, setIsPrebookingDone] = useState(false);
+  const [myCompanies, setMyCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [billToCompanyId, setBillToCompanyId] = useState<string | null>(null);
   
   const { prebook, checkout, prebookingData, checkoutData, loading: secureLoading, isPrebookingValid, getRemainingSeconds, reset } = useSecureFlightBooking();
   const { createBooking, loading: bookingLoading } = useCreateBooking();
@@ -118,6 +120,13 @@ export const SummaryStep = ({
   const checkAuth = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setIsAuthenticated(!!user);
+    if (user) {
+      const { data } = await supabase
+        .from("company_members")
+        .select("company_id, companies(name)")
+        .eq("user_id", user.id);
+      setMyCompanies((data || []).map((m: any) => ({ id: m.company_id, name: m.companies?.name || "Entreprise" })));
+    }
   };
 
   // Convert frontend passenger format to API format
@@ -259,11 +268,17 @@ export const SummaryStep = ({
             preferences: selectedPreferences,
             paymentMethod,
           },
+          company_id: billToCompanyId || undefined,
         });
 
         if (bookingId) {
-          // Navigate to payment with prebooking reference
-          navigate(`/payment?bookingId=${bookingId}&prebookingId=${prebookingData.prebooking_id}`);
+          if (billToCompanyId) {
+            toast.success("Réservation envoyée à votre entreprise pour paiement");
+            navigate("/booking-history");
+          } else {
+            // Navigate to payment with prebooking reference
+            navigate(`/payment?bookingId=${bookingId}&prebookingId=${prebookingData.prebooking_id}`);
+          }
         }
       } else {
         // Non-flight services - use existing flow
@@ -294,10 +309,16 @@ export const SummaryStep = ({
             preferences: selectedPreferences,
             paymentMethod,
           },
+          company_id: billToCompanyId || undefined,
         });
 
         if (bookingId) {
-          navigate(`/payment?bookingId=${bookingId}`);
+          if (billToCompanyId) {
+            toast.success("Réservation envoyée à votre entreprise pour paiement");
+            navigate("/booking-history");
+          } else {
+            navigate(`/payment?bookingId=${bookingId}`);
+          }
         }
       }
     } catch (error) {
@@ -699,6 +720,27 @@ export const SummaryStep = ({
                 </button>
               </div>
             </div>
+
+            {myCompanies.length > 0 && (
+              <div className="space-y-2 mt-4">
+                <h4 className="font-semibold">Qui paie ce voyage ?</h4>
+                <select
+                  className="w-full p-3 rounded-lg border-2 border-border bg-background text-sm"
+                  value={billToCompanyId || ""}
+                  onChange={(e) => setBillToCompanyId(e.target.value || null)}
+                >
+                  <option value="">Moi-même</option>
+                  {myCompanies.map((c) => (
+                    <option key={c.id} value={c.id}>Facturer à {c.name}</option>
+                  ))}
+                </select>
+                {billToCompanyId && (
+                  <p className="text-xs text-muted-foreground">
+                    La réservation sera créée sans paiement immédiat ; le responsable facturation de l'entreprise règlera depuis son tableau de bord.
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="mt-6 space-y-3">
               {/* For flights: Two-step process */}
