@@ -6,46 +6,91 @@ import { Button } from "@/components/ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  rating: number;
+  comment: string;
+  avatar: string;
+}
+
+// Shown only as filler while real customer reviews are still accumulating -
+// dropped from the carousel entirely once enough real ones exist (see
+// fetchTestimonials below).
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
+  { id: "fallback-1", name: "Kouadio Marie", role: "testimonials.traveler", rating: 5, comment: "testimonials.comment1", avatar: "KM" },
+  { id: "fallback-2", name: "Jean-Baptiste Koffi", role: "testimonials.entrepreneur", rating: 5, comment: "testimonials.comment2", avatar: "JK" },
+  { id: "fallback-3", name: "Aminata Traoré", role: "testimonials.guide", rating: 5, comment: "testimonials.comment3", avatar: "AT" },
+];
+
+const MIN_REAL_TESTIMONIALS = 3;
+
+const getInitials = (name: string) =>
+  name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || "").join("") || "?";
 
 const TestimonialsSection = () => {
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(FALLBACK_TESTIMONIALS);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      const { data: reviews, error } = await supabase
+        .from("reviews")
+        .select("id, user_id, rating, comment, reviewer_name" as any)
+        .eq("status" as any, "approved")
+        .not("comment", "is", null)
+        .order("rating", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(9);
+
+      if (error || !reviews || reviews.length === 0) return;
+
+      const userIds = [...new Set((reviews as any[]).map(r => r.user_id).filter(Boolean))];
+      const profilesById = new Map<string, string>();
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", userIds);
+        (profiles || []).forEach(p => profilesById.set(p.id, p.full_name || ""));
+      }
+
+      const real: Testimonial[] = (reviews as any[])
+        .map(r => {
+          const name = profilesById.get(r.user_id) || r.reviewer_name || "Client B-Reserve";
+          return {
+            id: r.id,
+            name,
+            role: "testimonials.verifiedCustomer",
+            rating: r.rating,
+            comment: r.comment,
+            avatar: getInitials(name),
+          };
+        })
+        .filter(t => t.name);
+
+      if (real.length >= MIN_REAL_TESTIMONIALS) {
+        setTestimonials(real);
+      } else if (real.length > 0) {
+        setTestimonials([...real, ...FALLBACK_TESTIMONIALS.slice(0, MIN_REAL_TESTIMONIALS - real.length)]);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { 
+    {
       loop: true,
       align: "center",
       skipSnaps: false,
     },
     [Autoplay({ delay: 5000, stopOnInteraction: false })]
   );
-  
-  const testimonials = [
-    {
-      id: 1,
-      name: "Kouadio Marie",
-      roleKey: "testimonials.traveler",
-      rating: 5,
-      commentKey: "testimonials.comment1",
-      avatar: "KM",
-    },
-    {
-      id: 2,
-      name: "Jean-Baptiste Koffi",
-      roleKey: "testimonials.entrepreneur",
-      rating: 5,
-      commentKey: "testimonials.comment2",
-      avatar: "JK",
-    },
-    {
-      id: 3,
-      name: "Aminata Traoré",
-      roleKey: "testimonials.guide",
-      rating: 5,
-      commentKey: "testimonials.comment3",
-      avatar: "AT",
-    },
-  ];
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -165,7 +210,7 @@ const TestimonialsSection = () => {
 
                       {/* Comment with enhanced typography */}
                       <p className="text-muted-foreground group-hover:text-foreground mb-4 md:mb-8 italic text-sm md:text-base lg:text-lg leading-relaxed transition-colors flex-1">
-                        "{t(testimonial.commentKey)}"
+                        "{testimonial.id.startsWith("fallback-") ? t(testimonial.comment) : testimonial.comment}"
                       </p>
 
                       {/* Author info with enhanced styling */}
@@ -177,7 +222,7 @@ const TestimonialsSection = () => {
                         </Avatar>
                         <div>
                           <p className="font-bold text-foreground text-sm md:text-lg">{testimonial.name}</p>
-                          <p className="text-xs md:text-sm text-muted-foreground">{t(testimonial.roleKey)}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">{t(testimonial.role)}</p>
                         </div>
                       </div>
                     </CardContent>

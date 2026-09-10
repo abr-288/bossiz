@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Loader2 } from "lucide-react";
+import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Loader2, Star } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { Price } from "@/components/ui/price";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
+import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
 
 interface Booking {
   id: string;
@@ -41,6 +42,8 @@ const BookingHistory = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(new Set());
+  const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
   const navigate = useNavigate();
 
   const getLocale = () => {
@@ -83,6 +86,15 @@ const BookingHistory = () => {
 
       if (error) throw error;
       setBookings(data || []);
+
+      const completedIds = (data || []).filter(b => b.status === "completed").map(b => b.id);
+      if (completedIds.length > 0) {
+        const { data: existingReviews } = await supabase
+          .from("reviews")
+          .select("booking_id")
+          .in("booking_id", completedIds);
+        setReviewedBookingIds(new Set((existingReviews || []).map(r => r.booking_id).filter(Boolean)));
+      }
     } catch (error) {
       console.error("Error fetching bookings:", error);
       toast.error(t('bookingHistory.loadingError'));
@@ -282,6 +294,19 @@ const BookingHistory = () => {
                             {t('bookingHistory.finalizePayment')}
                           </Button>
                         )}
+                        {booking.status === "completed" && (
+                          reviewedBookingIds.has(booking.id) ? (
+                            <Button variant="ghost" disabled className="gap-2 text-muted-foreground">
+                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              Avis envoyé
+                            </Button>
+                          ) : (
+                            <Button variant="outline" className="gap-2" onClick={() => setReviewBooking(booking)}>
+                              <Star className="w-4 h-4" />
+                              Laisser un avis
+                            </Button>
+                          )
+                        )}
                       </div>
 
                       <div className="mt-4 pt-4 border-t border-border">
@@ -297,6 +322,20 @@ const BookingHistory = () => {
           ))}
         </Tabs>
       </div>
+
+      {reviewBooking && (
+        <WriteReviewDialog
+          open={!!reviewBooking}
+          onOpenChange={(open) => { if (!open) setReviewBooking(null); }}
+          bookingId={reviewBooking.id}
+          serviceId={reviewBooking.service_id}
+          serviceName={reviewBooking.services.name}
+          onSubmitted={() => {
+            setReviewedBookingIds(prev => new Set(prev).add(reviewBooking.id));
+            setReviewBooking(null);
+          }}
+        />
+      )}
     </UserDashboardLayout>
   );
 };
