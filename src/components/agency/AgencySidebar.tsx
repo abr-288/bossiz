@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Activity, Home, Percent, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Activity, Home, Percent, Settings, LogOut, UtensilsCrossed } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 const menuItems = [
   { title: "Tableau de bord", url: "/agency", icon: LayoutDashboard },
   { title: "Mes Services", url: "/agency/services", icon: Package },
+  { title: "Mes Restaurants", url: "/agency/restaurants", icon: UtensilsCrossed },
   { title: "Mes Activités", url: "/agency/activities", icon: Activity },
   { title: "Mes Séjours", url: "/agency/stays", icon: Home },
   { title: "Mes Promotions", url: "/agency/promotions", icon: Percent },

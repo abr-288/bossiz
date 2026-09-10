@@ -68,6 +68,8 @@ const AdminBossizMicrosites = lazy(() => import("@/pages/admin/AdminBossizMicros
 const AdminHomepageConfig = lazy(() => import("@/pages/admin/AdminHomepageConfig"));
 const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
+const AgencyRestaurants = lazy(() => import("@/pages/agency/AgencyRestaurants"));
+const Restaurants = lazy(() => import("@/pages/Restaurants"));
 const AgencyActivities = lazy(() => import("@/pages/agency/AgencyActivities"));
 const AgencyStays = lazy(() => import("@/pages/agency/AgencyStays"));
 const AgencyPromotions = lazy(() => import("@/pages/agency/AgencyPromotions"));
@@ -75,6 +77,7 @@ const AgencySettings = lazy(() => import("@/pages/agency/AgencySettings"));
 const Help = lazy(() => import("@/pages/Help"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const BecomePartner = lazy(() => import("@/pages/BecomePartner"));
+const CarPartnerPlans = lazy(() => import("@/pages/CarPartnerPlans"));
 const Support = lazy(() => import("@/pages/Support"));
 const SupportCategory = lazy(() => import("@/pages/SupportCategory"));
 const Install = lazy(() => import("@/pages/Install"));
@@ -132,6 +135,7 @@ const AnimatedRoutes = () => {
           <Route path="/hotels-partenaires" element={<PageTransition><HotelsPartners /></PageTransition>} />
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
           <Route path="/tours" element={<PageTransition><Tours /></PageTransition>} />
+          <Route path="/restaurants" element={<PageTransition><Restaurants /></PageTransition>} />
           <Route path="/destinations" element={<PageTransition><Destinations /></PageTransition>} />
           <Route path="/destinations/:id" element={<PageTransition><DestinationDetail /></PageTransition>} />
           <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
@@ -179,6 +183,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/homepage-config" element={<PageTransition><AdminHomepageConfig /></PageTransition>} />
           <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
           <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
+          <Route path="/agency/restaurants" element={<PageTransition><AgencyRestaurants /></PageTransition>} />
           <Route path="/agency/activities" element={<PageTransition><AgencyActivities /></PageTransition>} />
           <Route path="/agency/stays" element={<PageTransition><AgencyStays /></PageTransition>} />
           <Route path="/agency/promotions" element={<PageTransition><AgencyPromotions /></PageTransition>} />
@@ -186,6 +191,7 @@ const AnimatedRoutes = () => {
           <Route path="/help" element={<PageTransition><Help /></PageTransition>} />
           <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
           <Route path="/devenir-partenaire" element={<PageTransition><BecomePartner /></PageTransition>} />
+          <Route path="/partenaires/voitures" element={<PageTransition><CarPartnerPlans /></PageTransition>} />
           <Route path="/support" element={<PageTransition><Support /></PageTransition>} />
           <Route path="/support/:categoryId" element={<PageTransition><SupportCategory /></PageTransition>} />
           <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
