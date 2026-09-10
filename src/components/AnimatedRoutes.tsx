@@ -70,6 +70,8 @@ const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
 const AgencyRestaurants = lazy(() => import("@/pages/agency/AgencyRestaurants"));
 const Restaurants = lazy(() => import("@/pages/Restaurants"));
+const AgencyArtisans = lazy(() => import("@/pages/agency/AgencyArtisans"));
+const Artisans = lazy(() => import("@/pages/Artisans"));
 const Companies = lazy(() => import("@/pages/Companies"));
 const CompanyDashboard = lazy(() => import("@/pages/company/CompanyDashboard"));
 const AgencyActivities = lazy(() => import("@/pages/agency/AgencyActivities"));
@@ -138,6 +140,7 @@ const AnimatedRoutes = () => {
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
           <Route path="/tours" element={<PageTransition><Tours /></PageTransition>} />
           <Route path="/restaurants" element={<PageTransition><Restaurants /></PageTransition>} />
+          <Route path="/artisans" element={<PageTransition><Artisans /></PageTransition>} />
           <Route path="/entreprises" element={<PageTransition><Companies /></PageTransition>} />
           <Route path="/company/dashboard" element={<PageTransition><CompanyDashboard /></PageTransition>} />
           <Route path="/destinations" element={<PageTransition><Destinations /></PageTransition>} />
@@ -188,6 +191,7 @@ const AnimatedRoutes = () => {
           <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
           <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
           <Route path="/agency/restaurants" element={<PageTransition><AgencyRestaurants /></PageTransition>} />
+          <Route path="/agency/artisans" element={<PageTransition><AgencyArtisans /></PageTransition>} />
           <Route path="/agency/activities" element={<PageTransition><AgencyActivities /></PageTransition>} />
           <Route path="/agency/stays" element={<PageTransition><AgencyStays /></PageTransition>} />
           <Route path="/agency/promotions" element={<PageTransition><AgencyPromotions /></PageTransition>} />
