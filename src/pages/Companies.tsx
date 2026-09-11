@@ -60,17 +60,16 @@ const Companies = () => {
     }
 
     setCreating(true);
-    const { error } = await supabase.from("companies").insert({
-      name: companyName,
-      description: companyDescription || null,
-      billing_email: billingEmail || user.email,
-      billing_phone: billingPhone || null,
-      owner_id: user.id,
+    const { error } = await supabase.rpc("create_company", {
+      p_name: companyName,
+      p_description: companyDescription || null,
+      p_billing_email: billingEmail || user.email,
+      p_billing_phone: billingPhone || null,
     });
     setCreating(false);
 
     if (error) {
-      toast.error("Impossible de créer le compte entreprise");
+      toast.error(error.message || "Impossible de créer le compte entreprise");
       return;
     }
 
