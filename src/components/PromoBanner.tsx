@@ -4,38 +4,50 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import bannerFlights from "@/assets/banner-flights.jpg";
+import bannerHotels from "@/assets/banner-hotels.jpg";
+import bannerCars from "@/assets/banner-cars.jpg";
+import bannerFlightHotel from "@/assets/banner-flight-hotel.jpg";
 
 interface PromoBannerData {
   id: string;
   icon: React.ReactNode;
   link: string;
+  image: string;
   gradient: string;
 }
 
+// Dégradés composés uniquement des couleurs Golden Hour (marine / jade / or)
+// - fini le vert-orange-violet arc-en-ciel qui ne correspondait à aucune
+// des couleurs de marque.
 const promoBanners: PromoBannerData[] = [
   {
     id: "flights",
     icon: <Plane className="w-4 h-4 text-white" />,
     link: "https://vols.bossiz.com/",
-    gradient: "from-secondary via-secondary/90 to-primary"
+    image: bannerFlights,
+    gradient: "from-primary/95 via-primary/85 to-secondary/80"
   },
   {
     id: "hotels",
     icon: <Hotel className="w-4 h-4 text-white" />,
     link: "/hotels-partenaires",
-    gradient: "from-emerald-600 via-emerald-500 to-teal-500"
+    image: bannerHotels,
+    gradient: "from-secondary/95 via-secondary/85 to-primary/80"
   },
   {
     id: "cars",
     icon: <Car className="w-4 h-4 text-white" />,
     link: "/cars",
-    gradient: "from-orange-600 via-orange-500 to-amber-500"
+    image: bannerCars,
+    gradient: "from-gold-dark/95 via-gold/80 to-primary/80"
   },
   {
     id: "pack",
     icon: <Gift className="w-4 h-4 text-white" />,
     link: "/flight-hotel",
-    gradient: "from-purple-600 via-purple-500 to-pink-500"
+    image: bannerFlightHotel,
+    gradient: "from-primary/95 via-primary/85 to-gold/75"
   }
 ];
 
@@ -68,13 +80,18 @@ const PromoBanner = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.3 }}
-          className={`relative bg-gradient-to-r ${currentBanner.gradient}`}
+          className="relative"
         >
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }} />
+          {/* Photo de fond propre à chaque offre, assombrie par un dégradé
+              aux couleurs Golden Hour pour garder le texte blanc lisible. */}
+          <div className="absolute inset-0">
+            <img
+              src={currentBanner.image}
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover"
+            />
+            <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`} />
           </div>
 
           <div className="site-container relative">
