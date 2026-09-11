@@ -8,6 +8,7 @@ import { carBookingSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { splitFullName } from "@/utils/splitFullName";
+import { DriverDocumentUpload } from "@/components/DriverDocumentUpload";
 
 interface CarBookingDialogProps {
   open: boolean;
@@ -22,6 +23,11 @@ interface CarBookingDialogProps {
     seats?: number;
     offerSignature?: string;
     offerExpiresAt?: string;
+    // 'partner' means car.id is a real services.id (see fetchPartnerCars in
+    // car-rental/index.ts) - anything else is a synthetic id from a
+    // third-party API (e.g. "priceline-2") and must never be sent as
+    // service_id, or create-booking would try to look it up and fail.
+    source?: string;
   };
 }
 
@@ -30,11 +36,21 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
   const navigate = useNavigate();
   const { createBooking, loading } = useCreateBooking();
 
+  // Storage paths in the private driver-documents bucket (see
+  // DriverDocumentUpload) - never a public URL, only the uploader and
+  // admins can read these (RLS on storage.objects).
+  const [licenseFrontPath, setLicenseFrontPath] = useState("");
+  const [licenseBackPath, setLicenseBackPath] = useState("");
+  const [applicantPhotoPath, setApplicantPhotoPath] = useState("");
+
   // Checked as soon as the dialog opens, not after the user has filled out
   // the whole form - avoids sending someone through 9+ fields only to tell
   // them at submit time that they needed to be logged in.
   useEffect(() => {
     if (!open) return;
+    setLicenseFrontPath("");
+    setLicenseBackPath("");
+    setApplicantPhotoPath("");
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -77,6 +93,11 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
       return;
     }
 
+    if (!licenseFrontPath || !licenseBackPath || !applicantPhotoPath) {
+      toast.error("La photo du permis (recto et verso) et votre photo sont obligatoires.");
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -104,6 +125,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     const { first_name, last_name } = splitFullName(customerName);
 
     const bookingId = await createBooking({
+      service_id: car.source === "partner" ? car.id : undefined,
       service_type: "car",
       service_name: car.name,
       service_description: `${car.category} - ${car.transmission || 'Automatique'} - ${car.seats || 5} places`,
@@ -127,6 +149,9 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
         pickupLocation,
         dropoffLocation,
         driverLicense,
+        driverLicensePhotoFrontPath: licenseFrontPath,
+        driverLicensePhotoBackPath: licenseBackPath,
+        applicantPhotoPath,
       },
     });
 
@@ -216,6 +241,27 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
                 name="driverLicense"
                 placeholder="ABC123456"
                 required
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <DriverDocumentUpload
+                  label="Permis de conduire - Recto"
+                  docType="license_front"
+                  path={licenseFrontPath}
+                  onChange={setLicenseFrontPath}
+                />
+                <DriverDocumentUpload
+                  label="Permis de conduire - Verso"
+                  docType="license_back"
+                  path={licenseBackPath}
+                  onChange={setLicenseBackPath}
+                />
+              </div>
+              <DriverDocumentUpload
+                label="Photo du demandeur"
+                docType="applicant_photo"
+                path={applicantPhotoPath}
+                onChange={setApplicantPhotoPath}
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

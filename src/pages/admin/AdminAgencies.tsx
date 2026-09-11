@@ -47,10 +47,20 @@ interface Agency {
   is_visible: boolean;
   is_active: boolean;
   commission_rate: number | null;
+  car_plan_id: string | null;
   created_at: string;
   owner_email?: string;
   owner_name?: string;
 }
+
+interface CarPartnerPlan {
+  plan_id: string;
+  name: string;
+  max_vehicles: number | null;
+  commission_rate: number;
+}
+
+const NO_CAR_PLAN = "none";
 
 interface UserOption {
   id: string;
@@ -63,10 +73,11 @@ export default function AdminAgencies() {
   const { toast } = useToast();
   const location = useLocation();
   const prefillApplication = location.state?.prefillApplication as
-    | { id: string; name: string; description: string | null; contact_email: string | null; contact_phone: string | null; logo_url: string | null }
+    | { id: string; name: string; description: string | null; contact_email: string | null; contact_phone: string | null; logo_url: string | null; requested_car_plan_id?: string | null }
     | undefined;
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
+  const [carPlans, setCarPlans] = useState<CarPartnerPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -81,11 +92,13 @@ export default function AdminAgencies() {
     is_visible: false,
     is_active: true,
     commission_rate: 10,
+    car_plan_id: NO_CAR_PLAN,
   });
 
   useEffect(() => {
     fetchAgencies();
     fetchUsers();
+    fetchCarPlans();
   }, []);
 
   useEffect(() => {
@@ -97,10 +110,21 @@ export default function AdminAgencies() {
         contact_email: prefillApplication.contact_email || "",
         contact_phone: prefillApplication.contact_phone || "",
         logo_url: prefillApplication.logo_url || "",
+        car_plan_id: prefillApplication.requested_car_plan_id || NO_CAR_PLAN,
       }));
       setIsDialogOpen(true);
     }
   }, [prefillApplication]);
+
+  const fetchCarPlans = async () => {
+    const { data, error } = await supabase
+      .from("car_partner_plans")
+      .select("plan_id, name, max_vehicles, commission_rate")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+
+    if (!error && data) setCarPlans(data as CarPartnerPlan[]);
+  };
 
   const fetchAgencies = async () => {
     try {
@@ -167,6 +191,9 @@ export default function AdminAgencies() {
     e.preventDefault();
     
     try {
+      const carPlanId = formData.car_plan_id === NO_CAR_PLAN ? null : formData.car_plan_id;
+      const carPlanChanged = editingAgency ? editingAgency.car_plan_id !== carPlanId : Boolean(carPlanId);
+
       if (editingAgency) {
         const { error } = await supabase
           .from("agencies")
@@ -179,6 +206,8 @@ export default function AdminAgencies() {
             is_visible: formData.is_visible,
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
+            car_plan_id: carPlanId,
+            ...(carPlanChanged ? { car_plan_started_at: carPlanId ? new Date().toISOString() : null } : {}),
           })
           .eq("id", editingAgency.id);
 
@@ -202,6 +231,8 @@ export default function AdminAgencies() {
             is_visible: formData.is_visible,
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
+            car_plan_id: carPlanId,
+            car_plan_started_at: carPlanId ? new Date().toISOString() : null,
           })
           .select()
           .single();
@@ -258,6 +289,7 @@ export default function AdminAgencies() {
       is_visible: agency.is_visible,
       is_active: agency.is_active,
       commission_rate: agency.commission_rate ?? 10,
+      car_plan_id: agency.car_plan_id || NO_CAR_PLAN,
     });
     setIsDialogOpen(true);
   };
@@ -318,6 +350,7 @@ export default function AdminAgencies() {
       is_visible: false,
       is_active: true,
       commission_rate: 10,
+      car_plan_id: NO_CAR_PLAN,
     });
   };
 
@@ -431,6 +464,35 @@ export default function AdminAgencies() {
                       onChange={(e) => setFormData({ ...formData, commission_rate: parseFloat(e.target.value) || 0 })}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="car_plan_id">Forfait voiture</Label>
+                    <Select
+                      value={formData.car_plan_id}
+                      onValueChange={(value) => {
+                        const plan = carPlans.find((p) => p.plan_id === value);
+                        setFormData({
+                          ...formData,
+                          car_plan_id: value,
+                          commission_rate: plan ? plan.commission_rate : formData.commission_rate,
+                        });
+                      }}
+                    >
+                      <SelectTrigger id="car_plan_id">
+                        <SelectValue placeholder="Aucun (illimité)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={NO_CAR_PLAN}>Aucun (illimité)</SelectItem>
+                        {carPlans.map((plan) => (
+                          <SelectItem key={plan.plan_id} value={plan.plan_id}>
+                            {plan.name} {plan.max_vehicles ? `(${plan.max_vehicles} véh.)` : "(illimité)"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Choisir un forfait ajuste automatiquement le taux de commission ci-dessus ; vous pouvez ensuite l'affiner manuellement.
+                    </p>
+                  </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
@@ -484,6 +546,7 @@ export default function AdminAgencies() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Propriétaire</TableHead>
                 <TableHead>Commission</TableHead>
+                <TableHead>Forfait voiture</TableHead>
                 <TableHead>Visibilité</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>Créée le</TableHead>
@@ -493,13 +556,13 @@ export default function AdminAgencies() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : filteredAgencies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     <Building2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     Aucune agence trouvée
                   </TableCell>
@@ -546,6 +609,15 @@ export default function AdminAgencies() {
                       <Badge variant="outline" className="font-mono">
                         {agency.commission_rate ?? 10}%
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {agency.car_plan_id ? (
+                        <Badge variant="secondary">
+                          {carPlans.find((p) => p.plan_id === agency.car_plan_id)?.name || agency.car_plan_id}
+                        </Badge>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">Aucun</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       {agency.is_visible ? (

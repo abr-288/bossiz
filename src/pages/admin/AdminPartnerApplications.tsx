@@ -27,7 +27,14 @@ interface PartnerApplication {
   logo_url: string | null;
   status: string;
   created_at: string;
+  requested_car_plan_id: string | null;
 }
+
+const carPlanLabels: Record<string, string> = {
+  decouverte: "Découverte",
+  pro: "Pro",
+  flotte: "Flotte",
+};
 
 export default function AdminPartnerApplications() {
   const { toast } = useToast();
@@ -94,6 +101,7 @@ export default function AdminPartnerApplications() {
           contact_email: application.contact_email,
           contact_phone: application.contact_phone,
           logo_url: application.logo_url,
+          requested_car_plan_id: application.requested_car_plan_id,
         },
       },
     });
@@ -140,6 +148,7 @@ export default function AdminPartnerApplications() {
                 <TableHead>Agence</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Forfait demandé</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>Reçue le</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -148,13 +157,13 @@ export default function AdminPartnerApplications() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : filteredApplications.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     Aucune candidature trouvée
                   </TableCell>
@@ -175,6 +184,15 @@ export default function AdminPartnerApplications() {
                       <p className="text-sm text-muted-foreground line-clamp-2 max-w-xs">
                         {application.description || "—"}
                       </p>
+                    </TableCell>
+                    <TableCell>
+                      {application.requested_car_plan_id ? (
+                        <Badge variant="outline">
+                          {carPlanLabels[application.requested_car_plan_id] || application.requested_car_plan_id}
+                        </Badge>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell>{statusBadge(application.status)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
