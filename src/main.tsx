@@ -1,6 +1,7 @@
 // Point d'entrée principal de l'application React
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
 import "./i18n/config";
@@ -22,15 +23,26 @@ window.addEventListener('vite:preloadError', () => {
 });
 setTimeout(() => sessionStorage.removeItem('vite-preload-reload-attempted'), 10000);
 
-// Enregistrement du service worker pour la PWA (Progressive Web App)
-// Permet à l'application de fonctionner hors ligne et d'être installable
+// Enregistrement du service worker pour la PWA (Progressive Web App).
+// registerSW (registerType: 'autoUpdate') recharge automatiquement la page
+// dès qu'une nouvelle version est activée -> chaque client reçoit la mise à
+// jour sans action manuelle. Le navigateur ne vérifie de lui-même que sur
+// certaines navigations ; on force une vérification périodique et au retour
+// sur l'onglet pour que la mise à jour soit détectée rapidement après un
+// déploiement, même sur un onglet resté ouvert longtemps.
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then((registration) => {
-      console.log('SW registered:', registration);
-    }).catch((error) => {
+  registerSW({
+    immediate: true,
+    onRegisteredSW(_swUrl, registration) {
+      if (!registration) return;
+      setInterval(() => registration.update(), 60 * 60 * 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') registration.update();
+      });
+    },
+    onRegisterError(error) {
       console.log('SW registration failed:', error);
-    });
+    }
   });
 }
 
