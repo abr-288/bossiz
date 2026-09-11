@@ -30,7 +30,7 @@ export const useCarServices = () => {
           name: service.name,
           category: specs.category || 'Standard',
           price: Number(service.price_per_unit),
-          rating: Number(service.rating) || 4.5,
+          rating: Number(service.rating) || 0,
           reviews: service.total_reviews || 0,
           image: service.image_url || service.images?.[0] || '/placeholder.svg',
           seats: specs.seats || 5,

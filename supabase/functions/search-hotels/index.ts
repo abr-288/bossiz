@@ -140,7 +140,7 @@ async function fetchPartnerHotels(location: string | null): Promise<any[]> {
       const rawAmenities = Array.isArray(s.amenities)
         ? s.amenities
         : (s.amenities && typeof s.amenities === 'object' ? Object.values(s.amenities) : []);
-      const ratingOn5 = Number(s.rating) || 4.0;
+      const ratingOn5 = Number(s.rating) || 0;
 
       return {
         id: s.id,
@@ -228,16 +228,16 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
                        hotel.minPrice ||
                        hotel.price ||
                        hotel.rate ||
-                       50;
-    
+                       0;
+
     // Extract rating (normalize to 0-10 scale or 0-5 stars)
-    let rating = hotel.review_score || 
-                 hotel.rating || 
+    let rating = hotel.review_score ||
+                 hotel.rating ||
                  hotel.property?.reviewScore ||
                  hotel.stars ||
                  hotel.starRating ||
                  hotel.guestRating ||
-                 4.0;
+                 0;
     
     // If rating is on 0-5 scale, convert to 10 scale for display
     if (rating <= 5) rating = rating * 2;
@@ -257,7 +257,7 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
                   hotel.starRating ||
                   hotel.property?.propertyClass ||
                   Math.floor(rating / 2) ||
-                  4;
+                  0;
     
     // Extract amenities/facilities
     const amenities = hotel.hotel_facilities_ids ? 
@@ -275,7 +275,7 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
       address: hotel.address || hotel.property?.address?.streetAddress || '',
       price: { grandTotal: Math.round(exactPrice) },
       currency: hotel.currency_code || hotel.currency || 'EUR',
-      rating: typeof rating === 'number' ? Math.min(rating, 10) : parseFloat(rating) || 8.0,
+      rating: typeof rating === 'number' ? Math.min(rating, 10) : parseFloat(rating) || 0,
       stars: Math.min(stars, 5),
       reviews: reviewCount,
       image: imageUrl,
@@ -320,10 +320,10 @@ const transformTripAdvisorData = (hotels: any[], searchLocation: string) => {
     const price = hotel.price?.amount ||
                   hotel.price_level ||
                   parseFloat(hotel.price?.replace(/[^0-9.]/g, '')) ||
-                  50;
-    
+                  0;
+
     // Extract rating (TripAdvisor uses 0-5 scale)
-    const rating = (hotel.rating || hotel.num_reviews || 4.0) * 2;
+    const rating = (hotel.rating || 0) * 2;
     
     return {
       id: hotel.location_id || hotel.id || Math.random().toString(36),
@@ -375,19 +375,19 @@ const transformHotelsComData = (hotels: any[], searchLocation: string) => {
                   hotel.ratePlan?.price?.exactCurrent ||
                   hotel.price?.lead?.amount ||
                   hotel.price ||
-                  50;
-    
-    const rating = hotel.guestRating || 
-                   hotel.starRating || 
+                  0;
+
+    const rating = hotel.guestRating ||
+                   hotel.starRating ||
                    hotel.reviews?.score ||
-                   4.0;
-    
+                   0;
+
     return {
       id: hotel.id || hotel.hotelId || Math.random().toString(36),
       name: hotelName,
       location: location,
       address: hotel.address?.streetAddress || '',
-      price: { grandTotal: Math.round(typeof price === 'number' ? price : parseFloat(price) || 50) },
+      price: { grandTotal: Math.round(typeof price === 'number' ? price : parseFloat(price) || 0) },
       currency: hotel.ratePlan?.price?.current?.currencyCode || 'EUR',
       rating: rating <= 5 ? rating * 2 : rating,
       stars: hotel.starRating || Math.floor(rating),
@@ -400,149 +400,6 @@ const transformHotelsComData = (hotels: any[], searchLocation: string) => {
       breakfast: hotel.ratePlan?.features?.paymentPreference?.includes('breakfast') || false,
     };
   });
-};
-
-// Popular hotels database for realistic fallback data
-const getPopularHotels = (location: string) => {
-  const locationLower = location.toLowerCase();
-  
-  // Real hotel names by city with realistic data
-  const cityHotels: Record<string, any[]> = {
-    'paris': [
-      { name: 'Hôtel Plaza Athénée', stars: 5, rating: 9.4, price: 890, image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800' },
-      { name: 'Le Bristol Paris', stars: 5, rating: 9.2, price: 850, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-      { name: 'Hôtel Raphael', stars: 5, rating: 9.0, price: 680, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-      { name: 'Le Meurice', stars: 5, rating: 9.3, price: 920, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-      { name: 'Hôtel de Crillon', stars: 5, rating: 9.1, price: 780, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-      { name: 'Citadines Tour Eiffel', stars: 4, rating: 8.5, price: 185, image: 'https://images.unsplash.com/photo-1587213811864-46e59f6873b1?w=800' },
-      { name: 'Ibis Styles Paris Eiffel', stars: 3, rating: 7.8, price: 120, image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800' },
-      { name: 'Mercure Paris Centre', stars: 4, rating: 8.2, price: 165, image: 'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800' },
-    ],
-    'dubai': [
-      { name: 'Burj Al Arab Jumeirah', stars: 5, rating: 9.6, price: 1500, image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800' },
-      { name: 'Atlantis The Palm', stars: 5, rating: 9.1, price: 450, image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800' },
-      { name: 'Armani Hotel Dubai', stars: 5, rating: 9.2, price: 520, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-      { name: 'Address Downtown', stars: 5, rating: 9.0, price: 380, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-      { name: 'JW Marriott Marquis', stars: 5, rating: 8.9, price: 290, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-      { name: 'Rove Downtown Dubai', stars: 3, rating: 8.4, price: 85, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-      { name: 'Ibis Dubai Al Barsha', stars: 3, rating: 7.6, price: 65, image: 'https://images.unsplash.com/photo-1587213811864-46e59f6873b1?w=800' },
-    ],
-    'new york': [
-      { name: 'The Plaza Hotel', stars: 5, rating: 9.3, price: 750, image: 'https://images.unsplash.com/photo-1455587734955-081b22074882?w=800' },
-      { name: 'The Ritz-Carlton New York', stars: 5, rating: 9.1, price: 680, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-      { name: 'Park Hyatt New York', stars: 5, rating: 9.0, price: 620, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-      { name: 'The St. Regis New York', stars: 5, rating: 9.2, price: 720, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-      { name: 'Marriott Times Square', stars: 4, rating: 8.5, price: 280, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-      { name: 'Pod Times Square', stars: 3, rating: 8.0, price: 145, image: 'https://images.unsplash.com/photo-1587213811864-46e59f6873b1?w=800' },
-    ],
-    'tokyo': [
-      { name: 'The Peninsula Tokyo', stars: 5, rating: 9.4, price: 580, image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800' },
-      { name: 'Aman Tokyo', stars: 5, rating: 9.5, price: 850, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-      { name: 'Park Hyatt Tokyo', stars: 5, rating: 9.2, price: 620, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-      { name: 'Mandarin Oriental Tokyo', stars: 5, rating: 9.3, price: 680, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-      { name: 'Hotel Gracery Shinjuku', stars: 4, rating: 8.6, price: 180, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-      { name: 'APA Hotel Shinjuku', stars: 3, rating: 7.8, price: 95, image: 'https://images.unsplash.com/photo-1587213811864-46e59f6873b1?w=800' },
-    ],
-    'london': [
-      { name: 'The Savoy', stars: 5, rating: 9.4, price: 650, image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800' },
-      { name: 'Claridge\'s', stars: 5, rating: 9.3, price: 720, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-      { name: 'The Langham London', stars: 5, rating: 9.1, price: 480, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-      { name: 'Corinthia London', stars: 5, rating: 9.2, price: 520, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-      { name: 'Premier Inn London', stars: 3, rating: 8.2, price: 110, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-      { name: 'Travelodge Central', stars: 2, rating: 7.5, price: 75, image: 'https://images.unsplash.com/photo-1587213811864-46e59f6873b1?w=800' },
-    ],
-    'abidjan': [
-      { name: 'Sofitel Abidjan Hôtel Ivoire', stars: 5, rating: 8.8, price: 180, image: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800' },
-      { name: 'Pullman Abidjan', stars: 5, rating: 8.6, price: 165, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-      { name: 'Radisson Blu Abidjan Airport', stars: 5, rating: 8.5, price: 145, image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-      { name: 'Novotel Abidjan', stars: 4, rating: 8.2, price: 120, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-      { name: 'Azalaï Hôtel Abidjan', stars: 4, rating: 8.0, price: 95, image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-      { name: 'Ibis Abidjan Plateau', stars: 3, rating: 7.6, price: 65, image: 'https://images.unsplash.com/photo-1587213811864-46e59f6873b1?w=800' },
-    ],
-  };
-
-  // Find matching city hotels
-  for (const [city, hotels] of Object.entries(cityHotels)) {
-    if (locationLower.includes(city)) {
-      return hotels.map((h, index) => ({
-        id: `${city}-${index}-${Date.now()}`,
-        name: h.name,
-        location: location,
-        address: `Centre-ville, ${location}`,
-        price: { grandTotal: h.price },
-        currency: 'EUR',
-        rating: h.rating,
-        stars: h.stars,
-        reviews: Math.floor(Math.random() * 3000) + 500,
-        image: h.image,
-        images: [h.image],
-        description: `${h.name} est un établissement ${h.stars} étoiles offrant un séjour exceptionnel à ${location}.`,
-        amenities: h.stars >= 4 ? ['Wifi Gratuit', 'Restaurant', 'Piscine', 'Spa', 'Parking', 'Salle de sport'] : ['Wifi Gratuit', 'Petit-déjeuner', 'Climatisation'],
-        freeCancellation: Math.random() > 0.3,
-        breakfast: Math.random() > 0.5,
-      }));
-    }
-  }
-
-  // Generic fallback for unknown cities
-  return [
-    {
-      id: `${location}-1-${Date.now()}`,
-      name: `Grand Hôtel ${location}`,
-      location: location,
-      address: `Centre-ville, ${location}`,
-      price: { grandTotal: 120 },
-      currency: 'EUR',
-      rating: 8.5,
-      stars: 4,
-      reviews: 850,
-      image: getCityPlaceholder(location),
-      images: [getCityPlaceholder(location)],
-      description: `Grand Hôtel ${location} offre un hébergement de qualité avec des services modernes.`,
-      amenities: ['Wifi Gratuit', 'Restaurant', 'Parking', 'Climatisation'],
-      freeCancellation: true,
-      breakfast: true,
-    },
-    {
-      id: `${location}-2-${Date.now()}`,
-      name: `Hôtel Central ${location}`,
-      location: location,
-      address: `Quartier central, ${location}`,
-      price: { grandTotal: 85 },
-      currency: 'EUR',
-      rating: 8.0,
-      stars: 3,
-      reviews: 620,
-      image: getCityPlaceholder(location),
-      images: [getCityPlaceholder(location)],
-      description: `Hôtel Central ${location} est idéalement situé pour explorer la ville.`,
-      amenities: ['Wifi Gratuit', 'Petit-déjeuner', 'Climatisation'],
-      freeCancellation: true,
-      breakfast: true,
-    },
-    {
-      id: `${location}-3-${Date.now()}`,
-      name: `Résidence Premium ${location}`,
-      location: location,
-      address: `Zone touristique, ${location}`,
-      price: { grandTotal: 180 },
-      currency: 'EUR',
-      rating: 9.0,
-      stars: 5,
-      reviews: 1200,
-      image: getCityPlaceholder(location),
-      images: [getCityPlaceholder(location)],
-      description: `Résidence Premium ${location} offre une expérience luxueuse avec vue panoramique.`,
-      amenities: ['Wifi Gratuit', 'Restaurant', 'Piscine', 'Spa', 'Parking', 'Salle de sport', 'Concierge'],
-      freeCancellation: true,
-      breakfast: true,
-    },
-  ];
-};
-
-// Fallback mock data only if APIs completely fail
-const getMockHotels = (location: string) => {
-  return getPopularHotels(location);
 };
 
 serve(async (req) => {
@@ -652,10 +509,10 @@ const results: {
               name: hotel.name || hotel.hotel_name || 'Hotel',
               location: hotel.city || hotel.location || location,
               address: hotel.address || '',
-              price: { grandTotal: hotel.price || hotel.min_price || hotel.rate || 80 },
+              price: { grandTotal: hotel.price || hotel.min_price || hotel.rate || 0 },
               currency: 'EUR',
-              rating: (hotel.rating || hotel.score || 4.0) <= 5 ? (hotel.rating || hotel.score || 4.0) * 2 : (hotel.rating || hotel.score || 4.0),
-              stars: hotel.stars || hotel.class || 4,
+              rating: (hotel.rating || hotel.score || 0) <= 5 ? (hotel.rating || hotel.score || 0) * 2 : (hotel.rating || hotel.score || 0),
+              stars: hotel.stars || hotel.class || 0,
               reviews: hotel.reviews_count || hotel.num_reviews || 0,
               image: imageUrl,
               images: [imageUrl],
@@ -1048,13 +905,13 @@ const results: {
 
                   const hotelName = hotel.name || hotel.hotelName || 'Hôtel';
                   const hotelLocation = hotel.location || hotel.address?.city || hotel.cityName || location;
-                  const price = hotel.ratesSummary?.minPrice || 
-                               hotel.price?.amount || 
-                               hotel.totalPrice || 
+                  const price = hotel.ratesSummary?.minPrice ||
+                               hotel.price?.amount ||
+                               hotel.totalPrice ||
                                hotel.rate ||
-                               80;
-                  
-                  let rating = hotel.overallGuestRating || hotel.rating || hotel.starRating || 4.0;
+                               0;
+
+                  let rating = hotel.overallGuestRating || hotel.rating || hotel.starRating || 0;
                   if (rating <= 5) rating = rating * 2;
 
                   return {
@@ -1062,7 +919,7 @@ const results: {
                     name: hotelName,
                     location: hotelLocation,
                     address: hotel.address?.streetAddress || hotel.address || '',
-                    price: { grandTotal: Math.round(parseFloat(price.toString()) || 80) },
+                    price: { grandTotal: Math.round(parseFloat(price.toString()) || 0) },
                     currency: 'EUR',
                     rating: Math.min(rating, 10),
                     stars: hotel.starRating || hotel.stars || Math.floor(rating / 2),
@@ -1179,17 +1036,17 @@ const results: {
                   results.amadeus = offersData.data.slice(0, 20).map((offer: any) => {
                     const hotel = offer.hotel;
                     const firstOffer = offer.offers?.[0];
-                    const price = firstOffer?.price?.total || 50000;
-                    
+                    const price = firstOffer?.price?.total || 0;
+
                     return {
                       id: hotel.hotelId,
                       name: hotel.name || 'Hotel',
                       location: `${hotel.address?.cityName || location}, ${hotel.address?.countryCode || ''}`,
                       price: { grandTotal: Math.round(parseFloat(price)) }, // Keep USD price (convert to EUR later if needed)
-                      rating: hotel.rating ? parseFloat(hotel.rating) : 4.0,
-                      reviews: Math.floor(Math.random() * 500) + 50,
-                      image: `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&sig=${hotel.hotelId}`,
-                      images: [`https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&sig=${hotel.hotelId}`],
+                      rating: hotel.rating ? parseFloat(hotel.rating) : 0,
+                      reviews: 0,
+                      image: getCityPlaceholder(location),
+                      images: [getCityPlaceholder(location)],
                       description: hotel.description?.text || `${hotel.name} est un établissement de qualité.`,
                       amenities: hotel.amenities || ['WiFi', 'Restaurant', 'Room Service'],
                     };
@@ -1258,9 +1115,7 @@ const results: {
     });
 
     if (!apiSuccess && results.services.length === 0) {
-      console.log('⚠️ NO API RESULTS - Using realistic hotel data for location:', location);
-      const mockHotels = getMockHotels(location);
-      results.booking = mockHotels;
+      console.log('⚠️ NO API RESULTS - returning no results (no fictitious fallback)');
     } else {
       console.log('✅ REAL API DATA - Returning results from', totalResults, 'hotels');
     }
@@ -1276,8 +1131,8 @@ const results: {
         success: true,
         data: results,
         count: finalCount,
-        mock: !apiSuccess && results.services.length === 0,
-        source: !apiSuccess && results.services.length === 0 ? 'mock' : 'api'
+        mock: false,
+        source: 'api'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -1369,7 +1224,7 @@ async function searchKayakHotels(
     if (Array.isArray(hotels) && hotels.length > 0) {
       return hotels.map((hotel: any) => {
         const hotelName = hotel.hotelName || hotel.name || 'Hôtel';
-        const rating = hotel.rating || 4.0;
+        const rating = hotel.rating || 0;
         let imageUrl = hotel.image || hotel.thumbnail || hotel.imageUrl || null;
         if (!isValidImageUrl(imageUrl)) {
           imageUrl = getCityPlaceholder(location);
@@ -1380,10 +1235,10 @@ async function searchKayakHotels(
           name: hotelName,
           location: hotel.city || hotel.location || location,
           address: hotel.address || '',
-          price: { grandTotal: Math.round(hotel.price || 100) },
+          price: { grandTotal: Math.round(hotel.price || 0) },
           currency: 'EUR',
           rating: rating <= 5 ? rating * 2 : rating,
-          stars: hotel.stars || 4,
+          stars: hotel.stars || 0,
           reviews: hotel.reviewCount || 0,
           image: imageUrl,
           images: [imageUrl],

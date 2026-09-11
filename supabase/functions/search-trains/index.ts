@@ -68,16 +68,16 @@ async function searchIRCTC(
         return {
           id: `irctc-${train.train_number || index}`,
           operator: 'Indian Railways',
-          trainNumber: train.train_number || `IR${index + 100}`,
+          trainNumber: train.train_number || '',
           origin: train.from_station_name || origin,
           destination: train.to_station_name || destination,
-          departureTime: train.from_std || '08:00',
-          arrivalTime: train.to_std || '14:00',
+          departureTime: train.from_std || '',
+          arrivalTime: train.to_std || '',
           duration: `${hours}h ${minutes.toString().padStart(2, '0')}m`,
           price: priceEur,
           currency: 'EUR',
           class: travelClass || 'economy',
-          availableSeats: train.available_seats || 50,
+          availableSeats: train.available_seats || 0,
           source: 'irctc',
         };
       });
@@ -118,8 +118,7 @@ async function searchSNCF(
 
     if (!response.ok) {
       console.error('SNCF API error:', response.status);
-      // Try alternative dataset
-      return await searchSNCFAlternative(origin, destination, departureDate, travelClass);
+      return [];
     }
 
     const data = await response.json();
@@ -156,149 +155,17 @@ async function searchSNCF(
           price: priceEur,
           currency: 'EUR',
           class: travelClass || 'economy',
-          availableSeats: 45 - (index * 3),
+          availableSeats: 0,
           source: 'sncf',
         };
       });
     }
 
-    return await searchSNCFAlternative(origin, destination, departureDate, travelClass);
-  } catch (error) {
-    console.error('SNCF API exception:', error);
-    return await searchSNCFAlternative(origin, destination, departureDate, travelClass);
-  }
-}
-
-// Alternative SNCF search using different dataset
-async function searchSNCFAlternative(
-  origin: string,
-  destination: string,
-  departureDate: string,
-  travelClass: string
-): Promise<TrainResult[]> {
-  try {
-    console.log('Trying SNCF alternative dataset...');
-    
-    // Use the objets-trouves dataset as fallback to show SNCF connectivity works
-    // In production, you'd use the proper journey planning API
-    const response = await fetch(
-      `https://ressources.data.sncf.com/api/explore/v2.1/catalog/datasets/referentiel-gares-voyageurs/records?` +
-      new URLSearchParams({
-        limit: '5',
-        where: `gare_alias_libelle_noncontraint LIKE '%${origin}%' OR commune_libellemin LIKE '%${origin}%'`,
-      }),
-      {
-        headers: {
-          'Accept': 'application/json',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      console.log('SNCF alternative API also failed:', response.status);
-      return generateSNCFMockTrains(origin, destination, departureDate, travelClass);
-    }
-
-    const data = await response.json();
-    
-    // If we found stations, generate realistic train data
-    if (data.results && data.results.length > 0) {
-      console.log('Found SNCF stations, generating train schedules');
-      return generateSNCFMockTrains(origin, destination, departureDate, travelClass);
-    }
-
     return [];
   } catch (error) {
-    console.error('SNCF alternative API exception:', error);
-    return generateSNCFMockTrains(origin, destination, departureDate, travelClass);
+    console.error('SNCF API exception:', error);
+    return [];
   }
-}
-
-// Generate realistic SNCF train data
-function generateSNCFMockTrains(
-  origin: string,
-  destination: string,
-  departureDate: string,
-  travelClass: string
-): TrainResult[] {
-  const trainTypes = [
-    { type: 'TGV INOUI', prefix: 'TGV', basePrice: 79, speed: 'fast' },
-    { type: 'OUIGO', prefix: 'OUI', basePrice: 39, speed: 'fast' },
-    { type: 'Intercités', prefix: 'IC', basePrice: 45, speed: 'medium' },
-    { type: 'TER', prefix: 'TER', basePrice: 25, speed: 'slow' },
-  ];
-
-  const departureTimes = ['06:07', '07:23', '08:45', '10:12', '12:30', '14:17', '16:05', '18:32'];
-  
-  return trainTypes.slice(0, 4).flatMap((trainType, typeIndex) => {
-    return [0, 1].map((scheduleIndex) => {
-      const timeIndex = (typeIndex * 2 + scheduleIndex) % departureTimes.length;
-      const departureTime = departureTimes[timeIndex];
-      const depHour = parseInt(departureTime.split(':')[0]);
-      const durationHours = trainType.speed === 'fast' ? 2 : trainType.speed === 'medium' ? 4 : 6;
-      const durationMinutes = Math.floor(Math.random() * 50);
-      const arrivalHour = (depHour + durationHours) % 24;
-      
-      const classMultiplier = travelClass === 'first' ? 1.8 : travelClass === 'business' ? 1.4 : 1;
-      const priceEur = Math.round(trainType.basePrice * classMultiplier);
-
-      return {
-        id: `sncf-${trainType.prefix}-${typeIndex}-${scheduleIndex}`,
-        operator: trainType.type,
-        trainNumber: `${trainType.prefix} ${6000 + typeIndex * 100 + scheduleIndex * 50 + Math.floor(Math.random() * 50)}`,
-        origin: origin,
-        destination: destination,
-        departureTime: departureTime,
-        arrivalTime: `${arrivalHour.toString().padStart(2, '0')}:${durationMinutes.toString().padStart(2, '0')}`,
-        duration: `${durationHours}h ${durationMinutes.toString().padStart(2, '0')}m`,
-        price: priceEur,
-        currency: 'EUR',
-        class: travelClass || 'economy',
-        availableSeats: 35 + Math.floor(Math.random() * 30),
-        source: 'sncf',
-      };
-    });
-  });
-}
-
-// Generate mock trains for other regions
-function getMockTrains(origin: string, destination: string, departureDate: string, travelClass: string): TrainResult[] {
-  const operators = [
-    { name: 'Eurostar', prefix: 'ES', basePrice: 89 },
-    { name: 'Thalys', prefix: 'TH', basePrice: 79 },
-    { name: 'Deutsche Bahn ICE', prefix: 'ICE', basePrice: 69 },
-    { name: 'Trenitalia Frecciarossa', prefix: 'FR', basePrice: 59 },
-    { name: 'Renfe AVE', prefix: 'AVE', basePrice: 55 },
-  ];
-
-  const departureTimes = ['06:15', '08:30', '10:45', '13:00', '15:30', '18:00', '20:15'];
-  
-  return operators.map((op, index) => {
-    const departureTime = departureTimes[index % departureTimes.length];
-    const depHour = parseInt(departureTime.split(':')[0]);
-    const durationHours = 2 + Math.floor(Math.random() * 4);
-    const durationMinutes = Math.floor(Math.random() * 60);
-    const arrivalHour = (depHour + durationHours) % 24;
-    
-    const classMultiplier = travelClass === 'first' ? 2 : travelClass === 'business' ? 1.5 : 1;
-    const priceEur = Math.round(op.basePrice * classMultiplier);
-
-    return {
-      id: `euro-${index}`,
-      operator: op.name,
-      trainNumber: `${op.prefix} ${6600 + index * 100 + Math.floor(Math.random() * 100)}`,
-      origin: origin,
-      destination: destination,
-      departureTime: departureTime,
-      arrivalTime: `${arrivalHour.toString().padStart(2, '0')}:${durationMinutes.toString().padStart(2, '0')}`,
-      duration: `${durationHours}h ${durationMinutes.toString().padStart(2, '0')}m`,
-      price: priceEur,
-      currency: 'EUR',
-      class: travelClass || 'economy',
-      availableSeats: 40 - (index * 5) + Math.floor(Math.random() * 20),
-      source: 'simulation',
-    };
-  });
 }
 
 // Detect region based on station names
@@ -354,23 +221,10 @@ serve(async (req) => {
       allTrains.push(...sncfResults);
     }
     
-    if (region === 'europe') {
-      console.log('Generating European train results...');
-      const euroResults = getMockTrains(origin, destination, departureDate, travelClass);
-      allTrains.push(...euroResults);
-    }
-
-    // If no results or unknown region, provide mock data
-    if (allTrains.length === 0) {
-      console.log('No API results, generating simulation data...');
-      // Try SNCF first as it's free
-      const sncfResults = await searchSNCF(origin, destination, departureDate, travelClass);
-      if (sncfResults.length > 0) {
-        allTrains.push(...sncfResults);
-      } else {
-        allTrains = getMockTrains(origin, destination, departureDate, travelClass);
-      }
-    }
+    // No real data source is integrated for other European rail operators
+    // (Eurostar, Thalys, DB, Trenitalia, Renfe) yet, so region === 'europe'
+    // and any unmatched region simply return no results instead of
+    // fabricating a fake schedule.
 
     // Apply retail markup on top of the raw supplier/estimated price so the
     // platform earns a margin on this vertical too (previously the exact

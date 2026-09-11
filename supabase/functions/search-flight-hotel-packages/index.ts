@@ -139,25 +139,27 @@ async function searchTravelpayoutsFlights(
         id: `tp-flight-${index}`,
         airline: airline,
         airlineCode: airlineCode,
-        flightNumber: `${airlineCode}${flight.flight_number || Math.floor(Math.random() * 9000) + 1000}`,
+        flightNumber: `${airlineCode}${flight.flight_number || ''}`,
         logo: getAirlineLogo(airlineCode),
-        price: flight.price || 350,
+        price: flight.price || 0,
         currency: 'EUR',
         departure: {
           date: departureDate,
-          time: flight.departure_at?.split('T')[1]?.slice(0, 5) || '08:30',
+          time: flight.departure_at?.split('T')[1]?.slice(0, 5) || '',
           airport: origin,
           city: origin,
         },
         arrival: {
           date: departureDate,
-          time: calculateArrivalTime(flight.departure_at?.split('T')[1]?.slice(0, 5) || '08:30', flight.duration || 180),
+          time: flight.departure_at?.split('T')[1]?.slice(0, 5)
+            ? calculateArrivalTime(flight.departure_at.split('T')[1].slice(0, 5), flight.duration || 0)
+            : '',
           airport: destination,
           city: destination,
         },
         returnFlight: returnDate ? {
           date: returnDate,
-          time: '14:30',
+          time: '',
           departureAirport: destination,
           arrivalAirport: origin,
         } : undefined,
@@ -230,9 +232,9 @@ async function searchKiwiFlights(
         id: `kiwi-flight-${index}`,
         airline: airline,
         airlineCode: airlineCode,
-        flightNumber: `${airlineCode}${route.flight_no || Math.floor(Math.random() * 9000) + 1000}`,
+        flightNumber: `${airlineCode}${route.flight_no || ''}`,
         logo: getAirlineLogo(airlineCode),
-        price: flight.price || 300,
+        price: flight.price || 0,
         currency: 'EUR',
         departure: {
           date: departureDate,
@@ -248,11 +250,11 @@ async function searchKiwiFlights(
         },
         returnFlight: returnDate ? {
           date: returnDate,
-          time: '16:00',
+          time: '',
           departureAirport: destination,
           arrivalAirport: origin,
         } : undefined,
-        duration: formatDuration(flight.fly_duration || flight.duration / 60 || 180),
+        duration: formatDuration(flight.fly_duration || flight.duration / 60 || 0),
         stops: flight.route?.length > 2 ? Math.floor(flight.route.length / 2) - 1 : 0,
         stopCities: [],
         travelClass: travelClass,
@@ -331,10 +333,10 @@ async function searchBookingHotels(
         return {
           id: `booking-hotel-${index}`,
           name: hotel.hotel_name || hotel.name || 'Hôtel',
-          rating: hotel.class || Math.round((hotel.review_score || 8) / 2),
-          reviewScore: hotel.review_score || 8.0,
-          reviewCount: hotel.review_nr || Math.floor(Math.random() * 500) + 50,
-          price: Math.round(hotel.min_total_price || hotel.composite_price_breakdown?.gross_amount?.value || 80),
+          rating: hotel.class || Math.round((hotel.review_score || 0) / 2),
+          reviewScore: hotel.review_score || 0,
+          reviewCount: hotel.review_nr || 0,
+          price: Math.round(hotel.min_total_price || hotel.composite_price_breakdown?.gross_amount?.value || 0),
           currency: 'EUR',
           image: photos[0] || getHotelPlaceholder(destination),
           images: photos.length > 0 ? photos : [getHotelPlaceholder(destination)],
@@ -395,10 +397,10 @@ async function searchHotelsComProvider(
       return hotels.slice(0, 6).map((hotel: any, index: number) => ({
         id: `hotelscom-hotel-${index}`,
         name: hotel.name || hotel.hotel_name || 'Hôtel',
-        rating: hotel.star || hotel.star_rating || 4,
-        reviewScore: hotel.reviews?.score || hotel.guestReviews?.rating || 8.0,
-        reviewCount: hotel.reviews?.total || hotel.guestReviews?.total || Math.floor(Math.random() * 300) + 30,
-        price: Math.round(hotel.price?.lead?.amount || hotel.ratePlan?.price?.current || 75),
+        rating: hotel.star || hotel.star_rating || 0,
+        reviewScore: hotel.reviews?.score || hotel.guestReviews?.rating || 0,
+        reviewCount: hotel.reviews?.total || hotel.guestReviews?.total || 0,
+        price: Math.round(hotel.price?.lead?.amount || hotel.ratePlan?.price?.current || 0),
         currency: 'EUR',
         image: hotel.propertyImage?.image?.url || hotel.image || getHotelPlaceholder(destination),
         images: [hotel.propertyImage?.image?.url || hotel.image].filter(Boolean),
@@ -433,14 +435,14 @@ function getAirlineName(code: string): string {
 }
 
 function formatTime(isoString: string | undefined): string {
-  if (!isoString) return '08:00';
+  if (!isoString) return '';
   const time = isoString.includes('T') ? isoString.split('T')[1] : isoString;
-  return time?.slice(0, 5) || '08:00';
+  return time?.slice(0, 5) || '';
 }
 
 function formatDuration(minutes: number | string): string {
   const mins = typeof minutes === 'string' ? parseInt(minutes) : minutes;
-  if (isNaN(mins)) return '3h 00min';
+  if (!mins || isNaN(mins)) return '';
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return `${h}h ${m.toString().padStart(2, '0')}min`;
@@ -476,80 +478,6 @@ function getHotelPlaceholder(city: string): string {
   return 'https://images.unsplash.com/photo-1566073771259-6a8506099945';
 }
 
-function getMockData(origin: string, destination: string, departureDate: string, returnDate: string, travelClass: string): { flights: FlightOffer[], hotels: HotelOffer[] } {
-  const airlines = [
-    { code: 'AF', name: 'Air France' },
-    { code: 'ET', name: 'Ethiopian Airlines' },
-    { code: 'TK', name: 'Turkish Airlines' },
-    { code: 'EK', name: 'Emirates' },
-    { code: 'KQ', name: 'Kenya Airways' },
-    { code: 'AT', name: 'Royal Air Maroc' },
-  ];
-
-  const flights: FlightOffer[] = airlines.map((airline, index) => ({
-    id: `mock-flight-${index}`,
-    airline: airline.name,
-    airlineCode: airline.code,
-    flightNumber: `${airline.code}${1000 + index * 111}`,
-    logo: getAirlineLogo(airline.code),
-    price: 350 + index * 75 + Math.floor(Math.random() * 100),
-    currency: 'EUR',
-    departure: {
-      date: departureDate,
-      time: `${6 + index * 2}:${index % 2 === 0 ? '30' : '00'}`,
-      airport: origin,
-      city: origin,
-    },
-    arrival: {
-      date: departureDate,
-      time: `${11 + index * 2}:${index % 2 === 0 ? '45' : '15'}`,
-      airport: destination,
-      city: destination,
-    },
-    returnFlight: {
-      date: returnDate,
-      time: '14:30',
-      departureAirport: destination,
-      arrivalAirport: origin,
-    },
-    duration: `${3 + Math.floor(index / 2)}h ${15 + (index % 3) * 15}min`,
-    stops: index % 3 === 0 ? 0 : 1,
-    stopCities: index % 3 === 0 ? [] : ['Transit'],
-    travelClass: travelClass,
-    baggage: getDefaultBaggage(airline.name, travelClass),
-    fareType: index % 2 === 0 ? 'Standard' : 'Flexible',
-    source: 'mock',
-  }));
-
-  const hotels: HotelOffer[] = [
-    { name: 'Sofitel', rating: 5, price: 275, reviewScore: 9.2 },
-    { name: 'Pullman', rating: 5, price: 220, reviewScore: 8.8 },
-    { name: 'Novotel', rating: 4, price: 145, reviewScore: 8.4 },
-    { name: 'Ibis Styles', rating: 3, price: 85, reviewScore: 7.8 },
-    { name: 'Radisson Blu', rating: 5, price: 195, reviewScore: 8.9 },
-  ].map((h, index) => ({
-    id: `mock-hotel-${index}`,
-    name: `${h.name} ${destination}`,
-    rating: h.rating,
-    reviewScore: h.reviewScore,
-    reviewCount: Math.floor(Math.random() * 800) + 100,
-    price: h.price,
-    currency: 'EUR',
-    image: getHotelPlaceholder(destination),
-    images: [getHotelPlaceholder(destination)],
-    address: `Centre-ville, ${destination}`,
-    city: destination,
-    amenities: ['WiFi gratuit', 'Piscine', 'Restaurant', 'Spa', 'Parking'],
-    description: `Hôtel ${h.rating} étoiles au cœur de ${destination}`,
-    roomType: 'Chambre Supérieure',
-    breakfast: index % 2 === 0,
-    freeCancellation: index % 3 !== 0,
-    source: 'mock',
-  }));
-
-  return { flights, hotels };
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -563,9 +491,9 @@ serve(async (req) => {
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
     
     if (!rapidApiKey) {
-      console.log('RapidAPI key not configured, returning mock data');
+      console.log('RapidAPI key not configured, returning no results (no fictitious fallback)');
       return new Response(
-        JSON.stringify(getMockData(origin, destination, departureDate, returnDate, travelClass)),
+        JSON.stringify({ flights: [], hotels: [] }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -583,25 +511,12 @@ serve(async (req) => {
 
     console.log(`Package search: ${allFlights.length} flights, ${allHotels.length} hotels`);
 
-    // Use mock data if no results
-    if (allFlights.length === 0 && allHotels.length === 0) {
-      console.log('No results from APIs, returning mock data');
-      return new Response(
-        JSON.stringify(getMockData(origin, destination, departureDate, returnDate, travelClass)),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     // Sort by price
     allFlights.sort((a, b) => a.price - b.price);
     allHotels.sort((a, b) => a.price - b.price);
 
-    // Fallback to mock if partial results
-    const finalFlights = allFlights.length > 0 ? allFlights : getMockData(origin, destination, departureDate, returnDate, travelClass).flights;
-    const finalHotels = allHotels.length > 0 ? allHotels : getMockData(origin, destination, departureDate, returnDate, travelClass).hotels;
-
     return new Response(
-      JSON.stringify({ flights: finalFlights, hotels: finalHotels }),
+      JSON.stringify({ flights: allFlights, hotels: allHotels }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
