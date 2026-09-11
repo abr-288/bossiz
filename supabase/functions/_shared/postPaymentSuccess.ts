@@ -137,7 +137,7 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     // fournisseur équivalente : ils restent confirmés immédiatement.
     const { data: bookingRow } = await supabase
       .from('bookings')
-      .select('id, services(type)')
+      .select('id, total_price, currency, services(type, agency_id)')
       .eq('id', bookingId)
       .single();
 
@@ -156,6 +156,48 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       console.error('❌ Erreur mise à jour réservation:', bookingError.message);
     } else {
       console.log(isFlight ? '✅ Paiement confirmé - PNR en attente' : '✅ Réservation confirmée');
+    }
+
+    // Commission agence : uniquement si le service réservé appartient à une
+    // agence partenaire (agency_id non nul - jamais le cas pour un résultat
+    // API tiers ou un service créé à la volée sans partenaire). Le montant
+    // n'est JAMAIS repris du booking directement : toujours recalculé ici
+    // depuis le taux de commission stocké sur l'agence, pour ne pas dépendre
+    // d'une valeur que le client aurait pu influencer.
+    // La ligne est créée avec status='pending' - il n'existe pas de délai de
+    // reversement automatique : un admin la marque 'paid' manuellement une
+    // fois le virement/mobile money réellement effectué (voir /admin/commissions).
+    const agencyId = bookingRow?.services?.agency_id;
+    if (agencyId && bookingRow?.total_price != null) {
+      console.log('   - Calcul de la commission agence...');
+      const { data: agency } = await supabase
+        .from('agencies')
+        .select('commission_rate')
+        .eq('id', agencyId)
+        .single();
+
+      const commissionRate = Number(agency?.commission_rate ?? 10);
+      const bookingAmount = Number(bookingRow.total_price);
+      const commissionAmount = Math.round(bookingAmount * (commissionRate / 100));
+
+      const { error: commissionError } = await supabase
+        .from('commissions')
+        .insert({
+          agency_id: agencyId,
+          booking_id: bookingId,
+          booking_amount: bookingAmount,
+          commission_rate: commissionRate,
+          commission_amount: commissionAmount,
+        });
+
+      // UNIQUE(booking_id) on commissions makes this safe to attempt more
+      // than once (e.g. a retried webhook) - a duplicate-key error here just
+      // means the row already exists, not a real failure.
+      if (commissionError && commissionError.code !== '23505') {
+        console.error('❌ Erreur création commission:', commissionError.message);
+      } else if (!commissionError) {
+        console.log(`✅ Commission créée: ${commissionAmount} ${bookingRow.currency || 'XOF'} (${commissionRate}%) pour l'agence ${agencyId}`);
+      }
     }
 
     // Email "réservation confirmée" et facture : pour un vol, différés

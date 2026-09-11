@@ -30,10 +30,13 @@ serve(async (req) => {
 
     const { bookingId } = await req.json();
 
-    // Récupérer les informations de la réservation
+    // Récupérer les informations de la réservation - la facture n'est
+    // générée qu'après paiement confirmé (voir postPaymentSuccess.ts), donc
+    // service_name/type viennent de la table services référencée, pas de
+    // colonnes booking_type/booking_data qui n'existent pas sur bookings.
     const { data: booking, error: bookingError } = await supabase
       .from('bookings')
-      .select('*')
+      .select('*, services(type, name)')
       .eq('id', bookingId)
       .single();
 
@@ -49,42 +52,51 @@ serve(async (req) => {
     // Générer un numéro de facture unique
     const invoiceNumber = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    // Calculer les taxes (10% TVA par exemple)
-    const taxRate = 0.10;
-    const taxAmount = Number(booking.total_price) * taxRate;
-    const totalAmount = Number(booking.total_price) + taxAmount;
+    // Le montant facturé doit être EXACTEMENT ce qui a été débité via
+    // CinetPay (process-payment ne charge jamais que booking.total_price) -
+    // aucune taxe n'est ajoutée après coup, ça ferait diverger la facture du
+    // paiement réel.
+    const totalAmount = Number(booking.total_price);
+    const serviceName = booking.services?.name || 'Réservation';
+    const serviceType = booking.services?.type || 'other';
 
-    // Créer les données de la facture
-    const invoiceData = {
-      invoice_number: invoiceNumber,
-      booking_reference: booking.booking_reference,
+    const invoiceMetadata = {
       customer_name: booking.customer_name,
       customer_email: booking.customer_email,
       customer_phone: booking.customer_phone,
-      booking_type: booking.booking_type,
-      booking_details: booking.booking_data,
-      subtotal: booking.total_price,
-      tax_amount: taxAmount.toFixed(2),
-      total_amount: totalAmount.toFixed(2),
-      currency: booking.currency,
-      issue_date: new Date().toISOString(),
-      due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours
+      service_type: serviceType,
+      location: booking.booking_details?.pickupLocation || undefined,
     };
 
-    // Enregistrer la facture dans la base de données
+    const invoiceItems = [
+      {
+        description: serviceName,
+        service_type: serviceType,
+        start_date: booking.start_date,
+        end_date: booking.end_date,
+        quantity: 1,
+        unit_price: totalAmount,
+        total: totalAmount,
+      },
+    ];
+
+    // Enregistrer la facture dans la base de données - déjà payée, puisque
+    // ce point n'est atteint qu'après confirmation CinetPay.
+    const now = new Date().toISOString();
     const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
       .insert({
         booking_id: bookingId,
         user_id: user.id,
         invoice_number: invoiceNumber,
-        amount: totalAmount.toFixed(2),
+        amount: totalAmount,
         currency: booking.currency,
-        tax_amount: taxAmount.toFixed(2),
-        invoice_data: invoiceData,
-        status: 'sent',
-        issued_at: new Date().toISOString(),
-        due_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        tax_amount: 0,
+        total_amount: totalAmount,
+        items: invoiceItems,
+        metadata: invoiceMetadata,
+        status: 'paid',
+        paid_date: now,
       })
       .select()
       .single();
@@ -97,8 +109,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        invoice: invoice,
-        invoice_data: invoiceData,
+        invoice,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
