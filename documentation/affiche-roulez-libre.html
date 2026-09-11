@@ -1,0 +1,333 @@
+<title>Roulez Libre</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    /* B-Reserve brand tokens, lifted straight from src/index.css and the
+       real "cars" gradient already used by PromoBanner.tsx
+       (from-orange-600 via-orange-500 to-amber-500). */
+    --primary:#192342;        /* --primary: 225 45% 18% */
+    --primary-foreground:#FFFFFF;
+    --page-bg:#F1F3F5;        /* --muted: 210 20% 96% */
+    --page-ink:#3A4256;
+    --page-line:#DCE1E8;      /* --border: 210 20% 85% */
+    --car-orange-600:#EA580C;
+    --car-orange-500:#F97316;
+    --car-amber-500:#F59E0B;
+    --white:#FFFFFF;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--page-bg); }
+  body{
+    color:var(--page-ink);
+    font-family:"Inter", ui-sans-serif, system-ui, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:clamp(1.75rem,4.5vw,3.25rem) 1rem 2.5rem;
+  }
+
+  .stage{ width:100%; max-width:640px; }
+
+  /* ============ POSTER ============ */
+  .poster{
+    position:relative;
+    width:100%;
+    aspect-ratio:420/594;
+    border-radius:28px;
+    overflow:hidden;
+    background:linear-gradient(135deg, var(--car-orange-600) 0%, var(--car-orange-500) 55%, var(--car-amber-500) 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.25) inset,
+      0 30px 60px -18px rgba(234,88,12,0.45),
+      0 10px 26px rgba(25,35,66,0.18);
+  }
+
+  /* subtle brand texture — same diamond pattern PromoBanner.tsx uses */
+  .fx-pattern{
+    position:absolute; inset:0;
+    opacity:0.12;
+    background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .fx-glow{
+    position:absolute; inset:0;
+    background:radial-gradient(60% 40% at 85% 0%, rgba(255,255,255,0.35), transparent 60%);
+  }
+
+  /* ============ CONTENT ============ */
+  .content{
+    position:relative; z-index:2;
+    height:100%;
+    display:flex; flex-direction:column;
+    padding:clamp(1.2rem,3.6vw,1.9rem);
+  }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; }
+  .brandmark{ display:flex; align-items:center; gap:.5rem; }
+  .brandmark .icon{
+    width:2rem; height:2rem; border-radius:999px;
+    background:rgba(255,255,255,0.22);
+    backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white);
+  }
+  .brandmark .word{ color:var(--white); font-weight:800; font-size:.92rem; letter-spacing:.02em; }
+  .eyebrow-badge{
+    display:inline-flex; align-items:center;
+    padding:.2rem .5rem;
+    border-radius:5px;
+    background:rgba(255,255,255,0.22);
+    color:var(--white);
+    font-size:.6rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    white-space:nowrap;
+  }
+
+  .headline{
+    margin-top:clamp(1rem,3vw,1.5rem);
+    color:var(--white);
+    font-weight:900;
+    letter-spacing:-.03em;
+    line-height:.92;
+    font-size:clamp(2.5rem,11.5vw,4rem);
+    text-shadow:0 2px 18px rgba(25,35,66,0.2);
+  }
+  .headline .l2{ color:var(--primary); display:block; }
+
+  .sub{
+    margin-top:.85rem;
+    max-width:29ch;
+    color:rgba(255,255,255,0.92);
+    font-size:clamp(.85rem,2.2vw,.98rem);
+    line-height:1.5;
+  }
+  .sub strong{ color:var(--white); font-weight:700; }
+
+  /* specs strip, same "white/20 divider on colour" idiom as PromoBanner */
+  .specs{
+    margin-top:clamp(1rem,2.8vw,1.4rem);
+    display:flex;
+    border-top:1px solid rgba(255,255,255,0.3);
+    border-bottom:1px solid rgba(255,255,255,0.3);
+  }
+  .spec{
+    flex:1;
+    padding:.6rem .35rem;
+    text-align:center;
+    border-left:1px solid rgba(255,255,255,0.3);
+    color:var(--white);
+    font-size:.58rem;
+    line-height:1.35;
+  }
+  .spec:first-child{ border-left:none; text-align:left; padding-left:0; }
+  .spec b{ display:block; font-weight:800; font-size:.86rem; margin-bottom:.1rem; }
+
+  /* visual stage */
+  .visual{ position:relative; flex:1; min-height:0; margin-top:clamp(.7rem,2.2vw,1.1rem); }
+
+  .price-card{
+    position:absolute; top:-.2rem; right:-.15rem; z-index:3;
+    background:var(--white);
+    border-radius:14px;
+    padding:.5rem .75rem .55rem;
+    text-align:right;
+    box-shadow:0 14px 28px -10px rgba(25,35,66,0.35);
+    transform:rotate(2deg);
+  }
+  .price-card .from{ font-size:.52rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--car-orange-600); }
+  .price-card .amount{ font-weight:900; font-size:1.5rem; line-height:1.05; color:var(--primary); margin-top:.05rem; }
+  .price-card .unit{ font-size:.55rem; font-weight:600; letter-spacing:.03em; text-transform:uppercase; color:var(--page-ink); opacity:.65; }
+
+  .scene{ position:absolute; inset:0; }
+  .scene svg{ width:100%; height:100%; display:block; overflow:visible; }
+
+  /* bottom */
+  .bottom{
+    position:relative; z-index:2;
+    margin-top:auto;
+    padding-top:clamp(.8rem,2.4vw,1.1rem);
+    display:flex; align-items:center; justify-content:space-between; gap:.6rem;
+  }
+  .plate{
+    display:flex; align-items:stretch;
+    height:clamp(1.85rem,5.2vw,2.25rem);
+    border-radius:5px; overflow:hidden; flex-shrink:0;
+    box-shadow:0 6px 14px -4px rgba(25,35,66,0.35);
+  }
+  .plate .ci{
+    background:var(--primary); color:#fff;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:0 .32rem; font-size:.46rem; font-weight:800; letter-spacing:.02em;
+  }
+  .plate .num{
+    background:var(--white); color:var(--primary);
+    display:flex; align-items:center; padding:0 .55rem;
+    font-weight:800; letter-spacing:.02em;
+    font-size:clamp(.62rem,2.3vw,.76rem); white-space:nowrap;
+  }
+  .cta{
+    display:flex; align-items:center; gap:.4rem;
+    padding:.55rem .95rem;
+    border-radius:999px;
+    background:var(--white);
+    color:var(--primary);
+    font-weight:800;
+    font-size:clamp(.7rem,2.4vw,.82rem);
+    white-space:nowrap;
+    box-shadow:0 10px 22px -8px rgba(25,35,66,0.4);
+  }
+
+  .fineprint{
+    position:relative; z-index:2;
+    margin-top:.5rem;
+    font-size:.56rem; color:rgba(255,255,255,0.85); line-height:1.4;
+  }
+
+  .caption{
+    width:100%; max-width:640px;
+    display:flex; justify-content:space-between; gap:1rem;
+    margin-top:1rem; padding-top:.75rem;
+    border-top:1px solid var(--page-line);
+    font-size:.72rem; color:#7A8296;
+  }
+  .caption b{ color:var(--primary); }
+
+  @media (prefers-reduced-motion: no-preference){
+    .poster{ animation:rise .6s cubic-bezier(.2,.7,.2,1) both; }
+  }
+  @keyframes rise{ from{ opacity:0; transform:translateY(12px);} to{ opacity:1; transform:none; } }
+</style>
+
+<div class="stage">
+  <div class="poster">
+    <div class="fx-glow"></div>
+    <div class="fx-pattern"></div>
+
+    <div class="content">
+      <div class="topbar">
+        <div class="brandmark">
+          <span class="icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-6.5a2 2 0 0 0-2-1.5H8.5a2 2 0 0 0-2 1.5L5 17Z"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg>
+          </span>
+          <span class="word">B-RESERVE</span>
+        </div>
+        <span class="eyebrow-badge">Location voiture</span>
+      </div>
+
+      <h1 class="headline">
+        ROULEZ<br><span class="l2">LIBRE.</span>
+      </h1>
+
+      <p class="sub">Réservez votre véhicule en <strong>3 minutes</strong> et prenez la route où bon vous semble.</p>
+
+      <div class="specs">
+        <div class="spec"><b>∞ km</b>Kilométrage illimité</div>
+        <div class="spec"><b>0 FCFA</b>Annulation gratuite</div>
+        <div class="spec"><b>A / M</b>Auto ou manuelle</div>
+        <div class="spec"><b>4 énergies</b>Essence·Diesel·Hybride·Électrique</div>
+      </div>
+
+      <div class="visual">
+        <div class="price-card">
+          <div class="from">Dès</div>
+          <div class="amount">30 000</div>
+          <div class="unit">FCFA / jour</div>
+        </div>
+
+        <div class="scene" aria-hidden="true">
+          <!-- Crossover silhouette modelled on the reference photo: pearl
+               body over black lower cladding, dark glass, roof rails, an
+               LED light signature, and a studio floor reflection. -->
+          <svg viewBox="0 0 320 250" preserveAspectRatio="xMidYMax meet">
+            <defs>
+              <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FFFFFF"/>
+                <stop offset="1" stop-color="#DCD6C8"/>
+              </linearGradient>
+              <linearGradient id="clad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#3A3B42"/>
+                <stop offset="1" stop-color="#131318"/>
+              </linearGradient>
+              <linearGradient id="carGlass" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#5C6B8C"/>
+                <stop offset="1" stop-color="#0E121F"/>
+              </linearGradient>
+              <radialGradient id="wheel" cx="35%" cy="30%" r="75%">
+                <stop offset="0" stop-color="#8B909C"/>
+                <stop offset=".55" stop-color="#4A4E58"/>
+                <stop offset="1" stop-color="#17181C"/>
+              </radialGradient>
+              <linearGradient id="floorFade" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
+                <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+              </linearGradient>
+              <mask id="reflMask">
+                <rect x="0" y="193" width="320" height="52" fill="url(#floorFade)"/>
+              </mask>
+            </defs>
+
+            <!-- studio floor -->
+            <ellipse cx="160" cy="193" rx="150" ry="15" fill="#FFFFFF" opacity="0.22"/>
+            <ellipse cx="160" cy="195" rx="100" ry="8" fill="#1A1006" opacity="0.24"/>
+
+            <g id="carBody">
+              <!-- cladding drawn first, body drawn over the top two-thirds -->
+              <path d="M20,150 C20,146 22,142 26,140 L58,138 C62,124 66,120 80,120 C94,120 98,124 102,138 L206,138 C210,124 214,120 228,120 C242,120 246,124 250,138 L282,140 C286,142 288,146 288,150 L288,158 C288,163 284,166 278,166 L30,166 C24,166 20,163 20,158 Z" fill="url(#clad)"/>
+              <path d="M14,148 L14,136 C14,130 17,125 22,122 L44,118 C50,94 76,72 110,66 L120,64 L176,64 C204,64 224,78 234,98 L256,100 C272,102 284,110 290,120 C294,126 294,133 292,140 L292,148 Z" fill="url(#body)"/>
+              <!-- cabin glass -->
+              <polygon points="70,109 100,72 172,70 196,98" fill="url(#carGlass)"/>
+              <polygon points="76,105 102,78 118,76 100,105" fill="#FFFFFF" opacity="0.28"/>
+              <line x1="132" y1="71" x2="132" y2="107" stroke="#0E121F" stroke-width="2" opacity="0.7"/>
+              <!-- roof rails -->
+              <rect x="112" y="61" width="66" height="3.4" rx="1.7" fill="#20222A" opacity="0.85"/>
+              <!-- LED light signature -->
+              <path d="M24,122 C40,117 52,115 56,120" stroke="#FFE7B8" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+              <path d="M24,122 C40,117 52,115 56,120" stroke="#FFE7B8" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.35"/>
+              <ellipse cx="286" cy="128" rx="4.5" ry="3" fill="#FF5B4E"/>
+              <!-- lower bumper accents -->
+              <rect x="22" y="152" width="20" height="5" rx="2.5" fill="#0D0D10"/>
+              <rect x="268" y="152" width="20" height="5" rx="2.5" fill="#0D0D10"/>
+              <!-- wheels -->
+              <circle cx="80" cy="166" r="27" fill="#101114"/>
+              <circle cx="80" cy="166" r="27" fill="none" stroke="#000" stroke-width="1" opacity="0.4"/>
+              <circle cx="80" cy="166" r="13" fill="url(#wheel)"/>
+              <g stroke="#1B1C20" stroke-width="1.4">
+                <line x1="80" y1="155" x2="80" y2="177"/>
+                <line x1="69" y1="166" x2="91" y2="166"/>
+                <line x1="72" y1="158" x2="88" y2="174"/>
+                <line x1="88" y1="158" x2="72" y2="174"/>
+              </g>
+              <circle cx="228" cy="166" r="27" fill="#101114"/>
+              <circle cx="228" cy="166" r="27" fill="none" stroke="#000" stroke-width="1" opacity="0.4"/>
+              <circle cx="228" cy="166" r="13" fill="url(#wheel)"/>
+              <g stroke="#1B1C20" stroke-width="1.4">
+                <line x1="228" y1="155" x2="228" y2="177"/>
+                <line x1="217" y1="166" x2="239" y2="166"/>
+                <line x1="220" y1="158" x2="236" y2="174"/>
+                <line x1="236" y1="158" x2="220" y2="174"/>
+              </g>
+            </g>
+
+            <!-- floor reflection (mirrored about the wheel contact line, y=193) -->
+            <use href="#carBody" transform="translate(0,386) scale(1,-1)" mask="url(#reflMask)" opacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="plate">
+          <div class="ci">CI<br>•</div>
+          <div class="num">B-RESERVE.COM/CARS</div>
+        </div>
+        <div class="cta">Réserver →</div>
+      </div>
+      <p class="fineprint">Tarifs indicatifs par jour, hors options. Sous réserve de disponibilité du véhicule choisi.</p>
+    </div>
+  </div>
+</div>
+
+<div class="caption">
+  <span><b>Roulez Libre</b> — campagne location de voitures</span>
+  <span>Format A2 numérique · 420 × 594&nbsp;mm</span>
+</div>
