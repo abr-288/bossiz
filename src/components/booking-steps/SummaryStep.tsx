@@ -86,6 +86,7 @@ export const SummaryStep = ({
   const [isPrebookingDone, setIsPrebookingDone] = useState(false);
   const [myCompanies, setMyCompanies] = useState<{ id: string; name: string }[]>([]);
   const [billToCompanyId, setBillToCompanyId] = useState<string | null>(null);
+  const [travelPolicy, setTravelPolicy] = useState<{ max_amount: number; currency: string } | null>(null);
   
   const { prebook, checkout, prebookingData, checkoutData, loading: secureLoading, isPrebookingValid, getRemainingSeconds, reset } = useSecureFlightBooking();
   const { createBooking, loading: bookingLoading } = useCreateBooking();
@@ -97,6 +98,23 @@ export const SummaryStep = ({
   useEffect(() => {
     checkAuth();
   }, []);
+
+  // Fetch the company's travel policy for this service type when billing to
+  // a company, so the "conforme / hors politique" badge reflects real data
+  // instead of always being silent about it.
+  useEffect(() => {
+    if (!billToCompanyId) {
+      setTravelPolicy(null);
+      return;
+    }
+    supabase
+      .from("travel_policies")
+      .select("max_amount, currency")
+      .eq("company_id", billToCompanyId)
+      .eq("service_type", serviceType)
+      .maybeSingle()
+      .then(({ data }) => setTravelPolicy(data));
+  }, [billToCompanyId, serviceType]);
 
   // Update remaining time every second
   useEffect(() => {
@@ -273,7 +291,7 @@ export const SummaryStep = ({
 
         if (bookingId) {
           if (billToCompanyId) {
-            toast.success("Réservation envoyée à votre entreprise pour paiement");
+            toast.success("Réservation soumise pour approbation à votre entreprise");
             navigate("/booking-history");
           } else {
             // Navigate to payment with prebooking reference
@@ -314,7 +332,7 @@ export const SummaryStep = ({
 
         if (bookingId) {
           if (billToCompanyId) {
-            toast.success("Réservation envoyée à votre entreprise pour paiement");
+            toast.success("Réservation soumise pour approbation à votre entreprise");
             navigate("/booking-history");
           } else {
             navigate(`/payment?bookingId=${bookingId}`);
@@ -677,52 +695,8 @@ export const SummaryStep = ({
 
             <Separator className="my-6" />
 
-            <div className="space-y-4">
-              <h4 className="font-semibold">Mode de paiement</h4>
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("mobile")}
-                  className={`w-full p-4 rounded-lg border-2 transition-all ${
-                    paymentMethod === "mobile"
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      📱
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">Mobile Money</p>
-                      <p className="text-xs text-muted-foreground">Orange, MTN, Moov, Wave</p>
-                    </div>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("card")}
-                  className={`w-full p-4 rounded-lg border-2 transition-all ${
-                    paymentMethod === "card"
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      💳
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">Carte bancaire</p>
-                      <p className="text-xs text-muted-foreground">Visa, Mastercard</p>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
             {myCompanies.length > 0 && (
-              <div className="space-y-2 mt-4">
+              <div className="space-y-2 mb-4">
                 <h4 className="font-semibold">Qui paie ce voyage ?</h4>
                 <select
                   className="w-full p-3 rounded-lg border-2 border-border bg-background text-sm"
@@ -735,10 +709,69 @@ export const SummaryStep = ({
                   ))}
                 </select>
                 {billToCompanyId && (
-                  <p className="text-xs text-muted-foreground">
-                    La réservation sera créée sans paiement immédiat ; le responsable facturation de l'entreprise règlera depuis son tableau de bord.
-                  </p>
+                  <>
+                    {travelPolicy ? (
+                      getTotalPrice() <= travelPolicy.max_amount ? (
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100 gap-1.5">
+                          ✓ Conforme à la politique de voyage
+                        </Badge>
+                      ) : (
+                        <Badge variant="destructive" className="gap-1.5">
+                          <AlertTriangle className="w-3 h-3" /> Hors politique de voyage (plafond : <Price amount={travelPolicy.max_amount} fromCurrency={travelPolicy.currency} />)
+                        </Badge>
+                      )
+                    ) : null}
+                    <p className="text-xs text-muted-foreground">
+                      La réservation sera soumise à un approbateur de l'entreprise avant paiement.
+                    </p>
+                  </>
                 )}
+              </div>
+            )}
+
+            {!billToCompanyId && (
+              <div className="space-y-4">
+                <h4 className="font-semibold">Mode de paiement</h4>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("mobile")}
+                    className={`w-full p-4 rounded-lg border-2 transition-all ${
+                      paymentMethod === "mobile"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        📱
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Mobile Money</p>
+                        <p className="text-xs text-muted-foreground">Orange, MTN, Moov, Wave</p>
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`w-full p-4 rounded-lg border-2 transition-all ${
+                      paymentMethod === "card"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        💳
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Carte bancaire</p>
+                        <p className="text-xs text-muted-foreground">Visa, Mastercard</p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -762,7 +795,7 @@ export const SummaryStep = ({
                   loading={loading}
                   onClick={handlePayment}
                 >
-                  Procéder au paiement
+                  {billToCompanyId ? "Soumettre pour approbation" : "Procéder au paiement"}
                 </UnifiedSubmitButton>
               )}
 
@@ -774,7 +807,7 @@ export const SummaryStep = ({
                   loading={loading}
                   onClick={handlePayment}
                 >
-                  Procéder au paiement
+                  {billToCompanyId ? "Soumettre pour approbation" : "Procéder au paiement"}
                 </UnifiedSubmitButton>
               )}
 

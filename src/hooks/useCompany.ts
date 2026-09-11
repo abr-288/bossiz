@@ -11,9 +11,11 @@ interface Company {
   is_active: boolean;
 }
 
+export type CompanyRole = "admin" | "approver" | "employee";
+
 export const useCompany = () => {
   const [company, setCompany] = useState<Company | null>(null);
-  const [role, setRole] = useState<"admin" | "employee" | null>(null);
+  const [role, setRole] = useState<CompanyRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchCompany = useCallback(async () => {
@@ -37,7 +39,7 @@ export const useCompany = () => {
     const membership = memberships?.[0];
     if (membership?.companies) {
       setCompany(membership.companies as any);
-      setRole(membership.role as "admin" | "employee");
+      setRole(membership.role as CompanyRole);
     } else {
       setCompany(null);
       setRole(null);

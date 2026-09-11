@@ -290,6 +290,11 @@ serve(async (req) => {
         notes: requestData.notes,
         booking_details: requestData.booking_details,
         company_id: requestData.company_id || null,
+        // A company-billed booking always starts as pending approval - an
+        // approver/admin for that company must sign off before the DAF can
+        // pay it (see process-payment). Personal bookings (no company_id)
+        // have no approval concept at all.
+        approval_status: requestData.company_id ? 'pending_approval' : null,
       })
       .select()
       .single();

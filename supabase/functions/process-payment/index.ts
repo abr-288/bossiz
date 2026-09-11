@@ -234,7 +234,7 @@ serve(async (req) => {
       // the row to this caller, .single() below simply finds nothing.
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
-        .select('id, user_id, company_id, total_price, currency, payment_status')
+        .select('id, user_id, company_id, total_price, currency, payment_status, approval_status')
         .eq('id', targetId)
         .single();
 
@@ -245,6 +245,19 @@ serve(async (req) => {
 
       if (booking.payment_status === 'paid') {
         return errorResponse('Cette réservation a déjà été payée', 409);
+      }
+
+      // Company-billed bookings must clear the approval workflow before
+      // the DAF/admin can pay them - a booking still 'pending_approval' or
+      // explicitly 'rejected' is not payable yet, regardless of who's
+      // asking.
+      if (booking.company_id && booking.approval_status !== 'approved') {
+        return errorResponse(
+          booking.approval_status === 'rejected'
+            ? 'Cette réservation a été rejetée par un approbateur'
+            : "Cette réservation est en attente d'approbation",
+          409
+        );
       }
 
       sourceAmount = Number(booking.total_price);

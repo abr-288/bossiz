@@ -14,10 +14,11 @@ import {
 import { 
   Menu, User, LogOut, LayoutDashboard, Plane, Hotel, PlaneTakeoff,
   Train, Calendar, Car, HelpCircle, UserCircle2,
-  MapPin, Compass, ChevronDown, Search, UtensilsCrossed, Hammer
+  MapPin, Compass, ChevronDown, Search, UtensilsCrossed, Hammer, Briefcase, ArrowLeftRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useCompany } from "@/hooks/useCompany";
 import { usePWA } from "@/hooks/usePWA";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -39,11 +40,13 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // État de connexion utilisateur
   const [isScrolled, setIsScrolled] = useState(false); // État du scroll pour l'effet d'ombre
   const { isAdmin, loading: roleLoading } = useUserRole(); // Rôle de l'utilisateur
+  const { company } = useCompany(); // Compte entreprise (pour le commutateur de profil)
   const { isInstallable, isInstalled, install } = usePWA(); // État PWA
   const { config } = useSiteConfigContext(); // Configuration du site
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const isBusinessMode = location.pathname.startsWith("/company");
 
   // Vérifie si le chemin actuel correspond au chemin donné
   const isActive = (path: string) => location.pathname === path;
@@ -180,6 +183,20 @@ const Navbar = () => {
                 </Button>
               </Link>
 
+              {/* Profile Switcher: Personnel <-> Entreprise */}
+              {isLoggedIn && company && (
+                <Link to={isBusinessMode ? "/" : "/company/dashboard"}>
+                  <Button
+                    variant={isBusinessMode ? "default" : "outline"}
+                    size="sm"
+                    className="gap-1.5 rounded-full text-sm font-medium"
+                  >
+                    {isBusinessMode ? <ArrowLeftRight className="w-4 h-4" /> : <Briefcase className="w-4 h-4" />}
+                    <span className="hidden xl:inline">{isBusinessMode ? "Mode Personnel" : "Mode Entreprise"}</span>
+                  </Button>
+                </Link>
+              )}
+
               {/* Account */}
               {isLoggedIn ? (
                 <DropdownMenu>
@@ -282,6 +299,16 @@ const Navbar = () => {
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
                             <LayoutDashboard className="w-5 h-5 text-primary" />
                             <span className="font-medium text-primary">{t("nav.admin")}</span>
+                          </Link>
+                        )}
+                        {company && (
+                          <Link
+                            to={isBusinessMode ? "/" : "/company/dashboard"}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                          >
+                            {isBusinessMode ? <ArrowLeftRight className="w-5 h-5 text-secondary" /> : <Briefcase className="w-5 h-5 text-secondary" />}
+                            <span className="font-medium text-secondary">{isBusinessMode ? "Mode Personnel" : "Mode Entreprise"}</span>
                           </Link>
                         )}
                       </div>
