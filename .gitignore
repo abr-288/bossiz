@@ -46,3 +46,8 @@ bun.lockb
 
 # Exports de données (peuvent contenir des données utilisateur)
 deploy-vps/backups/
+
+# Sauvegardes locales d'éditeur (ex: Hotels.tsx.20260813-233013.bak) -
+# jamais du code applicatif, ne doivent pas être versionnées
+/backups/
+*.bak
