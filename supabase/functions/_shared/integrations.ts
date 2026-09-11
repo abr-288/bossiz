@@ -17,7 +17,7 @@ interface IntegrationRow {
 
 async function getActiveCredentialByCategory(
   supabase: SupabaseClient,
-  category: "email" | "sms" | "payment"
+  category: "email" | "sms" | "whatsapp" | "payment"
 ): Promise<IntegrationRow | null> {
   try {
     const { data, error } = await supabase
@@ -254,6 +254,36 @@ export async function sendSms(
       return { ok: true };
     }
 
+    // Sendexa (https://docs.sendexa.co) - Africa-focused SMS/WhatsApp/OTP
+    // API. Auth is HTTP Basic with a single dashboard token (base64 of the
+    // token, no separate username/password) - see docs.sendexa.co. Their
+    // public API reference was still "under construction" when this was
+    // written; the SMS endpoint/body shape below is confirmed from their
+    // own site, but re-verify against a live account before relying on it.
+    if (provider === "sendexa") {
+      const { api_token, sender_id } = credentials;
+      if (!api_token) {
+        return { ok: false, error: "Sendexa credentials incomplete" };
+      }
+      const response = await fetch("https://api.sendexa.co/v1/sms/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${api_token}`,
+        },
+        body: JSON.stringify({
+          to: params.to,
+          from: sender_id || "B-Reserve",
+          message: params.message,
+        }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { ok: false, error: `Sendexa API error: ${response.status} ${errorText}` };
+      }
+      return { ok: true };
+    }
+
     if (provider === "africastalking") {
       const { username, api_key, sender_id } = credentials;
       if (!username || !api_key) {
@@ -283,5 +313,92 @@ export async function sendSms(
     return { ok: false, error: `Unknown SMS provider: ${provider}` };
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : "Unknown SMS error" };
+  }
+}
+
+export async function getActiveWhatsappCredential(supabase: SupabaseClient): Promise<IntegrationRow | null> {
+  return getActiveCredentialByCategory(supabase, "whatsapp");
+}
+
+// WhatsApp is deliberately a separate `integration_credentials` category
+// from `sms`, even for the same vendor (twilio_whatsapp / sendexa_whatsapp
+// as distinct `provider` rows) - a WhatsApp-approved sender number/token is
+// not interchangeable with a plain SMS one, and `provider` is UNIQUE so
+// they can't share a row anyway. No-ops (returns ok:false, not an
+// exception) if nothing is configured - callers that treat WhatsApp as a
+// "nice to have, fall back to SMS" channel can just check `.ok`.
+export async function sendWhatsapp(
+  supabase: SupabaseClient,
+  params: { to: string; message: string }
+): Promise<{ ok: boolean; error?: string }> {
+  const active = await getActiveWhatsappCredential(supabase);
+
+  if (!active) {
+    return { ok: false, error: "No active WhatsApp provider configured in integration_credentials" };
+  }
+
+  const { provider, credentials } = active;
+
+  try {
+    // Twilio WhatsApp reuses the plain-SMS Messages.json endpoint - the
+    // only difference is the `whatsapp:` channel prefix on To/From. The
+    // From number must be a WhatsApp-enabled Twilio sender (the Twilio
+    // Sandbox number while testing, e.g. "+14155238886").
+    if (provider === "twilio_whatsapp") {
+      const { account_sid, auth_token, from_number } = credentials;
+      if (!account_sid || !auth_token || !from_number) {
+        return { ok: false, error: "Twilio WhatsApp credentials incomplete" };
+      }
+      const toNumber = params.to.startsWith("whatsapp:") ? params.to : `whatsapp:${params.to}`;
+      const fromNumber = from_number.startsWith("whatsapp:") ? from_number : `whatsapp:${from_number}`;
+      const response = await fetch(
+        `https://api.twilio.com/2010-04-01/Accounts/${account_sid}/Messages.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": `Basic ${btoa(`${account_sid}:${auth_token}`)}`,
+          },
+          body: new URLSearchParams({ To: toNumber, From: fromNumber, Body: params.message }),
+        }
+      );
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { ok: false, error: `Twilio WhatsApp API error: ${response.status} ${errorText}` };
+      }
+      return { ok: true };
+    }
+
+    // Sendexa WhatsApp - same Basic-auth dashboard token as their SMS API;
+    // exact endpoint unconfirmed (their public docs were incomplete for
+    // WhatsApp specifically at the time this was written - re-verify
+    // against a live account/their support before relying on this).
+    if (provider === "sendexa_whatsapp") {
+      const { api_token, sender_id } = credentials;
+      if (!api_token) {
+        return { ok: false, error: "Sendexa WhatsApp credentials incomplete" };
+      }
+      const response = await fetch("https://api.sendexa.co/v1/whatsapp/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${api_token}`,
+        },
+        body: JSON.stringify({
+          to: params.to,
+          from: sender_id || "B-Reserve",
+          message: params.message,
+        }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { ok: false, error: `Sendexa WhatsApp API error: ${response.status} ${errorText}` };
+      }
+      return { ok: true };
+    }
+
+    return { ok: false, error: `Unknown WhatsApp provider: ${provider}` };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Unknown WhatsApp error" };
   }
 }

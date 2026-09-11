@@ -139,13 +139,14 @@ const CompanyDashboard = () => {
   };
 
   const reviewBooking = async (bookingId: string, decision: "approved" | "rejected") => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from("bookings")
-      .update({ approval_status: decision, approved_by: user?.id, approved_at: new Date().toISOString() })
-      .eq("id", bookingId);
+    // Goes through the review-booking-approval edge function (rather than a
+    // direct table update) so the traveler gets notified by SMS/WhatsApp
+    // the moment their booking is reviewed.
+    const { data, error } = await supabase.functions.invoke("review-booking-approval", {
+      body: { bookingId, decision },
+    });
 
-    if (error) {
+    if (error || !data?.success) {
       toast.error("Impossible de traiter cette demande");
     } else {
       toast.success(decision === "approved" ? "Réservation approuvée" : "Réservation rejetée");

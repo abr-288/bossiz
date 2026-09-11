@@ -33,6 +33,19 @@ const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boo
     { key: "api_key", label: "Clé API", secret: true },
     { key: "sender_id", label: "Sender ID (optionnel)" },
   ],
+  sendexa: [
+    { key: "api_token", label: "Token du dashboard (Basic Auth)", secret: true },
+    { key: "sender_id", label: "Nom de l'expéditeur (optionnel)" },
+  ],
+  twilio_whatsapp: [
+    { key: "account_sid", label: "Account SID" },
+    { key: "auth_token", label: "Auth Token", secret: true },
+    { key: "from_number", label: "Numéro WhatsApp Business (ex: +14155238886)" },
+  ],
+  sendexa_whatsapp: [
+    { key: "api_token", label: "Token du dashboard (Basic Auth)", secret: true },
+    { key: "sender_id", label: "Nom de l'expéditeur (optionnel)" },
+  ],
   cinetpay: [
     { key: "api_key", label: "Clé API CinetPay", secret: true },
     { key: "site_id", label: "Site ID CinetPay" },
@@ -56,6 +69,7 @@ const ENV_FALLBACK_HINTS: Record<string, string> = {
 const ACTIVE_DESCRIPTIONS: Record<string, string> = {
   email: "Prestataire actif — utilisé pour tous les emails envoyés par le site",
   sms: "Prestataire actif — utilisé pour tous les SMS envoyés par le site",
+  whatsapp: "Prestataire actif — utilisé pour les notifications WhatsApp (ex: approbation de voyage d'affaires)",
   payment: "Prestataire actif — utilisé pour tous les nouveaux paiements",
 };
 
@@ -155,6 +169,7 @@ export default function AdminIntegrations() {
 
   const emailIntegrations = integrations.filter((i) => i.category === "email");
   const smsIntegrations = integrations.filter((i) => i.category === "sms");
+  const whatsappIntegrations = integrations.filter((i) => i.category === "whatsapp");
   const paymentIntegrations = integrations.filter((i) => i.category === "payment");
 
   return (
@@ -222,6 +237,26 @@ export default function AdminIntegrations() {
                     integration={integration}
                     onSave={(updates) => updateIntegration(integration.id, updates)}
                     onActivate={(updates) => activateExclusive(integration.id, "sms", updates)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" /> WhatsApp
+              </h2>
+              <p className="text-sm text-muted-foreground mb-3">
+                Utilisé pour les notifications WhatsApp (ex: approbation de voyage d'affaires). Distinct du
+                prestataire SMS ci-dessus : un numéro WhatsApp Business n'est pas interchangeable avec un numéro SMS classique.
+              </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                {whatsappIntegrations.map((integration) => (
+                  <ExclusiveProviderCard
+                    key={integration.id}
+                    integration={integration}
+                    onSave={(updates) => updateIntegration(integration.id, updates)}
+                    onActivate={(updates) => activateExclusive(integration.id, "whatsapp", updates)}
                   />
                 ))}
               </div>

@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 export interface IntegrationCredential {
   id: string;
   provider: string;
-  category: "email" | "sms" | "payment" | "push" | "other";
+  category: "email" | "sms" | "whatsapp" | "payment" | "push" | "other";
   label: string;
   credentials: Record<string, string>;
   is_active: boolean;

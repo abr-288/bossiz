@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { verifyOfferSignature } from "../_shared/priceSignature.ts";
 import { RETAIL_MARKUP_PERCENTAGE } from "../_shared/pricing.ts";
+import { notifyCompanyApprovers } from "../_shared/notify.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -331,6 +332,20 @@ serve(async (req) => {
       console.warn('Continuing without passengers...');
     } else {
       console.log('Passengers created:', passengers.length);
+    }
+
+    // Best-effort: notify the company's approvers that a booking is waiting
+    // on them. Never blocks or fails the booking itself (notifyCompanyApprovers
+    // swallows its own errors) - a misconfigured or absent notification
+    // provider just means no SMS/WhatsApp goes out, the booking is still
+    // created either way. Awaited rather than fire-and-forget: an edge
+    // function instance can be torn down as soon as it returns its
+    // response, which would silently kill a detached background call.
+    if (requestData.company_id) {
+      await notifyCompanyApprovers(
+        requestData.company_id,
+        `B-Reserve: ${requestData.customer_name} a soumis ${requestData.service_name} (${verifiedTotalPrice} ${requestData.currency}) pour approbation. Connectez-vous à votre tableau de bord entreprise pour valider.`
+      );
     }
 
     console.log('=== CREATE BOOKING SUCCESS ===');
