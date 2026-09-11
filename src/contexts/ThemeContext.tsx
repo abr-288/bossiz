@@ -8,6 +8,10 @@ interface ThemeConfig {
   backgroundColor: string;
   foregroundColor: string;
   mutedColor: string;
+  // Couleur des cartes/popovers. Optionnelle pour rester compatible avec un
+  // thème déjà enregistré en base avant l'ajout de ce champ : dans ce cas on
+  // retombe sur backgroundColor (comportement historique).
+  cardColor?: string;
   borderRadius: string;
   fontHeading: string;
   fontBody: string;
@@ -15,41 +19,48 @@ interface ThemeConfig {
     backgroundColor: string;
     foregroundColor: string;
     mutedColor: string;
+    cardColor?: string;
     primaryColor?: string;
     secondaryColor?: string;
     accentColor?: string;
   };
 }
 
-// Ces valeurs reprennent exactement les tokens définis dans src/index.css.
-// Elles ne doivent JAMAIS diverger de index.css : ce contexte applique ses
-// couleurs par-dessus les variables CSS via des styles inline, donc le moindre
-// écart écrase silencieusement le thème (clair ou sombre) défini en CSS et
-// peut rendre du texte illisible (ex: primary sombre sur fond sombre).
+// Ces valeurs reprennent exactement les tokens définis dans src/index.css
+// ("Golden Hour" - voir la proposition de refonte UI/UX). Elles ne doivent
+// JAMAIS diverger de index.css : ce contexte applique ses couleurs par-dessus
+// les variables CSS via des styles inline, donc le moindre écart écrase
+// silencieusement le thème (clair ou sombre) défini en CSS et peut rendre du
+// texte illisible (ex: primary sombre sur fond sombre).
 const DEFAULT_THEME: ThemeConfig = {
-  primaryColor: "225 45% 18%",
-  secondaryColor: "158 100% 48%",
-  accentColor: "190 100% 95%",
-  backgroundColor: "0 0% 100%",
-  foregroundColor: "210 24% 16%",
-  mutedColor: "210 20% 96%",
+  primaryColor: "221 47% 20%", // Horizon (#1B2A4A)
+  secondaryColor: "165 79% 27%", // Jade (#0E7A5F)
+  accentColor: "38 55% 93%", // liseré doré très clair
+  backgroundColor: "37 62% 96%", // Sunrise (#FBF6EE)
+  foregroundColor: "222 30% 15%", // Encre
+  mutedColor: "34 24% 94%",
+  cardColor: "0 0% 100%", // cartes blanches, contrastent sur le fond Sunrise
   borderRadius: "0.75rem",
-  fontHeading: "Poppins",
-  fontBody: "Inter",
+  fontHeading: "Bricolage Grotesque",
+  fontBody: "Archivo",
   darkMode: {
     backgroundColor: "222 47% 6%",
-    foregroundColor: "210 40% 98%",
+    foregroundColor: "44 35% 94%",
     mutedColor: "222 40% 16%",
+    cardColor: "222 42% 10%",
     // Une couleur primaire/secondaire/accent dédiée est indispensable ici :
     // sans elle, le fallback `darkMode.xColor || xColor` réutilise la teinte
     // du mode clair (très sombre) en mode sombre, la rendant invisible.
-    primaryColor: "158 100% 45%",
-    secondaryColor: "222 47% 18%",
-    accentColor: "222 47% 20%",
+    primaryColor: "38 68% 62%", // Or Golden Hour éclairci (#E3B25A)
+    secondaryColor: "222 40% 20%",
+    accentColor: "222 40% 22%",
   },
 };
 
 const FONT_URLS: Record<string, string> = {
+  "Archivo": "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap",
+  "Bricolage Grotesque": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&display=swap",
+  "IBM Plex Mono": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap",
   "Inter": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
   "Poppins": "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap",
   "Roboto": "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap",
@@ -138,9 +149,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       root.style.setProperty("--primary", themeConfig.darkMode.primaryColor || themeConfig.primaryColor);
       root.style.setProperty("--secondary", themeConfig.darkMode.secondaryColor || themeConfig.secondaryColor);
       root.style.setProperty("--accent", themeConfig.darkMode.accentColor || themeConfig.accentColor);
-      // Card and popover backgrounds for dark mode
-      root.style.setProperty("--card", themeConfig.darkMode.mutedColor);
-      root.style.setProperty("--popover", themeConfig.darkMode.mutedColor);
+      // Card and popover backgrounds for dark mode - a dedicated cardColor
+      // keeps cards visually distinct from the page background instead of
+      // collapsing onto the same muted tone.
+      const darkCard = themeConfig.darkMode.cardColor || themeConfig.darkMode.mutedColor;
+      root.style.setProperty("--card", darkCard);
+      root.style.setProperty("--popover", darkCard);
     } else {
       root.classList.remove("dark");
       root.style.setProperty("--background", themeConfig.backgroundColor);
@@ -150,8 +164,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       root.style.setProperty("--secondary", themeConfig.secondaryColor);
       root.style.setProperty("--accent", themeConfig.accentColor);
       // Card and popover backgrounds for light mode
-      root.style.setProperty("--card", themeConfig.backgroundColor);
-      root.style.setProperty("--popover", themeConfig.backgroundColor);
+      const lightCard = themeConfig.cardColor || themeConfig.backgroundColor;
+      root.style.setProperty("--card", lightCard);
+      root.style.setProperty("--popover", lightCard);
     }
 
     // Apply font families to body

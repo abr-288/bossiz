@@ -158,7 +158,7 @@ export const FlightCard = ({
           </div>
           <Button
             onClick={onSelect}
-            className="w-full bg-secondary hover:bg-secondary/90 text-primary font-semibold"
+            className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
           >
             {t('search.book')}
           </Button>

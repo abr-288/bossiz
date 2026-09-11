@@ -488,7 +488,7 @@ const Flights = () => {
                       La Garantie B-Reserve offre des solutions instantanées aux perturbations, une assistance continue et des services de voyage automatisés.
                     </p>
                     <Link to="/help">
-                      <Button className="w-full bg-secondary hover:bg-secondary/90 text-primary font-bold rounded-xl shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all">
+                      <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold rounded-xl shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all">
                         En savoir plus
                       </Button>
                     </Link>

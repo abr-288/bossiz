@@ -268,7 +268,7 @@ const PlatformPresentation = () => {
             futurs clients ont besoin, réuni sur une seule plateforme.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button asChild size="lg" className="bg-[#00F59B] text-[#192443] hover:bg-[#00F59B]/90 font-semibold">
+            <Button asChild size="lg" className="bg-[#C98A2B] text-[#192443] hover:bg-[#C98A2B]/90 font-semibold">
               <Link to="/devenir-partenaire">Devenir partenaire</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
@@ -285,7 +285,7 @@ const PlatformPresentation = () => {
             <a
               key={id}
               href={`#${id}`}
-              className="text-xs md:text-sm px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:border-[#00F59B] hover:text-foreground transition-colors"
+              className="text-xs md:text-sm px-3 py-1.5 rounded-full border border-border text-muted-foreground hover:border-[#C98A2B] hover:text-foreground transition-colors"
             >
               {title}
             </a>
@@ -320,8 +320,8 @@ const PlatformPresentation = () => {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-11 h-11 rounded-xl bg-[#00F59B]/15 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-[#00F59B]" strokeWidth={2.2} />
+                    <div className="w-11 h-11 rounded-xl bg-[#C98A2B]/15 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-[#C98A2B]" strokeWidth={2.2} />
                     </div>
                     <h3 className="text-xl md:text-2xl font-bold text-foreground">{title}</h3>
                   </div>
@@ -329,7 +329,7 @@ const PlatformPresentation = () => {
                   <ul className="space-y-2 mb-6">
                     {features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2 text-sm text-foreground/90">
-                        <CheckCircle2 className="w-4 h-4 text-[#00F59B] mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-[#C98A2B] mt-0.5 flex-shrink-0" />
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -359,8 +359,8 @@ const PlatformPresentation = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-4xl mx-auto">
             {partnerBenefits.map(({ icon: Icon, title, description }) => (
               <div key={title} className="flex flex-col items-center text-center gap-3">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#00F59B]/15">
-                  <Icon className="w-7 h-7 text-[#00F59B]" strokeWidth={2.2} />
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#C98A2B]/15">
+                  <Icon className="w-7 h-7 text-[#C98A2B]" strokeWidth={2.2} />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">{title}</h3>
                 <p className="text-sm text-muted-foreground max-w-xs">{description}</p>
@@ -401,7 +401,7 @@ const PlatformPresentation = () => {
               Soumettez votre candidature en quelques minutes, notre équipe vous recontacte après étude de votre
               dossier.
             </p>
-            <Button asChild size="lg" className="bg-[#00F59B] text-[#192443] hover:bg-[#00F59B]/90 font-semibold mb-8">
+            <Button asChild size="lg" className="bg-[#C98A2B] text-[#192443] hover:bg-[#C98A2B]/90 font-semibold mb-8">
               <Link to="/devenir-partenaire">Devenir partenaire</Link>
             </Button>
             <div className="flex flex-wrap justify-center gap-6 text-white/80 text-sm">

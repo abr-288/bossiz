@@ -8,60 +8,66 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 210 24% 16%;
+    /* ===== Golden Hour — refonte UI/UX (voir proposition "Golden Hour") ===== */
+    --background: 37 62% 96%; /* #FBF6EE - Sunrise, fond chaud (remplace le blanc pur) */
+    --foreground: 222 30% 15%; /* Encre */
 
-    --card: 0 0% 100%;
-    --card-foreground: 210 24% 16%;
+    --card: 0 0% 100%; /* les cartes restent blanches pour ressortir sur le fond Sunrise */
+    --card-foreground: 222 30% 15%;
 
-    --popover: 0 0% 98%;
-    --popover-foreground: 210 24% 16%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 30% 15%;
 
     /* Bossiz Brand Colors */
-    --primary: 225 45% 18%; /* #192342 - Bleu foncé Bossiz */
+    --primary: 221 47% 20%; /* #1B2A4A - Horizon, bleu marine Bossiz */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 225 45% 28%;
-    --primary-dark: 225 45% 12%;
-    
-    /* Cyan Accent */
-    --secondary: 158 100% 48%; /* #00F59B - Vert clair */
-    --secondary-foreground: 225 45% 18%;
-    
-    /* Green Accent */
-    --accent-green: 158 100% 48%; /* #00F59B - Vert clair */
-    
-    /* Neutral Grays */
-    --muted: 210 20% 96%;
-    --muted-foreground: 210 12% 55%;
+    --primary-light: 221 47% 30%;
+    --primary-dark: 221 47% 12%;
 
-    --accent: 190 100% 95%;
-    --accent-foreground: 225 45% 18%;
+    /* Jade - actions secondaires, disponibilité, validation (remplace le vert néon) */
+    --secondary: 165 79% 27%; /* #0E7A5F */
+    --secondary-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --accent-green: 165 79% 27%; /* #0E7A5F - alias conservé pour compat, pointe désormais sur le Jade */
+
+    /* Or "Golden Hour" - CTA principal, prix, moments clés */
+    --gold: 36 65% 48%; /* #C98A2B */
+    --gold-foreground: 32 84% 13%; /* encre chaude, texte sur fond doré */
+    --gold-light: 36 65% 68%;
+    --gold-dark: 33 68% 38%; /* #B67420 */
+
+    /* Neutral Grays - biais chaud (Stone) plutôt que gris froid générique */
+    --muted: 34 24% 94%;
+    --muted-foreground: 220 10% 42%; /* #5B6270 - Stone */
+
+    --accent: 38 55% 93%; /* liseré doré très clair (survols, sélections) */
+    --accent-foreground: 221 47% 20%;
+
+    --destructive: 6 62% 47%; /* #C4432E - terracotta, distinct de l'or/jade */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 85%;
-    --input: 210 20% 90%;
-    --ring: 158 100% 48%;
-    
+    --border: 32 18% 85%;
+    --input: 32 18% 89%;
+    --ring: 165 65% 32%;
+
     --radius: 0.75rem;
-    
+
     /* Custom Design Tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(158 100% 48%) 0%, hsl(145 90% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(225 45% 30% / 0.35) 0%, hsl(225 45% 25% / 0.30) 50%, hsl(158 100% 60% / 0.10) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
-    --gradient-shine: linear-gradient(90deg, transparent 0%, hsl(158 100% 48% / 0.1) 50%, transparent 100%);
-    --gradient-mesh: radial-gradient(at 27% 37%, hsl(225 45% 18% / 0.12) 0px, transparent 50%),
-                     radial-gradient(at 97% 21%, hsl(158 100% 48% / 0.1) 0px, transparent 50%),
-                     radial-gradient(at 52% 99%, hsl(190 100% 95% / 0.08) 0px, transparent 50%);
-    
-    --shadow-sm: 0 2px 8px hsl(210 20% 20% / 0.05);
-    --shadow-md: 0 4px 16px hsl(210 20% 20% / 0.08);
-    --shadow-lg: 0 8px 32px hsl(210 20% 20% / 0.12);
-    --shadow-xl: 0 20px 60px hsl(210 20% 20% / 0.2);
-    --shadow-primary: 0 8px 24px hsl(158 100% 48% / 0.3);
-    --shadow-secondary: 0 8px 24px hsl(158 100% 48% / 0.3);
-    --shadow-glow: 0 0 40px hsl(158 100% 48% / 0.4);
+    --gradient-primary: linear-gradient(135deg, hsl(36 65% 48%) 0%, hsl(28 70% 42%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(221 47% 30% / 0.35) 0%, hsl(221 47% 25% / 0.30) 50%, hsl(36 65% 55% / 0.12) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(34 30% 98%) 100%);
+    --gradient-shine: linear-gradient(90deg, transparent 0%, hsl(36 65% 48% / 0.12) 50%, transparent 100%);
+    --gradient-mesh: radial-gradient(at 27% 37%, hsl(221 47% 20% / 0.12) 0px, transparent 50%),
+                     radial-gradient(at 97% 21%, hsl(36 65% 48% / 0.10) 0px, transparent 50%),
+                     radial-gradient(at 52% 99%, hsl(165 79% 27% / 0.08) 0px, transparent 50%);
+
+    --shadow-sm: 0 2px 8px hsl(222 30% 15% / 0.05);
+    --shadow-md: 0 4px 16px hsl(222 30% 15% / 0.08);
+    --shadow-lg: 0 8px 32px hsl(222 30% 15% / 0.12);
+    --shadow-xl: 0 20px 60px hsl(222 30% 15% / 0.2);
+    --shadow-primary: 0 8px 24px hsl(36 65% 48% / 0.3);
+    --shadow-secondary: 0 8px 24px hsl(165 79% 27% / 0.3);
+    --shadow-glow: 0 0 40px hsl(36 65% 48% / 0.4);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -100,49 +106,56 @@ All colors MUST be HSL.
 
   .dark {
     --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    --foreground: 44 35% 94%; /* texte crème chaud plutôt que blanc froid */
 
-    --card: 222 47% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 222 42% 10%;
+    --card-foreground: 44 35% 94%;
 
-    --popover: 222 47% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 222 42% 12%;
+    --popover-foreground: 44 35% 94%;
 
-    /* Primary - Plus lumineux et visible en mode sombre */
-    --primary: 158 100% 45%;
+    /* Primary - Or "Golden Hour", plus lumineux et visible en mode sombre */
+    --primary: 38 68% 62%; /* #E3B25A */
     --primary-foreground: 222 47% 8%;
-    --primary-light: 158 100% 55%;
-    --primary-dark: 158 100% 35%;
+    --primary-light: 38 68% 72%;
+    --primary-dark: 38 68% 48%;
 
-    /* Secondary - Contraste amélioré */
-    --secondary: 222 47% 18%;
-    --secondary-foreground: 210 40% 98%;
-    
-    --accent-green: 158 100% 50%;
+    /* Secondary - ton neutre sombre (boutons secondaires discrets) */
+    --secondary: 222 40% 20%;
+    --secondary-foreground: 44 35% 94%;
+
+    --accent-green: 162 50% 46%; /* #3FAE8C - Jade éclairci pour le fond sombre */
+
+    /* Or - identique au primary en mode sombre (même rôle de CTA) */
+    --gold: 38 68% 62%;
+    --gold-foreground: 222 47% 8%;
+    --gold-light: 38 68% 74%;
+    --gold-dark: 36 60% 46%;
 
     /* Muted - Meilleur contraste pour le texte */
     --muted: 222 40% 16%;
-    --muted-foreground: 215 20% 70%;
+    --muted-foreground: 32 12% 72%;
 
     /* Accent - Plus visible */
-    --accent: 222 47% 20%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 222 40% 22%;
+    --accent-foreground: 44 35% 94%;
 
-    --destructive: 0 72% 55%;
+    --destructive: 6 62% 58%;
     --destructive-foreground: 0 0% 100%;
 
     /* Bordures et inputs - Plus visibles */
     --border: 222 30% 25%;
     --input: 222 30% 18%;
-    --ring: 158 100% 50%;
-    
+    --ring: 162 50% 46%;
+
     /* Shadows for dark mode */
     --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.3);
     --shadow-md: 0 4px 16px hsl(0 0% 0% / 0.4);
     --shadow-lg: 0 8px 32px hsl(0 0% 0% / 0.5);
     --shadow-xl: 0 20px 60px hsl(0 0% 0% / 0.6);
-    --shadow-primary: 0 8px 24px hsl(158 100% 45% / 0.25);
-    --shadow-glow: 0 0 40px hsl(158 100% 50% / 0.3);
+    --shadow-primary: 0 8px 24px hsl(38 68% 62% / 0.25);
+    --shadow-secondary: 0 8px 24px hsl(162 50% 46% / 0.25);
+    --shadow-glow: 0 0 40px hsl(38 68% 62% / 0.3);
   }
 }
 
@@ -164,7 +177,7 @@ All colors MUST be HSL.
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-display font-semibold tracking-tight;
   }
 
   img, video, canvas, svg {
@@ -427,8 +440,8 @@ All colors MUST be HSL.
   }
   
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px hsl(158 100% 48% / 0.2); }
-    50% { box-shadow: 0 0 40px hsl(158 100% 48% / 0.4), 0 0 60px hsl(158 100% 48% / 0.2); }
+    0%, 100% { box-shadow: 0 0 20px hsl(36 65% 48% / 0.2); }
+    50% { box-shadow: 0 0 40px hsl(36 65% 48% / 0.4), 0 0 60px hsl(36 65% 48% / 0.2); }
   }
   
   @keyframes slide-up-fade {
@@ -475,22 +488,22 @@ All colors MUST be HSL.
   }
   
   .animate-shimmer {
-    background: linear-gradient(90deg, transparent 0%, hsl(158 100% 48% / 0.15) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, hsl(36 65% 48% / 0.15) 50%, transparent 100%);
     background-size: 1000px 100%;
     animation: shimmer 3s infinite;
   }
-  
+
   /* Glassmorphism */
   .glass {
     background: hsl(0 0% 100% / 0.7);
     backdrop-filter: blur(12px) saturate(180%);
     border: 1px solid hsl(0 0% 100% / 0.3);
   }
-  
+
   .glass-dark {
-    background: hsl(225 45% 18% / 0.5);
+    background: hsl(221 47% 20% / 0.5);
     backdrop-filter: blur(12px) saturate(180%);
-    border: 1px solid hsl(225 45% 18% / 0.3);
+    border: 1px solid hsl(221 47% 20% / 0.3);
   }
   
   /* Hover effects - Disable on touch devices */
@@ -505,20 +518,20 @@ All colors MUST be HSL.
     }
     
     .hover-glow:hover {
-      box-shadow: 0 0 30px hsl(158 100% 48% / 0.4), 0 0 60px hsl(158 100% 48% / 0.2);
+      box-shadow: 0 0 30px hsl(36 65% 48% / 0.4), 0 0 60px hsl(36 65% 48% / 0.2);
     }
   }
-  
+
   /* Text effects */
   .text-gradient {
-    background: linear-gradient(135deg, hsl(225 45% 18%) 0%, hsl(158 100% 48%) 100%);
+    background: linear-gradient(135deg, hsl(221 47% 20%) 0%, hsl(36 65% 48%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .text-glow {
-    text-shadow: 0 0 20px hsl(158 100% 48% / 0.5), 0 0 40px hsl(158 100% 48% / 0.3);
+    text-shadow: 0 0 20px hsl(36 65% 48% / 0.5), 0 0 40px hsl(36 65% 48% / 0.3);
   }
   
   /* Responsive card grid */

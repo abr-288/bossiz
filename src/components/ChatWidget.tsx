@@ -261,7 +261,7 @@ const ChatWidget = () => {
                   type="submit"
                   size="icon"
                   aria-label="Envoyer le message"
-                  className="h-14 w-14 rounded-2xl bg-secondary text-primary hover:bg-secondary/90 shadow-lg shadow-secondary/30 transition-all active:scale-90 flex-shrink-0"
+                  className="h-14 w-14 rounded-2xl bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg shadow-secondary/30 transition-all active:scale-90 flex-shrink-0"
                   disabled={!inputValue.trim() || aiLoading}
                 >
                   {aiLoading ? (

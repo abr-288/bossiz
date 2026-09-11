@@ -370,7 +370,7 @@ const Support = () => {
                       className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-14 rounded-2xl"
                     />
                   </div>
-                  <UnifiedSubmitButton loading={subscribing} className="bg-secondary text-primary h-14 px-8 rounded-2xl font-black text-lg shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95">
+                  <UnifiedSubmitButton loading={subscribing} className="bg-secondary text-secondary-foreground h-14 px-8 rounded-2xl font-black text-lg shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95">
                     {t('pages.support.subscribe')}
                   </UnifiedSubmitButton>
                 </UnifiedForm>
