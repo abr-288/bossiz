@@ -50,7 +50,8 @@ All colors MUST be HSL.
     --input: 32 18% 89%;
     --ring: 165 65% 32%;
 
-    --radius: 0.75rem;
+    /* 16px - cartes/talons de billet de la proposition Golden Hour */
+    --radius: 1rem;
 
     /* Custom Design Tokens */
     --gradient-primary: linear-gradient(135deg, hsl(36 65% 48%) 0%, hsl(28 70% 42%) 100%);

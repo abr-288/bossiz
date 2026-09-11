@@ -40,7 +40,7 @@ const DEFAULT_THEME: ThemeConfig = {
   foregroundColor: "222 30% 15%", // Encre
   mutedColor: "34 24% 94%",
   cardColor: "0 0% 100%", // cartes blanches, contrastent sur le fond Sunrise
-  borderRadius: "0.75rem",
+  borderRadius: "1rem",
   fontHeading: "Bricolage Grotesque",
   fontBody: "Archivo",
   darkMode: {
