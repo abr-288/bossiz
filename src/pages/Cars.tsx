@@ -417,7 +417,7 @@ const Cars = () => {
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Desktop Filters */}
-          <aside className="hidden lg:block lg:col-span-1">{filtersComponent}</aside>
+          <aside className="hidden lg:block lg:col-span-1 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">{filtersComponent}</aside>
 
           {/* Results */}
           <div className="lg:col-span-3 space-y-4">

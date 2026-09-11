@@ -12,6 +12,7 @@ import PromoBanner from "@/components/PromoBanner";
 import { AdvertisementBanner } from "@/components/AdvertisementBanner";
 import IOSDownloadSection from "@/components/iOSDownloadSection";
 import BecomePartnerBanner from "@/components/BecomePartnerBanner";
+import EditorialBanners from "@/components/EditorialBanners";
 import { useTranslation } from "react-i18next";
 
 const Index = () => {
@@ -32,6 +33,9 @@ const Index = () => {
 
         {/* Trust signals - raised above the fold, right after the hero */}
         <FeaturesSection />
+
+        {/* Destination / Business Travel editorial banners */}
+        <EditorialBanners />
 
         {/* Advertisement Banner */}
         <AdvertisementBanner />

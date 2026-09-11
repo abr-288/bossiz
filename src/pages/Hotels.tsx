@@ -444,7 +444,7 @@ const Hotels = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 md:gap-8">
           {/* Filtres Desktop */}
-          <aside className="hidden lg:block lg:col-span-1 space-y-6">
+          <aside className="hidden lg:block lg:col-span-1 space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Filtres</h2>
               

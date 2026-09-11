@@ -398,7 +398,7 @@ const Flights = () => {
           {(hasSearched || isDefaultResults) && !loading && filteredAndSortedFlights.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[300px_1fr_300px] gap-6">
               {/* Left Sidebar - Filters */}
-              <aside className="hidden lg:block">
+              <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
                 <FlightFilters
                   baggageHandCount={baggageHandCount}
                   baggageCheckCount={baggageCheckCount}

@@ -126,7 +126,7 @@ const Stays = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
           
           {/* Sidebar Filters - Desktop Only */}
-          <aside className="hidden lg:block space-y-8">
+          <aside className="hidden lg:block space-y-8 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <div className="sticky top-28 space-y-8">
               <div className="space-y-4">
                 <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
