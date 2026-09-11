@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const ANTHROPIC_MODEL = 'claude-sonnet-5';
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -12,108 +14,78 @@ serve(async (req) => {
 
   try {
     const { destination, interests, budget, duration } = await req.json();
-    
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!lovableApiKey) {
-      console.log('LOVABLE_API_KEY not configured, returning mock data');
-      return getMockRecommendations(destination, interests, budget, duration);
+    if (!destination || !String(destination).trim()) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Destination requise' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    console.log('Getting AI travel recommendations for:', destination);
+    const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
 
-    // Call Lovable API for AI-powered travel recommendations
-    const prompt = `Act as a travel advisor. Provide personalized travel recommendations for ${destination}. 
-    Interests: ${interests || 'general tourism'}
-    Budget: ${budget || 'flexible'}
-    Duration: ${duration || 'not specified'}
-    
-    Provide recommendations in JSON format with:
-    - top_attractions: array of attraction names and descriptions
-    - local_cuisine: array of food recommendations
-    - accommodation_tips: string with advice
-    - best_time_to_visit: string
-    - estimated_daily_budget: object with low, medium, high ranges
-    - insider_tips: array of local tips`;
+    if (!anthropicApiKey) {
+      // No fictitious fallback: without a real API key there is no real
+      // AI advisor to consult, so this returns an honest error instead of
+      // fabricated, generic recommendations.
+      console.log('ANTHROPIC_API_KEY not configured, returning error (no fictitious fallback)');
+      return new Response(
+        JSON.stringify({ success: false, error: "Le conseiller IA n'est pas configuré pour le moment." }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    const response = await fetch('https://api.lovable.ai/v1/chat/completions', {
+    const userPrompt = `Destination : ${destination}
+Centres d'intérêt : ${interests || 'non précisé'}
+Budget : ${budget || 'non précisé'}
+Durée du séjour : ${duration || 'non précisée'}
+
+Rédige des recommandations de voyage personnalisées pour cette destination, structurées avec des sections claires (attractions incontournables, gastronomie locale, conseils d'hébergement, meilleure période pour visiter, budget quotidien estimé, astuces d'initié). Réponds en français, en texte simple et lisible (pas de JSON), avec des titres de section et des listes à puces.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'content-type': 'application/json',
+        'x-api-key': anthropicApiKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a knowledgeable travel advisor providing personalized recommendations in JSON format.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
+        model: ANTHROPIC_MODEL,
+        max_tokens: 1200,
+        system: 'Tu es un conseiller de voyage expert et chaleureux pour Bossiz (B-Reserve), une agence de voyage. Tu donnes des recommandations concrètes, honnêtes et utiles, jamais génériques ou inventées au hasard.',
+        messages: [{ role: 'user', content: userPrompt }],
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable API error:', response.status, errorText);
-      console.log('Falling back to mock data');
-      return getMockRecommendations(destination, interests, budget, duration);
+      console.error('Anthropic API error:', response.status, errorText);
+      return new Response(
+        JSON.stringify({ success: false, error: "Le conseiller IA est temporairement indisponible." }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
-    const recommendations = JSON.parse(data.choices[0].message.content);
+    const recommendations = data.content?.[0]?.text;
+
+    if (!recommendations) {
+      console.error('Anthropic API returned no text content:', JSON.stringify(data).substring(0, 500));
+      return new Response(
+        JSON.stringify({ success: false, error: "Le conseiller IA n'a pas pu générer de réponse." }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        data: recommendations,
-      }),
+      JSON.stringify({ success: true, recommendations }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('Error in ai-travel-advisor:', error);
-    const { destination, interests, budget, duration } = await req.json();
-    return getMockRecommendations(destination, interests, budget, duration);
+    return new Response(
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 });
-
-function getMockRecommendations(destination: string, interests?: string, budget?: string, duration?: string) {
-  const mockData = {
-    destination: destination || 'Unknown Destination',
-    top_attractions: [
-      { name: 'Historic City Center', description: 'Explore the ancient architecture and local culture' },
-      { name: 'Scenic Viewpoint', description: 'Breathtaking panoramic views of the city' },
-      { name: 'Local Market', description: 'Experience authentic local life and crafts' },
-    ],
-    local_cuisine: [
-      { name: 'Traditional Dish', description: 'Signature local specialty dish' },
-      { name: 'Street Food Tour', description: 'Sample various local street foods' },
-    ],
-    accommodation_tips: 'Stay in the city center for easy access to attractions. Book in advance for better rates.',
-    best_time_to_visit: 'Spring and fall offer pleasant weather and fewer crowds.',
-    estimated_daily_budget: {
-      low: '$50-100',
-      medium: '$100-200',
-      high: '$200+',
-    },
-    insider_tips: [
-      'Learn a few basic phrases in the local language',
-      'Use public transportation for cost-effective travel',
-      'Visit attractions early morning or late afternoon to avoid crowds',
-    ],
-    source: 'mock'
-  };
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      data: mockData,
-    }),
-    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-  );
-}
