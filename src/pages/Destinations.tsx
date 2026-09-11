@@ -6,17 +6,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, MapPin, Star, TrendingUp, Calendar, Users, Plane, Heart, Globe, Sun, Compass, Mountain } from "lucide-react";
+import { Search, MapPin, Star, TrendingUp, Calendar, Plane, Heart, Sun } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { VOLS_BOSSIZ_URL } from "@/lib/volsBossiz";
 import destinationsHero from "@/assets/destination-hotel.jpg";
+import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
+import { toast } from "sonner";
 
 const Destinations = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const { subscribe: subscribeNewsletter, loading: subscribingNewsletter } = useNewsletterSubscribe();
+
+  const handleNewsletterSubmit = async () => {
+    if (!newsletterEmail.trim()) {
+      toast.error(t("footer.newsletter.emailRequired"));
+      return;
+    }
+    const result = await subscribeNewsletter(newsletterEmail.trim());
+    if (result) {
+      toast.success(result.message || t("footer.newsletter.subscribeSuccess"));
+      setNewsletterEmail("");
+    } else {
+      toast.error(t("footer.newsletter.subscribeError"));
+    }
+  };
 
   const toggleFavorite = (city: string) => {
     setFavorites(prev => 
@@ -300,49 +318,10 @@ const Destinations = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 py-7 text-lg bg-white/95 backdrop-blur-sm border-white/20 shadow-2xl rounded-2xl focus-visible:ring-primary/20 transition-all"
               />
-              <Button className="absolute right-2 top-1/2 -translate-y-1/2 h-11 px-6 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all">
-                {t("search.search")}
-              </Button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Quick Stats */}
-      <section className="py-8 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <Globe className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-2xl font-bold">150+</p>
-                <p className="text-sm text-muted-foreground">{t("destinations.stats.destinations")}</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <Compass className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-2xl font-bold">50+</p>
-                <p className="text-sm text-muted-foreground">{t("destinations.stats.countries")}</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <Users className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-2xl font-bold">100K+</p>
-                <p className="text-sm text-muted-foreground">{t("destinations.stats.travelers")}</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <Mountain className="w-8 h-8 text-primary mx-auto mb-2" />
-                <p className="text-2xl font-bold">4.8</p>
-                <p className="text-sm text-muted-foreground">{t("destinations.stats.avgRating")}</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
 
       {/* Content */}
       <div className="flex-1 bg-background py-12">
@@ -364,11 +343,17 @@ const Destinations = () => {
             </TabsList>
 
             <TabsContent value="popular">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {filteredDestinations.map((dest, index) => (
-                  <DestinationCard key={dest.city} dest={dest} index={index} />
-                ))}
-              </div>
+              {filteredDestinations.length === 0 ? (
+                <Card className="p-12 text-center text-muted-foreground">
+                  Aucune destination ne correspond à "{searchQuery}"
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {filteredDestinations.map((dest, index) => (
+                    <DestinationCard key={dest.city} dest={dest} index={index} />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="africa">
@@ -402,12 +387,14 @@ const Destinations = () => {
             {t("destinations.newsletterSubtitle", "Inscrivez-vous pour recevoir des offres exclusives et des inspirations voyage")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <Input 
-              type="email" 
+            <Input
+              type="email"
               placeholder={t("footer.newsletter.placeholder")}
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
               className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
             />
-            <Button variant="secondary">
+            <Button variant="secondary" onClick={handleNewsletterSubmit} disabled={subscribingNewsletter}>
               {t("pages.support.subscribe")}
             </Button>
           </div>

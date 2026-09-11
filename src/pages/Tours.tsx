@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,9 +42,8 @@ const Tours = () => {
     return Math.max(200, Math.ceil((highest || 200) / 50) * 50);
   }, [tours]);
 
-  useMemo(() => {
+  useEffect(() => {
     setPriceRange([0, maxPrice]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maxPrice]);
 
   const filteredTours = useMemo(() => {

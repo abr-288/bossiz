@@ -110,10 +110,13 @@ const Artisans = () => {
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{artisan.bio}</p>
                   )}
                   {artisan.products?.length > 0 && (
-                    <p className="text-xs text-muted-foreground mt-auto pt-2">
+                    <p className="text-xs text-muted-foreground mb-3">
                       {artisan.products.length} création{artisan.products.length > 1 ? "s" : ""} à découvrir
                     </p>
                   )}
+                  <Button variant="outline" className="mt-auto w-full">
+                    Voir le profil
+                  </Button>
                 </CardContent>
               </Card>
             ))}

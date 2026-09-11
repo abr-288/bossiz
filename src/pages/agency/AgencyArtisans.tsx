@@ -229,6 +229,7 @@ export default function AgencyArtisans() {
                   <div className="space-y-2">
                     <Label>WhatsApp</Label>
                     <Input value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="+225 XX XX XX XX XX" />
+                    <p className="text-xs text-muted-foreground">Indiquez bien l'indicatif pays (+225…), sinon le bouton WhatsApp du client ne fonctionnera pas.</p>
                   </div>
                 </div>
                 <div className="space-y-2">

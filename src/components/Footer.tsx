@@ -118,23 +118,6 @@ const Footer = () => {
                   </Button>
                 </a>
               )}
-              {/* Fallback if no social links configured */}
-              {!config.social.facebook && !config.social.twitter && !config.social.instagram && !config.social.youtube && (
-                <>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
-                    <Facebook className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
-                    <Twitter className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
-                    <Instagram className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
-                    <Youtube className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                </>
-              )}
             </div>
           </div>
 

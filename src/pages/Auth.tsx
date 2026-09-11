@@ -626,7 +626,7 @@ const Auth = () => {
               
               <div className="mt-8 grid grid-cols-3 gap-6 text-center">
                 <div className="glass p-4 rounded-xl slide-up-fade" style={{ animationDelay: '0.1s' }}>
-                  <div className="text-2xl font-bold">500+</div>
+                  <div className="text-2xl font-bold">Multi</div>
                   <div className="text-sm text-white/80">destinations</div>
                 </div>
                 <div className="glass p-4 rounded-xl slide-up-fade" style={{ animationDelay: '0.2s' }}>

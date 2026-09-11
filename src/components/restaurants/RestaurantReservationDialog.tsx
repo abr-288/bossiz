@@ -28,9 +28,16 @@ const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const todayIso = () => new Date().toISOString().split("T")[0];
 
 const buildSlots = (open: string, close: string, intervalMinutes: number): string[] => {
+  // Guards against malformed opening_hours entered directly in the DB
+  // (the partner admin form always writes complete {open, close, closed}
+  // objects, but a manual edit could leave open/close missing) - without
+  // this, .split(":") on undefined throws and takes down the whole page,
+  // since there's only one top-level ErrorBoundary for the app.
+  if (!open || !close) return [];
   const slots: string[] = [];
   const [openH, openM] = open.split(":").map(Number);
   const [closeH, closeM] = close.split(":").map(Number);
+  if (Number.isNaN(openH) || Number.isNaN(openM) || Number.isNaN(closeH) || Number.isNaN(closeM)) return [];
   let minutes = openH * 60 + openM;
   const endMinutes = closeH * 60 + closeM;
   while (minutes + intervalMinutes <= endMinutes) {
@@ -120,8 +127,8 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
       return;
     }
     const size = parseInt(partySize);
-    if (!size || size < 1) {
-      toast.error("Indiquez le nombre de convives");
+    if (!size || size < 1 || size > 50) {
+      toast.error(size > 50 ? "50 personnes maximum par réservation" : "Indiquez le nombre de convives");
       return;
     }
     if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
@@ -209,16 +216,16 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Nom *</Label>
-              <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+              <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
             </div>
             <div className="space-y-2">
               <Label>Téléphone *</Label>
-              <Input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} />
+              <Input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} required />
             </div>
           </div>
           <div className="space-y-2">
             <Label>Email *</Label>
-            <Input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} />
+            <Input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} required />
           </div>
           <div className="space-y-2">
             <Label>Demandes particulières</Label>
@@ -233,7 +240,11 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>Annuler</Button>
-          <Button onClick={handleSubmit} disabled={submitting || !selectedTime} className="gradient-primary">
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting || !selectedTime || !customerName.trim() || !customerPhone.trim() || !customerEmail.trim()}
+            className="gradient-primary"
+          >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (
               <>
                 <Users className="w-4 h-4 mr-2" />

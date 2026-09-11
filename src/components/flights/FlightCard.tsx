@@ -81,19 +81,19 @@ export const FlightCard = ({
         </div>
 
         {/* Flight Info */}
-        <div className="flex-1 flex items-center gap-4 lg:gap-6">
+        <div className="flex-1 flex items-center gap-2 sm:gap-4 lg:gap-6">
           {/* Departure */}
-          <div className="flex flex-col items-start">
-            <span className="text-xl lg:text-2xl font-bold">{formatTime(departureTime)}</span>
+          <div className="flex flex-col items-start min-w-0">
+            <span className="text-lg sm:text-xl lg:text-2xl font-bold">{formatTime(departureTime)}</span>
             <span className="text-sm font-medium">{getCityName(departureAirport)}</span>
             <span className="text-xs text-muted-foreground">{departureAirport}</span>
-            <span className="text-[10px] text-muted-foreground/70 max-w-[120px] truncate" title={getAirportName(departureAirport)}>
+            <span className="text-[10px] text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate" title={getAirportName(departureAirport)}>
               {getAirportName(departureAirport)}
             </span>
           </div>
 
           {/* Duration & Stops */}
-          <div className="flex-1 flex flex-col items-center min-w-[120px] gap-1">
+          <div className="flex-1 flex flex-col items-center min-w-[80px] sm:min-w-[120px] gap-1">
             {/* Duration Badge */}
             <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full">
               <Clock className="h-3.5 w-3.5" />
@@ -136,11 +136,11 @@ export const FlightCard = ({
           </div>
 
           {/* Arrival */}
-          <div className="flex flex-col items-end">
-            <span className="text-xl lg:text-2xl font-bold">{formatTime(arrivalTime)}</span>
+          <div className="flex flex-col items-end min-w-0">
+            <span className="text-lg sm:text-xl lg:text-2xl font-bold">{formatTime(arrivalTime)}</span>
             <span className="text-sm font-medium">{getCityName(arrivalAirport)}</span>
             <span className="text-xs text-muted-foreground">{arrivalAirport}</span>
-            <span className="text-[10px] text-muted-foreground/70 max-w-[120px] truncate text-right" title={getAirportName(arrivalAirport)}>
+            <span className="text-[10px] text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate text-right" title={getAirportName(arrivalAirport)}>
               {getAirportName(arrivalAirport)}
             </span>
           </div>

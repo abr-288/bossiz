@@ -156,6 +156,10 @@ const CompanyDashboard = () => {
 
   const savePolicy = async () => {
     if (!company || !newPolicyAmount) return;
+    if (parseFloat(newPolicyAmount) <= 0) {
+      toast.error("Le plafond doit être supérieur à 0");
+      return;
+    }
     const { error } = await supabase.from("travel_policies").upsert(
       { company_id: company.id, service_type: newPolicyType, max_amount: parseFloat(newPolicyAmount), currency: "XOF" },
       { onConflict: "company_id,service_type" }
@@ -312,7 +316,7 @@ const CompanyDashboard = () => {
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground">Plafond (XOF)</label>
-                  <Input type="number" value={newPolicyAmount} onChange={(e) => setNewPolicyAmount(e.target.value)} className="w-40" />
+                  <Input type="number" min="1" value={newPolicyAmount} onChange={(e) => setNewPolicyAmount(e.target.value)} className="w-40" />
                 </div>
                 <Button onClick={savePolicy} disabled={!newPolicyAmount}>
                   <Plus className="w-4 h-4 mr-1" /> Enregistrer

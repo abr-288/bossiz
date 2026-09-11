@@ -720,7 +720,11 @@ export const SummaryStep = ({
                           <AlertTriangle className="w-3 h-3" /> Hors politique de voyage (plafond : <Price amount={travelPolicy.max_amount} fromCurrency={travelPolicy.currency} />)
                         </Badge>
                       )
-                    ) : null}
+                    ) : (
+                      <Badge variant="outline" className="gap-1.5 text-muted-foreground">
+                        Aucune politique de voyage définie pour ce type de service
+                      </Badge>
+                    )}
                     <p className="text-xs text-muted-foreground">
                       La réservation sera soumise à un approbateur de l'entreprise avant paiement.
                     </p>
