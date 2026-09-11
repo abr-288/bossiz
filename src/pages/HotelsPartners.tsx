@@ -77,7 +77,8 @@ const HotelsPartners = () => {
           alt="Hôtels & Hébergements"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12 text-center animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Trouvez votre hôtel</h1>
           <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">

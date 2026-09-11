@@ -100,6 +100,7 @@ const Support = () => {
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background/10"></div>
+        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.18), transparent 55%)" }}></div>
 
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">

@@ -60,9 +60,18 @@ const HeroSection = () => {
             />
           </div>
         ))}
-        {/* Deep, Premium Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-background/20" />
-        <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
+        {/* Golden Hour overlay: navy gradient + signature gold glow + horizon
+            line over the real photo, instead of a generic black scrim. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/35 to-background/10" />
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.28), transparent 55%)" }}
+        />
+        <div
+          className="absolute left-0 right-0 h-px opacity-70"
+          style={{ top: "60%", background: "linear-gradient(90deg, transparent, hsl(var(--gold) / 0.7), transparent)" }}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-primary/85 via-primary/15 to-transparent" />
         
         {/* Hero text - Larger & More Impactful */}
         <div className="relative z-10 container mx-auto px-4 text-center mt-[-10vh]">
