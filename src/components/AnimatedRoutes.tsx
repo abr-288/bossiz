@@ -82,6 +82,7 @@ const Help = lazy(() => import("@/pages/Help"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const BecomePartner = lazy(() => import("@/pages/BecomePartner"));
 const CarPartnerPlans = lazy(() => import("@/pages/CarPartnerPlans"));
+const Partnership = lazy(() => import("@/pages/Partnership"));
 const Support = lazy(() => import("@/pages/Support"));
 const SupportCategory = lazy(() => import("@/pages/SupportCategory"));
 const Install = lazy(() => import("@/pages/Install"));
@@ -198,6 +199,7 @@ const AnimatedRoutes = () => {
           <Route path="/agency/settings" element={<PageTransition><AgencySettings /></PageTransition>} />
           <Route path="/help" element={<PageTransition><Help /></PageTransition>} />
           <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+          <Route path="/partenariat" element={<PageTransition><Partnership /></PageTransition>} />
           <Route path="/devenir-partenaire" element={<PageTransition><BecomePartner /></PageTransition>} />
           <Route path="/partenaires/voitures" element={<PageTransition><CarPartnerPlans /></PageTransition>} />
           <Route path="/support" element={<PageTransition><Support /></PageTransition>} />

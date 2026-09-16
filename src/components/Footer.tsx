@@ -193,6 +193,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/partenariat" className="text-white/80 hover:text-secondary transition-smooth">
+                  Devenir partenaire
+                </Link>
+              </li>
+              <li>
                 <Link to="/partenaires/voitures" className="text-white/80 hover:text-secondary transition-smooth">
                   Devenir partenaire voiture
                 </Link>

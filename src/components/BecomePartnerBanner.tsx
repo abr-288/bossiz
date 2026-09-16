@@ -39,7 +39,7 @@ const BecomePartnerBanner = () => {
             size="lg"
             className="relative bg-gold text-gold-foreground hover:bg-gold/90 font-semibold flex-shrink-0"
           >
-            <Link to="/devenir-partenaire">
+            <Link to="/partenariat">
               {t("pages.index.becomePartnerCta", "Devenir partenaire")}
             </Link>
           </Button>

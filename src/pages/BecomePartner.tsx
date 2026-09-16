@@ -20,6 +20,13 @@ const carPlanLabels: Record<string, string> = {
   flotte: "Flotte",
 };
 
+const partnerTypeLabels: Record<string, string> = {
+  hotel: "Hôtel / hébergement",
+  restaurant: "Restaurant",
+  activity: "Activité / excursion / tour",
+  artisan: "Artisan / guide local",
+};
+
 const benefits = [
   {
     icon: Users,
@@ -42,11 +49,13 @@ const BecomePartner = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const requestedCarPlan = searchParams.get("plan");
+  const requestedType = searchParams.get("type");
+  const requestedTypeLabel = requestedType ? partnerTypeLabels[requestedType] : undefined;
   const [formData, setFormData] = useState({
     name: "",
     contactEmail: "",
     contactPhone: "",
-    description: "",
+    description: requestedTypeLabel ? `Type de partenariat : ${requestedTypeLabel}\n\n` : "",
     logoUrl: "",
   });
   const [loading, setLoading] = useState(false);
@@ -147,6 +156,11 @@ const BecomePartner = () => {
                 </Link>
               </p>
             )}
+            <p className="text-sm text-muted-foreground mt-2">
+              <Link to="/partenariat" className="text-primary font-medium hover:underline">
+                Voir tous les types de partenariat et leurs conditions
+              </Link>
+            </p>
           </div>
 
           {/* Application form */}
@@ -158,6 +172,12 @@ const BecomePartner = () => {
                   <Badge variant="secondary" className="w-fit gap-1.5 mt-1">
                     <Car className="w-3.5 h-3.5" />
                     Forfait voiture demandé : {carPlanLabels[requestedCarPlan] || requestedCarPlan}
+                  </Badge>
+                )}
+                {!requestedCarPlan && requestedTypeLabel && (
+                  <Badge variant="secondary" className="w-fit gap-1.5 mt-1">
+                    <Handshake className="w-3.5 h-3.5" />
+                    Type de partenariat : {requestedTypeLabel}
                   </Badge>
                 )}
               </CardHeader>
