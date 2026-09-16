@@ -6,13 +6,47 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Handshake, BadgePercent, Users, TrendingUp, Car } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Handshake,
+  BadgePercent,
+  Users,
+  TrendingUp,
+  Hotel,
+  UtensilsCrossed,
+  Compass,
+  Hammer,
+  Car,
+  Check,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { partnerApplicationSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerBecomePartner from "@/assets/hero-slide-1.jpg";
+
+const partnerTypeOptions = [
+  { value: "hotel", label: "Hôtel / hébergement", icon: Hotel },
+  { value: "restaurant", label: "Restaurant", icon: UtensilsCrossed },
+  { value: "activity", label: "Activité / excursion / tour", icon: Compass },
+  { value: "artisan", label: "Artisan / guide local", icon: Hammer },
+  { value: "cars", label: "Location de voitures", icon: Car },
+] as const;
+
+type PartnerTypeValue = (typeof partnerTypeOptions)[number]["value"];
+
+const carPlanOptions = [
+  { value: "decouverte", label: "Découverte — Gratuit, commission 12%, jusqu'à 3 véhicules" },
+  { value: "pro", label: "Pro — 25 000 XOF/mois, commission 8%, jusqu'à 15 véhicules" },
+  { value: "flotte", label: "Flotte — 60 000 XOF/mois, commission 5%, véhicules illimités" },
+];
 
 const carPlanLabels: Record<string, string> = {
   decouverte: "Découverte",
@@ -20,18 +54,45 @@ const carPlanLabels: Record<string, string> = {
   flotte: "Flotte",
 };
 
-const partnerTypeLabels: Record<string, string> = {
-  hotel: "Hôtel / hébergement",
-  restaurant: "Restaurant",
-  activity: "Activité / excursion / tour",
-  artisan: "Artisan / guide local",
+const commonConditions = [
+  "Chaque candidature est étudiée manuellement par notre équipe avant toute activation.",
+  "B-Reserve peut refuser ou suspendre un partenariat en cas de non-respect de ces conditions.",
+];
+
+const conditionsByType: Record<PartnerTypeValue, string[]> = {
+  hotel: [
+    "Inscription gratuite, sans engagement.",
+    "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client.",
+    "Une commission de 10% est prélevée sur chaque réservation confirmée.",
+    "Votre établissement est géré en autonomie depuis votre espace agence une fois la candidature validée.",
+  ],
+  restaurant: [
+    "Inscription gratuite, sans engagement.",
+    "Une commission de 10% est prélevée sur chaque réservation effectuée via la plateforme.",
+    "Vous gérez votre menu et vos disponibilités depuis votre espace agence.",
+  ],
+  activity: [
+    "Inscription gratuite, sans engagement.",
+    "Une commission de 10% est prélevée sur chaque réservation.",
+    "Votre activité est visible dans les résultats Activités & Tours.",
+  ],
+  artisan: [
+    "Inscription gratuite, sans engagement.",
+    "Une commission de 10% est prélevée sur chaque prestation réservée.",
+    "Une fiche dédiée présente votre savoir-faire avec photos et description.",
+  ],
+  cars: [
+    "L'inscription se fait via l'un de nos 3 forfaits : Découverte (gratuit), Pro ou Flotte.",
+    "Une commission dégressive s'applique selon le forfait choisi : 12% (Découverte), 8% (Pro) ou 5% (Flotte).",
+    "Le nombre de véhicules en ligne et les mises en avant dépendent du forfait souscrit.",
+  ],
 };
 
 const benefits = [
   {
     icon: Users,
     title: "Visibilité auprès de nos clients",
-    description: "Vos hôtels apparaissent directement dans les résultats de recherche B-Reserve.",
+    description: "Votre établissement apparaît directement dans les résultats de recherche B-Reserve.",
   },
   {
     icon: BadgePercent,
@@ -45,23 +106,51 @@ const benefits = [
   },
 ];
 
+const isPartnerType = (value: string | null): value is PartnerTypeValue =>
+  !!value && partnerTypeOptions.some((option) => option.value === value);
+
 const BecomePartner = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const requestedCarPlan = searchParams.get("plan");
-  const requestedType = searchParams.get("type");
-  const requestedTypeLabel = requestedType ? partnerTypeLabels[requestedType] : undefined;
+  const requestedTypeParam = searchParams.get("type");
+  const initialType: PartnerTypeValue | "" = isPartnerType(requestedTypeParam)
+    ? requestedTypeParam
+    : requestedCarPlan
+      ? "cars"
+      : "";
+
   const [formData, setFormData] = useState({
     name: "",
     contactEmail: "",
     contactPhone: "",
-    description: requestedTypeLabel ? `Type de partenariat : ${requestedTypeLabel}\n\n` : "",
+    description: "",
     logoUrl: "",
   });
+  const [partnerType, setPartnerType] = useState<PartnerTypeValue | "">(initialType);
+  const [carPlan, setCarPlan] = useState(
+    requestedCarPlan && carPlanLabels[requestedCarPlan] ? requestedCarPlan : "decouverte"
+  );
+  const [acceptedConditions, setAcceptedConditions] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleTypeChange = (value: string) => {
+    setPartnerType(value as PartnerTypeValue);
+    setAcceptedConditions(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!partnerType) {
+      toast.error("Veuillez choisir un type de partenariat.");
+      return;
+    }
+
+    if (!acceptedConditions) {
+      toast.error("Veuillez accepter les conditions du partenariat avant de continuer.");
+      return;
+    }
 
     try {
       partnerApplicationSchema.parse(formData);
@@ -70,14 +159,23 @@ const BecomePartner = () => {
       return;
     }
 
+    const typeLabel = partnerTypeOptions.find((option) => option.value === partnerType)?.label;
+    const finalDescription = [
+      typeLabel ? `Type de partenariat : ${typeLabel}` : null,
+      partnerType === "cars" ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}` : null,
+      formData.description || null,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
     setLoading(true);
     const { error } = await supabase.from("partner_applications").insert({
       name: formData.name,
       contact_email: formData.contactEmail,
       contact_phone: formData.contactPhone || null,
-      description: formData.description || null,
+      description: finalDescription || null,
       logo_url: formData.logoUrl || null,
-      requested_car_plan_id: requestedCarPlan || null,
+      requested_car_plan_id: partnerType === "cars" ? carPlan : null,
     });
     setLoading(false);
 
@@ -89,7 +187,12 @@ const BecomePartner = () => {
 
     toast.success("Candidature envoyée ! Notre équipe vous recontactera après étude de votre dossier.");
     setFormData({ name: "", contactEmail: "", contactPhone: "", description: "", logoUrl: "" });
+    setPartnerType("");
+    setCarPlan("decouverte");
+    setAcceptedConditions(false);
   };
+
+  const activeConditions = partnerType ? [...conditionsByType[partnerType], ...commonConditions] : [];
 
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
@@ -111,7 +214,7 @@ const BecomePartner = () => {
             {t("pages.becomePartner.title", "Devenir partenaire")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
-            {t("pages.becomePartner.subtitle", "Hôtel, agence de location, guide touristique... Listez vos services sur B-Reserve et touchez de nouveaux clients")}
+            {t("pages.becomePartner.subtitle", "Hôtel, restaurant, activité, artisan, location de voitures... Listez vos services sur B-Reserve et touchez de nouveaux clients")}
           </p>
         </div>
       </section>
@@ -148,14 +251,6 @@ const BecomePartner = () => {
                 "Chaque candidature est étudiée manuellement par notre équipe avant activation de votre espace partenaire."
               )}
             </p>
-            {!requestedCarPlan && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Vous louez des véhicules ?{" "}
-                <Link to="/partenaires/voitures" className="text-primary font-medium hover:underline">
-                  Voir nos forfaits pour partenaires voiture
-                </Link>
-              </p>
-            )}
             <p className="text-sm text-muted-foreground mt-2">
               <Link to="/partenariat" className="text-primary font-medium hover:underline">
                 Voir tous les types de partenariat et leurs conditions
@@ -168,23 +263,62 @@ const BecomePartner = () => {
             <Card>
               <CardHeader>
                 <CardTitle>{t("pages.becomePartner.formTitle", "Votre candidature")}</CardTitle>
-                {requestedCarPlan && (
-                  <Badge variant="secondary" className="w-fit gap-1.5 mt-1">
-                    <Car className="w-3.5 h-3.5" />
-                    Forfait voiture demandé : {carPlanLabels[requestedCarPlan] || requestedCarPlan}
-                  </Badge>
-                )}
-                {!requestedCarPlan && requestedTypeLabel && (
-                  <Badge variant="secondary" className="w-fit gap-1.5 mt-1">
-                    <Handshake className="w-3.5 h-3.5" />
-                    Type de partenariat : {requestedTypeLabel}
-                  </Badge>
-                )}
               </CardHeader>
               <CardContent>
                 <UnifiedForm onSubmit={handleSubmit} variant="contact" loading={loading}>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium block">
+                      Type de partenariat <span className="text-destructive">*</span>
+                    </label>
+                    <Select value={partnerType} onValueChange={handleTypeChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisissez un type de partenariat" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {partnerTypeOptions.map((option) => {
+                          const Icon = option.icon;
+                          return (
+                            <SelectItem key={option.value} value={option.value}>
+                              <span className="flex items-center gap-2">
+                                <Icon className="w-4 h-4 text-primary" />
+                                {option.label}
+                              </span>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {partnerType === "cars" && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium block">
+                        Forfait souhaité <span className="text-destructive">*</span>
+                      </label>
+                      <Select value={carPlan} onValueChange={setCarPlan}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisissez un forfait" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {carPlanOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Détails complets sur la{" "}
+                        <Link to="/partenaires/voitures" className="text-primary hover:underline">
+                          page des forfaits voiture
+                        </Link>
+                        .
+                      </p>
+                    </div>
+                  )}
+
                   <UnifiedFormField
-                    label={t("pages.becomePartner.form.name", "Nom de l'agence / de l'hôtel")}
+                    label={t("pages.becomePartner.form.name", "Nom de l'agence / de l'établissement")}
                     name="name"
                     placeholder="Ex: Onomo Hotel Abidjan"
                     value={formData.name}
@@ -220,14 +354,51 @@ const BecomePartner = () => {
                       {t("pages.becomePartner.form.description", "Présentez votre établissement")}
                     </label>
                     <Textarea
-                      placeholder="Nombre de chambres, localisation, services proposés..."
+                      placeholder="Nombre de chambres/places, localisation, services proposés..."
                       rows={5}
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       className="w-full"
                     />
                   </div>
-                  <UnifiedSubmitButton loading={loading} fullWidth>
+
+                  {partnerType ? (
+                    <div className="rounded-lg border border-border bg-muted/40 p-4 space-y-3">
+                      <p className="text-sm font-semibold">
+                        Conditions —{" "}
+                        {partnerTypeOptions.find((o) => o.value === partnerType)?.label}
+                      </p>
+                      <ul className="space-y-2">
+                        {activeConditions.map((condition) => (
+                          <li key={condition} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span>{condition}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex items-start gap-2 pt-2 border-t border-border">
+                        <Checkbox
+                          id="accept-conditions"
+                          checked={acceptedConditions}
+                          onCheckedChange={(checked) => setAcceptedConditions(checked === true)}
+                          className="mt-0.5"
+                        />
+                        <label htmlFor="accept-conditions" className="text-sm cursor-pointer">
+                          J'ai lu et j'accepte les conditions de ce partenariat.
+                        </label>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      Choisissez un type de partenariat ci-dessus pour afficher les conditions correspondantes.
+                    </p>
+                  )}
+
+                  <UnifiedSubmitButton
+                    loading={loading}
+                    fullWidth
+                    disabled={!partnerType || !acceptedConditions}
+                  >
                     {t("pages.becomePartner.form.submit", "Envoyer ma candidature")}
                   </UnifiedSubmitButton>
                 </UnifiedForm>
