@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
-import { FileText, Scale, CreditCard, AlertTriangle, Ban, RefreshCcw, Gavel, ShieldCheck, Plane, Users } from "lucide-react";
+import { FileText, Scale, CreditCard, AlertTriangle, Ban, RefreshCcw, Gavel, ShieldCheck, Plane, Users, Handshake } from "lucide-react";
 
 const TermsOfService = () => {
   const { config } = useSiteConfigContext();
@@ -37,6 +37,10 @@ const TermsOfService = () => {
         "**2.3 Conditions d'âge**",
         "• Vous devez avoir au moins 18 ans pour créer un compte et effectuer des réservations.",
         "• Les mineurs peuvent voyager uniquement sous la responsabilité d'un adulte ayant effectué la réservation.",
+        "",
+        "**2.4 Acceptation préalable obligatoire**",
+        "• La création d'un compte, quel que soit son type (client, agence partenaire ou compte entreprise), n'est possible qu'après acceptation expresse des présentes CGU et de notre Politique de Confidentialité, au moyen d'une case à cocher dédiée lors de l'inscription.",
+        "• Cette acceptation constitue une preuve contractuelle de votre consentement, horodatée et conservée conformément à la section « Conservation des données » de la Politique de Confidentialité.",
       ],
     },
     {
@@ -150,8 +154,37 @@ const TermsOfService = () => {
       ],
     },
     {
+      icon: Handshake,
+      title: "9. Partenariats (hôtels, restaurants, activités, artisans, location de voitures)",
+      content: [
+        "**9.1 Candidature et étude du dossier**",
+        `• Toute personne ou entreprise souhaitant référencer ses services sur ${siteName} (hôtel, restaurant, activité/excursion, artisan/guide, location de voitures) doit soumettre une candidature via la page « Devenir partenaire ».`,
+        "• Le dépôt d'une candidature ne constitue ni un engagement contractuel ni une garantie d'acceptation. Chaque dossier est étudié manuellement et peut être accepté, rejeté ou classé sans suite, sans obligation de motivation.",
+        `• L'acceptation d'une candidature nécessite que le candidat dispose déjà d'un compte utilisateur ${siteName} enregistré avec la même adresse e-mail que celle indiquée dans sa candidature, ce compte étant ensuite rattaché à l'espace agence créé.`,
+        "",
+        "**9.2 Conditions spécifiques par catégorie**",
+        "• Les conditions applicables (gratuité de l'inscription, taux de commission, forfaits payants pour la location de voitures) sont présentées de façon détaillée sur la page « Devenir partenaire » et doivent être expressément acceptées, catégorie par catégorie, avant l'envoi de toute candidature.",
+        "• Ces conditions peuvent évoluer ; les partenaires déjà actifs seront informés de toute modification substantielle affectant leur taux de commission ou leur forfait.",
+        "",
+        "**9.3 Commission et paiement des partenaires**",
+        `• ${siteName} agit en tant que plateforme d'intermédiation et prélève une commission sur chaque réservation confirmée, dont le taux dépend de la catégorie de service et, pour la location de voitures, du forfait souscrit.`,
+        "• Le reversement des sommes dues au partenaire (montant de la réservation diminué de la commission) est effectué manuellement par nos équipes selon les modalités convenues ; il ne s'agit pas d'un virement automatique instantané.",
+        "• Les forfaits payants (location de voitures) sont facturés par avance (mensuellement ou annuellement) et ne sont pas remboursables au prorata en cas de résiliation en cours de période, sauf disposition légale contraire.",
+        "",
+        "**9.4 Obligations du partenaire**",
+        "• Le partenaire garantit l'exactitude des informations et tarifs qu'il publie, ainsi que sa capacité à honorer les réservations confirmées.",
+        "• Le partenaire demeure seul responsable du respect des réglementations applicables à son secteur d'activité (autorisations d'exploitation, assurances, normes sanitaires ou de sécurité, réglementation du transport pour la location de voitures).",
+        `• Le partenaire garantit détenir tous les droits nécessaires sur le logo, les photos et les textes qu'il transmet (y compris via le formulaire de candidature) et concède à ${siteName} une licence non exclusive, gratuite et mondiale pour les reproduire et les afficher dans le cadre de son référencement sur la plateforme.`,
+        "• Un fichier logo transmis lors d'une candidature est stocké sur un espace de stockage public et accessible via son lien direct dès son téléversement, y compris avant toute validation de la candidature.",
+        "",
+        "**9.5 Suspension et résiliation du partenariat**",
+        `• ${siteName} peut suspendre ou mettre fin à un partenariat, à tout moment et sans préavis en cas de manquement grave (fraude, non-respect des présentes conditions, plaintes répétées de clients, non-conformité réglementaire), et avec un préavis raisonnable dans les autres cas.`,
+        "• La résiliation n'affecte pas les réservations déjà confirmées, qui doivent être honorées ou remboursées selon les conditions applicables.",
+      ],
+    },
+    {
       icon: Scale,
-      title: "9. Abonnements et services premium",
+      title: "10. Abonnements et services premium",
       content: [
         "**9.1 Plans d'abonnement**",
         `• ${siteName} propose des plans d'abonnement offrant des avantages exclusifs.`,
@@ -165,7 +198,7 @@ const TermsOfService = () => {
     },
     {
       icon: Gavel,
-      title: "10. Droit applicable et litiges",
+      title: "11. Droit applicable et litiges",
       content: [
         "**10.1 Droit applicable**",
         "Les présentes conditions sont régies par le droit en vigueur en Côte d'Ivoire et les conventions internationales applicables au transport aérien.",

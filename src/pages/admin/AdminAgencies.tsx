@@ -49,7 +49,6 @@ interface Agency {
   commission_rate: number | null;
   car_plan_id: string | null;
   created_at: string;
-  owner_email?: string;
   owner_name?: string;
 }
 
@@ -82,6 +81,7 @@ export default function AdminAgencies() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
+  const [ownerMatchStatus, setOwnerMatchStatus] = useState<"idle" | "found" | "not-found">("idle");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -116,6 +116,25 @@ export default function AdminAgencies() {
     }
   }, [prefillApplication]);
 
+  // Auto-link the owner: the candidate must already have a B-Reserve
+  // account (created via /auth) using the same email as their
+  // application, since agencies.owner_id always points at an existing
+  // profiles row - there's no flow that creates the auth account here.
+  useEffect(() => {
+    if (!prefillApplication?.contact_email || users.length === 0) {
+      setOwnerMatchStatus("idle");
+      return;
+    }
+    const email = prefillApplication.contact_email.toLowerCase();
+    const match = users.find((u) => u.email?.toLowerCase() === email);
+    if (match) {
+      setFormData((prev) => (prev.owner_id ? prev : { ...prev, owner_id: match.id }));
+      setOwnerMatchStatus("found");
+    } else {
+      setOwnerMatchStatus("not-found");
+    }
+  }, [prefillApplication, users]);
+
   const fetchCarPlans = async () => {
     const { data, error } = await supabase
       .from("car_partner_plans")
@@ -144,12 +163,9 @@ export default function AdminAgencies() {
             .eq("id", agency.owner_id)
             .single();
 
-          const { data: userData } = await supabase.auth.admin.getUserById(agency.owner_id).catch(() => ({ data: null }));
-
           return {
             ...agency,
             owner_name: profileData?.full_name || "N/A",
-            owner_email: userData?.user?.email || "N/A",
           };
         })
       );
@@ -169,19 +185,9 @@ export default function AdminAgencies() {
 
   const fetchUsers = async () => {
     try {
-      const { data: profiles, error } = await supabase
-        .from("profiles")
-        .select("id, full_name");
-
+      const { data, error } = await supabase.functions.invoke("admin-list-users");
       if (error) throw error;
-      
-      setUsers(
-        (profiles || []).map((p) => ({
-          id: p.id,
-          email: "",
-          full_name: p.full_name,
-        }))
-      );
+      setUsers((data?.users || []) as UserOption[]);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -400,6 +406,19 @@ export default function AdminAgencies() {
                   {!editingAgency && (
                     <div className="space-y-2">
                       <Label htmlFor="owner">Propriétaire *</Label>
+                      {prefillApplication && ownerMatchStatus === "found" && (
+                        <p className="text-xs text-green-600 font-medium">
+                          Compte trouvé automatiquement pour {prefillApplication.contact_email}
+                        </p>
+                      )}
+                      {prefillApplication && ownerMatchStatus === "not-found" && (
+                        <p className="text-xs text-destructive font-medium">
+                          Aucun compte B-Reserve trouvé pour {prefillApplication.contact_email}. Le
+                          candidat doit d'abord créer un compte sur /auth avec cette adresse email,
+                          puis rouvrez cette candidature - ou choisissez manuellement ci-dessous s'il
+                          a utilisé une autre adresse.
+                        </p>
+                      )}
                       <Select
                         value={formData.owner_id}
                         onValueChange={(value) => setFormData({ ...formData, owner_id: value })}
@@ -411,7 +430,7 @@ export default function AdminAgencies() {
                         <SelectContent>
                           {users.map((user) => (
                             <SelectItem key={user.id} value={user.id}>
-                              {user.full_name || user.id.slice(0, 8)}
+                              {user.full_name || "Sans nom"} — {user.email}
                             </SelectItem>
                           ))}
                         </SelectContent>

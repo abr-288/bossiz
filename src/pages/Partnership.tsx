@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,9 @@ import {
   FileText,
   Search,
   Rocket,
+  LayoutGrid,
+  Percent,
+  Clock,
 } from "lucide-react";
 import bannerTours from "@/assets/banner-tours.jpg";
 
@@ -94,8 +98,8 @@ const partnershipTypes: PartnershipType[] = [
       "Commission dégressive selon le forfait : 12% → 8% → 5%",
       "Mise en avant, support prioritaire et badge vérifié selon le forfait choisi",
     ],
-    ctaLabel: "Voir les forfaits voiture",
-    ctaTo: "/partenaires/voitures",
+    ctaLabel: "Devenir partenaire voiture",
+    ctaTo: "/devenir-partenaire?type=cars",
     highlight: "Forfaits payants",
   },
 ];
@@ -103,17 +107,17 @@ const partnershipTypes: PartnershipType[] = [
 const steps = [
   {
     icon: FileText,
-    title: "1. Envoyez votre candidature",
+    title: "Envoyez votre candidature",
     description: "Choisissez votre type de partenariat et remplissez le formulaire en quelques minutes.",
   },
   {
     icon: Search,
-    title: "2. Étude de votre dossier",
+    title: "Étude de votre dossier",
     description: "Notre équipe étudie chaque candidature manuellement avant toute activation.",
   },
   {
     icon: Rocket,
-    title: "3. Activation de votre espace",
+    title: "Activation de votre espace",
     description: "Une fois validé, vous gérez vos offres, tarifs et disponibilités en toute autonomie.",
   },
 ];
@@ -139,67 +143,93 @@ const Partnership = () => {
           <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
             Tous nos partenariats
           </h1>
-          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
+          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium mb-8">
             Hôtels, restaurants, activités, artisans ou location de voitures : choisissez votre catégorie,
             découvrez les conditions et inscrivez-vous en quelques minutes.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-white/90 text-sm font-medium">
+            <span className="flex items-center gap-2">
+              <LayoutGrid className="w-4 h-4 text-gold" />
+              5 catégories de partenariat
+            </span>
+            <span className="flex items-center gap-2">
+              <Percent className="w-4 h-4 text-gold" />
+              Commission dès 5%
+            </span>
+            <span className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-gold" />
+              Réponse sous quelques jours
+            </span>
+          </div>
         </div>
       </section>
 
       <main className="flex-1 container mx-auto px-4 py-12 md:py-16">
         {/* Partnership types */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {partnershipTypes.map((type) => {
+          {partnershipTypes.map((type, index) => {
             const Icon = type.icon;
             return (
-              <Card key={type.id} className="flex flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-2xl flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-primary" />
+              <motion.div
+                key={type.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.4, delay: index * 0.06 }}
+              >
+                <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-2xl flex items-center justify-center">
+                          <Icon className="w-6 h-6 text-primary" />
+                        </div>
+                        <CardTitle className="text-xl">{type.title}</CardTitle>
                       </div>
-                      <CardTitle className="text-xl">{type.title}</CardTitle>
+                      {type.highlight && (
+                        <Badge variant="secondary" className="flex-shrink-0">
+                          {type.highlight}
+                        </Badge>
+                      )}
                     </div>
-                    {type.highlight && (
-                      <Badge variant="secondary" className="flex-shrink-0">
-                        {type.highlight}
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-col flex-1">
-                  <p className="text-sm text-muted-foreground mb-4">{type.description}</p>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                    Conditions
-                  </p>
-                  <ul className="space-y-2 mb-6 flex-1">
-                    {type.conditions.map((condition) => (
-                      <li key={condition} className="flex items-start gap-2 text-sm">
-                        <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span>{condition}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button asChild size="lg" className="w-full">
-                    <Link to={type.ctaTo}>{type.ctaLabel}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="flex flex-col flex-1">
+                    <p className="text-sm text-muted-foreground mb-4">{type.description}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                      Conditions
+                    </p>
+                    <ul className="space-y-2 mb-6 flex-1">
+                      {type.conditions.map((condition) => (
+                        <li key={condition} className="flex items-start gap-2 text-sm">
+                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>{condition}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button asChild size="lg" className="w-full">
+                      <Link to={type.ctaTo}>{type.ctaLabel}</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
             );
           })}
         </div>
 
         {/* How it works */}
         <div className="mb-16">
-          <h2 className="text-2xl font-black text-foreground mb-8 text-center">Comment ça marche</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {steps.map((step) => {
+          <h2 className="text-2xl font-black text-foreground mb-10 text-center">Comment ça marche</h2>
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 max-w-4xl mx-auto">
+            <div className="hidden md:block absolute top-7 left-[16.5%] right-[16.5%] h-px bg-border" />
+            {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <div key={step.title} className="text-center px-4">
-                  <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-2xl flex items-center justify-center">
+                <div key={step.title} className="relative text-center px-4">
+                  <div className="relative w-14 h-14 mx-auto mb-4 bg-background border-2 border-primary/20 rounded-2xl flex items-center justify-center">
                     <Icon className="w-7 h-7 text-primary" />
+                    <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center">
+                      {index + 1}
+                    </span>
                   </div>
                   <h3 className="font-bold mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground">{step.description}</p>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Facebook, Twitter, Instagram, Youtube, Mail, Linkedin, Download } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Mail, Linkedin } from "lucide-react";
 import Logo from "./Logo";
 import { useState } from "react";
 import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
@@ -158,18 +158,13 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Informations */}
           <div className="text-center sm:text-left">
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.support")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
                 <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.help")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
-                  {t("footer.faq")}
                 </Link>
               </li>
               <li>
@@ -183,43 +178,14 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-white/80 hover:text-secondary transition-smooth">
-                  Tableau de bord
-                </Link>
-              </li>
-              <li>
-                <Link to="/compatibility" className="text-white/80 hover:text-secondary transition-smooth">
-                  Compatibilité
-                </Link>
-              </li>
-              <li>
                 <Link to="/partenariat" className="text-white/80 hover:text-secondary transition-smooth">
                   Devenir partenaire
-                </Link>
-              </li>
-              <li>
-                <Link to="/partenaires/voitures" className="text-white/80 hover:text-secondary transition-smooth">
-                  Devenir partenaire voiture
                 </Link>
               </li>
               <li>
                 <Link to="/entreprises" className="text-white/80 hover:text-secondary transition-smooth">
                   Espace Entreprises
                 </Link>
-              </li>
-              <li>
-                <Link to="/artisans" className="text-white/80 hover:text-secondary transition-smooth">
-                  Artisans locaux
-                </Link>
-              </li>
-              <li>
-                <Button
-                  onClick={handleAppInstall}
-                  className="bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-colors duration-300 shadow-lg font-bold py-3 px-4 border-2 border-white hover:border-gray-200 rounded-lg text-sm"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  {t("common.install")}
-                </Button>
               </li>
             </ul>
           </div>
@@ -261,21 +227,19 @@ const Footer = () => {
             {config.footer.copyright || `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
-            <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
-              {t("footer.about")}
-            </Link>
             <Link to="/terms" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.terms")}
             </Link>
             <Link to="/privacy" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.privacy")}
             </Link>
-            <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
-              {t("footer.help")}
-            </Link>
-            <Link to="/install" className="text-secondary hover:text-secondary/80 transition-smooth font-semibold">
+            <button
+              type="button"
+              onClick={handleAppInstall}
+              className="text-secondary hover:text-secondary/80 transition-smooth font-semibold"
+            >
               📱 {t("common.install")}
-            </Link>
+            </button>
             <Link to="/bossiz-portal" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.bossizGroup")}
             </Link>
