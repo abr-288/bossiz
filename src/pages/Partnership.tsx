@@ -57,7 +57,7 @@ const partnershipTypes: PartnershipType[] = [
     description: "Faites découvrir votre table aux voyageurs et aux clients locaux de B-Reserve.",
     conditions: [
       "Inscription gratuite, sans engagement",
-      "Commission de 10% sur les réservations effectuées via la plateforme",
+      "Commission de 10% calculée sur chaque réservation confirmée, sur la base de votre prix moyen par personne",
       "Gérez votre menu et vos disponibilités depuis votre espace agence",
     ],
     ctaLabel: "Devenir partenaire restaurant",
@@ -83,7 +83,7 @@ const partnershipTypes: PartnershipType[] = [
     description: "Mettez en avant votre savoir-faire local ou vos services de guide auprès de nos clients.",
     conditions: [
       "Inscription gratuite, sans engagement",
-      "Commission de 10% sur les prestations réservées",
+      "Commission de 10% sur les commandes que vous confirmez, calculée sur le prix affiché de la création",
       "Fiche dédiée avec photos et description",
     ],
     ctaLabel: "Devenir partenaire artisan",
@@ -95,8 +95,8 @@ const partnershipTypes: PartnershipType[] = [
     title: "Bien-être & Beauté",
     description: "Spas, manucure/pédicure, barbershops, instituts de beauté et yoga : faites découvrir vos soins et prises de rendez-vous en ligne.",
     conditions: [
-      "Inscription gratuite, sans engagement, aucune commission prélevée par B-Reserve",
-      "Prise de rendez-vous en ligne sur vos créneaux, prestation et règlement gérés directement avec vous",
+      "Inscription gratuite, sans engagement",
+      "Commission de 10% calculée sur chaque rendez-vous confirmé, sur la base du prix de la prestation choisie",
       "Gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence",
     ],
     ctaLabel: "Devenir partenaire bien-être",

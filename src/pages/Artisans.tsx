@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MapPin, Hammer, Loader2, Phone, MessageCircle } from "lucide-react";
+import { MapPin, Hammer, Loader2, Phone, MessageCircle, ShoppingBag } from "lucide-react";
 import { useArtisans } from "@/hooks/useArtisans";
 import { Price } from "@/components/ui/price";
+import { ArtisanOrderDialog } from "@/components/artisans/ArtisanOrderDialog";
 
 const CRAFT_TYPES = ["Sculpture sur bois", "Bijoux & Accessoires", "Textile & Tissage", "Poterie & Céramique", "Maroquinerie", "Peinture & Art", "Vannerie", "Autre"];
 
@@ -20,6 +21,7 @@ const Artisans = () => {
   const [search, setSearch] = useState("");
   const [craftFilter, setCraftFilter] = useState("all");
   const [selectedArtisan, setSelectedArtisan] = useState<any>(null);
+  const [orderingProduct, setOrderingProduct] = useState<any>(null);
 
   const filtered = useMemo(() => {
     let result = artisans;
@@ -187,6 +189,15 @@ const Artisans = () => {
                               <Price amount={product.price} fromCurrency={product.currency || "XOF"} />
                             </p>
                           )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full mt-3 gap-1.5"
+                            onClick={() => setOrderingProduct(product)}
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            Demander
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
@@ -197,6 +208,16 @@ const Artisans = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {selectedArtisan && orderingProduct && (
+        <ArtisanOrderDialog
+          open={!!orderingProduct}
+          onOpenChange={(open) => !open && setOrderingProduct(null)}
+          artisanId={selectedArtisan.id}
+          artisanName={selectedArtisan.name}
+          product={orderingProduct}
+        />
+      )}
 
       <Footer />
     </div>

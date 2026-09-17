@@ -57,6 +57,7 @@ const AdminConfiguration = lazy(() => import("@/pages/admin/AdminConfiguration")
 const AdminAgencies = lazy(() => import("@/pages/admin/AdminAgencies"));
 const AdminPartnerApplications = lazy(() => import("@/pages/admin/AdminPartnerApplications"));
 const AdminCommissions = lazy(() => import("@/pages/admin/AdminCommissions"));
+const AdminCarPartnerPlans = lazy(() => import("@/pages/admin/AdminCarPartnerPlans"));
 const AdminAdvertisements = lazy(() => import("@/pages/admin/AdminAdvertisements"));
 const AdminPayments = lazy(() => import("@/pages/admin/AdminPayments"));
 const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
@@ -182,6 +183,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/agencies" element={<PageTransition><AdminAgencies /></PageTransition>} />
           <Route path="/admin/partner-applications" element={<PageTransition><AdminPartnerApplications /></PageTransition>} />
           <Route path="/admin/commissions" element={<PageTransition><AdminCommissions /></PageTransition>} />
+          <Route path="/admin/car-partner-plans" element={<PageTransition><AdminCarPartnerPlans /></PageTransition>} />
           <Route path="/admin/advertisements" element={<PageTransition><AdminAdvertisements /></PageTransition>} />
           <Route path="/admin/payments" element={<PageTransition><AdminPayments /></PageTransition>} />
           <Route path="/admin/reviews" element={<PageTransition><AdminReviews /></PageTransition>} />

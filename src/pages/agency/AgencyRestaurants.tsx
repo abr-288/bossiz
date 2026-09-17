@@ -46,6 +46,7 @@ interface Restaurant {
   opening_hours: Record<string, { open: string; close: string; closed?: boolean }>;
   slot_interval_minutes: number;
   max_covers_per_slot: number;
+  average_ticket_price: number | null;
   is_active: boolean;
   created_at: string;
 }
@@ -77,6 +78,7 @@ const emptyForm = {
   image_url: "",
   slot_interval_minutes: "30",
   max_covers_per_slot: "20",
+  average_ticket_price: "",
   available: true,
   openingHours: emptyOpeningHours(),
 };
@@ -144,6 +146,7 @@ export default function AgencyRestaurants() {
         image_url: formData.image_url || null,
         slot_interval_minutes: parseInt(formData.slot_interval_minutes) || 30,
         max_covers_per_slot: parseInt(formData.max_covers_per_slot) || 20,
+        average_ticket_price: formData.average_ticket_price ? parseFloat(formData.average_ticket_price) : null,
         is_active: formData.available,
         opening_hours: formData.openingHours,
       };
@@ -180,6 +183,7 @@ export default function AgencyRestaurants() {
       image_url: restaurant.image_url || "",
       slot_interval_minutes: restaurant.slot_interval_minutes.toString(),
       max_covers_per_slot: restaurant.max_covers_per_slot.toString(),
+      average_ticket_price: restaurant.average_ticket_price?.toString() || "",
       available: restaurant.is_active,
       openingHours: DAYS.reduce((acc, d) => {
         acc[d.key] = hours[d.key] || { open: "11:00", close: "22:00", closed: true };
@@ -288,6 +292,21 @@ export default function AgencyRestaurants() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Prix moyen par personne (XOF) *</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="Ex: 8000"
+                    value={formData.average_ticket_price}
+                    onChange={(e) => setFormData({ ...formData, average_ticket_price: e.target.value })}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Sert de base au calcul de la commission due sur chaque réservation confirmée (non affiché publiquement aux clients).
+                  </p>
                 </div>
 
                 <div className="space-y-3 border-t pt-4">

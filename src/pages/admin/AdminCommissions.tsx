@@ -21,14 +21,17 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, DollarSign, Clock, CheckCircle, Building2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, DollarSign, Clock, CheckCircle, Building2, Settings, Car } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface Commission {
   id: string;
   agency_id: string;
-  booking_id: string;
+  booking_id: string | null;
+  source_type: string;
+  source_id: string | null;
   booking_amount: number;
   commission_rate: number;
   commission_amount: number;
@@ -37,6 +40,13 @@ interface Commission {
   created_at: string;
   agency_name?: string;
 }
+
+const sourceLabels: Record<string, string> = {
+  service_booking: "Réservation (vol/hôtel/voiture/séjour)",
+  restaurant_reservation: "Restaurant",
+  wellness_booking: "Bien-être & Beauté",
+  artisan_order: "Artisan",
+};
 
 interface Stats {
   total: number;
@@ -133,9 +143,10 @@ export default function AdminCommissions() {
   };
 
   const filteredCommissions = commissions.filter((commission) => {
+    const reference = commission.booking_id || commission.source_id || "";
     const matchesSearch =
       commission.agency_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      commission.booking_id.toLowerCase().includes(searchTerm.toLowerCase());
+      reference.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || commission.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -164,12 +175,32 @@ export default function AdminCommissions() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Gestion des Commissions</h1>
-          <p className="text-muted-foreground">
-            Suivez et gérez les commissions des sous-agences
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Gestion des Commissions</h1>
+            <p className="text-muted-foreground">
+              Suivez et gérez les commissions des sous-agences
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/agencies">
+                <Settings className="h-4 w-4 mr-2" />
+                Taux par agence
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/car-partner-plans">
+                <Car className="h-4 w-4 mr-2" />
+                Taux forfaits voiture
+              </Link>
+            </Button>
+          </div>
         </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Le taux appliqué est celui de l'agence (configurable dans "Sous-Agences"), y compris pour les
+          restaurants et le bien-être. Les forfaits voiture ont leur propre taux, modifiable ci-dessus.
+        </p>
 
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
@@ -229,6 +260,7 @@ export default function AdminCommissions() {
             <TableHeader>
               <TableRow>
                 <TableHead>Agence</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Réservation</TableHead>
                 <TableHead>Montant Vente</TableHead>
                 <TableHead>Taux</TableHead>
@@ -241,13 +273,13 @@ export default function AdminCommissions() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : filteredCommissions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     <Building2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     Aucune commission trouvée
                   </TableCell>
@@ -256,8 +288,11 @@ export default function AdminCommissions() {
                 filteredCommissions.map((commission) => (
                   <TableRow key={commission.id}>
                     <TableCell className="font-medium">{commission.agency_name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{sourceLabels[commission.source_type] || commission.source_type}</Badge>
+                    </TableCell>
                     <TableCell className="font-mono text-sm">
-                      {commission.booking_id.slice(0, 8)}...
+                      {(commission.booking_id || commission.source_id || "—").slice(0, 8)}...
                     </TableCell>
                     <TableCell>{formatCurrency(commission.booking_amount)}</TableCell>
                     <TableCell>

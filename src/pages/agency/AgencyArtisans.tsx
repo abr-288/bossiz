@@ -18,7 +18,9 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { Plus, Pencil, Trash2, Hammer, Search, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Hammer, Search, X, Check, ShoppingBag } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Product {
   name: string;
@@ -45,6 +47,23 @@ interface Artisan {
 
 const CRAFT_TYPES = ["Sculpture sur bois", "Bijoux & Accessoires", "Textile & Tissage", "Poterie & Céramique", "Maroquinerie", "Peinture & Art", "Vannerie", "Autre"];
 
+interface ArtisanOrder {
+  id: string;
+  artisan_id: string;
+  product_name: string;
+  unit_price: number;
+  currency: string;
+  quantity: number;
+  total_amount: number;
+  status: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
+  message: string | null;
+  created_at: string;
+  artisan_name?: string;
+}
+
 const emptyProduct = (): Product => ({ name: "", description: "", price: "", currency: "XOF", image_url: "" });
 
 const emptyForm = {
@@ -69,6 +88,8 @@ export default function AgencyArtisans() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Artisan | null>(null);
   const [formData, setFormData] = useState(emptyForm);
+  const [orders, setOrders] = useState<ArtisanOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
     fetchAgencyAndArtisans();
@@ -94,6 +115,41 @@ export default function AgencyArtisans() {
       setArtisans((data || []) as any);
     }
     setLoading(false);
+
+    fetchOrders((data || []) as Artisan[]);
+  };
+
+  const fetchOrders = async (agencyArtisans: Artisan[]) => {
+    if (agencyArtisans.length === 0) {
+      setOrders([]);
+      setOrdersLoading(false);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("artisan_orders")
+      .select("*")
+      .in("artisan_id", agencyArtisans.map((a) => a.id))
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching artisan orders:", error);
+    } else {
+      const artisanNameById = new Map(agencyArtisans.map((a) => [a.id, a.name]));
+      setOrders(
+        ((data || []) as ArtisanOrder[]).map((o) => ({ ...o, artisan_name: artisanNameById.get(o.artisan_id) }))
+      );
+    }
+    setOrdersLoading(false);
+  };
+
+  const updateOrderStatus = async (id: string, status: "confirmed" | "cancelled") => {
+    const { error } = await supabase.from("artisan_orders").update({ status }).eq("id", id);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Succès", description: status === "confirmed" ? "Commande confirmée" : "Commande refusée" });
+    fetchAgencyAndArtisans();
   };
 
   const resetForm = () => {
@@ -372,6 +428,77 @@ export default function AgencyArtisans() {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-bold mb-1">Demandes de commande</h2>
+          <p className="text-muted-foreground mb-4">
+            Confirmez une demande pour l'accepter (une commission est alors due) ou refusez-la si vous ne pouvez pas l'honorer.
+          </p>
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Artisan</TableHead>
+                  <TableHead>Création</TableHead>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Montant</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Reçue le</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordersLoading ? (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8">Chargement...</TableCell></TableRow>
+                ) : orders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <ShoppingBag className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      Aucune demande pour l'instant
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  orders.map((o) => (
+                    <TableRow key={o.id}>
+                      <TableCell className="font-medium">{o.artisan_name}</TableCell>
+                      <TableCell>{o.product_name} × {o.quantity}</TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <p>{o.customer_name}</p>
+                          <p className="text-muted-foreground">{o.customer_phone}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{o.total_amount.toLocaleString()} {o.currency}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={o.status === "confirmed" ? "default" : o.status === "cancelled" ? "destructive" : "secondary"}
+                        >
+                          {o.status === "pending" ? "En attente" : o.status === "confirmed" ? "Confirmée" : o.status === "cancelled" ? "Refusée" : o.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {format(new Date(o.created_at), "dd MMM yyyy", { locale: fr })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {o.status === "pending" && (
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" onClick={() => updateOrderStatus(o.id, "confirmed")}>
+                              <Check className="h-4 w-4 mr-1" />
+                              Confirmer
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => updateOrderStatus(o.id, "cancelled")}>
+                              <X className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
     </AgencyLayout>

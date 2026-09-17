@@ -160,6 +160,21 @@ export default function AgencyWellness() {
     e.preventDefault();
     if (!agencyId) return;
 
+    const namedTreatments = formData.treatments.filter((t) => t.name.trim());
+    if (namedTreatments.length === 0) {
+      toast({ title: "Erreur", description: "Ajoutez au moins une prestation", variant: "destructive" });
+      return;
+    }
+    const missingPrice = namedTreatments.find((t) => t.price === undefined || Number.isNaN(t.price));
+    if (missingPrice) {
+      toast({
+        title: "Erreur",
+        description: `Indiquez un prix pour la prestation "${missingPrice.name}" (sert de base au calcul de la commission)`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const serviceData = {
         agency_id: agencyId,

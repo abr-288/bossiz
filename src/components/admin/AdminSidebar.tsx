@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound, FileText } from "lucide-react";
+import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound, FileText, Car } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import {
   Sidebar,
@@ -21,6 +21,7 @@ const menuItems = [
   { title: "Sous-Agences", url: "/admin/agencies", icon: Building2 },
   { title: "Candidatures Partenaires", url: "/admin/partner-applications", icon: FileText },
   { title: "Commissions", url: "/admin/commissions", icon: DollarSign },
+  { title: "Forfaits voiture", url: "/admin/car-partner-plans", icon: Car },
   { title: "Demandes Abonnements", url: "/admin/subscriptions", icon: Crown },
   { title: "Plans d'abonnement", url: "/admin/subscription-plans", icon: Tags },
   { title: "Promotions", url: "/admin/promotions", icon: Percent },

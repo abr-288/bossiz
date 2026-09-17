@@ -77,8 +77,8 @@ const conditionsByType: Record<PartnerTypeValue, string[]> = {
   ],
   restaurant: [
     "Inscription gratuite, sans engagement.",
-    "Une commission de 10% est prélevée sur chaque réservation effectuée via la plateforme.",
-    "Vous gérez votre menu et vos disponibilités depuis votre espace agence.",
+    "Une commission de 10% est calculée sur chaque réservation confirmée, sur la base du prix moyen par personne que vous renseignez (la table n'a pas de prix fixe).",
+    "Vous gérez votre menu, vos disponibilités et votre prix moyen depuis votre espace agence.",
   ],
   activity: [
     "Inscription gratuite, sans engagement.",
@@ -87,13 +87,15 @@ const conditionsByType: Record<PartnerTypeValue, string[]> = {
   ],
   artisan: [
     "Inscription gratuite, sans engagement.",
-    "Une commission de 10% est prélevée sur chaque prestation réservée.",
+    "Une commission de 10% est calculée sur chaque commande que vous confirmez, sur la base du prix affiché de la création.",
+    "Les demandes de commande sont à valider vous-même depuis votre espace agence avant qu'une commission ne soit due.",
     "Une fiche dédiée présente votre savoir-faire avec photos et description.",
   ],
   wellness: [
     "Regroupe spas, salons de manucure/pédicure, barbershops, instituts de beauté et studios de yoga.",
-    "Inscription gratuite, sans engagement, aucune commission prélevée par B-Reserve.",
-    "Vos clients prennent rendez-vous en ligne sur vos créneaux et prestations, la prestation et son règlement restent gérés directement avec vous.",
+    "Inscription gratuite, sans engagement.",
+    "Une commission de 10% est calculée sur chaque rendez-vous confirmé, sur la base du prix de la prestation choisie.",
+    "Vos clients prennent rendez-vous en ligne sur vos créneaux et prestations ; le règlement de la prestation reste géré directement avec vous.",
     "Vous gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence.",
   ],
   cars: [
