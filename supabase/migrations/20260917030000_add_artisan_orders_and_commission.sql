@@ -100,7 +100,7 @@ BEGIN
 
     INSERT INTO public.commissions (agency_id, source_type, source_id, booking_amount, commission_rate, commission_amount, status)
     VALUES (v_agency_id, 'artisan_order', NEW.id, NEW.total_amount, v_rate, ROUND(NEW.total_amount * v_rate / 100, 2), 'pending')
-    ON CONFLICT (source_type, source_id) DO UPDATE
+    ON CONFLICT (source_type, source_id) WHERE source_id IS NOT NULL DO UPDATE
       SET booking_amount = EXCLUDED.booking_amount,
           commission_rate = EXCLUDED.commission_rate,
           commission_amount = EXCLUDED.commission_amount,
