@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { LazyImage } from "@/components/ui/lazy-image";
 import {
   Handshake,
@@ -21,14 +23,17 @@ import {
   LayoutGrid,
   Percent,
   Clock,
+  ChevronDown,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import bannerTours from "@/assets/banner-tours.jpg";
 
 interface PartnershipType {
   id: string;
   icon: typeof Hotel;
   title: string;
-  description: string;
+  tagline: string;
+  facts: string[];
   conditions: string[];
   ctaLabel: string;
   ctaTo: string;
@@ -40,7 +45,8 @@ const partnershipTypes: PartnershipType[] = [
     id: "hotels",
     icon: Hotel,
     title: "Hôtels & hébergements",
-    description: "Chambres, résidences meublées, villas... Listez vos hébergements dans les résultats de recherche B-Reserve.",
+    tagline: "Chambres, résidences, villas",
+    facts: ["Gratuit", "Commission 10%"],
     conditions: [
       "Inscription gratuite, sans engagement",
       "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client",
@@ -54,7 +60,8 @@ const partnershipTypes: PartnershipType[] = [
     id: "restaurants",
     icon: UtensilsCrossed,
     title: "Restaurants",
-    description: "Faites découvrir votre table aux voyageurs et aux clients locaux de B-Reserve.",
+    tagline: "Réservation de table en ligne",
+    facts: ["Gratuit", "Commission 10%"],
     conditions: [
       "Inscription gratuite, sans engagement",
       "Commission de 10% calculée sur chaque réservation confirmée, sur la base de votre prix moyen par personne",
@@ -66,8 +73,9 @@ const partnershipTypes: PartnershipType[] = [
   {
     id: "activities",
     icon: Compass,
-    title: "Activités, excursions & tours",
-    description: "Proposez vos excursions, visites guidées et activités à notre communauté de voyageurs.",
+    title: "Activités & tours",
+    tagline: "Excursions, visites guidées",
+    facts: ["Gratuit", "Commission 10%"],
     conditions: [
       "Inscription gratuite, sans engagement",
       "Commission de 10% sur chaque réservation",
@@ -79,8 +87,9 @@ const partnershipTypes: PartnershipType[] = [
   {
     id: "artisans",
     icon: Hammer,
-    title: "Artisans & guides locaux",
-    description: "Mettez en avant votre savoir-faire local ou vos services de guide auprès de nos clients.",
+    title: "Artisans & guides",
+    tagline: "Créations & savoir-faire local",
+    facts: ["Gratuit", "Commission 10%"],
     conditions: [
       "Inscription gratuite, sans engagement",
       "Commission de 10% sur les commandes que vous confirmez, calculée sur le prix affiché de la création",
@@ -93,7 +102,8 @@ const partnershipTypes: PartnershipType[] = [
     id: "wellness",
     icon: Sparkles,
     title: "Bien-être & Beauté",
-    description: "Spas, manucure/pédicure, barbershops, instituts de beauté et yoga : faites découvrir vos soins et prises de rendez-vous en ligne.",
+    tagline: "Spa, coiffure, institut, yoga",
+    facts: ["Gratuit", "Commission 10%"],
     conditions: [
       "Inscription gratuite, sans engagement",
       "Commission de 10% calculée sur chaque rendez-vous confirmé, sur la base du prix de la prestation choisie",
@@ -106,7 +116,8 @@ const partnershipTypes: PartnershipType[] = [
     id: "cars",
     icon: Car,
     title: "Location de voitures",
-    description: "Listez votre flotte de véhicules avec un forfait adapté à votre taille : Découverte, Pro ou Flotte.",
+    tagline: "Découverte, Pro ou Flotte",
+    facts: ["Dès 0 XOF/mois", "Commission 5 à 12%"],
     conditions: [
       "3 forfaits : Découverte (gratuit), Pro (25 000 XOF/mois) et Flotte (60 000 XOF/mois)",
       "Commission dégressive selon le forfait : 12% → 8% → 5%",
@@ -117,6 +128,70 @@ const partnershipTypes: PartnershipType[] = [
     highlight: "Forfaits payants",
   },
 ];
+
+const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number }) => {
+  const Icon = type.icon;
+  const [open, setOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+    >
+      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40">
+        <CardContent className="p-5 flex flex-col flex-1">
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="w-11 h-11 flex-shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Icon className="w-5 h-5 text-primary" />
+            </div>
+            {type.highlight && (
+              <Badge variant="secondary" className="flex-shrink-0 text-xs">
+                {type.highlight}
+              </Badge>
+            )}
+          </div>
+
+          <h3 className="font-bold text-base mb-0.5">{type.title}</h3>
+          <p className="text-sm text-muted-foreground mb-3">{type.tagline}</p>
+
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {type.facts.map((fact) => (
+              <span
+                key={fact}
+                className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground"
+              >
+                {fact}
+              </span>
+            ))}
+          </div>
+
+          <Collapsible open={open} onOpenChange={setOpen} className="mb-4">
+            <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+              Voir les conditions
+              <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <ul className="space-y-1.5 mt-3">
+                {type.conditions.map((condition) => (
+                  <li key={condition} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                    <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{condition}</span>
+                  </li>
+                ))}
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Button asChild className="w-full mt-auto">
+            <Link to={type.ctaTo}>{type.ctaLabel}</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
 
 const steps = [
   {
@@ -180,54 +255,10 @@ const Partnership = () => {
 
       <main className="flex-1 container mx-auto px-4 py-12 md:py-16">
         {/* Partnership types */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {partnershipTypes.map((type, index) => {
-            const Icon = type.icon;
-            return (
-              <motion.div
-                key={type.id}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: index * 0.06 }}
-              >
-                <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-2xl flex items-center justify-center">
-                          <Icon className="w-6 h-6 text-primary" />
-                        </div>
-                        <CardTitle className="text-xl">{type.title}</CardTitle>
-                      </div>
-                      {type.highlight && (
-                        <Badge variant="secondary" className="flex-shrink-0">
-                          {type.highlight}
-                        </Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex flex-col flex-1">
-                    <p className="text-sm text-muted-foreground mb-4">{type.description}</p>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                      Conditions
-                    </p>
-                    <ul className="space-y-2 mb-6 flex-1">
-                      {type.conditions.map((condition) => (
-                        <li key={condition} className="flex items-start gap-2 text-sm">
-                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>{condition}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button asChild size="lg" className="w-full">
-                      <Link to={type.ctaTo}>{type.ctaLabel}</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
+          {partnershipTypes.map((type, index) => (
+            <PartnershipCard key={type.id} type={type} index={index} />
+          ))}
         </div>
 
         {/* How it works */}
