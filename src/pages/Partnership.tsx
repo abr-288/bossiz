@@ -13,6 +13,7 @@ import {
   Compass,
   Hammer,
   Car,
+  Sparkles,
   Check,
   FileText,
   Search,
@@ -89,6 +90,19 @@ const partnershipTypes: PartnershipType[] = [
     ctaTo: "/devenir-partenaire?type=artisan",
   },
   {
+    id: "wellness",
+    icon: Sparkles,
+    title: "Bien-être & Beauté",
+    description: "Spas, manucure/pédicure, barbershops, instituts de beauté et yoga : faites découvrir vos soins et prises de rendez-vous en ligne.",
+    conditions: [
+      "Inscription gratuite, sans engagement, aucune commission prélevée par B-Reserve",
+      "Prise de rendez-vous en ligne sur vos créneaux, prestation et règlement gérés directement avec vous",
+      "Gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence",
+    ],
+    ctaLabel: "Devenir partenaire bien-être",
+    ctaTo: "/devenir-partenaire?type=wellness",
+  },
+  {
     id: "cars",
     icon: Car,
     title: "Location de voitures",
@@ -150,7 +164,7 @@ const Partnership = () => {
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-white/90 text-sm font-medium">
             <span className="flex items-center gap-2">
               <LayoutGrid className="w-4 h-4 text-gold" />
-              5 catégories de partenariat
+              6 catégories de partenariat
             </span>
             <span className="flex items-center gap-2">
               <Percent className="w-4 h-4 text-gold" />

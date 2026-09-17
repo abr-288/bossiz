@@ -155,6 +155,11 @@ const Footer = () => {
                   {t("footer.activities")}
                 </Link>
               </li>
+              <li>
+                <Link to="/bien-etre-beaute" className="text-white/80 hover:text-secondary transition-smooth">
+                  {t("nav.wellness")}
+                </Link>
+              </li>
             </ul>
           </div>
 

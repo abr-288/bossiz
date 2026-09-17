@@ -27,6 +27,7 @@ import {
   Compass,
   Hammer,
   Car,
+  Sparkles,
   Check,
   ImagePlus,
   Loader2,
@@ -44,6 +45,7 @@ const partnerTypeOptions = [
   { value: "restaurant", label: "Restaurant", icon: UtensilsCrossed },
   { value: "activity", label: "Activité / excursion / tour", icon: Compass },
   { value: "artisan", label: "Artisan / guide local", icon: Hammer },
+  { value: "wellness", label: "Bien-être & Beauté (spa, coiffure, institut, yoga...)", icon: Sparkles },
   { value: "cars", label: "Location de voitures", icon: Car },
 ] as const;
 
@@ -87,6 +89,12 @@ const conditionsByType: Record<PartnerTypeValue, string[]> = {
     "Inscription gratuite, sans engagement.",
     "Une commission de 10% est prélevée sur chaque prestation réservée.",
     "Une fiche dédiée présente votre savoir-faire avec photos et description.",
+  ],
+  wellness: [
+    "Regroupe spas, salons de manucure/pédicure, barbershops, instituts de beauté et studios de yoga.",
+    "Inscription gratuite, sans engagement, aucune commission prélevée par B-Reserve.",
+    "Vos clients prennent rendez-vous en ligne sur vos créneaux et prestations, la prestation et son règlement restent gérés directement avec vous.",
+    "Vous gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence.",
   ],
   cars: [
     "L'inscription se fait via l'un de nos 3 forfaits : Découverte (gratuit), Pro ou Flotte.",

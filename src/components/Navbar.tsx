@@ -14,7 +14,7 @@ import {
 import { 
   Menu, User, LogOut, LayoutDashboard, Plane, Hotel, PlaneTakeoff,
   Train, Calendar, Car, HelpCircle, UserCircle2,
-  MapPin, Compass, ChevronDown, Search, UtensilsCrossed, Hammer, Briefcase, ArrowLeftRight
+  MapPin, Compass, ChevronDown, Search, UtensilsCrossed, Hammer, Briefcase, ArrowLeftRight, Sparkles
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -81,6 +81,7 @@ const Navbar = () => {
     { to: "/stays", icon: Compass, label: t("nav.stays") },
     { to: "/restaurants", icon: UtensilsCrossed, label: t("nav.restaurants") },
     { to: "/artisans", icon: Hammer, label: t("nav.artisans") },
+    { to: "/bien-etre-beaute", icon: Sparkles, label: t("nav.wellness") },
   ];
 
   // Verticaux principaux affichés directement, le reste regroupé sous "Autres"
