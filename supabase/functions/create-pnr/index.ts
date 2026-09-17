@@ -187,15 +187,45 @@ serve(async (req) => {
 
     // Only now - with a real, confirmed PNR - send the flight-specific
     // confirmation email (includes the real PNR) and generate the invoice
-    // (deferred from payment-callback).
-    fetch(`${supabaseUrl}/functions/v1/send-flight-confirmation`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${supabaseServiceKey}` },
-      body: JSON.stringify({ bookingId: booking_id }),
-    }).catch(e => console.warn('⚠️ Email non envoyé:', e.message));
+    // (deferred from payment-callback). Both run after the response is
+    // built but must still be seen through to completion: a bare
+    // fire-and-forget fetch()/invoke() only rejects on a network error, so
+    // a 4xx/5xx from the downstream function used to pass completely
+    // unnoticed, and Deno's edge runtime does not guarantee an unawaited
+    // promise survives past the point the response is returned. Wrapping
+    // in EdgeRuntime.waitUntil() (falling back to a plain await if that API
+    // isn't available) fixes both: real failures are logged, and the work
+    // is guaranteed to run without delaying the booking response.
+    const notifyBackground = (async () => {
+      try {
+        const res = await fetch(`${supabaseUrl}/functions/v1/send-flight-confirmation`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${supabaseServiceKey}` },
+          body: JSON.stringify({ bookingId: booking_id }),
+        });
+        if (!res.ok) {
+          const body = await res.text().catch(() => '');
+          console.error(`⚠️ Email de confirmation vol non envoyé (HTTP ${res.status}) pour ${booking_id}:`, body);
+        }
+      } catch (e) {
+        console.error(`⚠️ Email de confirmation vol non envoyé pour ${booking_id}:`, e instanceof Error ? e.message : e);
+      }
 
-    supabase.functions.invoke('generate-invoice', { body: { bookingId: booking_id } })
-      .catch(() => console.warn('⚠️ Facture non générée'));
+      const { error: invoiceError } = await supabase.functions
+        .invoke('generate-invoice', { body: { bookingId: booking_id } })
+        .catch((e) => ({ error: e }));
+      if (invoiceError) {
+        console.error(`⚠️ Facture non générée pour ${booking_id}:`, invoiceError.message || invoiceError);
+      }
+    })();
+
+    // deno-lint-ignore no-explicit-any
+    const edgeRuntime = (globalThis as any).EdgeRuntime;
+    if (edgeRuntime && typeof edgeRuntime.waitUntil === 'function') {
+      edgeRuntime.waitUntil(notifyBackground);
+    } else {
+      await notifyBackground;
+    }
 
     return new Response(
       JSON.stringify({

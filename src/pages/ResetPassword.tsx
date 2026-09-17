@@ -18,20 +18,34 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if we have access token in URL (from email link)
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get("access_token");
-    const type = hashParams.get("type");
+    // supabase-js (PKCE flow, the default since v2) auto-exchanges the
+    // ?code= from the recovery link for a session as soon as the client
+    // initializes - it does not land as a #access_token hash fragment, so
+    // parsing the hash here never matched anything. Wait for either the
+    // PASSWORD_RECOVERY event or an existing session before deciding the
+    // link is invalid, instead of checking getSession() immediately (which
+    // could race ahead of that automatic exchange and reject a valid link).
+    let resolved = false;
 
-    if (!accessToken || type !== "recovery") {
-      // Check if user is already authenticated via recovery
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (!session) {
-          toast.error("Lien de réinitialisation invalide ou expiré");
-          navigate("/forgot-password");
-        }
-      });
-    }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
+        resolved = true;
+      }
+    });
+
+    const timeout = setTimeout(async () => {
+      if (resolved) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Lien de réinitialisation invalide ou expiré");
+        navigate("/forgot-password");
+      }
+    }, 1500);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {

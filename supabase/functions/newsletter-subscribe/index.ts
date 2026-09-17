@@ -65,14 +65,22 @@ serve(async (req) => {
       );
     }
 
-    // Send confirmation email if a provider is configured
+    // Send confirmation email if a provider is configured. A failed send
+    // never fails the subscription (the row is already saved), but a real
+    // send failure - as opposed to no provider being configured at all -
+    // is logged at error level so it actually gets noticed instead of
+    // blending into routine warnings.
     try {
       const result = await sendConfirmationEmail(supabase, email);
       if (!result.ok) {
-        console.warn('Failed to send confirmation email:', result.error);
+        if (result.error === 'RESEND_API_KEY not configured') {
+          console.log('Newsletter confirmation email skipped: no email provider configured');
+        } else {
+          console.error('Failed to send newsletter confirmation email:', result.error);
+        }
       }
     } catch (emailError) {
-      console.warn('Failed to send confirmation email:', emailError);
+      console.error('Failed to send newsletter confirmation email:', emailError);
       // Don't fail the subscription if email fails
     }
 
