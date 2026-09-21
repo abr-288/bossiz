@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Star, UtensilsCrossed, Loader2, Phone } from "lucide-react";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { RestaurantReservationDialog } from "@/components/restaurants/RestaurantReservationDialog";
+import { LazyImage } from "@/components/ui/lazy-image";
+import bannerRestaurants from "@/assets/banner-restaurants.jpg";
 
 const Restaurants = () => {
   const { restaurants, loading, error } = useRestaurants();
@@ -36,8 +38,13 @@ const Restaurants = () => {
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
 
-      <div className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+      <div className="relative py-16 md:py-24 overflow-hidden bg-primary">
+        <LazyImage
+          src={bannerRestaurants}
+          alt="Restaurants"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/60 to-primary/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <UtensilsCrossed className="w-12 h-12 text-white mx-auto mb-4" />
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
