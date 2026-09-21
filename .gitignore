@@ -51,3 +51,6 @@ deploy-vps/backups/
 # jamais du code applicatif, ne doivent pas être versionnées
 /backups/
 *.bak
+
+# Documents (factures, guides) : usage local, pas besoin de versionner
+/documentation/
