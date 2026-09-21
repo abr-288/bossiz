@@ -174,9 +174,45 @@ serve(async (req) => {
       verifiedSupplierCost = Math.round((unitPrice / (1 + RETAIL_MARKUP_PERCENTAGE)) * units * multiplier);
 
       console.log('✅ Price offer verified - server-computed total:', verifiedTotalPrice, '- supplier cost:', verifiedSupplierCost);
-    } else if (requestData.service_type === 'flight' && typeof requestData.supplier_cost === 'number') {
-      // Already server-computed and signed via prebook/checkout - trusted as-is.
-      verifiedSupplierCost = requestData.supplier_cost;
+    } else if (requestData.service_type === 'flight') {
+      // SECURITY: flights go through their own signed flow (prebook ->
+      // checkout), never the hotel/car offer_signature. The only proof
+      // that checkout actually recomputed and validated this price
+      // server-side is the flight_prebookings row itself: checkout is the
+      // sole place that flips PREBOOKED -> PENDING_PAYMENT, and it only
+      // does that after verifying price_signature. So re-derive
+      // total_price/supplier_cost from that row - never from the client -
+      // instead of trusting requestData.total_price/supplier_cost as-is.
+      const prebookingId = requestData.booking_details?.prebooking_id;
+
+      if (!prebookingId) {
+        throw new Error('Missing signed price offer for this service type');
+      }
+
+      const { data: prebooking, error: prebookingError } = await supabase
+        .from('flight_prebookings')
+        .select('total_amount, base_fare, currency, status, expires_at')
+        .eq('id', prebookingId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (prebookingError || !prebooking) {
+        console.error('Pre-booking not found for flight booking - Code:', prebookingError?.code);
+        throw new Error('Referenced pre-booking not found');
+      }
+
+      if (prebooking.status !== 'PENDING_PAYMENT') {
+        throw new Error('This booking has not completed checkout. Please start again.');
+      }
+
+      if (new Date(prebooking.expires_at).getTime() < Date.now()) {
+        throw new Error('This price offer has expired. Please search again.');
+      }
+
+      verifiedTotalPrice = prebooking.total_amount;
+      verifiedSupplierCost = prebooking.base_fare;
+
+      console.log('✅ Flight pre-booking verified - server-computed total:', verifiedTotalPrice, '- supplier cost:', verifiedSupplierCost);
     }
 
     // Catalog-backed types (stay, activity) live in their own table, not in

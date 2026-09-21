@@ -1,8 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Configuration Supabase
-const supabaseUrl = 'https://kzuzpqjxlhewgqjwzjhe.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6dXpwanp4bGhld2dxand6amhlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNzU3MjY1MiwiZXhwIjoyMDUzMTQ4NjUyfQ.7FhX_6d6J7W3k8e9m4lF5t6s7d8n9p0q1r2s3t4u5v';
+// Configuration Supabase - jamais de clé en dur ici (service_role contourne
+// toutes les RLS). Fournir SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY en
+// variables d'environnement avant d'exécuter ce script.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars');
+  process.exit(1);
+}
 
 // Créer le client Supabase
 const supabase = createClient(supabaseUrl, supabaseKey);
