@@ -13,6 +13,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
+import RouteSeo from "@/components/RouteSeo";
 import ChatWidget from "@/components/ChatWidget";
 
 // Client React Query pour la gestion des requêtes API et du cache
@@ -32,6 +33,7 @@ const App = () => (
                   <Sonner />
                   <NotificationPrompt />
                   <BrowserRouter>
+                    <RouteSeo />
                     <AnimatedRoutes />
                     <ChatWidget />
                   </BrowserRouter>

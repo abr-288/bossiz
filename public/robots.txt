@@ -1,14 +1,26 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# Un seul groupe : Googlebot, Bingbot & co. suivent "*" (un groupe nommé
+# ignorerait les règles de "*").
 User-agent: *
 Allow: /
+
+# Espaces privés / transactionnels : aucun intérêt à être explorés
+Disallow: /admin
+Disallow: /agency
+Disallow: /company
+Disallow: /dashboard
+Disallow: /account
+Disallow: /booking-history
+Disallow: /price-alerts
+Disallow: /auth
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /payment
+Disallow: /confirmation
+Disallow: /order-summary
+Disallow: /subscription-payment
+Disallow: /booking/
+Disallow: /booking-process
+Disallow: /flight-hotel/booking
+Disallow: /flight-comparison
+
+Sitemap: https://app.bossiz.com/sitemap.xml
