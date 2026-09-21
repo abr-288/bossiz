@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { requestPasswordReset } from "@/lib/requestPasswordReset";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -185,16 +186,19 @@ const Auth = () => {
     
     setLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(resetForm.email.trim(), {
-      redirectTo: `${window.location.origin}/auth`,
-    });
+    let resetError: Error | null = null;
+    try {
+      await requestPasswordReset(resetForm.email.trim(), "/auth");
+    } catch (err) {
+      resetError = err instanceof Error ? err : new Error(String(err));
+    }
 
     setLoading(false);
 
-    if (error) {
+    if (resetError) {
       toast({
         title: t('common.error'),
-        description: error.message,
+        description: resetError.message,
         variant: "destructive",
       });
     } else {

@@ -82,6 +82,7 @@ export default function AdminAgencies() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAgency, setEditingAgency] = useState<Agency | null>(null);
   const [ownerMatchStatus, setOwnerMatchStatus] = useState<"idle" | "found" | "not-found">("idle");
+  const [creatingAccount, setCreatingAccount] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -190,6 +191,49 @@ export default function AdminAgencies() {
       setUsers((data?.users || []) as UserOption[]);
     } catch (error) {
       console.error("Error fetching users:", error);
+    }
+  };
+
+  // Crée le compte du candidat côté serveur (admin-create-partner-account) et
+  // lui envoie un lien pour choisir son mot de passe, puis le sélectionne
+  // comme propriétaire.
+  const handleCreateAccount = async () => {
+    if (!prefillApplication?.contact_email) return;
+    setCreatingAccount(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-create-partner-account", {
+        body: { email: prefillApplication.contact_email, fullName: prefillApplication.name },
+      });
+      if (error || !data?.userId) throw error || new Error(data?.error || "Réponse invalide");
+
+      await fetchUsers();
+      setFormData((prev) => ({ ...prev, owner_id: data.userId }));
+      setOwnerMatchStatus("found");
+
+      if (data.created && !data.emailSent) {
+        toast({
+          title: "Compte créé, email non envoyé",
+          description: data.setupLink
+            ? `Transmettez-lui ce lien pour choisir son mot de passe : ${data.setupLink}`
+            : "Il peut utiliser « Mot de passe oublié » sur /auth pour définir son mot de passe.",
+        });
+      } else {
+        toast({
+          title: data.created ? "Compte créé" : "Compte déjà existant",
+          description: data.created
+            ? `Un email d'invitation a été envoyé à ${prefillApplication.contact_email}.`
+            : "Le compte existant a été sélectionné.",
+        });
+      }
+    } catch (error) {
+      console.error("Error creating partner account:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de créer le compte. Réessayez ou sélectionnez un utilisateur existant.",
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingAccount(false);
     }
   };
 
@@ -412,12 +456,22 @@ export default function AdminAgencies() {
                         </p>
                       )}
                       {prefillApplication && ownerMatchStatus === "not-found" && (
-                        <p className="text-xs text-destructive font-medium">
-                          Aucun compte B-Reserve trouvé pour {prefillApplication.contact_email}. Le
-                          candidat doit d'abord créer un compte sur /auth avec cette adresse email,
-                          puis rouvrez cette candidature - ou choisissez manuellement ci-dessous s'il
-                          a utilisé une autre adresse.
-                        </p>
+                        <div className="space-y-2 rounded-md border border-destructive/30 bg-destructive/5 p-3">
+                          <p className="text-xs text-destructive font-medium">
+                            Aucun compte B-Reserve trouvé pour {prefillApplication.contact_email}.
+                            Vous pouvez lui en créer un : il recevra un email pour choisir son mot
+                            de passe. Sinon, sélectionnez un autre utilisateur ci-dessous.
+                          </p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={creatingAccount}
+                            onClick={handleCreateAccount}
+                          >
+                            {creatingAccount ? "Création..." : "Créer le compte et envoyer l'invitation"}
+                          </Button>
+                        </div>
                       )}
                       <Select
                         value={formData.owner_id}

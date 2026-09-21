@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/lib/supabase";
+import { requestPasswordReset } from "@/lib/requestPasswordReset";
 import { toast } from "sonner";
 import { Car, Mail, ArrowLeft } from "lucide-react";
 import { z } from "zod";
@@ -25,11 +25,7 @@ export default function ForgotPassword() {
       const validated = emailSchema.parse({ email });
       setLoading(true);
 
-      const { error } = await supabase.auth.resetPasswordForEmail(validated.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) throw error;
+      await requestPasswordReset(validated.email, "/reset-password");
 
       setEmailSent(true);
       toast.success("Email de réinitialisation envoyé !");

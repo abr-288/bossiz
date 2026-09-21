@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Save, Mail, MessageSquare, AlertTriangle, Eye, EyeOff, CreditCard, CheckCircle2 } from "lucide-react";
 import { useIntegrationCredentials, type IntegrationCredential } from "@/hooks/useIntegrationCredentials";
+import { supabase } from "@/integrations/supabase/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Champs attendus par prestataire — détermine le formulaire affiché.
 const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boolean }[]> = {
@@ -168,6 +170,30 @@ export default function AdminIntegrations() {
   const { integrations, loading, tableMissing, updateIntegration, activateExclusive } = useIntegrationCredentials();
 
   const emailIntegrations = integrations.filter((i) => i.category === "email");
+
+  const [testEmail, setTestEmail] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  const handleTestEmail = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-send-test-email", {
+        body: { to: testEmail.trim() },
+      });
+      if (error) throw error;
+      setTestResult(
+        data?.success
+          ? { ok: true, message: `E-mail envoyé via ${data.provider}. Vérifiez la boîte de réception et les spams.` }
+          : { ok: false, message: `Échec (${data?.provider ?? "?"}) : ${data?.error ?? "erreur inconnue"}` },
+      );
+    } catch (err) {
+      setTestResult({ ok: false, message: err instanceof Error ? err.message : "Impossible de joindre la fonction de test." });
+    } finally {
+      setTesting(false);
+    }
+  };
   const smsIntegrations = integrations.filter((i) => i.category === "sms");
   const whatsappIntegrations = integrations.filter((i) => i.category === "whatsapp");
   const paymentIntegrations = integrations.filter((i) => i.category === "payment");
@@ -202,7 +228,14 @@ export default function AdminIntegrations() {
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
         ) : !tableMissing && (
-          <>
+          <Tabs defaultValue="email" className="space-y-6">
+            <TabsList className="grid w-full max-w-xl grid-cols-3">
+              <TabsTrigger value="email" className="gap-2"><Mail className="w-4 h-4" /> Email</TabsTrigger>
+              <TabsTrigger value="messaging" className="gap-2"><MessageSquare className="w-4 h-4" /> SMS / WhatsApp</TabsTrigger>
+              <TabsTrigger value="payment" className="gap-2"><CreditCard className="w-4 h-4" /> Paiement</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="email" className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <Mail className="w-5 h-5" /> Email
@@ -221,8 +254,33 @@ export default function AdminIntegrations() {
                   />
                 ))}
               </div>
+              <div className="mt-4 rounded-md border p-4 space-y-3">
+                <p className="text-sm font-medium">Tester l'envoi d'e-mails</p>
+                <p className="text-xs text-muted-foreground">
+                  Envoie un e-mail de test via le prestataire actif et affiche l'erreur exacte en cas d'échec.
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Input
+                    type="email"
+                    placeholder="votre-adresse@exemple.com"
+                    value={testEmail}
+                    onChange={(e) => setTestEmail(e.target.value)}
+                  />
+                  <Button onClick={handleTestEmail} disabled={testing || !testEmail.trim()}>
+                    {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+                    Envoyer un test
+                  </Button>
+                </div>
+                {testResult && (
+                  <p className={`text-sm break-words ${testResult.ok ? "text-green-600" : "text-destructive"}`}>
+                    {testResult.message}
+                  </p>
+                )}
+              </div>
             </div>
+            </TabsContent>
 
+            <TabsContent value="messaging" className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" /> SMS
@@ -261,7 +319,9 @@ export default function AdminIntegrations() {
                 ))}
               </div>
             </div>
+            </TabsContent>
 
+            <TabsContent value="payment" className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <CreditCard className="w-5 h-5" /> Paiement
@@ -283,7 +343,8 @@ export default function AdminIntegrations() {
                 ))}
               </div>
             </div>
-          </>
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </AdminLayout>

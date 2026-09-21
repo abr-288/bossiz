@@ -47,6 +47,8 @@ export async function getResendApiKey(supabase: SupabaseClient): Promise<string 
   return Deno.env.get("RESEND_API_KEY") ?? undefined;
 }
 
+const DEFAULT_REPLY_TO = "contact@bossiz.com";
+
 export interface EmailAttachment {
   filename: string;
   content: string; // base64
@@ -108,8 +110,12 @@ export async function getActiveSmsCredential(supabase: SupabaseClient): Promise<
 // ne changerait rien pour eux.
 export async function sendEmail(
   supabase: SupabaseClient,
-  params: SendEmailParams
+  rawParams: SendEmailParams
 ): Promise<{ ok: boolean; error?: string }> {
+  // Les emails partent souvent d'une adresse "noreply" : par défaut, les
+  // réponses des clients arrivent dans la vraie boîte de contact.
+  const params: SendEmailParams = { ...rawParams, replyTo: rawParams.replyTo ?? DEFAULT_REPLY_TO };
+
   const active = await getActiveCredentialByCategory(supabase, "email");
 
   if (
