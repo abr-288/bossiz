@@ -20,14 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Percent, Search } from "lucide-react";
@@ -110,7 +104,7 @@ export default function AgencyPromotions() {
         location: formData.location,
         original_price: parseFloat(formData.original_price),
         discount: parseInt(formData.discount),
-        currency: formData.currency,
+        currency: "XOF",
         is_active: formData.is_active,
         expires_at: formData.expires_at || null,
         image_url: formData.image_url || null,
@@ -256,20 +250,7 @@ export default function AgencyPromotions() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Devise</Label>
-                    <Select
-                      value={formData.currency}
-                      onValueChange={(v) => setFormData({ ...formData, currency: v })}
-                    >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="XOF">XOF</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">Prix affiché et facturé en XOF (FCFA)</div>
                 </div>
                 <div className="space-y-2">
                   <Label>Date d'expiration</Label>
@@ -287,13 +268,7 @@ export default function AgencyPromotions() {
                     rows={2}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>URL Image</Label>
-                  <Input
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  />
-                </div>
+                <ImageUpload label="Visuel de la promotion" folder="agency-promotions" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.is_active}

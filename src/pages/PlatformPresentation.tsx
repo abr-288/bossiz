@@ -249,7 +249,7 @@ const PlatformPresentation = () => {
       <section className="relative py-16 md:py-24 bg-[#192443] overflow-hidden">
         <LazyImage
           src={bannerPresentation}
-          alt="B-Reserve"
+          alt="Bossiz+"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-[#192443]/65" />
@@ -261,7 +261,7 @@ const PlatformPresentation = () => {
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight drop-shadow-lg">
-            B-Reserve, la plateforme de réservation qui connecte voyageurs et partenaires
+            Bossiz+, la plateforme de réservation qui connecte voyageurs et partenaires
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto font-medium mb-8">
             Vols, hôtels, location de voiture, séjours, circuits, activités, événements et trains — tout ce dont vos

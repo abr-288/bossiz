@@ -27,6 +27,26 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+interface PaymentBooking {
+  id: string;
+  total_price: number;
+  currency: string;
+  payment_status: string;
+  payment_plan?: string;
+  amount_due_now?: number;
+  deposit_percent?: number;
+  balance_due?: number;
+  status: string;
+  services?: { name: string; type: string; location: string } | null;
+  start_date: string;
+  end_date: string | null;
+  guests: number;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  notes: string | null;
+}
+
 export default function Payment() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -36,12 +56,15 @@ export default function Payment() {
 
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [booking, setBooking] = useState<any>(null);
+  const [booking, setBooking] = useState<PaymentBooking | null>(null);
   const [paymentMethod, setPaymentMethod] = useState("cinetpay");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [validatedFormData, setValidatedFormData] = useState<PaymentInput | null>(null);
+  const amountToPay = booking?.payment_plan === "deposit" && Number(booking.balance_due) > 0
+    ? Number(booking.amount_due_now)
+    : Number(booking?.total_price || 0);
   
   // Customer info
   const [customerName, setCustomerName] = useState("");
@@ -100,6 +123,14 @@ export default function Payment() {
         navigate("/dashboard");
         return;
       }
+      if (data.payment_status === "partially_paid") {
+        toast({
+          title: "Acompte déjà réglé",
+          description: "Le solde de cette réservation est à régler sur place.",
+        });
+        navigate("/booking-history");
+        return;
+      }
 
       // Check if booking is cancelled
       if (data.status === "cancelled") {
@@ -116,11 +147,11 @@ export default function Payment() {
       setCustomerName(data.customer_name || "");
       setCustomerEmail(data.customer_email || "");
       setCustomerPhone(data.customer_phone || "");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error loading booking:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de charger la réservation",
+        description: error instanceof Error ? error.message : "Impossible de charger la réservation",
         variant: "destructive",
       });
       navigate("/dashboard");
@@ -253,7 +284,7 @@ export default function Payment() {
       const { data, error } = await supabase.functions.invoke("process-payment", {
         body: {
           bookingId: bookingId,
-          amount: booking.total_price,
+          amount: amountToPay,
           currency: "XOF",
           paymentMethod: validatedData.paymentMethod,
           customerInfo: {
@@ -310,7 +341,7 @@ export default function Payment() {
         window.location.href = data.payment_url;
       }, 500);
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       clearTimeout(timeoutId);
       
       console.error("Erreur de paiement:", error);
@@ -319,8 +350,6 @@ export default function Payment() {
       let userMessage = "Une erreur inattendue est survenue";
       
       if (error instanceof Error) {
-        userMessage = error.message;
-      } else if (error?.message) {
         userMessage = error.message;
       } else if (typeof error === 'string') {
         userMessage = error;
@@ -493,6 +522,18 @@ export default function Payment() {
                     <Price amount={booking.total_price} fromCurrency={booking.currency} />
                   </span>
                 </div>
+                {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0 && (
+                  <>
+                    <div className="flex justify-between items-center text-primary">
+                      <span>À payer maintenant ({booking.deposit_percent} %):</span>
+                      <span className="font-bold"><Price amount={booking.amount_due_now} fromCurrency={booking.currency} /></span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                      <span>Solde à régler sur place:</span>
+                      <span><Price amount={booking.balance_due} fromCurrency={booking.currency} /></span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </Card>
@@ -643,7 +684,7 @@ export default function Payment() {
                     Traitement...
                   </>
                 ) : (
-                  <>Payer <Price amount={booking.total_price} fromCurrency={booking.currency} /></>
+                  <>Payer <Price amount={amountToPay} fromCurrency={booking.currency} /></>
                 )}
               </Button>
 
@@ -669,7 +710,7 @@ export default function Payment() {
                 <p>
                   Une demande de paiement de{" "}
                   <strong className="text-foreground">
-                    <Price amount={booking?.total_price || 0} fromCurrency={booking?.currency} />
+                    <Price amount={amountToPay} fromCurrency={booking?.currency} />
                   </strong>{" "}
                   sera envoyée au numéro:
                 </p>

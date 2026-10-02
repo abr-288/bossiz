@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AgencyLayout } from "@/components/agency/AgencyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
+import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
 import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -41,6 +44,10 @@ interface Service {
   type: string;
   description: string | null;
   location: string;
+  maps_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  available_dates: string[];
   price_per_unit: number;
   currency: string;
   available: boolean;
@@ -89,6 +96,7 @@ const emptyTourSpecs = {
   languages: "Français",
   difficulty: "Facile",
   category: "Culture & Patrimoine",
+  availableDates: [] as string[],
 };
 
 interface CarPlanLimit {
@@ -97,6 +105,8 @@ interface CarPlanLimit {
 }
 
 export default function AgencyServices() {
+  const [searchParams] = useSearchParams();
+  const typeFilter = searchParams.get("type");
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
@@ -110,8 +120,11 @@ export default function AgencyServices() {
     type: "hotel",
     description: "",
     location: "",
+    maps_url: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
     price_per_unit: "",
-    currency: "EUR",
+    currency: "XOF",
     available: true,
     image_url: "",
     carSpecs: emptyCarSpecs,
@@ -224,6 +237,7 @@ export default function AgencyServices() {
             languages: formData.tourSpecs.languages,
             difficulty: formData.tourSpecs.difficulty,
             category: formData.tourSpecs.category,
+            availableDates: formData.tourSpecs.availableDates,
           }
         : null;
 
@@ -232,8 +246,12 @@ export default function AgencyServices() {
         type: formData.type as any,
         description: formData.description || null,
         location: formData.location,
+        maps_url: formData.maps_url || null,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        available_dates: isTour ? formData.tourSpecs.availableDates : [],
         price_per_unit: parseFloat(formData.price_per_unit),
-        currency: formData.currency,
+        currency: "XOF",
         available: formData.available,
         image_url: isCar ? (carPhotos[0] || null) : (formData.image_url || null),
         images: isCar && carPhotos.length > 0 ? carPhotos : null,
@@ -279,6 +297,9 @@ export default function AgencyServices() {
       type: service.type,
       description: service.description || "",
       location: service.location,
+      maps_url: service.maps_url || "",
+      latitude: service.latitude,
+      longitude: service.longitude,
       price_per_unit: service.price_per_unit.toString(),
       currency: service.currency,
       available: service.available,
@@ -318,6 +339,7 @@ export default function AgencyServices() {
             languages: specs.languages || "Français",
             difficulty: specs.difficulty || "Facile",
             category: specs.category || "Culture & Patrimoine",
+            availableDates: service.available_dates || [],
           }
         : emptyTourSpecs,
     });
@@ -343,8 +365,11 @@ export default function AgencyServices() {
       type: "hotel",
       description: "",
       location: "",
+      maps_url: "",
+      latitude: null,
+      longitude: null,
       price_per_unit: "",
-      currency: "EUR",
+      currency: "XOF",
       available: true,
       image_url: "",
       carSpecs: emptyCarSpecs,
@@ -354,6 +379,7 @@ export default function AgencyServices() {
   };
 
   const filteredServices = services.filter((s) =>
+    (!typeFilter || s.type === typeFilter) &&
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -362,8 +388,8 @@ export default function AgencyServices() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Mes Services</h1>
-            <p className="text-muted-foreground">Gérez vos services de voyage</p>
+            <h1 className="text-2xl font-bold">{typeFilter === "tour" ? "Mes Circuits" : "Mes Services"}</h1>
+            <p className="text-muted-foreground">{typeFilter === "tour" ? "Gérez vos circuits touristiques" : "Gérez vos services de voyage"}</p>
             {carPlan && (
               <Badge variant="outline" className="mt-2 gap-1.5">
                 Forfait {carPlan.name} ·{" "}
@@ -411,14 +437,11 @@ export default function AgencyServices() {
                     </Select>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Localisation *</Label>
-                  <Input
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    required
-                  />
-                </div>
+                <LocationPicker
+                  value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }}
+                  onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
+                  required
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Prix *</Label>
@@ -429,20 +452,7 @@ export default function AgencyServices() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Devise</Label>
-                    <Select
-                      value={formData.currency}
-                      onValueChange={(v) => setFormData({ ...formData, currency: v })}
-                    >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="XOF">XOF</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">Prix affiché et facturé en XOF (FCFA)</div>
                 </div>
                 <div className="space-y-2">
                   <Label>Description</Label>
@@ -680,6 +690,7 @@ export default function AgencyServices() {
                         </Select>
                       </div>
                     </div>
+                    <AvailableDatesInput dates={formData.tourSpecs.availableDates} onChange={(availableDates) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, availableDates } })} label="Dates de départ du circuit" />
                     <div className="space-y-2">
                       <Label>Point de rendez-vous *</Label>
                       <Input
@@ -726,13 +737,7 @@ export default function AgencyServices() {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <Label>URL Image</Label>
-                    <Input
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    />
-                  </div>
+                  <ImageUpload label="Photo du service" folder="agency-services" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
                 )}
                 <div className="flex items-center gap-2">
                   <Switch

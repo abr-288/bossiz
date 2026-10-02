@@ -86,14 +86,15 @@ serve(async (req) => {
       return jsonResponse({ success: false, error: 'Invalid JSON' }, 400);
     }
 
-    if (payload.event !== 'transaction.completed' || payload.data?.transactionType !== 'payment') {
+    const jekoEvent = req.headers.get('Jeko-Event');
+    const jekoTransaction = payload;
+
+    if (jekoEvent !== 'TRANSACTION_COMPLETED' || jekoTransaction.transactionType !== 'payment' || jekoTransaction.status !== 'success') {
       // Événement non pertinent (ex: transfert) : on accuse quand même
       // réception pour éviter des retries inutiles côté Jèko.
-      console.log('   - Événement ignoré:', payload.event, payload.data?.transactionType);
+      console.log('   - Événement ignoré:', jekoEvent, jekoTransaction.transactionType, jekoTransaction.status);
       return jsonResponse({ success: true, ignored: true });
     }
-
-    const jekoTransaction = payload.data;
     const paymentLinkId = jekoTransaction.transactionDetails?.paymentLinkId;
 
     if (!paymentLinkId) {

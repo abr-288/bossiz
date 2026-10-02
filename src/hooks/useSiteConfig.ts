@@ -64,14 +64,14 @@ export interface SiteConfig {
 
 const DEFAULT_CONFIG: SiteConfig = {
   branding: {
-    siteName: "B-Reserve",
+    siteName: "Bossiz+",
     tagline: "Votre partenaire voyage",
     logoLight: "",
     logoDark: "",
     favicon: "/favicon.ico",
   },
   contact: {
-    email: "contact@b-reserve.com",
+    email: "contact@bossiz.com",
     phone: "+225 00 00 00 00",
     address: "Abidjan, Côte d'Ivoire",
     whatsapp: "+225 00 00 00 00",
@@ -94,7 +94,7 @@ const DEFAULT_CONFIG: SiteConfig = {
     items: [],
   },
   seo: {
-    defaultTitle: "B-Reserve - Réservation de voyages",
+    defaultTitle: "Bossiz+ - Réservation de voyages",
     defaultDescription: "Plateforme de réservation de vols, hôtels et voitures",
     keywords: "voyage, vol, hôtel, voiture",
   },
@@ -105,7 +105,7 @@ const DEFAULT_CONFIG: SiteConfig = {
     availableLanguages: ["fr", "en"],
   },
   footer: {
-    copyright: "© 2024 B-Reserve. Tous droits réservés.",
+    copyright: "© 2024 Conciergerie Bossiz. Tous droits réservés.",
     showNewsletter: true,
     newsletterTitle: "Abonnez-vous",
   },

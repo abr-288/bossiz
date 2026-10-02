@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Loader2, Star } from "lucide-react";
+import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Loader2, Star, type LucideIcon } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
@@ -23,7 +23,10 @@ interface Booking {
   currency: string;
   status: string;
   payment_status: string;
-  booking_details: any;
+  payment_plan?: string;
+  amount_due_now?: number;
+  balance_due?: number;
+  booking_details: Record<string, unknown> | null;
   created_at: string;
   customer_name: string;
   customer_email: string;
@@ -37,15 +40,11 @@ interface Booking {
   };
 }
 
-// Mirrors the reviews INSERT RLS check (see migration 20260910210000): a
-// booking is reviewable once it's paid, confirmed, and its service date has
-// actually passed - not on a 'completed' status nothing in this codebase
-// ever sets.
+// Mirrors RLS: payment (full or deposit) is verified server-side and the
+// booking is confirmed before the rating form is offered.
 const isReviewEligible = (booking: Booking) => {
-  if (booking.payment_status !== "paid") return false;
-  if (booking.status !== "confirmed" && booking.status !== "completed") return false;
-  const serviceDate = booking.end_date || booking.start_date;
-  return new Date(serviceDate) <= new Date();
+  return ["paid", "partially_paid"].includes(booking.payment_status)
+    && ["confirmed", "completed"].includes(booking.status);
 };
 
 const BookingHistory = () => {
@@ -55,6 +54,7 @@ const BookingHistory = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(new Set());
   const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
+  const [reviewPromptEnabled, setReviewPromptEnabled] = useState(true);
   const navigate = useNavigate();
 
   const getLocale = () => {
@@ -68,6 +68,14 @@ const BookingHistory = () => {
   useEffect(() => {
     checkAuth();
     fetchBookings();
+    supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle()
+      .then(({ data }) => {
+        const rawPolicy = data?.config_value;
+        const policy = rawPolicy && typeof rawPolicy === "object"
+          ? rawPolicy as { reviewPromptEnabled?: boolean }
+          : undefined;
+        setReviewPromptEnabled(policy?.reviewPromptEnabled !== false);
+      });
   }, []);
 
   const checkAuth = async () => {
@@ -115,7 +123,7 @@ const BookingHistory = () => {
   };
 
   const getServiceIcon = (type: string) => {
-    const icons: Record<string, any> = {
+    const icons: Record<string, LucideIcon> = {
       hotel: Hotel,
       flight: Plane,
       car: Car,
@@ -178,12 +186,12 @@ const BookingHistory = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="all">{t('bookingHistory.tabs.all')} ({bookings.length})</TabsTrigger>
-            <TabsTrigger value="flight">{t('bookingHistory.tabs.flights')} ({filterBookings("flight").length})</TabsTrigger>
-            <TabsTrigger value="hotel">{t('bookingHistory.tabs.hotels')} ({filterBookings("hotel").length})</TabsTrigger>
-            <TabsTrigger value="car">{t('bookingHistory.tabs.cars')} ({filterBookings("car").length})</TabsTrigger>
-            <TabsTrigger value="tour">{t('bookingHistory.tabs.tours')} ({filterBookings("tour").length})</TabsTrigger>
+          <TabsList aria-label="Filtrer les réservations par service" className="mb-6 grid h-auto w-full grid-cols-3 justify-stretch gap-1 sm:inline-flex sm:h-10 sm:w-auto sm:grid-cols-none sm:justify-center sm:gap-0">
+            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="all">{t('bookingHistory.tabs.all')} ({bookings.length})</TabsTrigger>
+            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="flight">{t('bookingHistory.tabs.flights')} ({filterBookings("flight").length})</TabsTrigger>
+            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="hotel">{t('bookingHistory.tabs.hotels')} ({filterBookings("hotel").length})</TabsTrigger>
+            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="car">{t('bookingHistory.tabs.cars')} ({filterBookings("car").length})</TabsTrigger>
+            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="tour">{t('bookingHistory.tabs.tours')} ({filterBookings("tour").length})</TabsTrigger>
           </TabsList>
 
           {["all", "flight", "hotel", "car", "tour"].map((tab) => (
@@ -265,9 +273,14 @@ const BookingHistory = () => {
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">{t('bookingHistory.totalAmount')}</p>
-                            <p className="font-semibold text-primary">
-                              <Price amount={booking.total_price} fromCurrency={booking.currency} />
+                          <p className="font-semibold text-primary">
+                            <Price amount={booking.total_price} fromCurrency={booking.currency} />
+                          </p>
+                          {booking.payment_status === "partially_paid" && (
+                            <p className="text-xs text-muted-foreground">
+                              <Price amount={booking.amount_due_now || 0} fromCurrency={booking.currency} /> payé · <Price amount={booking.balance_due || 0} fromCurrency={booking.currency} /> sur place
                             </p>
+                          )}
                           </div>
                         </div>
                       </div>
@@ -300,12 +313,12 @@ const BookingHistory = () => {
                             {t('bookingHistory.modifyBooking')}
                           </Button>
                         )}
-                        {booking.status === "pending" && (
-                          <Button className="gradient-primary shadow-primary">
+                        {booking.status === "pending" && booking.payment_status === "pending" && (
+                          <Button className="gradient-primary shadow-primary" onClick={() => navigate(`/payment?bookingId=${booking.id}`)}>
                             {t('bookingHistory.finalizePayment')}
                           </Button>
                         )}
-                        {isReviewEligible(booking) && (
+                        {reviewPromptEnabled && isReviewEligible(booking) && (
                           reviewedBookingIds.has(booking.id) ? (
                             <Button variant="ghost" disabled className="gap-2 text-muted-foreground">
                               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />

@@ -18,7 +18,7 @@ const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boo
     { key: "port", label: "Port (465 = TLS, 587 = STARTTLS)" },
     { key: "username", label: "Nom d'utilisateur" },
     { key: "password", label: "Mot de passe", secret: true },
-    { key: "from", label: "Adresse d'expédition (ex: B-Reserve <contact@bossiz.com>)" },
+    { key: "from", label: "Adresse d'expédition (ex: Bossiz+ <contact@bossiz.com>)" },
   ],
   twilio: [
     { key: "account_sid", label: "Account SID" },

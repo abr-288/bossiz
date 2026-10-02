@@ -20,6 +20,7 @@ export const PAYMENT_STATUS_DOT_COLOR: Record<string, string> = {
   pending: "bg-amber-500",
   processing: "bg-amber-500",
   paid: "bg-emerald-500",
+  partially_paid: "bg-blue-500",
   refunded: "bg-slate-400",
   failed: "bg-red-500",
 };
@@ -35,6 +36,7 @@ const PAYMENT_STATUS_VARIANT: Record<string, BadgeVariant> = {
   pending: "secondary",
   processing: "secondary",
   paid: "default",
+  partially_paid: "secondary",
   completed: "default", // `payments.status` uses "completed", `bookings.payment_status` uses "paid" - same meaning
   refunded: "outline",
   failed: "destructive",

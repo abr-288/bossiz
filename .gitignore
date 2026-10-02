@@ -22,6 +22,8 @@ dist-ssr
 
 # Artefacts PWA générés (service worker de dev)
 dev-dist/
+/playwright-report/
+/test-results/
 
 # Vite temporary files
 vite.config.ts.timestamp-*

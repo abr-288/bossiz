@@ -81,11 +81,25 @@ const AdminEmailTemplates = () => {
   };
 
   const templateTypes = [
-    { value: "flight_confirmation", label: "Confirmation de vol" },
-    { value: "support", label: "Message support" },
-    { value: "support_confirmation", label: "Confirmation support" },
-    { value: "newsletter", label: "Newsletter" },
+    { value: "password_reset", label: "Réinitialisation mot de passe" },
+    { value: "partner_account_ready", label: "Compte partenaire prêt" },
+    { value: "partner_application_received", label: "Candidature reçue (candidat)" },
+    { value: "partner_application_admin_alert", label: "Nouvelle candidature (interne)" },
+    { value: "partner_approved", label: "Candidature approuvée" },
+    { value: "partner_application_rejected", label: "Candidature rejetée" },
+    { value: "partner_suspended", label: "Partenaire suspendu" },
+    { value: "partner_reactivated", label: "Partenaire réactivé" },
+    { value: "otp_login", label: "Code de connexion" },
+    { value: "newsletter_welcome", label: "Bienvenue newsletter" },
+    { value: "booking_confirmation", label: "Réservation confirmée" },
+    { value: "flight_confirmation", label: "Vol confirmé" },
+    { value: "flight_ticket", label: "Billet d'avion" },
+    { value: "pnr_confirmation", label: "PNR confirmé" },
+    { value: "booking_pdf", label: "PDF de réservation" },
     { value: "invoice", label: "Facture" },
+    { value: "subscription_confirmation", label: "Abonnement confirmé" },
+    { value: "contact_message_internal", label: "Message de contact (interne)" },
+    { value: "support_request_internal", label: "Demande support (interne)" },
   ];
 
   if (loading) {

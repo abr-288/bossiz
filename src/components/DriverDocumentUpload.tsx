@@ -110,7 +110,7 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
             {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : path ? <Check className="w-4 h-4 mr-2 text-green-600" /> : <Upload className="w-4 h-4 mr-2" />}
             {uploading ? "Envoi..." : path ? "Remplacer" : "Choisir une photo"}
           </Button>
-          <p className="text-xs text-muted-foreground">JPG/PNG, 5 Mo max. Visible uniquement par vous et B-Reserve.</p>
+          <p className="text-xs text-muted-foreground">JPG/PNG, 5 Mo max. Visible uniquement par vous et Bossiz+.</p>
         </div>
       </div>
     </div>

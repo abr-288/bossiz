@@ -6,6 +6,7 @@ import {
   Bell,
   Settings,
   MapPin,
+  Map,
   Plane,
   HelpCircle,
   LogOut,
@@ -97,6 +98,11 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       url: "/destinations", 
       icon: MapPin 
     },
+    {
+      title: t('nav.tours', 'Circuits'),
+      url: "/tours",
+      icon: Map,
+    },
   ];
 
   const supportItems = [
@@ -113,7 +119,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
   ];
 
   const agencyItem = { 
-    title: "Espace Agence", 
+    title: "BizBossiz",
     url: "/agency", 
     icon: Building2 
   };

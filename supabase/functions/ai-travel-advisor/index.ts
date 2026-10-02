@@ -52,7 +52,7 @@ Rédige des recommandations de voyage personnalisées pour cette destination, st
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
         max_tokens: 1200,
-        system: 'Tu es un conseiller de voyage expert et chaleureux pour Bossiz (B-Reserve), une agence de voyage. Tu donnes des recommandations concrètes, honnêtes et utiles, jamais génériques ou inventées au hasard.',
+        system: 'Tu es un conseiller de voyage expert et chaleureux pour Bossiz+, une agence de voyage. Tu donnes des recommandations concrètes, honnêtes et utiles, jamais génériques ou inventées au hasard.',
         messages: [{ role: 'user', content: userPrompt }],
       }),
     });

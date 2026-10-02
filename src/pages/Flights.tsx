@@ -486,7 +486,7 @@ const Flights = () => {
                       Le forfait de voyage ultime
                     </h3>
                     <p className="text-sm text-white/70 mb-8 leading-relaxed">
-                      La Garantie B-Reserve offre des solutions instantanées aux perturbations, une assistance continue et des services de voyage automatisés.
+                      La Garantie Bossiz+ offre des solutions instantanées aux perturbations, une assistance continue et des services de voyage automatisés.
                     </p>
                     <Link to="/help">
                       <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold rounded-xl shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all">

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,12 +22,21 @@ serve(async (req) => {
     );
     console.log('Sending subscription confirmation email to:', customerEmail);
 
-    const emailHtml = generateSubscriptionConfirmationEmail(planName, planPrice, customerName, transactionId, paymentMethod);
+    const vars = {
+      customerName: String(customerName),
+      planName: String(planName),
+      planPrice: String(planPrice),
+      transactionId: String(transactionId),
+      paymentMethod: String(paymentMethod),
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(supabase, "subscription_confirmation", vars);
+    const emailHtml = rendered?.html ?? generateSubscriptionConfirmationEmail(planName, planPrice, customerName, transactionId, paymentMethod);
 
     const result = await sendEmail(supabase, {
-      from: 'B-Reserve <noreply@bossiz.com>',
+      from: 'Bossiz+ <noreply@bossiz.com>',
       to: [customerEmail],
-      subject: `Subscription Confirmed - ${planName}`,
+      subject: rendered?.subject ?? `Subscription Confirmed - ${planName}`,
       html: emailHtml,
     });
 
@@ -104,11 +114,11 @@ function generateSubscriptionConfirmationEmail(planName: string, planPrice: stri
 
           <p>You can manage your subscription anytime from your account settings.</p>
           
-          <p>Thank you for choosing B-Reserve!</p>
-          <p>Best regards,<br>The B-Reserve Team</p>
+          <p>Thank you for choosing Bossiz+!</p>
+          <p>Best regards,<br>The Bossiz+ Team</p>
         </div>
         <div class="footer">
-          <p>&copy; 2025 B-Reserve. All rights reserved.</p>
+          <p>&copy; 2025 Conciergerie Bossiz. All rights reserved.</p>
         </div>
       </div>
     </body>

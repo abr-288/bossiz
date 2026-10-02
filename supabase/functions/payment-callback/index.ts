@@ -7,7 +7,7 @@ import { getCinetPayCredentials } from "../_shared/integrations.ts";
 // ============================================================
 // EDGE FUNCTION: payment-callback
 // Description: Gère les callbacks de paiement CinetPay
-// Auteur: B-Reserve
+// Auteur: Bossiz+
 // Version: 2.0.0 - Production Ready
 // ============================================================
 

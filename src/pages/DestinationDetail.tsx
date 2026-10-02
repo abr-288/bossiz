@@ -301,7 +301,7 @@ const DestinationDetail = () => {
                 <Star className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-50" />
                 <h3 className="text-xl font-bold mb-2">Avis clients</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Aucun avis vérifié pour le moment sur cette destination. Les avis affichés sur B-Reserve
+                  Aucun avis vérifié pour le moment sur cette destination. Les avis affichés sur Bossiz+
                   proviennent uniquement de clients ayant réellement effectué une réservation.
                 </p>
               </Card>

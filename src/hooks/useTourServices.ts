@@ -38,6 +38,10 @@ export const useTourServices = () => {
           languages: specs.languages || '',
           difficulty: specs.difficulty || 'Facile',
           category: specs.category || 'Culture & Patrimoine',
+          availableDates: service.available_dates || [],
+          latitude: service.latitude,
+          longitude: service.longitude,
+          mapsUrl: service.maps_url,
         };
       });
 

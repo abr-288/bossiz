@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 // des données mock faute de clés API fiables. Stay22 est un widget
 // d'affiliation, pas un moteur de réservation : le disclaimer ci-dessous
 // est volontaire pour que le client ne s'attende pas à finaliser sur
-// B-Reserve.
+// Bossiz+.
 const HotelsWidget = () => {
   return (
     <Card className="w-full max-w-4xl mx-auto border border-gray-200 shadow-sm rounded-3xl overflow-hidden">

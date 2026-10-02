@@ -37,6 +37,13 @@ interface Passenger {
   nationality?: string;
 }
 
+interface BookingDetails extends Record<string, unknown> {
+  pickupTime?: string;
+  dropoffTime?: string;
+  prebooking_id?: string;
+  rooms?: number;
+}
+
 interface BookingRequest {
   service_id?: string;
   service_type: string;
@@ -53,7 +60,7 @@ interface BookingRequest {
   customer_phone: string;
   notes?: string;
   passengers: Passenger[];
-  booking_details?: any;
+  booking_details?: BookingDetails;
   // Present only for service types backed by a signed search offer (hotel, car)
   unit_price?: number;
   offer_signature?: string;
@@ -66,6 +73,7 @@ interface BookingRequest {
   // member of this company before allowing the row through, so a stranger
   // company_id here is rejected at the database level regardless.
   company_id?: string;
+  payment_plan?: 'full' | 'deposit';
 }
 
 serve(async (req) => {
@@ -305,6 +313,34 @@ serve(async (req) => {
       console.log('Service created successfully');
     }
 
+    // Payment policy is owned by admins in site_config. The client may ask
+    // for a deposit, but the server decides whether this type is eligible
+    // and computes the amount from the verified booking total.
+    const { data: paymentPolicyRow } = await supabase
+      .from('site_config')
+      .select('config_value')
+      .eq('config_key', 'booking_payment_policy')
+      .maybeSingle();
+    const paymentPolicy = paymentPolicyRow?.config_value || {};
+    const depositTypes = Array.isArray(paymentPolicy.enabledServiceTypes)
+      ? paymentPolicy.enabledServiceTypes
+      : ['car', 'tour', 'event', 'stay', 'activity'];
+    const depositPercent = Number(paymentPolicy.depositPercent ?? 30);
+    const depositAllowed = paymentPolicy.depositEnabled !== false
+      && depositTypes.includes(requestData.service_type)
+      && !requestData.company_id
+      && !['hotel', 'flight', 'train', 'flight_hotel'].includes(requestData.service_type);
+    const paymentPlan = requestData.payment_plan === 'deposit' && depositAllowed ? 'deposit' : 'full';
+    if (requestData.payment_plan === 'deposit' && !depositAllowed) {
+      throw new Error('Le paiement en acompte n’est pas disponible pour ce service');
+    }
+    if (paymentPlan === 'deposit' && (!Number.isFinite(depositPercent) || depositPercent < 1 || depositPercent > 99)) {
+      throw new Error('Le pourcentage d’acompte configuré est invalide');
+    }
+    const amountDueNow = paymentPlan === 'deposit'
+      ? Math.ceil(verifiedTotalPrice * depositPercent / 100)
+      : verifiedTotalPrice;
+
     // Create booking
     console.log('Creating booking...');
     const { data: booking, error: bookingError } = await supabase
@@ -318,6 +354,11 @@ serve(async (req) => {
         end_date: requestData.end_date || requestData.start_date,
         guests: requestData.guests,
         total_price: verifiedTotalPrice,
+        payment_plan: paymentPlan,
+        deposit_percent: paymentPlan === 'deposit' ? depositPercent : 0,
+        amount_due_now: amountDueNow,
+        amount_paid: 0,
+        balance_due: verifiedTotalPrice - amountDueNow,
         currency: requestData.currency,
         supplier_cost: verifiedSupplierCost,
         supplier_cost_currency: verifiedSupplierCost !== null ? requestData.currency : null,
@@ -380,7 +421,7 @@ serve(async (req) => {
     if (requestData.company_id) {
       await notifyCompanyApprovers(
         requestData.company_id,
-        `B-Reserve: ${requestData.customer_name} a soumis ${requestData.service_name} (${verifiedTotalPrice} ${requestData.currency}) pour approbation. Connectez-vous à votre tableau de bord entreprise pour valider.`
+        `Bossiz+: ${requestData.customer_name} a soumis ${requestData.service_name} (${verifiedTotalPrice} ${requestData.currency}) pour approbation. Connectez-vous à votre tableau de bord entreprise pour valider.`
       );
     }
 

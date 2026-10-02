@@ -241,7 +241,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div class="ticket-container">
             <div class="ticket-header">
               <h1>✈️ Billet d'Avion</h1>
-              <p>Bossiz Travel - Votre partenaire voyage</p>
+              <p>Bossiz+ Travel - Votre partenaire voyage</p>
             </div>
 
             <div class="ticket-body">
@@ -333,7 +333,7 @@ const handler = async (req: Request): Promise<Response> => {
 
             <div class="footer">
               <p>Prix total: ${booking.total_price.toLocaleString()} ${booking.currency}</p>
-              <p style="margin-top: 10px;">Merci d'avoir choisi Bossiz Travel</p>
+              <p style="margin-top: 10px;">Merci d'avoir choisi Bossiz+ Travel</p>
               <p style="margin-top: 5px;">Email: ${booking.customer_email} | Tél: ${booking.customer_phone}</p>
             </div>
           </div>

@@ -62,7 +62,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
         max_tokens: 500,
-        system: 'Tu es un assistant de voyage serviable pour Bossiz (B-Reserve). Donne des conseils de voyage concis et utiles, de l\'aide pour les réservations et des recommandations de destinations. Sois amical et professionnel. Réponds en français sauf si on te parle dans une autre langue.',
+        system: 'Tu es un assistant de voyage serviable pour Bossiz+. Donne des conseils de voyage concis et utiles, de l\'aide pour les réservations et des recommandations de destinations. Sois amical et professionnel. Réponds en français sauf si on te parle dans une autre langue.',
         messages: history.map((m) => ({ role: m.role, content: m.content })),
       }),
     });

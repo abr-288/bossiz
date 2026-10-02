@@ -27,13 +27,15 @@ import {
   Copy,
   Check,
   Printer,
-  QrCode
+  QrCode,
+  Star
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { toast } from "sonner";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
+import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
 
 const Confirmation = () => {
   const { t, i18n } = useTranslation();
@@ -43,6 +45,9 @@ const Confirmation = () => {
   const [booking, setBooking] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [hasReview, setHasReview] = useState(false);
+  const [reviewPromptEnabled, setReviewPromptEnabled] = useState(true);
 
   const getLocale = () => {
     switch (i18n.language) {
@@ -80,7 +85,7 @@ const Confirmation = () => {
           }));
           
           // Show toast notification on status change
-          if (payload.new.payment_status === 'paid' && payload.old?.payment_status !== 'paid') {
+          if (['paid', 'partially_paid'].includes(payload.new.payment_status) && !['paid', 'partially_paid'].includes(payload.old?.payment_status)) {
             toast.success(t('confirmation.paymentReceived'), {
               description: t('confirmation.confirmedDesc'),
               duration: 5000,
@@ -122,6 +127,12 @@ const Confirmation = () => {
 
       if (error) throw error;
       setBooking(data);
+      const [{ data: existingReview }, { data: reviewConfig }] = await Promise.all([
+        supabase.from("reviews").select("id").eq("booking_id", bookingId).maybeSingle(),
+        supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle(),
+      ]);
+      setHasReview(!!existingReview);
+      setReviewPromptEnabled((reviewConfig?.config_value as any)?.reviewPromptEnabled !== false);
     } catch (err: any) {
       console.error("Error loading booking:", err);
       setError(err.message);
@@ -457,17 +468,33 @@ const Confirmation = () => {
                 <CardContent className="py-6">
                   <h3 className="font-semibold mb-4 flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-primary" />
-                    {t('confirmation.amountPaid')}
+                    {booking.payment_status === "partially_paid" ? "Acompte payé" : t('confirmation.amountPaid')}
                   </h3>
                   <div className="text-4xl font-bold text-primary mb-2">
-                    <Price amount={booking.total_price} fromCurrency={booking.currency || "XOF"} />
+                    <Price amount={booking.amount_paid || booking.total_price} fromCurrency={booking.currency || "XOF"} />
                   </div>
+                  {booking.payment_status === "partially_paid" && (
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Solde de <Price amount={booking.balance_due || 0} fromCurrency={booking.currency || "XOF"} /> à régler sur place.
+                    </p>
+                  )}
                   <Badge 
-                    variant={booking.payment_status === 'paid' ? 'default' : 'secondary'}
-                    className={booking.payment_status === 'paid' ? 'bg-green-500' : ''}
+                    variant={['paid', 'partially_paid'].includes(booking.payment_status) ? 'default' : 'secondary'}
+                    className={['paid', 'partially_paid'].includes(booking.payment_status) ? 'bg-green-500' : ''}
                   >
                     {booking.payment_status === 'paid' ? '✓ ' + t('confirmation.paid') : t('confirmation.pending')}
                   </Badge>
+                  {reviewPromptEnabled && booking.status === "confirmed" && ["paid", "partially_paid"].includes(booking.payment_status) && booking.service_id && (
+                    <div className="mt-4 border-t pt-4">
+                      {hasReview ? (
+                        <p className="text-sm text-muted-foreground">Merci, votre avis a bien été envoyé.</p>
+                      ) : (
+                        <Button variant="outline" className="gap-2" onClick={() => setReviewOpen(true)}>
+                          <Star className="h-4 w-4" /> Noter ce service
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -535,6 +562,16 @@ const Confirmation = () => {
           </Card>
         </motion.div>
       </main>
+      {booking?.service_id && (
+        <WriteReviewDialog
+          open={reviewOpen}
+          onOpenChange={setReviewOpen}
+          bookingId={booking.id}
+          serviceId={booking.service_id}
+          serviceName={booking.services?.name || "Service réservé"}
+          onSubmitted={() => setHasReview(true)}
+        />
+      )}
       <Footer />
     </div>
   );

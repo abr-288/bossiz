@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -100,25 +101,28 @@ serve(async (req) => {
   }
 });
 
-function sendConfirmationEmail(supabase: ReturnType<typeof createClient>, email: string) {
+async function sendConfirmationEmail(supabase: ReturnType<typeof createClient>, email: string) {
+  const vars = { year: String(new Date().getFullYear()) };
+  const rendered = await renderEmailTemplate(supabase, "newsletter_welcome", vars);
+
   return sendEmail(supabase, {
-    from: 'B-Reserve <noreply@bossiz.com>',
+    from: 'Bossiz+ <noreply@bossiz.com>',
     to: [email],
-    subject: 'Bienvenue à la newsletter B-Reserve',
-    html: `
-      <h1>Bienvenue chez B-Reserve !</h1>
+    subject: rendered?.subject ?? 'Bienvenue à la newsletter Bossiz+',
+    html: rendered?.html ?? `
+      <h1>Bienvenue chez Bossiz+ !</h1>
       <p>Merci de vous être inscrit à notre newsletter.</p>
       <p>Vous recevrez nos meilleures offres de voyage, recommandations de destinations et promotions exclusives.</p>
-      <p>À bientôt,<br>L'équipe B-Reserve</p>
+      <p>À bientôt,<br>L'équipe Bossiz+</p>
     `,
     text: `
-      Bienvenue chez B-Reserve !
+      Bienvenue chez Bossiz+ !
 
       Merci de vous être inscrit à notre newsletter.
       Vous recevrez nos meilleures offres de voyage, recommandations de destinations et promotions exclusives.
 
       À bientôt,
-      L'équipe B-Reserve
+      L'équipe Bossiz+
     `,
   });
 }

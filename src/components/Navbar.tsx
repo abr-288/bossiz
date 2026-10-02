@@ -14,7 +14,7 @@ import {
 import { 
   Menu, User, LogOut, LayoutDashboard, Plane, Hotel, PlaneTakeoff,
   Train, Calendar, Car, HelpCircle, UserCircle2,
-  MapPin, Compass, ChevronDown, Search, UtensilsCrossed, Hammer, Briefcase, ArrowLeftRight, Sparkles
+  MapPin, Map, Compass, ChevronDown, Search, UtensilsCrossed, Hammer, Briefcase, ArrowLeftRight, Sparkles
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -77,6 +77,7 @@ const Navbar = () => {
     { to: "/cars", icon: Car, label: t("nav.carRental") },
     { to: "/trains", icon: Train, label: t("nav.trains") },
     { to: "/events", icon: Calendar, label: t("nav.events") },
+    { to: "/tours", icon: Map, label: t("nav.tours") },
     { to: "/destinations", icon: MapPin, label: t("nav.destinations") },
     { to: "/stays", icon: Compass, label: t("nav.stays") },
     { to: "/restaurants", icon: UtensilsCrossed, label: t("nav.restaurants") },

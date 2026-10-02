@@ -137,16 +137,20 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     // fournisseur équivalente : ils restent confirmés immédiatement.
     const { data: bookingRow } = await supabase
       .from('bookings')
-      .select('id, total_price, currency, services(type, agency_id)')
+      .select('id, total_price, amount_due_now, balance_due, payment_plan, currency, services(type, agency_id)')
       .eq('id', bookingId)
       .single();
 
     const isFlight = bookingRow?.services?.type === 'flight';
 
+    const isDeposit = bookingRow?.payment_plan === 'deposit' && Number(bookingRow?.balance_due || 0) > 0;
+    const amountPaid = Number(bookingRow?.amount_due_now || bookingRow?.total_price || 0);
     const { error: bookingError } = await supabase
       .from('bookings')
       .update({
-        payment_status: 'paid',
+        payment_status: isDeposit ? 'partially_paid' : 'paid',
+        amount_paid: amountPaid,
+        balance_due: Math.max(0, Number(bookingRow?.total_price || 0) - amountPaid),
         status: isFlight ? 'pending' : 'confirmed',
         updated_at: new Date().toISOString(),
       })

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -63,12 +64,25 @@ serve(async (req) => {
     }
 
     // Send email with ticket attachment via le prestataire actif (Resend ou SMTP)
-    const emailHtml = generateTicketEmailHtml(booking, passengers || []);
+    const passengerList = passengers || [];
+    const vars = {
+      customerName: booking.customer_name,
+      pnr: booking.external_ref || 'Pending',
+      route: booking.location,
+      totalPrice: String(booking.total_price),
+      currency: booking.currency,
+      passengersHtml: passengerList
+        .map((p, index) => `<li>Passager ${index + 1} : ${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)} (${escapeHtml(p.document_type)}: ${escapeHtml(p.document_number)})</li>`)
+        .join(""),
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(supabase, "flight_ticket", vars, ["passengersHtml"]);
+    const emailHtml = rendered?.html ?? generateTicketEmailHtml(booking, passengers || []);
 
     const result = await sendEmail(supabase, {
-      from: 'B-Reserve <noreply@bossiz.com>',
+      from: 'Bossiz+ <noreply@bossiz.com>',
       to: [booking.customer_email],
-      subject: `Your Flight Ticket - ${booking.external_ref || 'Pending'}`,
+      subject: rendered?.subject ?? `Your Flight Ticket - ${booking.external_ref || 'Pending'}`,
       html: emailHtml,
       attachments: [
         {
@@ -162,10 +176,10 @@ function generateTicketEmailHtml(booking: any, passengers: any[]) {
           </ul>
           
           <p>Have a wonderful trip!</p>
-          <p>Best regards,<br>The B-Reserve Team</p>
+          <p>Best regards,<br>The Bossiz+ Team</p>
         </div>
         <div class="footer">
-          <p>&copy; 2025 B-Reserve. All rights reserved.</p>
+          <p>&copy; 2025 Conciergerie Bossiz. All rights reserved.</p>
         </div>
       </div>
     </body>

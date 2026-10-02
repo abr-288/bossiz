@@ -12,6 +12,7 @@ import { HomepageConfigProvider } from "@/contexts/HomepageConfigContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
 import RouteSeo from "@/components/RouteSeo";
 import ChatWidget from "@/components/ChatWidget";
@@ -36,6 +37,7 @@ const App = () => (
                     <RouteSeo />
                     <AnimatedRoutes />
                     <ChatWidget />
+                    <CookieConsentBanner />
                   </BrowserRouter>
                 </TooltipProvider>
               </CurrencyProvider>

@@ -216,7 +216,7 @@ const Compatibility = () => {
             </h1>
           </div>
           <p className="text-lg text-gray-600">
-            Vérification de la compatibilité de votre appareil avec B-Reserve
+            Vérification de la compatibilité de votre appareil avec Bossiz+
           </p>
         </div>
 
@@ -240,7 +240,7 @@ const Compatibility = () => {
           <CardContent>
             {compatibility.isCompatible ? (
               <p className="text-green-700">
-                Félicitations ! Votre appareil peut utiliser toutes les fonctionnalités de B-Reserve.
+                Félicitations ! Votre appareil peut utiliser toutes les fonctionnalités de Bossiz+.
               </p>
             ) : (
               <div className="space-y-4">

@@ -52,9 +52,9 @@ export function AdminSidebar() {
   return (
     <Sidebar className={collapsed ? "w-14" : "w-56 md:w-64"} collapsible="icon">
       <SidebarContent className="flex flex-col h-full">
-        <div className="p-3 md:p-4 border-b flex-shrink-0">
-          <h2 className={`font-bold text-base md:text-xl ${collapsed ? "text-center" : ""}`}>
-            {collapsed ? "BR" : "B-Reserve Admin"}
+        <div className="p-3 md:p-4 flex-shrink-0" style={{ backgroundColor: "#334155" }}>
+          <h2 className={`font-bold text-base md:text-xl text-white ${collapsed ? "text-center" : ""}`}>
+            {collapsed ? "HQ" : "BossizHQ"}
           </h2>
         </div>
 
@@ -69,7 +69,7 @@ export function AdminSidebar() {
                       to={item.url}
                       aria-label={item.title}
                       className={`flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
-                        isActive(item.url) ? "bg-accent text-accent-foreground font-medium" : ""
+                        isActive(item.url) ? "bg-[#334155]/10 text-[#334155] dark:text-slate-300 font-medium" : ""
                       }`}
                     >
                       <item.icon className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />

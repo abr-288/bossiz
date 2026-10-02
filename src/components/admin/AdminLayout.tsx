@@ -66,6 +66,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/10">
+        <div className="fixed top-0 left-0 right-0 h-1 z-[60]" style={{ backgroundColor: "#334155" }} />
         <AdminSidebar />
         
         <div className="flex-1 flex flex-col min-w-0">

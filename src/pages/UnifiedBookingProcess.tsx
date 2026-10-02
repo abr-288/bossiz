@@ -60,7 +60,7 @@ const UnifiedBookingProcess = () => {
   // États pour le processus de réservation
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, number>>({});
-  const [selectedPreferences, setSelectedPreferences] = useState<Record<string, any>>({});
+  const [selectedPreferences, setSelectedPreferences] = useState<Record<string, unknown>>({});
 
   const getServiceIcon = () => {
     switch (serviceType) {

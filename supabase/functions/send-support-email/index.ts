@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,12 +23,23 @@ serve(async (req) => {
     );
     console.log('Sending support email from:', email);
 
-    const emailHtml = generateSupportEmailHtml(name, email, bookingReference, subject, message);
+    const vars = {
+      name: String(name),
+      email: String(email),
+      bookingReferenceBlockHtml: bookingReference
+        ? `<p style="margin:4px 0;"><strong>Référence de réservation :</strong> ${escapeHtml(String(bookingReference))}</p>`
+        : "",
+      subject: String(subject),
+      messageHtml: escapeHtml(String(message)).replace(/\n/g, "<br/>"),
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(supabase, "support_request_internal", vars, ["bookingReferenceBlockHtml", "messageHtml"]);
+    const emailHtml = rendered?.html ?? generateSupportEmailHtml(name, email, bookingReference, subject, message);
 
     const result = await sendEmail(supabase, {
-      from: 'B-Reserve <noreply@bossiz.com>',
+      from: 'Bossiz+ <noreply@bossiz.com>',
       to: [supportInbox],
-      subject: `Support Request: ${subject}`,
+      subject: rendered?.subject ?? `Support Request: ${subject}`,
       html: emailHtml,
       replyTo: email,
     });
@@ -105,7 +117,7 @@ function generateSupportEmailHtml(name: string, email: string, bookingReference:
           <p>Please respond to this support request as soon as possible.</p>
         </div>
         <div class="footer">
-          <p>&copy; 2026 B-Reserve Support System</p>
+          <p>&copy; 2026 Conciergerie Bossiz - Support System</p>
         </div>
       </div>
     </body>

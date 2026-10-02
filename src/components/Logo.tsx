@@ -21,7 +21,7 @@ const Logo = ({ variant = "dark", className, showWordmark = true }: LogoProps) =
       viewBox={showWordmark ? "0 0 172 40" : "0 0 40 40"}
       className={cn("h-9 w-auto", className)}
       role="img"
-      aria-label="B-Reserve"
+      aria-label="Bossiz+"
     >
       <rect x="0" y="0" width="40" height="40" rx="11" fill={badgeFill} />
       <text

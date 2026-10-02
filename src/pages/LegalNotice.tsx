@@ -1,0 +1,119 @@
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
+import { Building2, Server, Copyright, Gavel, Mail, AlertCircle } from "lucide-react";
+
+const LegalNotice = () => {
+  const { config } = useSiteConfigContext();
+  const siteName = config.branding.siteName;
+
+  const sections = [
+    {
+      icon: Building2,
+      title: "1. Éditeur du site",
+      content: [
+        `Le site ${siteName} (accessible notamment à l'adresse app.bossiz.com) est édité par :`,
+        "",
+        "**CONCIERGERIE BOSSIZ**, Société à Responsabilité Limitée Unipersonnelle (SARLU)",
+        "• Capital social : 5 000 000 FCFA",
+        "• Siège social : Abidjan, Cocody, Riviera CIAD, face à la Pharmacie Mpouto, Immeuble Diamantine, Côte d'Ivoire",
+        "• RCCM : CI-ABJ-03-2024-B13-05959 (Tribunal de Commerce d'Abidjan)",
+        "• Numéro de Compte Contribuable (NCC) : 2402095S",
+        "• Gérante / Directrice de la publication : N'Guessan Elie Ahou Sara",
+        "• E-mail : contact@bossiz.com",
+      ],
+    },
+    {
+      icon: Gavel,
+      title: "2. Activité",
+      content: [
+        `${siteName} exerce notamment, dans le cadre de son objet social enregistré au RCCM, des activités de billetterie, agence de voyage et circuit touristique, aux côtés d'opérations de conciergerie privée et d'entreprise, commerce général et prestations de services.`,
+        "L'objet social complet est consultable auprès du greffe du Tribunal de Commerce d'Abidjan sous le numéro RCCM ci-dessus.",
+      ],
+    },
+    {
+      icon: Server,
+      title: "3. Hébergement",
+      content: [
+        "**Hébergement du site web** : Contabo GmbH (serveur privé virtuel), Allemagne.",
+        "**Infrastructure technique (base de données, authentification, stockage, fonctions serveur)** : Supabase Inc., dont les serveurs pour ce projet sont situés dans la région Europe (Irlande).",
+      ],
+    },
+    {
+      icon: Copyright,
+      title: "4. Propriété intellectuelle",
+      content: [
+        `L'ensemble des éléments du site ${siteName} (structure, textes, logos, éléments graphiques) est protégé par le droit de la propriété intellectuelle. Voir les Conditions Générales d'Utilisation, section « Propriété intellectuelle », pour le détail.`,
+      ],
+    },
+    {
+      icon: AlertCircle,
+      title: "5. Droit applicable et réclamations",
+      content: [
+        "Les présentes mentions légales sont soumises au droit ivoirien. En cas de litige, les tribunaux compétents d'Abidjan sont seuls compétents, sauf disposition légale contraire.",
+        "Pour toute réclamation relative à vos données personnelles, voir la Politique de Confidentialité (section « Contact et réclamations »).",
+      ],
+    },
+    {
+      icon: Mail,
+      title: "6. Contact",
+      content: [
+        `Pour toute question relative au site ${siteName} ou à la présente page :`,
+        "",
+        "E-mail : contact@bossiz.com",
+        "Formulaire : voir la page Contact du site",
+      ],
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="pt-32 pb-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+              <Building2 className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Mentions Légales
+            </h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Informations légales relatives à l'éditeur et à l'hébergement du site {siteName}, conformément à la réglementation ivoirienne applicable aux sites marchands.
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            {sections.map((section, index) => {
+              const Icon = section.icon;
+              return (
+                <section key={index} className="bg-card border border-border rounded-xl p-6 md:p-8">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <h2 className="text-xl font-bold text-foreground pt-1.5">{section.title}</h2>
+                  </div>
+                  <div className="pl-14 space-y-2">
+                    {section.content.map((line, i) => (
+                      <p
+                        key={i}
+                        className={`text-sm leading-relaxed ${line.includes("à compléter") ? "text-amber-600 dark:text-amber-400 font-medium" : "text-muted-foreground"}`}
+                        dangerouslySetInnerHTML={{
+                          __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>'),
+                        }}
+                      />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default LegalNotice;

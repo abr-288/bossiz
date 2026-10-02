@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useTravelChatbot } from "@/hooks/useTravelChatbot";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -21,7 +22,14 @@ interface Message {
 
 const ChatWidget = () => {
   const { t } = useTranslation();
+  const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const isTransactionalPage = [
+    "/payment",
+    "/booking-history",
+    "/booking-process",
+    "/flight-hotel/booking",
+  ].includes(pathname) || pathname.startsWith("/booking/") || pathname.startsWith("/admin");
   const { sendMessage, loading: aiLoading } = useTravelChatbot();
   
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -29,7 +37,10 @@ const ChatWidget = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return parsed.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }));
+        return parsed.map((item: unknown) => {
+          const message = item as Partial<Message>;
+          return { ...message, timestamp: new Date(message.timestamp ?? Date.now()) } as Message;
+        });
       } catch (e) {
         return [];
       }
@@ -41,12 +52,16 @@ const ChatWidget = () => {
     if (messages.length === 0) {
       setMessages([{
         id: '1',
-        text: "Bonjour ! Je suis votre assistant B-Reserve boosté à l'IA. Comment puis-je vous aider aujourd'hui ? 🌍",
+        text: "Bonjour ! Je suis votre assistant Bossiz+ boosté à l'IA. Comment puis-je vous aider aujourd'hui ? 🌍",
         sender: 'agent',
         timestamp: new Date(),
       }]);
     }
   }, []);
+
+  useEffect(() => {
+    if (isTransactionalPage) setIsOpen(false);
+  }, [isTransactionalPage, pathname]);
 
   const [unreadCount, setUnreadCount] = useState(() => {
     const saved = localStorage.getItem("b_reserve_chat_messages");
@@ -135,6 +150,8 @@ const ChatWidget = () => {
     }
   };
 
+  if (isTransactionalPage) return null;
+
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000] flex flex-col items-end pointer-events-none">
       <AnimatePresence>
@@ -160,7 +177,7 @@ const ChatWidget = () => {
                     </div>
                   </div>
                   <div className="space-y-0.5">
-                    <h3 className="font-extrabold text-lg tracking-tight">Conciergerie B-Reserve</h3>
+                    <h3 className="font-extrabold text-lg tracking-tight">Conciergerie Bossiz+</h3>
                     <div className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                       <p className="text-xs text-white/80 font-semibold uppercase tracking-widest">IA Active</p>
@@ -272,7 +289,7 @@ const ChatWidget = () => {
                 </Button>
               </form>
               <div className="mt-3 text-center">
-                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-60">IA Intelligente B-Reserve • Sécurisé</p>
+                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-60">IA Intelligente Bossiz+ • Sécurisé</p>
               </div>
             </div>
           </motion.div>
@@ -283,7 +300,7 @@ const ChatWidget = () => {
         onClick={toggleChat}
         aria-label={isOpen ? "Fermer le chat" : "Ouvrir le chat"}
         className={cn(
-          "h-16 w-16 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 transition-all pointer-events-auto border overflow-hidden relative group",
+          "h-12 w-12 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 transition-all pointer-events-auto border overflow-hidden relative group",
           isOpen 
             ? "bg-white text-primary border-border" 
             : "bg-primary text-white border-white/20"
@@ -313,11 +330,10 @@ const ChatWidget = () => {
   );
 };
 
-const Badge = ({ children, className, variant }: any) => (
+const Badge = ({ children, className }: { children: React.ReactNode; className?: string }) => (
   <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold", className)}>
     {children}
   </span>
 );
 
 export default ChatWidget;
-

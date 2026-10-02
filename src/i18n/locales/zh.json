@@ -10,7 +10,7 @@
     "support": "客服",
     "login": "登录",
     "signup": "注册",
-    "myAccount": "我的账户",
+    "myAccount": "MyBossiz",
     "admin": "管理",
     "logout": "登出",
     "logoutSuccess": "登出成功",
@@ -96,7 +96,7 @@
     "chooseDate": "选择日期"
   },
   "features": {
-    "title": "为什么选择B-Reserve？",
+    "title": "为什么选择Bossiz+？",
     "bestPrices": {
       "title": "价格保证最优",
       "description": "我们保证为您提供市场上最优惠的价格"
@@ -542,7 +542,7 @@
       "signup": "注册成功",
       "signupDesc": "请检查邮箱以确认账户",
       "login": "登录成功",
-      "loginDesc": "欢迎来到B-Reserve！",
+      "loginDesc": "欢迎来到Bossiz+！",
       "resetSent": "邮件已发送",
       "resetSentDesc": "请检查邮箱以重置密码",
       "passwordUpdated": "密码已更新",
@@ -1177,7 +1177,7 @@
       "bookings": "预订",
       "priceAlerts": "价格提醒",
       "explore": "探索",
-      "account": "账户",
+      "account": "MyBossiz",
       "support": "客服支持"
     }
   },
@@ -1260,7 +1260,7 @@
   },
   "iosDownload": {
     "badge": "移动应用",
-    "title": "下载 B-Reserve",
+    "title": "下载 Bossiz+",
     "titleHighlight": "在您的手机上",
     "subtitle": "直接从您的智能手机访问我们所有的预订服务",
     "detected": {
@@ -1286,7 +1286,7 @@
       "scanQR": "扫描二维码",
       "hideQR": "隐藏二维码",
       "qrHint": "用您的iOS设备扫描此二维码",
-      "qrAlt": "在iOS上下载B-Reserve的二维码"
+      "qrAlt": "在iOS上下载Bossiz+的二维码"
     },
     "android": {
       "devices": "手机和平板电脑",
@@ -1315,7 +1315,7 @@
         "用相机扫描二维码",
         "点击\"在App Store中打开\"",
         "点击\"获取\"进行安装",
-        "B-Reserve图标将出现在您的主屏幕上"
+        "Bossiz+图标将出现在您的主屏幕上"
       ],
       "androidSteps": [
         "点击下载按钮",
@@ -2084,7 +2084,7 @@
       "general": {
         "label": "常见问题",
         "q0": {
-          "question": "如何在B-Reserve上创建账户？",
+          "question": "如何在Bossiz+上创建账户？",
           "answer": "点击页面顶部的\"登录\"，然后点击\"创建账户\"，填写信息并验证您的电子邮件。"
         },
         "q1": {

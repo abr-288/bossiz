@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { Plus, Pencil, Trash2, Sparkles, Search, X } from "lucide-react";
 
 interface Treatment {
@@ -47,6 +48,9 @@ interface WellnessService {
   category: string;
   description: string | null;
   location: string;
+  latitude: number | null;
+  longitude: number | null;
+  maps_url: string | null;
   address: string | null;
   phone: string | null;
   image_url: string | null;
@@ -89,6 +93,9 @@ const emptyForm = {
   category: "spa",
   description: "",
   location: "",
+  latitude: null as number | null,
+  longitude: null as number | null,
+  maps_url: "",
   address: "",
   phone: "",
   image_url: "",
@@ -152,7 +159,7 @@ export default function AgencyWellness() {
         name: t.name.trim(),
         description: t.description?.trim() || undefined,
         price: t.price !== undefined && !Number.isNaN(t.price) ? t.price : undefined,
-        currency: t.currency || "XOF",
+        currency: "XOF",
         duration_minutes: t.duration_minutes !== undefined && !Number.isNaN(t.duration_minutes) ? t.duration_minutes : undefined,
       }));
 
@@ -182,6 +189,9 @@ export default function AgencyWellness() {
         category: formData.category,
         description: formData.description || null,
         location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        maps_url: formData.maps_url || null,
         address: formData.address || null,
         phone: formData.phone || null,
         image_url: formData.image_url || null,
@@ -218,6 +228,9 @@ export default function AgencyWellness() {
       category: service.category,
       description: service.description || "",
       location: service.location,
+      latitude: service.latitude,
+      longitude: service.longitude,
+      maps_url: service.maps_url || "",
       address: service.address || "",
       phone: service.phone || "",
       image_url: service.image_url || "",
@@ -305,6 +318,7 @@ export default function AgencyWellness() {
                     <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                   </div>
                 </div>
+                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Téléphone</Label>

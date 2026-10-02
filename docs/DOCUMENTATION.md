@@ -1,10 +1,10 @@
-# B-Reserve / Bossiz — Documentation du fonctionnement du site
+# Bossiz+ / Bossiz — Documentation du fonctionnement du site
 
 Dernière mise à jour : 2026-08-05
 
 ## 1. Vue d'ensemble
 
-B-Reserve (marque **Bossiz**) est une plateforme de réservation de voyages pour la
+Bossiz+ (marque **Bossiz**) est une plateforme de réservation de voyages pour la
 Côte d'Ivoire et l'Afrique de l'Ouest : vols, hôtels, voitures, activités/tours,
 trains, événements, packages vol+hôtel.
 
@@ -111,7 +111,7 @@ supabase/
   functions/         Edge Functions Deno (paiement, recherche, emails, PDF...)
   migrations/         Migrations SQL (schéma, RLS, seed de référence)
 
-android/, ios/        Projets natifs Capacitor (appId com.breserve.app)
+android/, ios/        Projets natifs Capacitor (appId com.bossizplus.app)
 deploy-vps/            Scripts et config de déploiement VPS (voir section 5)
 ```
 
@@ -199,7 +199,7 @@ sudo docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter cadd
   d'accueil) — Apple ne propose pas de prompt d'installation automatique pour
   les PWA, ce comportement est normal et déjà bien géré par la page `/install`.
 - **Build natif (Capacitor)** : les projets `android/` et `ios/` existent et
-  sont configurés (`capacitor.config.ts`, appId `com.breserve.app`), et un job
+  sont configurés (`capacitor.config.ts`, appId `com.bossizplus.app`), et un job
   `build-android` existe déjà dans `.github/workflows/ci-cd.yml` (build APK
   debug via GitHub Actions à chaque push sur `prod`). **Aucun build APK/IPA
   n'est actuellement produit ni distribué** — ce poste de développement

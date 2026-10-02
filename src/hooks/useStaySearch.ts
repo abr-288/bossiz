@@ -17,6 +17,10 @@ export interface Stay {
   highlights: string[];
   available: boolean;
   featured: boolean;
+  available_dates: string[];
+  latitude: number | null;
+  longitude: number | null;
+  maps_url: string | null;
 }
 
 export const useStaySearch = () => {

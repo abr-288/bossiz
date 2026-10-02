@@ -96,6 +96,8 @@ const SubscriptionPaymentComponent = lazy(() => import("@/components/ModernSubsc
 const OrderSummary = lazy(() => import("@/pages/OrderSummary"));
 const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("@/pages/TermsOfService"));
+const CookiePolicy = lazy(() => import("@/pages/CookiePolicy"));
+const LegalNotice = lazy(() => import("@/pages/LegalNotice"));
 const Documentation = lazy(() => import("@/pages/Documentation"));
 const PlatformPresentation = lazy(() => import("@/pages/PlatformPresentation"));
 const Compatibility = lazy(() => import("@/pages/Compatibility"));
@@ -109,7 +111,7 @@ const PageLoader = () => (
       <div className="loader-ring"></div>
       <Logo variant="light" showWordmark={false} className="loader-logo !w-20 !h-20" />
     </div>
-    <div className="loader-text">B-RESERVE</div>
+    <div className="loader-text">BOSSIZ+</div>
     <div className="loader-bar-bg">
       <div className="loader-bar"></div>
     </div>
@@ -219,6 +221,9 @@ const AnimatedRoutes = () => {
           <Route path="/order-summary" element={<PageTransition><OrderSummary /></PageTransition>} />
           <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
           <Route path="/terms-of-service" element={<PageTransition><TermsOfService /></PageTransition>} />
+          <Route path="/politique-cookies" element={<PageTransition><CookiePolicy /></PageTransition>} />
+          <Route path="/cookie-policy" element={<PageTransition><CookiePolicy /></PageTransition>} />
+          <Route path="/mentions-legales" element={<PageTransition><LegalNotice /></PageTransition>} />
           <Route path="/documentation" element={<PageTransition><Documentation /></PageTransition>} />
           <Route path="/documentations" element={<PageTransition><PlatformPresentation /></PageTransition>} />
           <Route path="/compatibility" element={<PageTransition><Compatibility /></PageTransition>} />

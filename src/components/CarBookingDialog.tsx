@@ -42,6 +42,9 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
   const [licenseFrontPath, setLicenseFrontPath] = useState("");
   const [licenseBackPath, setLicenseBackPath] = useState("");
   const [applicantPhotoPath, setApplicantPhotoPath] = useState("");
+  const [paymentPlan, setPaymentPlan] = useState<"full" | "deposit">("full");
+  const [depositPercent, setDepositPercent] = useState(30);
+  const [depositAvailable, setDepositAvailable] = useState(false);
 
   // Checked as soon as the dialog opens, not after the user has filled out
   // the whole form - avoids sending someone through 9+ fields only to tell
@@ -51,6 +54,14 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     setLicenseFrontPath("");
     setLicenseBackPath("");
     setApplicantPhotoPath("");
+    supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle()
+      .then(({ data }) => {
+        const policy = data?.config_value as any;
+        setDepositPercent(Math.min(99, Math.max(1, Number(policy?.depositPercent) || 30)));
+        const available = policy?.depositEnabled !== false && (policy?.enabledServiceTypes || []).includes("car");
+        setDepositAvailable(available);
+        if (!available) setPaymentPlan("full");
+      });
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -153,6 +164,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
         driverLicensePhotoBackPath: licenseBackPath,
         applicantPhotoPath,
       },
+      payment_plan: paymentPlan,
     });
 
     if (!bookingId) return;
@@ -173,6 +185,18 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
 
         <UnifiedForm onSubmit={handleSubmit} variant="booking" loading={loading}>
           <div className="space-y-6">
+            {depositAvailable && (
+              <div className="space-y-2 rounded-lg border p-4">
+                <h3 className="font-semibold">Choisissez le paiement</h3>
+                <button type="button" onClick={() => setPaymentPlan("full")} className={`w-full rounded-md border p-3 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : ""}`}>
+                  Payer la totalité en ligne
+                </button>
+                <button type="button" onClick={() => setPaymentPlan("deposit")} className={`w-full rounded-md border p-3 text-left ${paymentPlan === "deposit" ? "border-primary bg-primary/5" : ""}`}>
+                  Verser {depositPercent} % d’acompte en ligne, puis régler le solde sur place
+                </button>
+                {paymentPlan === "deposit" && <p className="text-xs text-muted-foreground">Le montant exact de l’acompte et le solde seront affichés après le calcul de la durée.</p>}
+              </div>
+            )}
             {/* Informations de prise en charge */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Lieu et horaire de prise en charge</h3>

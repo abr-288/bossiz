@@ -284,7 +284,7 @@ const Auth = () => {
                 <Logo variant="dark" className="h-10 w-auto" />
               </div>
               <CardTitle className="text-2xl font-semibold text-gray-900 mb-2">
-                B-Reserve
+                Bossiz+
               </CardTitle>
               <CardDescription className="text-gray-600">
                 {t('auth.yourAgency')}

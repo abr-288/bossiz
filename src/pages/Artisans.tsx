@@ -159,7 +159,7 @@ const Artisans = () => {
                   {selectedArtisan.whatsapp && (
                     <Button asChild className="gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white">
                       <a
-                        href={waLink(selectedArtisan.whatsapp, `Bonjour, je vous contacte depuis B-Reserve au sujet de vos créations (${selectedArtisan.name}).`)}
+                        href={waLink(selectedArtisan.whatsapp, `Bonjour, je vous contacte depuis Bossiz+ au sujet de vos créations (${selectedArtisan.name}).`)}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

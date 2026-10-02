@@ -57,8 +57,8 @@ export default defineConfig(({ mode }) => ({
       },
       manifest: {
         id: '/',
-        name: 'B-Reserve - Voyages & Réservations',
-        short_name: 'B-Reserve',
+        name: 'Bossiz+ - Voyages & Réservations',
+        short_name: 'Bossiz+',
         description: 'Votre compagnon de voyage - Réservez vols, hôtels, voitures et plus encore en quelques clics',
         theme_color: '#0c4a6e',
         background_color: '#0c4a6e',
@@ -132,14 +132,14 @@ export default defineConfig(({ mode }) => ({
             sizes: '390x844',
             type: 'image/png',
             form_factor: 'narrow',
-            label: 'Accueil B-Reserve Mobile'
+            label: 'Accueil Bossiz+ Mobile'
           },
           {
             src: '/pwa-icons/screenshot-desktop.png',
             sizes: '1920x1080',
             type: 'image/png',
             form_factor: 'wide',
-            label: 'Accueil B-Reserve Desktop'
+            label: 'Accueil Bossiz+ Desktop'
           }
         ],
         shortcuts: [

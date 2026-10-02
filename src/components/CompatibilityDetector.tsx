@@ -159,7 +159,7 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
             <AlertTriangle className="h-12 w-12 text-orange-600 mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Appareil non compatible</h2>
             <p className="text-gray-600 mb-4">
-              Votre appareil ou navigateur n'est pas compatible avec B-Reserve. 
+              Votre appareil ou navigateur n'est pas compatible avec Bossiz+.
               Vous allez être redirigé vers la page de compatibilité.
             </p>
             <div className="space-y-2 text-sm text-gray-500">

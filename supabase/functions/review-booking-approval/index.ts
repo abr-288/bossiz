@@ -72,8 +72,8 @@ serve(async (req) => {
 
     const serviceName = (booking as any).services?.name || 'votre réservation';
     const message = decision === 'approved'
-      ? `B-Reserve: ${serviceName} (${booking.total_price} ${booking.currency}) a été approuvée. Le paiement va être traité par votre entreprise.`
-      : `B-Reserve: ${serviceName} (${booking.total_price} ${booking.currency}) a été rejetée par votre entreprise.`;
+      ? `Bossiz+: ${serviceName} (${booking.total_price} ${booking.currency}) a été approuvée. Le paiement va être traité par votre entreprise.`
+      : `Bossiz+: ${serviceName} (${booking.total_price} ${booking.currency}) a été rejetée par votre entreprise.`;
 
     // Best-effort, awaited for the same reason as create-booking (a
     // detached background call risks being killed when the function

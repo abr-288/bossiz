@@ -28,6 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
+import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Activity, Search } from "lucide-react";
@@ -38,6 +41,10 @@ interface ActivityItem {
   category: string;
   description: string | null;
   location: string;
+  maps_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  available_dates: string[];
   duration: string;
   price_per_unit: number;
   currency: string;
@@ -68,6 +75,10 @@ export default function AgencyActivities() {
     category: "adventure",
     description: "",
     location: "",
+    maps_url: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
+    available_dates: [] as string[],
     duration: "",
     price_per_unit: "",
     currency: "XOF",
@@ -116,9 +127,13 @@ export default function AgencyActivities() {
         category: formData.category,
         description: formData.description || null,
         location: formData.location,
+        maps_url: formData.maps_url || null,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        available_dates: formData.available_dates,
         duration: formData.duration,
         price_per_unit: parseFloat(formData.price_per_unit),
-        currency: formData.currency,
+        currency: "XOF",
         available: formData.available,
         image_url: formData.image_url || null,
         agency_id: agencyId,
@@ -160,6 +175,10 @@ export default function AgencyActivities() {
       category: activity.category,
       description: activity.description || "",
       location: activity.location,
+      maps_url: activity.maps_url || "",
+      latitude: activity.latitude,
+      longitude: activity.longitude,
+      available_dates: activity.available_dates || [],
       duration: activity.duration,
       price_per_unit: activity.price_per_unit.toString(),
       currency: activity.currency,
@@ -188,6 +207,10 @@ export default function AgencyActivities() {
       category: "adventure",
       description: "",
       location: "",
+      maps_url: "",
+      latitude: null,
+      longitude: null,
+      available_dates: [],
       duration: "",
       price_per_unit: "",
       currency: "XOF",
@@ -246,15 +269,12 @@ export default function AgencyActivities() {
                     </Select>
                   </div>
                 </div>
+                <LocationPicker
+                    value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }}
+                    onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
+                    required
+                />
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Localisation *</Label>
-                    <Input
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      required
-                    />
-                  </div>
                   <div className="space-y-2">
                     <Label>Durée *</Label>
                     <Input
@@ -275,21 +295,9 @@ export default function AgencyActivities() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Devise</Label>
-                    <Select
-                      value={formData.currency}
-                      onValueChange={(v) => setFormData({ ...formData, currency: v })}
-                    >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="XOF">XOF</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">Prix affiché et facturé en XOF (FCFA)</div>
                 </div>
+                <AvailableDatesInput dates={formData.available_dates} onChange={(available_dates) => setFormData({ ...formData, available_dates })} />
                 <div className="space-y-2">
                   <Label>Description</Label>
                   <Textarea
@@ -298,13 +306,7 @@ export default function AgencyActivities() {
                     rows={2}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>URL Image</Label>
-                  <Input
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  />
-                </div>
+                <ImageUpload label="Photo de l’activité" folder="agency-activities" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.available}

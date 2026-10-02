@@ -81,6 +81,12 @@ export default function AdminPartnerApplications() {
 
       toast({ title: "Succès", description: "Candidature rejetée" });
       fetchApplications();
+
+      supabase.functions
+        .invoke("send-partner-application-rejection", { body: { applicationId: id } })
+        .then(({ error: emailError }) => {
+          if (emailError) console.error("Partner rejection email error:", emailError);
+        });
     } catch (error: any) {
       console.error("Error rejecting application:", error);
       toast({

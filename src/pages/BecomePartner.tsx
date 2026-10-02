@@ -65,7 +65,7 @@ const carPlanLabels: Record<string, string> = {
 
 const commonConditions = [
   "Chaque candidature est étudiée manuellement par notre équipe avant toute activation.",
-  "B-Reserve peut refuser ou suspendre un partenariat en cas de non-respect de ces conditions.",
+  "Bossiz+ peut refuser ou suspendre un partenariat en cas de non-respect de ces conditions.",
 ];
 
 const conditionsByType: Record<PartnerTypeValue, string[]> = {
@@ -109,7 +109,7 @@ const benefits = [
   {
     icon: Users,
     title: "Visibilité auprès de nos clients",
-    description: "Votre établissement apparaît directement dans les résultats de recherche B-Reserve.",
+    description: "Votre établissement apparaît directement dans les résultats de recherche Bossiz+.",
   },
   {
     icon: BadgePercent,
@@ -290,7 +290,7 @@ const BecomePartner = () => {
             {t("pages.becomePartner.title", "Devenir partenaire")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
-            {t("pages.becomePartner.subtitle", "Hôtel, restaurant, activité, artisan, location de voitures... Listez vos services sur B-Reserve et touchez de nouveaux clients")}
+            {t("pages.becomePartner.subtitle", "Hôtel, restaurant, activité, artisan, location de voitures... Listez vos services sur Bossiz+ et touchez de nouveaux clients")}
           </p>
         </div>
       </section>

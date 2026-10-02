@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail, sendSms } from "../_shared/integrations.ts";
 import { generateOtpCode, hashOtpCode, otpEmailHtml } from "../_shared/otp.ts";
 import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
+import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -98,10 +99,13 @@ serve(async (req) => {
     }
 
     if (channel === 'email') {
+      const vars = { code, year: String(new Date().getFullYear()) };
+      const rendered = await renderEmailTemplate(supabase, "otp_login", vars);
+
       const result = await sendEmail(supabase, {
         to: [destination],
-        subject: 'Votre code de connexion B-Reserve',
-        html: otpEmailHtml(code),
+        subject: rendered?.subject ?? 'Votre code de connexion Bossiz+',
+        html: rendered?.html ?? otpEmailHtml(code),
       });
       if (!result.ok) {
         console.error('Failed to send OTP email:', result.error);
@@ -113,7 +117,7 @@ serve(async (req) => {
     } else {
       const result = await sendSms(supabase, {
         to: destination,
-        message: `Votre code de connexion B-Reserve : ${code} (valable ${OTP_TTL_MINUTES} min)`,
+        message: `Votre code de connexion Bossiz+ : ${code} (valable ${OTP_TTL_MINUTES} min)`,
       });
       if (!result.ok) {
         console.error('Failed to send OTP SMS:', result.error);

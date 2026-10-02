@@ -63,7 +63,7 @@ export async function createJekoPaymentLink(
   const amountCents = Math.round(params.amountXof * 100);
 
   // Contrainte documentée : title entre 10 et 255 caractères.
-  const title = params.title.length >= 10 ? params.title : `${params.title} - Réservation B-Reserve`.slice(0, 255);
+  const title = params.title.length >= 10 ? params.title : `${params.title} - Réservation Bossiz+`.slice(0, 255);
 
   const response = await fetch(`${JEKO_API_BASE}/payment_links`, {
     method: "POST",

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate, escapeHtml as escapeVarHtml } from "../_shared/emailTemplates.ts";
 
 // ============================================================
 // EDGE FUNCTION: send-partner-application-confirmation
@@ -62,18 +63,43 @@ serve(async (req) => {
       ? carPlanLabels[application.requested_car_plan_id] || application.requested_car_plan_id
       : null;
 
+    const year = String(new Date().getFullYear());
+
+    const applicantVars = { applicationName: application.name, year };
+    const applicantRendered = await renderEmailTemplate(supabase, "partner_application_received", applicantVars);
+
     const applicantResult = await sendEmail(supabase, {
-      from: "B-Reserve Partenaires <partenaires@bossiz.com>",
+      from: "Bossiz+ Partenaires <partenaires@bossiz.com>",
       to: [application.contact_email],
-      subject: "Candidature partenaire reçue - B-Reserve",
-      html: applicantEmailHtml(application.name),
+      subject: applicantRendered?.subject ?? "Candidature partenaire reçue - Bossiz+",
+      html: applicantRendered?.html ?? applicantEmailHtml(application.name),
     });
 
+    const adminVars = {
+      applicationName: application.name,
+      contactEmail: application.contact_email,
+      carPlanBlockHtml: carPlanLabel
+        ? `<p style="margin:4px 0;"><strong>Forfait voiture demandé :</strong> ${carPlanLabel}</p>`
+        : "",
+      descriptionBlockHtml: application.description
+        ? `<p style="margin:4px 0;"><strong>Description :</strong><br/>${escapeVarHtml(application.description).replace(/\n/g, "<br/>")}</p>`
+        : "",
+      receivedAt: new Date(application.created_at).toLocaleString("fr-FR"),
+      reviewLink: "https://app.bossiz.com/admin/partner-applications",
+      year,
+    };
+    const adminRendered = await renderEmailTemplate(
+      supabase,
+      "partner_application_admin_alert",
+      adminVars,
+      ["carPlanBlockHtml", "descriptionBlockHtml"]
+    );
+
     const adminResult = await sendEmail(supabase, {
-      from: "B-Reserve Partenaires <partenaires@bossiz.com>",
+      from: "Bossiz+ Partenaires <partenaires@bossiz.com>",
       to: [ADMIN_NOTIFICATION_EMAIL],
-      subject: `Nouvelle candidature partenaire : ${application.name}`,
-      html: adminEmailHtml(application, carPlanLabel),
+      subject: adminRendered?.subject ?? `Nouvelle candidature partenaire : ${application.name}`,
+      html: adminRendered?.html ?? adminEmailHtml(application, carPlanLabel),
       replyTo: application.contact_email,
     });
 
@@ -110,9 +136,9 @@ function applicantEmailHtml(name: string) {
         </div>
         <div style="padding: 24px; background: #f9fafb; border-radius: 0 0 8px 8px;">
           <p>Bonjour,</p>
-          <p>Nous avons bien reçu la candidature partenaire de <strong>${escapeHtml(name)}</strong> sur B-Reserve.</p>
+          <p>Nous avons bien reçu la candidature partenaire de <strong>${escapeHtml(name)}</strong> sur Bossiz+.</p>
           <p>Notre équipe étudie chaque dossier manuellement. Vous serez recontacté par email à cette même adresse une fois l'étude terminée, avec la décision et les prochaines étapes si votre candidature est retenue.</p>
-          <p style="margin-top: 24px;">Merci pour votre intérêt,<br/>L'équipe B-Reserve</p>
+          <p style="margin-top: 24px;">Merci pour votre intérêt,<br/>L'équipe Bossiz+</p>
         </div>
       </div>
     </body>

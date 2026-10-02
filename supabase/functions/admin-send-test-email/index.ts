@@ -69,10 +69,10 @@ serve(async (req) => {
       .maybeSingle();
 
     const result = await sendEmail(adminClient, {
-      from: "B-Reserve <contact@bossiz.com>",
+      from: "Bossiz+ <contact@bossiz.com>",
       to: [to],
-      subject: "Test d'envoi d'e-mail - B-Reserve",
-      html: "<p>Bonjour,</p><p>Ceci est un e-mail de test envoyé depuis l'administration de B-Reserve. Si vous le lisez, l'envoi d'e-mails fonctionne.</p>",
+      subject: "Test d'envoi d'e-mail - Bossiz+",
+      html: "<p>Bonjour,</p><p>Ceci est un e-mail de test envoyé depuis l'administration de Bossiz+. Si vous le lisez, l'envoi d'e-mails fonctionne.</p>",
     });
 
     return json({

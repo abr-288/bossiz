@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { Plus, Pencil, Trash2, Hammer, Search, X, Check, ShoppingBag } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -36,6 +37,9 @@ interface Artisan {
   craft_type: string;
   bio: string | null;
   location: string;
+  latitude: number | null;
+  longitude: number | null;
+  maps_url: string | null;
   address: string | null;
   phone: string | null;
   whatsapp: string | null;
@@ -71,6 +75,9 @@ const emptyForm = {
   craft_type: CRAFT_TYPES[0],
   bio: "",
   location: "",
+  latitude: null as number | null,
+  longitude: null as number | null,
+  maps_url: "",
   address: "",
   phone: "",
   whatsapp: "",
@@ -168,6 +175,9 @@ export default function AgencyArtisans() {
         craft_type: formData.craft_type,
         bio: formData.bio || null,
         location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        maps_url: formData.maps_url || null,
         address: formData.address || null,
         phone: formData.phone || null,
         whatsapp: formData.whatsapp || null,
@@ -175,7 +185,7 @@ export default function AgencyArtisans() {
         is_active: formData.available,
         products: formData.products
           .filter((p) => p.name.trim())
-          .map((p) => ({ ...p, price: parseFloat(p.price) || 0 })),
+          .map((p) => ({ ...p, price: parseFloat(p.price) || 0, currency: "XOF" })),
       };
 
       if (editing) {
@@ -203,6 +213,9 @@ export default function AgencyArtisans() {
       craft_type: artisan.craft_type,
       bio: artisan.bio || "",
       location: artisan.location,
+      latitude: artisan.latitude,
+      longitude: artisan.longitude,
+      maps_url: artisan.maps_url || "",
       address: artisan.address || "",
       phone: artisan.phone || "",
       whatsapp: artisan.whatsapp || "",
@@ -267,6 +280,7 @@ export default function AgencyArtisans() {
                     </Select>
                   </div>
                 </div>
+                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Ville / Quartier *</Label>
@@ -337,14 +351,7 @@ export default function AgencyArtisans() {
                           <Label className="text-xs">Prix</Label>
                           <div className="flex gap-2">
                             <Input type="number" value={product.price} onChange={(e) => updateProduct(index, "price", e.target.value)} />
-                            <Select value={product.currency} onValueChange={(v) => updateProduct(index, "currency", v)}>
-                              <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="XOF">XOF</SelectItem>
-                                <SelectItem value="EUR">EUR</SelectItem>
-                                <SelectItem value="USD">USD</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <span className="flex items-center rounded-md border px-3 text-sm text-muted-foreground">XOF</span>
                           </div>
                         </div>
                       </div>

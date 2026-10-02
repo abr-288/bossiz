@@ -80,6 +80,9 @@ export const SummaryStep = ({
 }: SummaryStepProps) => {
   const { t } = useTranslation();
   const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile");
+  const [paymentPlan, setPaymentPlan] = useState<"full" | "deposit">("full");
+  const [depositPercent, setDepositPercent] = useState(30);
+  const [depositAvailable, setDepositAvailable] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [remainingTime, setRemainingTime] = useState<number>(0);
@@ -93,6 +96,25 @@ export const SummaryStep = ({
   const navigate = useNavigate();
 
   const loading = secureLoading || bookingLoading;
+
+  useEffect(() => {
+    if (["hotel", "flight", "train"].includes(serviceType)) {
+      setDepositAvailable(false);
+      return;
+    }
+    supabase
+      .from("site_config")
+      .select("config_value")
+      .eq("config_key", "booking_payment_policy")
+      .maybeSingle()
+      .then(({ data }) => {
+        const policy = data?.config_value as any;
+        const allowedTypes = Array.isArray(policy?.enabledServiceTypes) ? policy.enabledServiceTypes : [];
+        const isAllowed = policy?.depositEnabled !== false && allowedTypes.includes(serviceType);
+        setDepositAvailable(isAllowed);
+        setDepositPercent(Math.min(99, Math.max(1, Number(policy?.depositPercent) || 30)));
+      });
+  }, [serviceType]);
 
   // Check authentication on mount
   useEffect(() => {
@@ -301,11 +323,10 @@ export const SummaryStep = ({
       } else {
         // Non-flight services - use existing flow
         const totalPrice = getTotalPrice();
-        // Only 'stay' and 'activity' have a real catalog row create-booking can
-        // verify the price against; other types (event, tour, ...) don't have
-        // one yet, so service_id is omitted rather than pointing at a row that
-        // doesn't exist in the services table.
-        const verifiableServiceId = (serviceType === 'stay' || serviceType === 'activity') ? serviceId : undefined;
+        // Stay and activity use their dedicated catalogs; tours already refer
+        // to the generic services catalog. Other types have no reusable row.
+        // create-booking verifies catalog-backed prices server-side.
+        const verifiableServiceId = ['stay', 'activity', 'tour'].includes(serviceType) ? serviceId : undefined;
 
         const bookingId = await createBooking({
           service_id: verifiableServiceId,
@@ -328,6 +349,7 @@ export const SummaryStep = ({
             paymentMethod,
           },
           company_id: billToCompanyId || undefined,
+          payment_plan: paymentPlan,
         });
 
         if (bookingId) {
@@ -701,7 +723,10 @@ export const SummaryStep = ({
                 <select
                   className="w-full p-3 rounded-lg border-2 border-border bg-background text-sm"
                   value={billToCompanyId || ""}
-                  onChange={(e) => setBillToCompanyId(e.target.value || null)}
+                  onChange={(e) => {
+                    setBillToCompanyId(e.target.value || null);
+                    if (e.target.value) setPaymentPlan("full");
+                  }}
                 >
                   <option value="">Moi-même</option>
                   {myCompanies.map((c) => (
@@ -735,6 +760,29 @@ export const SummaryStep = ({
 
             {!billToCompanyId && (
               <div className="space-y-4">
+                {depositAvailable && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">Montant à régler maintenant</h4>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentPlan("full")}
+                      className={`w-full p-3 rounded-lg border-2 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : "border-border"}`}
+                    >
+                      <span className="font-medium">Payer la totalité</span>
+                      <span className="block text-sm text-muted-foreground"><Price amount={getTotalPrice()} /></span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentPlan("deposit")}
+                      className={`w-full p-3 rounded-lg border-2 text-left ${paymentPlan === "deposit" ? "border-primary bg-primary/5" : "border-border"}`}
+                    >
+                      <span className="font-medium">Acompte de {depositPercent} % maintenant</span>
+                      <span className="block text-sm text-muted-foreground">
+                        <Price amount={Math.ceil(getTotalPrice() * depositPercent / 100)} /> à payer maintenant · <Price amount={getTotalPrice() - Math.ceil(getTotalPrice() * depositPercent / 100)} /> sur place
+                      </span>
+                    </button>
+                  </div>
+                )}
                 <h4 className="font-semibold">Mode de paiement</h4>
                 <div className="space-y-2">
                   <button

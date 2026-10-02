@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -58,12 +59,28 @@ serve(async (req) => {
       .eq('booking_id', bookingId);
 
     // Send PNR confirmation email via le prestataire actif (Resend ou SMTP)
-    const emailHtml = generatePNRConfirmationEmail(booking, passengers || []);
+    const passengerList = passengers || [];
+    const vars = {
+      customerName: booking.customer_name,
+      pnr: booking.external_ref,
+      serviceName: booking.service_name,
+      route: booking.location,
+      departureDate: booking.start_date,
+      returnDateBlockHtml: booking.end_date
+        ? `<p style="margin:4px 0;"><strong>Date de retour :</strong> ${escapeHtml(booking.end_date)}</p>`
+        : "",
+      passengersHtml: passengerList
+        .map((p) => `<li>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</li>`)
+        .join(""),
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(supabase, "pnr_confirmation", vars, ["returnDateBlockHtml", "passengersHtml"]);
+    const emailHtml = rendered?.html ?? generatePNRConfirmationEmail(booking, passengers || []);
 
     const result = await sendEmail(supabase, {
-      from: 'B-Reserve <noreply@bossiz.com>',
+      from: 'Bossiz+ <noreply@bossiz.com>',
       to: [booking.customer_email],
-      subject: `PNR Confirmation - ${booking.external_ref}`,
+      subject: rendered?.subject ?? `PNR Confirmation - ${booking.external_ref}`,
       html: emailHtml,
     });
 
@@ -155,10 +172,10 @@ function generatePNRConfirmationEmail(booking: any, passengers: any[]) {
           </ul>
           
           <p>Have a wonderful trip!</p>
-          <p>Best regards,<br>The B-Reserve Team</p>
+          <p>Best regards,<br>The Bossiz+ Team</p>
         </div>
         <div class="footer">
-          <p>&copy; 2025 B-Reserve. All rights reserved.</p>
+          <p>&copy; 2025 Conciergerie Bossiz. All rights reserved.</p>
         </div>
       </div>
     </body>

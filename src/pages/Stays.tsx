@@ -249,6 +249,8 @@ const Stays = () => {
                         <MapPin className="w-4 h-4 flex-shrink-0" />
                         <span className="truncate">{stay.location}</span>
                       </div>
+                      {stay.maps_url && <a href={stay.maps_url} target="_blank" rel="noreferrer" className="mb-2 inline-block text-sm text-primary underline underline-offset-2">Voir le lieu sur la carte</a>}
+                      {!!stay.available_dates?.length && <div className="mb-2 flex flex-wrap gap-2">{stay.available_dates.slice(0, 4).map((date: string) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</span>)}</div>}
                       <div className="flex items-center gap-4 text-sm">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4 text-primary" />
@@ -305,7 +307,8 @@ const Stays = () => {
                             price_per_unit: stay.price_per_unit,
                             currency: stay.currency,
                             type: "stay",
-                            location: stay.location
+                            location: stay.location,
+                            availableDates: stay.available_dates
                           });
                           setDialogOpen(true);
                         }}

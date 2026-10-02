@@ -77,8 +77,8 @@ const iOSDownloadSection = () => {
     localStorage.setItem('downloadStats', JSON.stringify(newStats));
   };
 
-  const appStoreUrl = "https://apps.apple.com/app/b-reserve/id123456789";
-  const playStoreUrl = "https://play.google.com/store/apps/details?id=com.breserve.app";
+  const appStoreUrl = "https://apps.apple.com/app/bossiz-plus/id123456789";
+  const playStoreUrl = "https://play.google.com/store/apps/details?id=com.bossizplus.app";
   const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(appStoreUrl);
 
   // Fonction pour installer l'app selon le système détecté

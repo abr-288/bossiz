@@ -77,7 +77,7 @@ const Install = () => {
       
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white py-16 md:py-24 overflow-hidden">
-        <img src={heroImage} alt="Installer B-Reserve" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImage} alt="Installer Bossiz+" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/85 to-primary/80" />
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -105,7 +105,7 @@ const Install = () => {
             </motion.div>
 
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              Installez B-Reserve
+              Installez Bossiz+
             </h1>
             <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8">
               Accédez à vos voyages en un clic depuis votre écran d'accueil
@@ -294,7 +294,7 @@ const Install = () => {
             transition={{ delay: 0.3 }}
             className="mb-12"
           >
-            <h2 className="text-2xl font-bold text-center mb-8">Pourquoi installer B-Reserve ?</h2>
+            <h2 className="text-2xl font-bold text-center mb-8">Pourquoi installer Bossiz+ ?</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {features.map((feature, index) => (
                 <motion.div

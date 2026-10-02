@@ -83,6 +83,8 @@ const Activities = () => {
                     <MapPin className="w-4 h-4" />
                     {activity.location}
                   </div>
+                  {activity.maps_url && <a href={activity.maps_url} target="_blank" rel="noreferrer" className="mb-3 inline-block text-sm text-primary underline underline-offset-2">Voir le lieu sur la carte</a>}
+                  {!!activity.available_dates?.length && <div className="mb-3 flex flex-wrap gap-2" aria-label="Dates disponibles">{activity.available_dates.slice(0, 4).map((date) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</span>)}</div>}
                   {activity.description && (
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                       {activity.description}
@@ -115,7 +117,8 @@ const Activities = () => {
                         price_per_unit: activity.price_per_unit,
                         currency: activity.currency,
                         type: "activity",
-                        location: activity.location
+                        location: activity.location,
+                        availableDates: activity.available_dates
                       });
                       setDialogOpen(true);
                     }}

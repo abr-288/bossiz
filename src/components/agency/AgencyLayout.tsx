@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AgencySidebar } from "./AgencySidebar";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,11 +16,14 @@ interface AgencyLayoutProps {
 export function AgencyLayout({ children }: AgencyLayoutProps) {
   const [loading, setLoading] = useState(true);
   const [agencyName, setAgencyName] = useState<string>("");
+  const [enabledFeatures, setEnabledFeatures] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
     const checkAgencyAccess = async () => {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -47,13 +50,24 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
       }
 
       // Fetch agency info
-      const { data: agency } = await supabase
+      let { data: agency, error: agencyError } = await supabase
         .from("agencies")
-        .select("name, is_active")
+        .select("name, is_active, enabled_features")
         .eq("owner_id", user.id)
         .single();
 
-      if (!agency || !agency.is_active) {
+      // Keep older deployments usable until the permissions migration is applied.
+      if (agencyError?.message.includes("enabled_features")) {
+        const legacyResult = await supabase
+          .from("agencies")
+          .select("name, is_active")
+          .eq("owner_id", user.id)
+          .single();
+        agency = legacyResult.data ? { ...legacyResult.data, enabled_features: {} } : null;
+        agencyError = legacyResult.error;
+      }
+
+      if (!agency || agencyError || !agency.is_active) {
         toast({
           title: "Accès refusé",
           description: "Votre agence n'est pas active",
@@ -64,11 +78,22 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
       }
 
       setAgencyName(agency.name);
+      setEnabledFeatures((agency.enabled_features as Record<string, boolean> | null) || {});
       setLoading(false);
     };
 
     checkAgencyAccess();
-  }, [navigate, toast]);
+  }, [navigate, pathname, toast]);
+
+  const featureForPath = pathname.startsWith("/agency/services") ? "services"
+    : pathname.startsWith("/agency/activities") ? "activities"
+    : pathname.startsWith("/agency/stays") ? "stays"
+    : pathname.startsWith("/agency/restaurants") ? "restaurants"
+    : pathname.startsWith("/agency/artisans") ? "artisans"
+    : pathname.startsWith("/agency/wellness") ? "wellness"
+    : pathname.startsWith("/agency/promotions") ? "promotions"
+    : null;
+  const featureDisabled = !!featureForPath && enabledFeatures[featureForPath] === false;
 
   if (loading) {
     return (
@@ -84,7 +109,8 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <AgencySidebar />
+        <div className="fixed top-0 left-0 right-0 h-1 z-[60]" style={{ backgroundColor: "#0d9488" }} />
+        <AgencySidebar enabledFeatures={enabledFeatures} />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 md:h-16 border-b flex items-center justify-between px-3 md:px-4 bg-background sticky top-0 z-50">
             <div className="flex items-center gap-2 md:gap-4 min-w-0">
@@ -99,7 +125,14 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
             <DarkModeToggle />
           </header>
           <main className="flex-1 p-3 md:p-6 overflow-auto">
-            {children}
+            {featureDisabled && (
+              <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200" role="status">
+                Cette rubrique est désactivée par l’administrateur. Vos éléments restent consultables, mais aucune modification n’est autorisée.
+              </div>
+            )}
+            <fieldset disabled={featureDisabled} className="m-0 min-w-0 border-0 p-0 disabled:opacity-50">
+              {children}
+            </fieldset>
           </main>
         </div>
       </div>

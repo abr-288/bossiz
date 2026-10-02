@@ -1,8 +1,8 @@
-# B-Reserve - Documentation API
+# Bossiz+ - Documentation API
 
 ## Vue d'ensemble
 
-B-Reserve est un système de réservation et de paiement inspiré de Kiwi.com, utilisant CinetPay comme fournisseur de paiement. Le système est construit sur Supabase (base de données + Edge Functions) et un frontend React.
+Bossiz+ est un système de réservation et de paiement inspiré de Kiwi.com, utilisant CinetPay comme fournisseur de paiement. Le système est construit sur Supabase (base de données + Edge Functions) et un frontend React.
 
 ## Architecture
 
@@ -548,4 +548,4 @@ ou
 Pour toute question technique:
 - Documentation CinetPay: https://docs.cinetpay.com
 - Documentation Supabase: https://supabase.com/docs
-- Support B-Reserve: support@b-reserve.com
+- Support Bossiz+: support@bossiz.com

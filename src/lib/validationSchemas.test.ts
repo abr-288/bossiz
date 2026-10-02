@@ -177,6 +177,18 @@ describe('Validation Schemas', () => {
       expect(result.success).toBe(true);
     });
 
+    it('should accept the preselected CinetPay payment method', () => {
+      const result = paymentSchema.safeParse({
+        customerName: 'John Doe',
+        customerEmail: 'john@example.com',
+        customerPhone: '+2250708090102',
+        customerCity: 'Abidjan',
+        paymentMethod: 'cinetpay',
+      });
+
+      expect(result.success).toBe(true);
+    });
+
     it('should reject invalid email', () => {
       const invalidData = {
         customerName: 'John Doe',

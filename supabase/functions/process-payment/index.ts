@@ -8,7 +8,7 @@ import { getJekoCredentials, createJekoPaymentLink } from "../_shared/jeko.ts";
 // EDGE FUNCTION: process-payment
 // Description: Initie un paiement via le prestataire actif (CinetPay ou
 // Jèko, voir /admin/integrations - catégorie "payment")
-// Auteur: B-Reserve
+// Auteur: Bossiz+
 // Version: 2.1.0 - Multi-prestataire
 // ============================================================
 
@@ -16,6 +16,26 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
+
+interface PaymentRequestBody {
+  bookingId?: string;
+  subscriptionId?: string;
+  paymentMethod?: string;
+  customerInfo?: {
+    email?: string;
+    name?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+  };
+}
+
+interface CinetPayCreateResponse {
+  code?: string;
+  message?: string;
+  description?: string;
+  data?: { payment_url?: string };
+}
 
 // Fonction utilitaire pour créer une réponse JSON
 function jsonResponse(data: object, status: number = 200): Response {
@@ -171,10 +191,14 @@ serve(async (req) => {
     // ================================================================
     console.log('\n📋 Étape 2: Validation des données de paiement...');
     
-    let body: any;
+    let body: PaymentRequestBody;
     try {
-      body = await req.json();
-    } catch (parseError) {
+      const parsedBody: unknown = await req.json();
+      if (!parsedBody || typeof parsedBody !== "object" || Array.isArray(parsedBody)) {
+        return errorResponse('Corps de la requête invalide - objet JSON attendu', 400);
+      }
+      body = parsedBody as PaymentRequestBody;
+    } catch {
       return errorResponse('Corps de la requête invalide - JSON attendu', 400);
     }
     
@@ -234,7 +258,7 @@ serve(async (req) => {
       // the row to this caller, .single() below simply finds nothing.
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
-        .select('id, user_id, company_id, total_price, currency, payment_status, approval_status')
+        .select('id, user_id, company_id, total_price, amount_due_now, currency, payment_status, approval_status')
         .eq('id', targetId)
         .single();
 
@@ -245,6 +269,9 @@ serve(async (req) => {
 
       if (booking.payment_status === 'paid') {
         return errorResponse('Cette réservation a déjà été payée', 409);
+      }
+      if (booking.payment_status === 'partially_paid') {
+        return errorResponse('L’acompte est déjà payé. Le solde est à régler sur place.', 409);
       }
 
       // Company-billed bookings must clear the approval workflow before
@@ -260,7 +287,7 @@ serve(async (req) => {
         );
       }
 
-      sourceAmount = Number(booking.total_price);
+      sourceAmount = Number(booking.amount_due_now || booking.total_price);
       sourceCurrency = booking.currency;
       paymentDescription = `Réservation #${targetId.substring(0, 8)}`;
     } else {
@@ -544,7 +571,7 @@ serve(async (req) => {
     console.log('   - URL: https://api-checkout.cinetpay.com/v2/payment');
     
     let cinetpayResponse: Response;
-    let cinetpayData: any;
+    let cinetpayData: CinetPayCreateResponse;
     
     try {
       cinetpayResponse = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
@@ -562,7 +589,7 @@ serve(async (req) => {
       
       try {
         cinetpayData = JSON.parse(responseText);
-      } catch (jsonError) {
+      } catch {
         console.error('❌ Réponse CinetPay non-JSON:', responseText.substring(0, 200));
         await revertClaim();
         return errorResponse('Réponse invalide de la passerelle de paiement', 502);

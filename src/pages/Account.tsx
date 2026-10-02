@@ -294,7 +294,7 @@ const Account = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  {profile.full_name || "Mon Compte"}
+                  {profile.full_name || "MyBossiz"}
                 </motion.h1>
                 <motion.p 
                   className="text-muted-foreground mt-1"

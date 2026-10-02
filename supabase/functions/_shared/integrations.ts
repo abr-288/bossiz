@@ -81,7 +81,7 @@ export async function sendEmailViaResend(
       "Authorization": `Bearer ${resendApiKey}`,
     },
     body: JSON.stringify({
-      from: params.from || "B-Reserve <noreply@bossiz.com>",
+      from: params.from || "Bossiz+ <noreply@bossiz.com>",
       to: params.to,
       subject: params.subject,
       html: params.html,
@@ -279,7 +279,7 @@ export async function sendSms(
         },
         body: JSON.stringify({
           to: params.to,
-          from: sender_id || "B-Reserve",
+          from: sender_id || "Bossiz+",
           message: params.message,
         }),
       });
@@ -392,7 +392,7 @@ export async function sendWhatsapp(
         },
         body: JSON.stringify({
           to: params.to,
-          from: sender_id || "B-Reserve",
+          from: sender_id || "Bossiz+",
           message: params.message,
         }),
       });

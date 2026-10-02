@@ -29,7 +29,7 @@ const BecomePartnerBanner = () => {
               <p className="text-sm md:text-base text-white/80 mt-1">
                 {t(
                   "pages.index.becomePartnerSubtitle",
-                  "Listez-le sur B-Reserve et touchez de nouveaux clients, sans commission cachée."
+                  "Listez-le sur Bossiz+ et touchez de nouveaux clients, sans commission cachée."
                 )}
               </p>
             </div>

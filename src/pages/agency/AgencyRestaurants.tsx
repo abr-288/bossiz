@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { Plus, Pencil, Trash2, UtensilsCrossed, Search } from "lucide-react";
 
 interface Restaurant {
@@ -39,6 +40,9 @@ interface Restaurant {
   description: string | null;
   cuisine_type: string | null;
   location: string;
+  latitude: number | null;
+  longitude: number | null;
+  maps_url: string | null;
   address: string | null;
   price_range: string;
   image_url: string | null;
@@ -72,6 +76,9 @@ const emptyForm = {
   description: "",
   cuisine_type: "",
   location: "",
+  latitude: null as number | null,
+  longitude: null as number | null,
+  maps_url: "",
   address: "",
   price_range: "€€",
   phone: "",
@@ -140,6 +147,9 @@ export default function AgencyRestaurants() {
         description: formData.description || null,
         cuisine_type: formData.cuisine_type || null,
         location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        maps_url: formData.maps_url || null,
         address: formData.address || null,
         price_range: formData.price_range,
         phone: formData.phone || null,
@@ -177,6 +187,9 @@ export default function AgencyRestaurants() {
       description: restaurant.description || "",
       cuisine_type: restaurant.cuisine_type || "",
       location: restaurant.location,
+      latitude: restaurant.latitude,
+      longitude: restaurant.longitude,
+      maps_url: restaurant.maps_url || "",
       address: restaurant.address || "",
       price_range: restaurant.price_range,
       phone: restaurant.phone || "",
@@ -247,6 +260,7 @@ export default function AgencyRestaurants() {
                     <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                   </div>
                 </div>
+                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Gamme de prix</Label>

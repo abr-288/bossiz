@@ -42,6 +42,10 @@ export type Database = {
       activities: {
         Row: {
           agency_id: string | null
+          available_dates: string[]
+          latitude: number | null
+          longitude: number | null
+          maps_url: string | null
           available: boolean | null
           category: string
           created_at: string
@@ -62,6 +66,10 @@ export type Database = {
         }
         Insert: {
           agency_id?: string | null
+          available_dates?: string[]
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
           available?: boolean | null
           category: string
           created_at?: string
@@ -82,6 +90,10 @@ export type Database = {
         }
         Update: {
           agency_id?: string | null
+          available_dates?: string[]
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
           available?: boolean | null
           category?: string
           created_at?: string
@@ -166,6 +178,7 @@ export type Database = {
       }
       agencies: {
         Row: {
+          enabled_features: Json
           car_plan_id: string | null
           car_plan_started_at: string | null
           commission_rate: number | null
@@ -182,6 +195,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          enabled_features?: Json
           car_plan_id?: string | null
           car_plan_started_at?: string | null
           commission_rate?: number | null
@@ -198,6 +212,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          enabled_features?: Json
           car_plan_id?: string | null
           car_plan_started_at?: string | null
           commission_rate?: number | null
@@ -350,6 +365,12 @@ export type Database = {
       }
       bookings: {
         Row: {
+          amount_due_now: number
+          amount_paid: number
+          balance_due: number
+          balance_paid_at: string | null
+          balance_paid_by: string | null
+          balance_paid_on_site: boolean
           booking_details: Json | null
           created_at: string
           currency: string
@@ -363,6 +384,8 @@ export type Database = {
           id: string
           notes: string | null
           payment_status: Database["public"]["Enums"]["payment_status"]
+          payment_plan: string
+          deposit_percent: number
           pnr: string | null
           prebooking_id: string | null
           service_id: string
@@ -375,6 +398,12 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          amount_due_now?: number
+          amount_paid?: number
+          balance_due?: number
+          balance_paid_at?: string | null
+          balance_paid_by?: string | null
+          balance_paid_on_site?: boolean
           booking_details?: Json | null
           created_at?: string
           currency?: string
@@ -388,6 +417,8 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          payment_plan?: string
+          deposit_percent?: number
           pnr?: string | null
           prebooking_id?: string | null
           service_id: string
@@ -400,6 +431,12 @@ export type Database = {
           user_id: string
         }
         Update: {
+          amount_due_now?: number
+          amount_paid?: number
+          balance_due?: number
+          balance_paid_at?: string | null
+          balance_paid_by?: string | null
+          balance_paid_on_site?: boolean
           booking_details?: Json | null
           created_at?: string
           currency?: string
@@ -413,6 +450,8 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          payment_plan?: string
+          deposit_percent?: number
           pnr?: string | null
           prebooking_id?: string | null
           service_id?: string
@@ -2476,6 +2515,10 @@ export type Database = {
       services: {
         Row: {
           agency_id: string | null
+          available_dates: string[]
+          latitude: number | null
+          longitude: number | null
+          maps_url: string | null
           amenities: Json | null
           available: boolean | null
           created_at: string
@@ -2497,6 +2540,10 @@ export type Database = {
         }
         Insert: {
           agency_id?: string | null
+          available_dates?: string[]
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
           amenities?: Json | null
           available?: boolean | null
           created_at?: string
@@ -2518,6 +2565,10 @@ export type Database = {
         }
         Update: {
           agency_id?: string | null
+          available_dates?: string[]
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
           amenities?: Json | null
           available?: boolean | null
           created_at?: string
@@ -2580,6 +2631,10 @@ export type Database = {
       stays: {
         Row: {
           agency_id: string | null
+          available_dates: string[]
+          latitude: number | null
+          longitude: number | null
+          maps_url: string | null
           available: boolean | null
           created_at: string
           currency: string
@@ -2599,6 +2654,10 @@ export type Database = {
         }
         Insert: {
           agency_id?: string | null
+          available_dates?: string[]
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
           available?: boolean | null
           created_at?: string
           currency?: string
@@ -2618,6 +2677,10 @@ export type Database = {
         }
         Update: {
           agency_id?: string | null
+          available_dates?: string[]
+          latitude?: number | null
+          longitude?: number | null
+          maps_url?: string | null
           available?: boolean | null
           created_at?: string
           currency?: string
@@ -3154,6 +3217,10 @@ export type Database = {
         Args: { _agency_id: string; _user_id: string }
         Returns: boolean
       }
+      admin_mark_booking_balance_paid: {
+        Args: { p_booking_id: string }
+        Returns: undefined
+      }
       renew_subscription: {
         Args: { p_user_subscription_id: string }
         Returns: boolean
@@ -3171,7 +3238,7 @@ export type Database = {
         | "FAILED"
         | "REFUNDED"
         | "EXPIRED"
-      payment_status: "pending" | "paid" | "refunded" | "failed" | "processing"
+      payment_status: "pending" | "paid" | "partially_paid" | "refunded" | "failed" | "processing"
       service_type:
         | "hotel"
         | "flight"
@@ -3180,6 +3247,8 @@ export type Database = {
         | "event"
         | "flight_hotel"
         | "stay"
+        | "activity"
+        | "train"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3322,7 +3391,7 @@ export const Constants = {
         "REFUNDED",
         "EXPIRED",
       ],
-      payment_status: ["pending", "paid", "refunded", "failed", "processing"],
+      payment_status: ["pending", "paid", "partially_paid", "refunded", "failed", "processing"],
       service_type: [
         "hotel",
         "flight",
@@ -3331,6 +3400,8 @@ export const Constants = {
         "event",
         "flight_hotel",
         "stay",
+        "activity",
+        "train",
       ],
     },
   },

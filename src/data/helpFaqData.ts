@@ -36,16 +36,16 @@ export const HELP_DOMAINS: HelpDomain[] = [
   { id: "delays", label: "Retards & Perturbations", description: "Que faire en cas de retard ou d'annulation", icon: AlertTriangle },
   { id: "account", label: "Compte & Sécurité", description: "Gérer votre profil et la sécurité de votre compte", icon: UserCircle },
   { id: "subscriptions", label: "Abonnements", description: "Plans Basic, Premium, Business et Corporate", icon: Star },
-  { id: "mobileApp", label: "Application mobile", description: "Installation et utilisation de l'app B-Reserve", icon: Smartphone },
+  { id: "mobileApp", label: "Application mobile", description: "Installation et utilisation de l'app Bossiz+", icon: Smartphone },
   { id: "agency", label: "Agences partenaires", description: "Devenir agence partenaire et gérer vos offres", icon: Building2 },
   { id: "conciergerie", label: "Bossiz Conciergerie", description: "Services de conciergerie premium CI et SN", icon: Crown },
   { id: "technical", label: "Support technique", description: "Problèmes techniques et compatibilité", icon: Settings },
-  { id: "general", label: "Général", description: "À propos de B-Reserve et de la plateforme", icon: HelpCircle },
+  { id: "general", label: "Général", description: "À propos de Bossiz+ et de la plateforme", icon: HelpCircle },
 ];
 
 export const HELP_FAQ: HelpFaqEntry[] = [
   // ───────────────────────── Vols ─────────────────────────
-  { domain: "flights", question: "Comment rechercher un vol sur B-Reserve ?", answer: "Depuis la page d'accueil, utilisez l'onglet « Vols » du moteur de recherche : indiquez votre ville de départ, votre destination, vos dates et le nombre de passagers, puis lancez la recherche." },
+  { domain: "flights", question: "Comment rechercher un vol sur Bossiz+ ?", answer: "Depuis la page d'accueil, utilisez l'onglet « Vols » du moteur de recherche : indiquez votre ville de départ, votre destination, vos dates et le nombre de passagers, puis lancez la recherche." },
   { domain: "flights", question: "Puis-je réserver un vol aller simple ?", answer: "Oui, sélectionnez l'option « Aller simple » dans le formulaire de recherche de vols avant de lancer votre recherche." },
   { domain: "flights", question: "Comment réserver un vol multi-destinations ?", answer: "Utilisez le formulaire « Vol multi-villes » accessible depuis la recherche de vols pour ajouter plusieurs escales à votre itinéraire." },
   { domain: "flights", question: "Les prix affichés incluent-ils les taxes ?", answer: "Oui, tous les prix affichés incluent les taxes aéroportuaires et frais de service, sauf mention contraire clairement indiquée." },
@@ -56,7 +56,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "flights", question: "Comment savoir si mon vol a des escales ?", answer: "Le nombre d'escales et leur durée sont indiqués sur chaque résultat de recherche, avant même de sélectionner un vol." },
   { domain: "flights", question: "Puis-je choisir uniquement des vols directs ?", answer: "Oui, utilisez le filtre « Vols directs uniquement » dans les résultats de recherche pour exclure les vols avec escale." },
   { domain: "flights", question: "Comment recevoir ma carte d'embarquement ?", answer: "Votre carte d'embarquement électronique est envoyée par email après l'enregistrement, généralement ouvert 24 à 48h avant le départ selon la compagnie." },
-  { domain: "flights", question: "Puis-je faire l'enregistrement en ligne via B-Reserve ?", answer: "L'enregistrement en ligne se fait directement auprès de la compagnie aérienne ; nous vous envoyons un rappel avec le lien dès qu'il est disponible." },
+  { domain: "flights", question: "Puis-je faire l'enregistrement en ligne via Bossiz+ ?", answer: "L'enregistrement en ligne se fait directement auprès de la compagnie aérienne ; nous vous envoyons un rappel avec le lien dès qu'il est disponible." },
   { domain: "flights", question: "Que faire si le nom sur mon billet est mal orthographié ?", answer: "Contactez notre support rapidement avec votre référence de réservation ; une correction mineure est souvent possible avant le départ, parfois avec des frais selon la compagnie." },
   { domain: "flights", question: "Puis-je ajouter un repas spécial à ma réservation ?", answer: "Certaines compagnies permettent d'ajouter un repas spécial (végétarien, halal, sans gluten...) lors de la réservation ou via notre support avant le départ." },
   { domain: "flights", question: "Comment fonctionne le tarif classe affaires ?", answer: "La classe affaires est proposée comme option lors de la recherche de vols quand elle est disponible, avec un tarif et des avantages détaillés avant confirmation." },
@@ -70,7 +70,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "flights", question: "Puis-je voir le type d'avion utilisé pour mon vol ?", answer: "Le type d'appareil est généralement indiqué dans les détails du vol lors de la sélection, quand cette information est fournie par la compagnie." },
 
   // ───────────────────────── Hôtels ─────────────────────────
-  { domain: "hotels", question: "Comment rechercher un hôtel sur B-Reserve ?", answer: "Utilisez l'onglet « Hôtels » du moteur de recherche : indiquez votre destination, vos dates de séjour et le nombre de voyageurs." },
+  { domain: "hotels", question: "Comment rechercher un hôtel sur Bossiz+ ?", answer: "Utilisez l'onglet « Hôtels » du moteur de recherche : indiquez votre destination, vos dates de séjour et le nombre de voyageurs." },
   { domain: "hotels", question: "Puis-je filtrer les hôtels par étoiles ?", answer: "Oui, un filtre par nombre d'étoiles est disponible dans les résultats de recherche d'hôtels, avec d'autres filtres comme le prix ou les équipements." },
   { domain: "hotels", question: "Comment fonctionne l'annulation gratuite sur un hôtel ?", answer: "Certains hôtels proposent une annulation gratuite jusqu'à une date limite précisée avant la réservation ; ce tarif est clairement identifié dans les résultats." },
   { domain: "hotels", question: "Puis-je comparer plusieurs hôtels avant de réserver ?", answer: "Oui, notre outil de comparaison d'hôtels vous permet de comparer prix, avis et équipements de plusieurs établissements simultanément." },
@@ -111,7 +111,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "flightHotel", question: "Comment sont réparties les conditions d'annulation entre vol et hôtel dans un package ?", answer: "Chaque composante du package conserve ses propres conditions ; le récapitulatif avant paiement détaille les règles applicables au vol et à l'hôtel séparément." },
 
   // ───────────────────────── Location de voitures ─────────────────────────
-  { domain: "cars", question: "Comment louer une voiture sur B-Reserve ?", answer: "Utilisez l'onglet « Location de voiture » du moteur de recherche : indiquez le lieu de prise en charge, les dates et heures souhaitées." },
+  { domain: "cars", question: "Comment louer une voiture sur Bossiz+ ?", answer: "Utilisez l'onglet « Location de voiture » du moteur de recherche : indiquez le lieu de prise en charge, les dates et heures souhaitées." },
   { domain: "cars", question: "Quel âge minimum pour louer une voiture ?", answer: "L'âge minimum est généralement de 21 ans, avec parfois des frais jeune conducteur pour les moins de 25 ans selon l'agence de location." },
   { domain: "cars", question: "Quels documents dois-je présenter à la prise en charge du véhicule ?", answer: "Un permis de conduire valide, une pièce d'identité et la carte bancaire utilisée pour la réservation sont généralement requis." },
   { domain: "cars", question: "L'assurance est-elle incluse dans le prix de la location ?", answer: "Une assurance de base est incluse ; des options supplémentaires (rachat de franchise, tous risques) sont proposées lors de la réservation." },
@@ -229,7 +229,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "payment", question: "Mes informations bancaires sont-elles conservées pour de futurs achats ?", answer: "Non, nous ne stockons jamais vos données de carte bancaire ; chaque paiement est traité de façon sécurisée et indépendante via CinetPay." },
   { domain: "payment", question: "Puis-je demander une facture au nom de mon entreprise ?", answer: "Oui, indiquez les informations de facturation professionnelle lors du paiement ou contactez notre support après votre réservation." },
   { domain: "payment", question: "Que faire si je suis débité deux fois pour la même réservation ?", answer: "Contactez immédiatement notre support avec vos justificatifs de paiement ; nous investiguons et remboursons tout double débit confirmé." },
-  { domain: "payment", question: "Puis-je payer en espèces dans une agence B-Reserve ?", answer: "Oui, le paiement en espèces est possible directement dans nos agences physiques en Côte d'Ivoire, pendant les horaires d'ouverture." },
+  { domain: "payment", question: "Puis-je payer en espèces dans une agence Bossiz+ ?", answer: "Oui, le paiement en espèces est possible directement dans nos agences physiques en Côte d'Ivoire, pendant les horaires d'ouverture." },
   { domain: "payment", question: "Existe-t-il des frais supplémentaires selon le moyen de paiement choisi ?", answer: "Certains moyens de paiement peuvent inclure des frais de transaction, affichés clairement avant la validation finale de votre paiement." },
   { domain: "payment", question: "Comment vérifier qu'un paiement a bien été validé ?", answer: "Un email de confirmation est envoyé immédiatement après validation ; le statut « Confirmée » apparaît aussi dans « Mes Réservations »." },
   { domain: "payment", question: "Puis-je changer de moyen de paiement après avoir initié une transaction ?", answer: "Si le paiement n'a pas abouti, vous pouvez recommencer et choisir un autre moyen de paiement lors d'une nouvelle tentative." },
@@ -309,7 +309,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "delays", question: "Comment déposer une réclamation pour un vol perturbé ?", answer: "Contactez notre support avec votre référence de réservation et les détails de la perturbation ; nous transmettons votre réclamation au transporteur concerné." },
 
   // ───────────────────────── Compte & Sécurité ─────────────────────────
-  { domain: "account", question: "Comment créer un compte B-Reserve ?", answer: "Cliquez sur « Connexion » puis « S'inscrire » et renseignez votre email et un mot de passe pour créer votre compte gratuitement." },
+  { domain: "account", question: "Comment créer un compte Bossiz+ ?", answer: "Cliquez sur « Connexion » puis « S'inscrire » et renseignez votre email et un mot de passe pour créer votre compte gratuitement." },
   { domain: "account", question: "J'ai oublié mon mot de passe, que faire ?", answer: "Cliquez sur « Mot de passe oublié » sur la page de connexion et suivez les instructions envoyées par email pour le réinitialiser." },
   { domain: "account", question: "Comment modifier mes informations personnelles ?", answer: "Rendez-vous dans « Mon Profil » depuis votre tableau de bord pour mettre à jour vos coordonnées, votre photo et vos préférences." },
   { domain: "account", question: "Comment supprimer mon compte ?", answer: "Contactez notre support pour demander la suppression définitive de votre compte et de vos données personnelles conformément à notre politique de confidentialité." },
@@ -326,7 +326,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "account", question: "Comment vérifier mon numéro de téléphone sur mon compte ?", answer: "Un code de vérification par SMS peut être envoyé à votre numéro depuis les paramètres de sécurité de votre profil." },
 
   // ───────────────────────── Abonnements ─────────────────────────
-  { domain: "subscriptions", question: "Quels types d'abonnements propose B-Reserve ?", answer: "Nous proposons les plans Basic, Premium, Business et Corporate, chacun avec des avantages différents adaptés à votre profil de voyageur." },
+  { domain: "subscriptions", question: "Quels types d'abonnements propose Bossiz+ ?", answer: "Nous proposons les plans Basic, Premium, Business et Corporate, chacun avec des avantages différents adaptés à votre profil de voyageur." },
   { domain: "subscriptions", question: "Comment souscrire à un abonnement ?", answer: "Consultez la section abonnements depuis la page d'accueil, choisissez votre plan et suivez le processus de paiement pour activer votre abonnement." },
   { domain: "subscriptions", question: "Puis-je changer de plan d'abonnement ?", answer: "Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment depuis votre espace « Abonnements »." },
   { domain: "subscriptions", question: "Comment annuler mon abonnement ?", answer: "Rendez-vous dans votre espace abonnement et sélectionnez « Annuler » ; l'abonnement reste actif jusqu'à la fin de la période déjà payée." },
@@ -341,7 +341,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "subscriptions", question: "Existe-t-il un abonnement familial ?", answer: "Les formules disponibles couvrent principalement les profils individuels, business et corporate ; contactez notre support pour toute demande spécifique multi-utilisateurs." },
 
   // ───────────────────────── Application mobile ─────────────────────────
-  { domain: "mobileApp", question: "Comment installer l'application B-Reserve sur Android ?", answer: "Téléchargez directement le fichier APK depuis notre page « Installation Android », ou installez la version PWA depuis votre navigateur Chrome." },
+  { domain: "mobileApp", question: "Comment installer l'application Bossiz+ sur Android ?", answer: "Téléchargez directement le fichier APK depuis notre page « Installation Android », ou installez la version PWA depuis votre navigateur Chrome." },
   { domain: "mobileApp", question: "Comment installer l'application sur iPhone ?", answer: "Ouvrez le site dans Safari, appuyez sur « Partager » puis « Sur l'écran d'accueil » pour installer l'application en tant que PWA." },
   { domain: "mobileApp", question: "L'application est-elle disponible sur le Play Store ?", answer: "Pas encore ; en attendant sa publication officielle, l'APK est téléchargeable directement depuis notre site." },
   { domain: "mobileApp", question: "L'application fonctionne-t-elle hors ligne ?", answer: "Certaines fonctionnalités restent accessibles hors ligne grâce à la technologie PWA, notamment la consultation de vos réservations déjà chargées." },
@@ -354,7 +354,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "mobileApp", question: "L'application iOS sera-t-elle bientôt sur l'App Store ?", answer: "La publication sur l'App Store est en cours d'étude ; en attendant, l'installation PWA depuis Safari offre une expérience équivalente." },
 
   // ───────────────────────── Agences partenaires ─────────────────────────
-  { domain: "agency", question: "Comment devenir agence partenaire sur B-Reserve ?", answer: "Contactez notre équipe via le formulaire de contact en précisant votre activité ; nous étudions chaque demande de partenariat individuellement." },
+  { domain: "agency", question: "Comment devenir agence partenaire sur Bossiz+ ?", answer: "Contactez notre équipe via le formulaire de contact en précisant votre activité ; nous étudions chaque demande de partenariat individuellement." },
   { domain: "agency", question: "Quels avantages offre le statut d'agence partenaire ?", answer: "Les agences partenaires bénéficient d'un espace de gestion dédié pour publier leurs offres de séjours, activités et promotions directement sur la plateforme." },
   { domain: "agency", question: "Comment gérer mes offres en tant qu'agence ?", answer: "Connectez-vous à votre espace agence pour ajouter, modifier ou retirer vos séjours, activités et promotions à tout moment." },
   { domain: "agency", question: "Comment sont calculées les commissions pour les agences ?", answer: "Le taux de commission est défini lors de votre partenariat et visible dans les paramètres de votre espace agence." },
@@ -377,35 +377,35 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   { domain: "conciergerie", question: "Puis-je résilier ma formule Bossiz Conciergerie à tout moment ?", answer: "Les conditions de résiliation dépendent de la formule souscrite ; consultez les détails de votre offre ou contactez l'équipe conciergerie." },
   { domain: "conciergerie", question: "Bossiz Conciergerie propose-t-il un accompagnement personnalisé ?", answer: "Oui, l'accompagnement est adapté à vos besoins spécifiques, discutés avec l'équipe conciergerie lors de la mise en place de votre formule." },
   { domain: "conciergerie", question: "Comment obtenir un devis pour un service Bossiz Conciergerie ?", answer: "Remplissez le formulaire de demande de devis sur la page Bossiz Conciergerie CI ou SN correspondant à votre besoin." },
-  { domain: "conciergerie", question: "Les paiements pour Bossiz Conciergerie se font-ils sur la même plateforme ?", answer: "Oui, les paiements sont traités via le même système sécurisé que le reste de la plateforme B-Reserve." },
+  { domain: "conciergerie", question: "Les paiements pour Bossiz Conciergerie se font-ils sur la même plateforme ?", answer: "Oui, les paiements sont traités via le même système sécurisé que le reste de la plateforme Bossiz+." },
 
 
 
   // ───────────────────────── Support technique ─────────────────────────
   { domain: "technical", question: "Le site ne se charge pas correctement, que faire ?", answer: "Essayez de vider le cache de votre navigateur ou d'utiliser une autre version de navigateur à jour ; contactez le support si le problème persiste." },
-  { domain: "technical", question: "Quels navigateurs sont compatibles avec B-Reserve ?", answer: "Notre site fonctionne sur les dernières versions de Chrome, Firefox, Safari et Edge ; consultez notre page Compatibilité pour plus de détails." },
+  { domain: "technical", question: "Quels navigateurs sont compatibles avec Bossiz+ ?", answer: "Notre site fonctionne sur les dernières versions de Chrome, Firefox, Safari et Edge ; consultez notre page Compatibilité pour plus de détails." },
   { domain: "technical", question: "Je ne reçois pas les emails de confirmation, pourquoi ?", answer: "Vérifiez votre dossier de courriers indésirables et que votre adresse email est correctement renseignée ; contactez le support si le souci persiste." },
   { domain: "technical", question: "Le paiement échoue systématiquement, que faire ?", answer: "Vérifiez votre connexion internet et les informations de votre moyen de paiement ; essayez un autre moyen de paiement ou contactez notre support." },
   { domain: "technical", question: "Comment signaler un bug sur le site ou l'application ?", answer: "Utilisez notre formulaire de contact en décrivant précisément le problème rencontré, idéalement avec une capture d'écran." },
   { domain: "technical", question: "Le site fonctionne-t-il correctement sur mobile ?", answer: "Oui, le site est entièrement responsive et optimisé pour une utilisation sur smartphone et tablette." },
   { domain: "technical", question: "Pourquoi certaines pages se chargent-elles lentement ?", answer: "Les temps de chargement peuvent dépendre de votre connexion internet ; essayez de rafraîchir la page ou de vérifier votre réseau si le problème persiste." },
-  { domain: "technical", question: "Puis-je utiliser B-Reserve avec un lecteur d'écran ?", answer: "Nous travaillons continuellement à améliorer l'accessibilité du site ; contactez notre support si vous rencontrez une difficulté spécifique avec un lecteur d'écran." },
+  { domain: "technical", question: "Puis-je utiliser Bossiz+ avec un lecteur d'écran ?", answer: "Nous travaillons continuellement à améliorer l'accessibilité du site ; contactez notre support si vous rencontrez une difficulté spécifique avec un lecteur d'écran." },
   { domain: "technical", question: "Comment vider le cache de mon navigateur ?", answer: "Dans les paramètres de votre navigateur, section confidentialité, sélectionnez « Effacer les données de navigation » puis videz le cache et rechargez le site." },
   { domain: "technical", question: "Le chat en direct ne répond pas, que faire ?", answer: "Rafraîchissez la page ou réessayez plus tard ; en cas de problème persistant, contactez-nous par téléphone ou email." },
 
   // ───────────────────────── Général ─────────────────────────
-  { domain: "general", question: "Qu'est-ce que B-Reserve ?", answer: "B-Reserve est une plateforme de réservation de voyages pour la Côte d'Ivoire et l'Afrique de l'Ouest : vols, hôtels, voitures, trains, activités et événements." },
-  { domain: "general", question: "Dans quels pays B-Reserve opère-t-il ?", answer: "Notre plateforme est principalement orientée vers la Côte d'Ivoire et l'Afrique de l'Ouest, avec des services complémentaires comme Bossiz Conciergerie au Sénégal." },
+  { domain: "general", question: "Qu'est-ce que Bossiz+ ?", answer: "Bossiz+ est une plateforme de réservation de voyages pour la Côte d'Ivoire et l'Afrique de l'Ouest : vols, hôtels, voitures, trains, activités et événements." },
+  { domain: "general", question: "Dans quels pays Bossiz+ opère-t-il ?", answer: "Notre plateforme est principalement orientée vers la Côte d'Ivoire et l'Afrique de l'Ouest, avec des services complémentaires comme Bossiz Conciergerie au Sénégal." },
   { domain: "general", question: "Comment contacter le service client ?", answer: "Vous pouvez nous joindre par téléphone, WhatsApp, email ou chat en direct ; consultez notre page Contact pour tous les moyens disponibles." },
-  { domain: "general", question: "B-Reserve propose-t-il une assurance voyage ?", answer: "Des options d'assurance voyage peuvent être proposées selon les services réservés ; consultez les détails lors de votre réservation." },
+  { domain: "general", question: "Bossiz+ propose-t-il une assurance voyage ?", answer: "Des options d'assurance voyage peuvent être proposées selon les services réservés ; consultez les détails lors de votre réservation." },
   { domain: "general", question: "Comment fonctionne le programme de parrainage ?", answer: "Si un programme de parrainage est actif, les détails et avantages sont communiqués depuis votre tableau de bord ou par email." },
-  { domain: "general", question: "B-Reserve est-il disponible en plusieurs langues ?", answer: "Oui, le site est disponible en français, anglais et chinois ; changez de langue via le sélecteur situé dans la barre de navigation." },
-  { domain: "general", question: "Comment laisser un avis sur mon expérience B-Reserve ?", answer: "Après votre voyage, vous pouvez généralement laisser un avis directement depuis « Mes Réservations » ou via un email de suivi post-séjour." },
-  { domain: "general", question: "B-Reserve propose-t-il des offres spéciales ou promotions ?", answer: "Oui, consultez la section « Offres spéciales » de la page d'accueil ou inscrivez-vous à notre newsletter pour recevoir nos meilleures promotions." },
+  { domain: "general", question: "Bossiz+ est-il disponible en plusieurs langues ?", answer: "Oui, le site est disponible en français, anglais et chinois ; changez de langue via le sélecteur situé dans la barre de navigation." },
+  { domain: "general", question: "Comment laisser un avis sur mon expérience Bossiz+ ?", answer: "Après votre voyage, vous pouvez généralement laisser un avis directement depuis « Mes Réservations » ou via un email de suivi post-séjour." },
+  { domain: "general", question: "Bossiz+ propose-t-il des offres spéciales ou promotions ?", answer: "Oui, consultez la section « Offres spéciales » de la page d'accueil ou inscrivez-vous à notre newsletter pour recevoir nos meilleures promotions." },
   { domain: "general", question: "Comment fonctionne le blog ou guide de destinations ?", answer: "Notre guide de destinations propose des informations pratiques et inspirantes pour préparer votre voyage, accessible depuis la section Destinations du site." },
-  { domain: "general", question: "B-Reserve travaille-t-il avec des compagnies aériennes locales ?", answer: "Oui, nous travaillons avec un réseau de compagnies aériennes locales et internationales pour vous offrir le plus large choix de vols possible." },
-  { domain: "general", question: "Comment recruter ou postuler chez B-Reserve ?", answer: "Consultez nos opportunités de carrière via notre page dédiée ou contactez-nous directement pour toute candidature spontanée." },
-  { domain: "general", question: "B-Reserve a-t-il des partenariats avec des banques pour le paiement échelonné ?", answer: "Des partenariats peuvent exister selon les offres en cours ; consultez les options de paiement lors de votre réservation pour connaître les possibilités actuelles." },
+  { domain: "general", question: "Bossiz+ travaille-t-il avec des compagnies aériennes locales ?", answer: "Oui, nous travaillons avec un réseau de compagnies aériennes locales et internationales pour vous offrir le plus large choix de vols possible." },
+  { domain: "general", question: "Comment recruter ou postuler chez Bossiz+ ?", answer: "Consultez nos opportunités de carrière via notre page dédiée ou contactez-nous directement pour toute candidature spontanée." },
+  { domain: "general", question: "Bossiz+ a-t-il des partenariats avec des banques pour le paiement échelonné ?", answer: "Des partenariats peuvent exister selon les offres en cours ; consultez les options de paiement lors de votre réservation pour connaître les possibilités actuelles." },
   { domain: "general", question: "Comment fonctionne le service conciergerie en dehors de Bossiz Conciergerie ?", answer: "Notre assistant IA disponible via le chat peut répondre à de nombreuses questions générales et vous orienter vers le bon service ou interlocuteur." },
   { domain: "general", question: "Puis-je suggérer une nouvelle fonctionnalité pour le site ?", answer: "Oui, nous accueillons vos suggestions avec plaisir via notre formulaire de contact ou notre chat en direct." },
 ];

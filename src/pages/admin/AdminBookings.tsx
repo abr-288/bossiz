@@ -16,24 +16,32 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
+import type { Database } from "@/integrations/supabase/types";
+
+type AdminBooking = Database["public"]["Tables"]["bookings"]["Row"] & {
+  services: { name: string; type: string; agency_id?: string | null } | null;
+};
+type AdminPassenger = Database["public"]["Tables"]["passengers"]["Row"];
+type AdminPayment = Database["public"]["Tables"]["payments"]["Row"];
+const errorMessage = (error: unknown, fallback: string) => error instanceof Error ? error.message : fallback;
 
 const bookingStatusBadge = (status: string) => <BookingStatusBadge status={status} />;
 const paymentStatusBadge = (status: string) => <PaymentStatusBadge status={status} />;
 
 const AdminBookings = () => {
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<AdminBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
 
   const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
-  const [detailPassengers, setDetailPassengers] = useState<any[]>([]);
-  const [detailPayment, setDetailPayment] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<AdminBooking | null>(null);
+  const [detailPassengers, setDetailPassengers] = useState<AdminPassenger[]>([]);
+  const [detailPayment, setDetailPayment] = useState<AdminPayment | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState<"refund" | "pnr" | "status" | null>(null);
+  const [actionLoading, setActionLoading] = useState<"refund" | "pnr" | "status" | "settle" | null>(null);
   type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
   const [pendingStatus, setPendingStatus] = useState<BookingStatus>("pending");
 
@@ -53,7 +61,7 @@ const AdminBookings = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setBookings(data || []);
+      setBookings((data || []) as AdminBooking[]);
     } catch (error) {
       console.error("Error fetching bookings:", error);
     } finally {
@@ -84,7 +92,7 @@ const AdminBookings = () => {
     setFilteredBookings(filtered);
   };
 
-  const openDetail = async (booking: any) => {
+  const openDetail = async (booking: AdminBooking) => {
     setSelectedBooking(booking);
     setPendingStatus(booking.status);
     setDetailOpen(true);
@@ -103,8 +111,8 @@ const AdminBookings = () => {
           .limit(1)
           .maybeSingle(),
       ]);
-      setDetailPassengers(passengers || []);
-      setDetailPayment(payment || null);
+      setDetailPassengers((passengers || []) as AdminPassenger[]);
+      setDetailPayment((payment || null) as AdminPayment | null);
     } catch (error) {
       console.error("Error loading booking detail:", error);
     } finally {
@@ -120,7 +128,7 @@ const AdminBookings = () => {
       .eq("id", bookingId)
       .single();
     if (data) {
-      setSelectedBooking(data);
+      setSelectedBooking(data as AdminBooking);
       setPendingStatus(data.status);
     }
   };
@@ -137,8 +145,23 @@ const AdminBookings = () => {
 
       toast.success(data.refunded ? "Remboursement effectué" : "Réservation annulée");
       await refreshAfterAction(selectedBooking.id);
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors du remboursement");
+    } catch (error: unknown) {
+      toast.error(errorMessage(error, "Erreur lors du remboursement"));
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleSettleOnSite = async () => {
+    if (!selectedBooking) return;
+    setActionLoading("settle");
+    try {
+      const { error } = await supabase.rpc("admin_mark_booking_balance_paid", { p_booking_id: selectedBooking.id });
+      if (error) throw error;
+      toast.success("Solde réglé sur place enregistré");
+      await refreshAfterAction(selectedBooking.id);
+    } catch (error: unknown) {
+      toast.error(errorMessage(error, "Impossible d’enregistrer le règlement du solde"));
     } finally {
       setActionLoading(null);
     }
@@ -158,8 +181,8 @@ const AdminBookings = () => {
         toast.success(`PNR émis: ${data.pnr}`);
       }
       await refreshAfterAction(selectedBooking.id);
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la relance du PNR");
+    } catch (error: unknown) {
+      toast.error(errorMessage(error, "Erreur lors de la relance du PNR"));
     } finally {
       setActionLoading(null);
     }
@@ -176,14 +199,14 @@ const AdminBookings = () => {
       if (error) throw error;
       toast.success("Statut mis à jour");
       await refreshAfterAction(selectedBooking.id);
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la mise à jour du statut");
+    } catch (error: unknown) {
+      toast.error(errorMessage(error, "Erreur lors de la mise à jour du statut"));
     } finally {
       setActionLoading(null);
     }
   };
 
-  const margin = (booking: any) => {
+  const margin = (booking: AdminBooking) => {
     if (booking.supplier_cost === null || booking.supplier_cost === undefined) return null;
     return Number(booking.total_price) - Number(booking.supplier_cost);
   };
@@ -249,6 +272,7 @@ const AdminBookings = () => {
                   <SelectItem value="all">Tous les paiements</SelectItem>
                   <SelectItem value="pending">En attente</SelectItem>
                   <SelectItem value="processing">En traitement</SelectItem>
+                  <SelectItem value="partially_paid">Acompte payé</SelectItem>
                   <SelectItem value="paid">Payé</SelectItem>
                   <SelectItem value="refunded">Remboursé</SelectItem>
                   <SelectItem value="failed">Échoué</SelectItem>
@@ -425,6 +449,16 @@ const AdminBookings = () => {
 
                 <div className="space-y-3">
                   <h4 className="font-semibold text-sm">Actions administrateur</h4>
+
+                  {selectedBooking.payment_status === "partially_paid" && (
+                    <div className="rounded-md border p-3 space-y-2">
+                      <p className="text-sm">Solde restant : <Price amount={selectedBooking.balance_due || 0} fromCurrency={selectedBooking.currency} /></p>
+                      <Button className="w-full" disabled={actionLoading !== null} onClick={handleSettleOnSite}>
+                        {actionLoading === "settle" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Confirmer le règlement sur place
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-2">
                     <Select value={pendingStatus} onValueChange={(v) => setPendingStatus(v as BookingStatus)}>

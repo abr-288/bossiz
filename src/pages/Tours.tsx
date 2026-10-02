@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Clock, Users, Map, Loader2 } from "lucide-react";
+import { Star, MapPin, Clock, Users, Map, Loader2, ExternalLink, CalendarDays } from "lucide-react";
 import { BookingDialog } from "@/components/BookingDialog";
 import { TourSearchForm } from "@/components/TourSearchForm";
 import { Pagination } from "@/components/Pagination";
@@ -248,6 +248,19 @@ const Tours = () => {
                           <MapPin className="w-4 h-4" />
                           <span className="text-sm">{tour.location}</span>
                         </div>
+                        {(tour.mapsUrl || (tour.latitude != null && tour.longitude != null)) && (
+                          <a className="mb-3 inline-flex items-center gap-1 text-sm text-primary underline" href={tour.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${tour.latitude},${tour.longitude}`} target="_blank" rel="noreferrer">
+                            Voir le lieu sur la carte <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                        {tour.availableDates?.length > 0 && (
+                          <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
+                            <CalendarDays className="h-4 w-4 text-primary" />
+                            <span className="text-muted-foreground">Départs :</span>
+                            {tour.availableDates.slice(0, 3).map((date: string) => <span key={date} className="rounded-full bg-muted px-2 py-1">{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</span>)}
+                            {tour.availableDates.length > 3 && <span className="text-muted-foreground">+{tour.availableDates.length - 3}</span>}
+                          </div>
+                        )}
 
                         <div className="flex items-center gap-2 mb-3">
                           <div className="flex">
@@ -295,6 +308,7 @@ const Tours = () => {
                               currency: tour.currency,
                               type: "tour",
                               location: tour.location,
+                              availableDates: tour.availableDates,
                             });
                             setDialogOpen(true);
                           }}>

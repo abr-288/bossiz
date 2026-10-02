@@ -355,7 +355,7 @@ const Support = () => {
 
             <CardContent className="p-10 md:p-16 relative z-10">
               <div className="max-w-3xl mx-auto text-center">
-                <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">{t('pages.support.followNews')} <br className="hidden md:block" /> B-Reserve</h3>
+                <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">{t('pages.support.followNews')} <br className="hidden md:block" /> Bossiz+</h3>
                 <p className="text-lg text-white/80 mb-10 max-w-xl mx-auto font-medium">
                   {t('footer.newsletter.description')}
                 </p>

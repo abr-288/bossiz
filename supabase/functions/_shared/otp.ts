@@ -30,7 +30,7 @@ export function otpEmailHtml(code: string): string {
     <body>
       <div class="container">
         <h2>Votre code de connexion</h2>
-        <p>Utilisez ce code pour vous connecter à votre compte B-Reserve :</p>
+        <p>Utilisez ce code pour vous connecter à votre compte Bossiz+ :</p>
         <div class="code">${code}</div>
         <p>Ce code expire dans 10 minutes. Ne le partagez avec personne.</p>
         <p class="footer">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>

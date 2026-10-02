@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Save } from "lucide-react";
@@ -152,22 +153,12 @@ export default function AgencySettings() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo_url">URL du logo</Label>
-                <Input
-                  id="logo_url"
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                  placeholder="https://..."
-                />
-                {formData.logo_url && (
-                  <img
-                    src={formData.logo_url}
-                    alt="Logo preview"
-                    className="h-16 w-16 rounded-lg object-cover mt-2"
-                  />
-                )}
-              </div>
+              <ImageUpload
+                label="Logo de l'agence"
+                folder="agency-logos"
+                value={formData.logo_url}
+                onChange={(logo_url) => setFormData({ ...formData, logo_url })}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

@@ -363,13 +363,13 @@ const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string): s
           </div>
 
           <div class="footer">
-            <div class="footer-logo">B-RESERVE</div>
+            <div class="footer-logo">CONCIERGERIE BOSSIZ</div>
             <div class="footer-text">
               Votre partenaire de confiance pour tous vos voyages<br>
               Merci de votre confiance !
             </div>
             <div class="footer-contact">
-              📧 support@b-reserve.com | 📱 +225 XX XX XX XX
+              📧 support@bossiz.com | 📱 +225 XX XX XX XX
             </div>
           </div>
         </div>

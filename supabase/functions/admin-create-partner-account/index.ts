@@ -1,11 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 // ============================================================
 // EDGE FUNCTION: admin-create-partner-account
 // Used by the admin "Créer une agence" flow (AdminAgencies.tsx) when a
-// partner application's contact_email has no B-Reserve account yet.
+// partner application's contact_email has no Bossiz+ account yet.
 // Instead of asking the candidate to sign up first, an admin creates the
 // account here and the candidate receives an email with a link to choose
 // their own password (Supabase "recovery" link -> /reset-password). No
@@ -100,11 +101,18 @@ serve(async (req) => {
       return json({ success: true, userId: created.user.id, created: true, emailSent: false });
     }
 
+    const vars = {
+      ownerGreeting: fullName ? ` ${fullName}` : "",
+      setupLink: actionLink,
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(adminClient, "partner_account_ready", vars);
+
     const result = await sendEmail(adminClient, {
-      from: "B-Reserve Partenaires <partenaires@bossiz.com>",
+      from: "Bossiz+ Partenaires <partenaires@bossiz.com>",
       to: [email],
-      subject: "Votre compte partenaire B-Reserve est prêt",
-      html: emailHtml(fullName, actionLink),
+      subject: rendered?.subject ?? "Votre compte partenaire Bossiz+ est prêt",
+      html: rendered?.html ?? emailHtml(fullName, actionLink),
     });
     if (!result.ok) console.error("Account email error:", result.error);
 
@@ -130,17 +138,17 @@ function emailHtml(name: string, link: string) {
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin:0; padding:0;">
       <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: #0b3d5c; color: white; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-          <h1 style="margin:0; font-size: 20px;">Bienvenue chez B-Reserve</h1>
+          <h1 style="margin:0; font-size: 20px;">Bienvenue chez Bossiz+</h1>
         </div>
         <div style="padding: 24px; background: #f9fafb; border-radius: 0 0 8px 8px;">
           <p>Bonjour${name ? ` ${escapeHtml(name)}` : ""},</p>
-          <p>Suite à votre candidature partenaire, nous avons créé votre compte B-Reserve avec cette adresse email.</p>
+          <p>Suite à votre candidature partenaire, nous avons créé votre compte Bossiz+ avec cette adresse email.</p>
           <p>Cliquez sur le bouton ci-dessous pour choisir votre mot de passe et accéder à votre espace :</p>
           <p style="text-align:center; margin: 28px 0;">
             <a href="${escapeHtml(link)}" style="background:#0b3d5c; color:#fff; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:bold;">Choisir mon mot de passe</a>
           </p>
           <p style="font-size: 13px; color:#666;">Ce lien est à usage unique et expire au bout d'un certain temps. S'il a expiré, utilisez « Mot de passe oublié » sur ${SITE_URL}/auth. Si vous n'êtes pas à l'origine de cette candidature, ignorez cet email.</p>
-          <p style="margin-top: 24px;">L'équipe B-Reserve</p>
+          <p style="margin-top: 24px;">L'équipe Bossiz+</p>
         </div>
       </div>
     </body>

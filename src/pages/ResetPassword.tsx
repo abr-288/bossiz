@@ -86,7 +86,7 @@ export default function ResetPassword() {
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img 
           src={authBg} 
-          alt="B-Reserve"
+          alt="Bossiz+"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/70 to-accent/80" />
@@ -97,7 +97,7 @@ export default function ResetPassword() {
               <Car className="h-6 w-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-bold">B-Reserve</span>
+              <span className="text-2xl font-bold">Bossiz+</span>
               <span className="text-xs text-white/70 tracking-wider">VOYAGES & RÉSERVATIONS</span>
             </div>
           </Link>
@@ -121,7 +121,7 @@ export default function ResetPassword() {
           </div>
           
           <p className="text-sm text-white/50">
-            © 2026 B-Reserve. Tous droits réservés.
+            © 2026 Conciergerie Bossiz. Tous droits réservés.
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function ResetPassword() {
                 <Car className="h-6 w-6 text-primary-foreground" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-2xl font-bold text-primary">B-Reserve</span>
+                <span className="text-2xl font-bold text-primary">Bossiz+</span>
                 <span className="text-xs text-muted-foreground tracking-wider">VOYAGES & RÉSERVATIONS</span>
               </div>
             </Link>

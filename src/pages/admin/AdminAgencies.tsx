@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Building2, Search, Eye, EyeOff } from "lucide-react";
@@ -48,6 +49,7 @@ interface Agency {
   is_active: boolean;
   commission_rate: number | null;
   car_plan_id: string | null;
+  enabled_features: Record<string, boolean> | null;
   created_at: string;
   owner_name?: string;
 }
@@ -60,6 +62,16 @@ interface CarPartnerPlan {
 }
 
 const NO_CAR_PLAN = "none";
+const AGENCY_FEATURES = [
+  { key: "services", label: "Services et circuits" },
+  { key: "activities", label: "Activités" },
+  { key: "stays", label: "Séjours" },
+  { key: "restaurants", label: "Restaurants et réservations" },
+  { key: "artisans", label: "Artisans, produits et commandes" },
+  { key: "wellness", label: "Bien-être et rendez-vous" },
+  { key: "promotions", label: "Promotions" },
+] as const;
+const DEFAULT_AGENCY_FEATURES = Object.fromEntries(AGENCY_FEATURES.map(({ key }) => [key, true]));
 
 interface UserOption {
   id: string;
@@ -94,6 +106,7 @@ export default function AdminAgencies() {
     is_active: true,
     commission_rate: 10,
     car_plan_id: NO_CAR_PLAN,
+    enabled_features: { ...DEFAULT_AGENCY_FEATURES } as Record<string, boolean>,
   });
 
   useEffect(() => {
@@ -117,7 +130,7 @@ export default function AdminAgencies() {
     }
   }, [prefillApplication]);
 
-  // Auto-link the owner: the candidate must already have a B-Reserve
+  // Auto-link the owner: the candidate must already have a Bossiz+
   // account (created via /auth) using the same email as their
   // application, since agencies.owner_id always points at an existing
   // profiles row - there's no flow that creates the auth account here.
@@ -257,6 +270,7 @@ export default function AdminAgencies() {
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
             car_plan_id: carPlanId,
+            enabled_features: formData.enabled_features,
             ...(carPlanChanged ? { car_plan_started_at: carPlanId ? new Date().toISOString() : null } : {}),
           })
           .eq("id", editingAgency.id);
@@ -282,6 +296,7 @@ export default function AdminAgencies() {
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
             car_plan_id: carPlanId,
+            enabled_features: formData.enabled_features,
             car_plan_started_at: carPlanId ? new Date().toISOString() : null,
           })
           .select()
@@ -307,6 +322,12 @@ export default function AdminAgencies() {
             .update({ status: "approved" })
             .eq("id", prefillApplication.id);
         }
+
+        supabase.functions
+          .invoke("send-partner-approved", { body: { agencyId: newAgency.id } })
+          .then(({ error: emailError }) => {
+            if (emailError) console.error("Partner approval email error:", emailError);
+          });
 
         toast({
           title: "Succès",
@@ -340,6 +361,7 @@ export default function AdminAgencies() {
       is_active: agency.is_active,
       commission_rate: agency.commission_rate ?? 10,
       car_plan_id: agency.car_plan_id || NO_CAR_PLAN,
+      enabled_features: { ...DEFAULT_AGENCY_FEATURES, ...(agency.enabled_features || {}) },
     });
     setIsDialogOpen(true);
   };
@@ -383,6 +405,12 @@ export default function AdminAgencies() {
 
       if (error) throw error;
       fetchAgencies();
+
+      supabase.functions
+        .invoke("send-partner-status-change", { body: { agencyId: id } })
+        .then(({ error: emailError }) => {
+          if (emailError) console.error("Partner status change email error:", emailError);
+        });
     } catch (error) {
       console.error("Error toggling agency status:", error);
     }
@@ -401,6 +429,7 @@ export default function AdminAgencies() {
       is_active: true,
       commission_rate: 10,
       car_plan_id: NO_CAR_PLAN,
+      enabled_features: { ...DEFAULT_AGENCY_FEATURES },
     });
   };
 
@@ -458,7 +487,7 @@ export default function AdminAgencies() {
                       {prefillApplication && ownerMatchStatus === "not-found" && (
                         <div className="space-y-2 rounded-md border border-destructive/30 bg-destructive/5 p-3">
                           <p className="text-xs text-destructive font-medium">
-                            Aucun compte B-Reserve trouvé pour {prefillApplication.contact_email}.
+                            Aucun compte Bossiz+ trouvé pour {prefillApplication.contact_email}.
                             Vous pouvez lui en créer un : il recevra un email pour choisir son mot
                             de passe. Sinon, sélectionnez un autre utilisateur ci-dessous.
                           </p>
@@ -509,12 +538,11 @@ export default function AdminAgencies() {
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="logo_url">URL du logo</Label>
-                    <Input
-                      id="logo_url"
+                    <ImageUpload
+                      label="Logo du partenaire"
+                      folder="agency-logos"
                       value={formData.logo_url}
-                      onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                      placeholder="https://..."
+                      onChange={(logo_url) => setFormData({ ...formData, logo_url })}
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
@@ -568,7 +596,7 @@ export default function AdminAgencies() {
                   </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
                     <Switch
                       id="is_visible"
@@ -584,6 +612,27 @@ export default function AdminAgencies() {
                       onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                     />
                     <Label htmlFor="is_active">Agence active</Label>
+                  </div>
+                </div>
+                <div className="space-y-3 rounded-lg border p-4">
+                  <div>
+                    <h3 className="font-semibold">Accès du partenaire</h3>
+                    <p className="text-sm text-muted-foreground">Les rubriques désactivées restent visibles en gris, mais leurs formulaires et actions sont bloqués. La base refuse aussi les modifications directes.</p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {AGENCY_FEATURES.map(({ key, label }) => (
+                      <div key={key} className="flex items-center justify-between gap-3 rounded-md bg-muted/40 px-3 py-2">
+                        <Label htmlFor={`agency-feature-${key}`}>{label}</Label>
+                        <Switch
+                          id={`agency-feature-${key}`}
+                          checked={formData.enabled_features[key] !== false}
+                          onCheckedChange={(checked) => setFormData({
+                            ...formData,
+                            enabled_features: { ...formData.enabled_features, [key]: checked },
+                          })}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-4">

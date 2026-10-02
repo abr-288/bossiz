@@ -56,8 +56,8 @@ export const useAdminStats = () => {
           .order("created_at", { ascending: false });
 
         if (bookings) {
-          const paidBookings = bookings.filter((b) => b.payment_status === "paid");
-          const totalRevenue = paidBookings.reduce((sum, b) => sum + Number(b.total_price), 0);
+          const paidBookings = bookings.filter((b) => ["paid", "partially_paid"].includes(b.payment_status));
+          const totalRevenue = paidBookings.reduce((sum, b) => sum + Number(b.amount_paid ?? (b.payment_status === "paid" ? b.total_price : 0)), 0);
 
           // supplier_cost is only known for hotel/car (back-computed from the
           // retail markup) and flight (real base_fare) bookings - see
@@ -84,12 +84,12 @@ export const useAdminStats = () => {
               .filter((b) => {
                 const bookingDate = new Date(b.created_at);
                 return (
-                  b.payment_status === "paid" &&
+                  ["paid", "partially_paid"].includes(b.payment_status) &&
                   bookingDate.getMonth() === date.getMonth() &&
                   bookingDate.getFullYear() === date.getFullYear()
                 );
               })
-              .reduce((sum, b) => sum + Number(b.total_price), 0);
+              .reduce((sum, b) => sum + Number(b.amount_paid ?? (b.payment_status === "paid" ? b.total_price : 0)), 0);
 
             revenueByMonth.push({ month: monthName, revenue: monthRevenue });
           }

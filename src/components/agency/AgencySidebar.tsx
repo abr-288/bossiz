@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Activity, Home, Percent, Settings, LogOut, UtensilsCrossed, Hammer, Sparkles } from "lucide-react";
+import { LayoutDashboard, Package, Activity, Home, Percent, Settings, LogOut, UtensilsCrossed, Hammer, Sparkles, Map } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 const menuItems = [
   { title: "Tableau de bord", url: "/agency", icon: LayoutDashboard },
   { title: "Mes Services", url: "/agency/services", icon: Package },
+  { title: "Mes Circuits", url: "/agency/services?type=tour", icon: Map },
   { title: "Mes Restaurants", url: "/agency/restaurants", icon: UtensilsCrossed },
   { title: "Mes Artisans", url: "/agency/artisans", icon: Hammer },
   { title: "Bien-être & Beauté", url: "/agency/wellness", icon: Sparkles },
@@ -27,7 +28,7 @@ const menuItems = [
   { title: "Paramètres", url: "/agency/settings", icon: Settings },
 ];
 
-export function AgencySidebar() {
+export function AgencySidebar({ enabledFeatures = {} }: { enabledFeatures?: Record<string, boolean> }) {
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
@@ -53,9 +54,9 @@ export function AgencySidebar() {
   return (
     <Sidebar className={collapsed ? "w-14" : "w-60 md:w-64"} collapsible="icon">
       <SidebarContent className="flex flex-col h-full">
-        <div className="p-3 md:p-4 border-b flex-shrink-0">
-          <h2 className={`font-bold text-lg md:text-xl ${collapsed ? "text-center" : ""}`}>
-            {collapsed ? "AG" : "Espace Agence"}
+        <div className="p-3 md:p-4 flex-shrink-0" style={{ backgroundColor: "#0d9488" }}>
+          <h2 className={`font-bold text-lg md:text-xl text-white ${collapsed ? "text-center" : ""}`}>
+            {collapsed ? "BB" : "BizBossiz"}
           </h2>
         </div>
 
@@ -63,14 +64,28 @@ export function AgencySidebar() {
           <SidebarGroupLabel className="text-xs px-3">Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {menuItems.map((item) => {
+                const feature = item.url.startsWith("/agency/services") ? "services"
+                  : item.url.startsWith("/agency/activities") ? "activities"
+                  : item.url.startsWith("/agency/stays") ? "stays"
+                  : item.url.startsWith("/agency/restaurants") ? "restaurants"
+                  : item.url.startsWith("/agency/artisans") ? "artisans"
+                  : item.url.startsWith("/agency/wellness") ? "wellness"
+                  : item.url.startsWith("/agency/promotions") ? "promotions"
+                  : null;
+                const disabled = !!feature && enabledFeatures[feature] === false;
+                return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link
                       to={item.url}
                       aria-label={item.title}
+                      aria-disabled={disabled}
+                      tabIndex={disabled ? -1 : undefined}
+                      title={disabled ? "Désactivé par l’administrateur" : undefined}
+                      onClick={(event) => { if (disabled) event.preventDefault(); }}
                       className={`flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
-                        isActive(item.url) ? "bg-accent text-accent-foreground font-medium" : ""
+                        disabled ? "opacity-40 cursor-not-allowed" : isActive(item.url) ? "bg-[#0d9488]/10 text-[#0d9488] font-medium" : ""
                       }`}
                     >
                       <item.icon className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
@@ -78,7 +93,8 @@ export function AgencySidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

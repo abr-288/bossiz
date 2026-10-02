@@ -69,7 +69,7 @@ const CarPartnerPlans = () => {
             Un forfait pour chaque taille de flotte
           </h1>
           <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">
-            Listez vos véhicules sur B-Reserve, gardez le contrôle de vos tarifs et payez une commission qui baisse avec votre forfait.
+            Listez vos véhicules sur Bossiz+, gardez le contrôle de vos tarifs et payez une commission qui baisse avec votre forfait.
           </p>
         </div>
       </div>

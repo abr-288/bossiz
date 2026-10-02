@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
 import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
+import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 // ============================================================
 // EDGE FUNCTION: send-password-reset
@@ -83,11 +84,14 @@ serve(async (req) => {
       return ok();
     }
 
+    const vars = { resetLink: actionLink, year: String(new Date().getFullYear()) };
+    const rendered = await renderEmailTemplate(adminClient, "password_reset", vars);
+
     const result = await sendEmail(adminClient, {
-      from: "B-Reserve <contact@bossiz.com>",
+      from: "Bossiz+ <contact@bossiz.com>",
       to: [email],
-      subject: "Réinitialisation de votre mot de passe - B-Reserve",
-      html: emailHtml(actionLink),
+      subject: rendered?.subject ?? "Réinitialisation de votre mot de passe - Bossiz+",
+      html: rendered?.html ?? emailHtml(actionLink),
     });
     if (!result.ok) console.error("Password reset email error:", result.error);
 
@@ -112,12 +116,12 @@ function emailHtml(link: string) {
         </div>
         <div style="padding: 24px; background: #f9fafb; border-radius: 0 0 8px 8px;">
           <p>Bonjour,</p>
-          <p>Vous avez demandé à réinitialiser le mot de passe de votre compte B-Reserve. Cliquez sur le bouton ci-dessous pour en choisir un nouveau :</p>
+          <p>Vous avez demandé à réinitialiser le mot de passe de votre compte Bossiz+. Cliquez sur le bouton ci-dessous pour en choisir un nouveau :</p>
           <p style="text-align:center; margin: 28px 0;">
             <a href="${link.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}" style="background:#0b3d5c; color:#fff; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:bold;">Choisir un nouveau mot de passe</a>
           </p>
           <p style="font-size: 13px; color:#666;">Ce lien est à usage unique et expire rapidement. Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail : votre mot de passe actuel reste valable.</p>
-          <p style="margin-top: 24px;">L'équipe B-Reserve</p>
+          <p style="margin-top: 24px;">L'équipe Bossiz+</p>
         </div>
       </div>
     </body>

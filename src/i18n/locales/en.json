@@ -10,7 +10,7 @@
     "support": "Support",
     "login": "Login",
     "signup": "Sign Up",
-    "myAccount": "My Account",
+    "myAccount": "MyBossiz",
     "admin": "Admin",
     "logout": "Logout",
     "logoutSuccess": "Logout successful",
@@ -96,7 +96,7 @@
     "chooseDate": "Choose date"
   },
   "features": {
-    "title": "Why Choose B-Reserve?",
+    "title": "Why Choose Bossiz+?",
     "bestPrices": {
       "title": "Best Prices Guaranteed",
       "description": "We guarantee you the best rates on the market"
@@ -237,6 +237,7 @@
       "completed": "Completed"
     },
     "payment": {
+      "partially_paid": "Deposit paid",
       "paid": "Paid",
       "pending": "Pending",
       "failed": "Failed",
@@ -542,7 +543,7 @@
       "signup": "Signup successful",
       "signupDesc": "Check your email to confirm your account",
       "login": "Login successful",
-      "loginDesc": "Welcome to B-Reserve!",
+      "loginDesc": "Welcome to Bossiz+!",
       "resetSent": "Email sent",
       "resetSentDesc": "Check your inbox to reset your password",
       "passwordUpdated": "Password updated",
@@ -1177,7 +1178,7 @@
       "bookings": "Bookings",
       "priceAlerts": "Price alerts",
       "explore": "Explore",
-      "account": "Account",
+      "account": "MyBossiz",
       "support": "Support"
     }
   },
@@ -1260,7 +1261,7 @@
   },
   "iosDownload": {
     "badge": "Mobile App",
-    "title": "Download B-Reserve",
+    "title": "Download Bossiz+",
     "titleHighlight": "ON YOUR MOBILE",
     "subtitle": "Access all our booking services directly from your smartphone",
     "detected": {
@@ -1286,7 +1287,7 @@
       "scanQR": "Scan QR Code",
       "hideQR": "Hide QR Code",
       "qrHint": "Scan this QR Code with your iOS device",
-      "qrAlt": "QR Code to download B-Reserve on iOS"
+      "qrAlt": "QR Code to download Bossiz+ on iOS"
     },
     "android": {
       "devices": "Phones & Tablets",
@@ -1315,7 +1316,7 @@
         "Scan the QR Code with your camera",
         "Tap \"Open in App Store\"",
         "Tap \"Get\" to install",
-        "The B-Reserve icon will appear on your home screen"
+        "The Bossiz+ icon will appear on your home screen"
       ],
       "androidSteps": [
         "Click the download button",
@@ -2084,7 +2085,7 @@
       "general": {
         "label": "General",
         "q0": {
-          "question": "How do I create an account on B-Reserve?",
+          "question": "How do I create an account on Bossiz+?",
           "answer": "Click \"Login\" at the top of the page then \"Create an account\". Fill in your information and confirm your email."
         },
         "q1": {

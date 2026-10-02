@@ -230,6 +230,14 @@ export default function AdminConfiguration() {
               }}
               saving={saving === getConfigByKey("booking")?.id}
             />
+            <PaymentPolicyConfig
+              config={getConfigByKey("booking_payment_policy")}
+              onSave={(value) => {
+                const config = getConfigByKey("booking_payment_policy");
+                if (config) updateConfig(config.id, "booking_payment_policy", value);
+              }}
+              saving={saving === getConfigByKey("booking_payment_policy")?.id}
+            />
             <PricingConfig
               config={getConfigByKey("pricing")}
               onSave={(value) => {
@@ -789,6 +797,79 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
           />
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          Sauvegarder
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+const DEPOSIT_SERVICE_TYPES = [
+  { value: "car", label: "Location de voiture" },
+  { value: "tour", label: "Circuits" },
+  { value: "event", label: "Événements" },
+  { value: "stay", label: "Séjours" },
+  { value: "activity", label: "Activités" },
+];
+
+function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const [value, setValue] = useState(config?.config_value || {
+    depositEnabled: true,
+    depositPercent: 30,
+    enabledServiceTypes: DEPOSIT_SERVICE_TYPES.map((item) => item.value),
+    reviewPromptEnabled: true,
+  });
+
+  useEffect(() => {
+    if (config) setValue(config.config_value);
+  }, [config]);
+
+  const enabledTypes: string[] = value.enabledServiceTypes || [];
+  const toggleType = (type: string, checked: boolean) => {
+    setValue({
+      ...value,
+      enabledServiceTypes: checked
+        ? [...new Set([...enabledTypes, type])]
+        : enabledTypes.filter((item) => item !== type),
+    });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Paiement à la réservation</CardTitle>
+        <CardDescription>Choisissez les services qui acceptent un acompte ; l’hôtel, les vols et les trains restent exclus. Le solde est indiqué comme payable sur place.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label>Autoriser le paiement d’un acompte</Label>
+            <p className="text-sm text-muted-foreground">Le client peut choisir acompte ou paiement intégral.</p>
+          </div>
+          <Switch checked={value.depositEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, depositEnabled: checked })} />
+        </div>
+        <div className="max-w-xs space-y-2">
+          <Label>Pourcentage de l’acompte</Label>
+          <Input type="number" min="1" max="99" value={value.depositPercent ?? 30} onChange={(e) => setValue({ ...value, depositPercent: Number(e.target.value) })} />
+        </div>
+        <div className="space-y-3">
+          <Label>Services éligibles</Label>
+          {DEPOSIT_SERVICE_TYPES.map((item) => (
+            <div key={item.value} className="flex items-center justify-between">
+              <Label htmlFor={`deposit-${item.value}`}>{item.label}</Label>
+              <Switch id={`deposit-${item.value}`} checked={enabledTypes.includes(item.value)} onCheckedChange={(checked) => toggleType(item.value, checked)} />
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-between border-t pt-4">
+          <div className="space-y-0.5">
+            <Label>Proposer la notation après paiement</Label>
+            <p className="text-sm text-muted-foreground">Seuls les clients ayant payé peuvent noter ; les avis restent soumis à modération.</p>
+          </div>
+          <Switch checked={value.reviewPromptEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, reviewPromptEnabled: checked })} />
+        </div>
+        <Button onClick={() => onSave(value)} disabled={saving || !Number.isFinite(Number(value.depositPercent)) || value.depositPercent < 1 || value.depositPercent > 99}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Sauvegarder
         </Button>

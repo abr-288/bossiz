@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,12 +22,20 @@ serve(async (req) => {
     );
     console.log('Sending contact message from:', email);
 
-    const emailHtml = generateContactEmailHtml(name, email, subject, message);
+    const vars = {
+      name: String(name),
+      email: String(email),
+      subject: String(subject),
+      messageHtml: escapeHtml(String(message)).replace(/\n/g, "<br/>"),
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(supabase, "contact_message_internal", vars, ["messageHtml"]);
+    const emailHtml = rendered?.html ?? generateContactEmailHtml(name, email, subject, message);
 
     const result = await sendEmail(supabase, {
-      from: 'B-Reserve Contact <contact@bossiz.com>',
+      from: 'Bossiz+ Contact <contact@bossiz.com>',
       to: ['contact@bossiz.com'],
-      subject: `Contact Form: ${subject}`,
+      subject: rendered?.subject ?? `Contact Form: ${subject}`,
       html: emailHtml,
       replyTo: email,
     });
@@ -103,7 +112,7 @@ function generateContactEmailHtml(name: string, email: string, subject: string, 
           <p>Please respond to this message as soon as possible.</p>
         </div>
         <div class="footer">
-          <p>&copy; 2025 B-Reserve Contact System</p>
+          <p>&copy; 2025 Conciergerie Bossiz - Contact System</p>
         </div>
       </div>
     </body>

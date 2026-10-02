@@ -27,7 +27,7 @@ interface CreateBookingParams {
   customer_phone: string;
   notes?: string;
   passengers: Passenger[];
-  booking_details?: any;
+  booking_details?: Record<string, unknown>;
   // Present only for service types backed by a signed search offer (hotel, car)
   unit_price?: number;
   offer_signature?: string;
@@ -38,6 +38,7 @@ interface CreateBookingParams {
   // created as usual but payment is settled later by the company's billing
   // admin from /company/dashboard instead of immediately by this user.
   company_id?: string;
+  payment_plan?: "full" | "deposit";
 }
 
 export const useCreateBooking = () => {
@@ -68,9 +69,9 @@ export const useCreateBooking = () => {
 
       toast.success("Réservation créée avec succès !");
       return data.booking_id;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Create booking error:', error);
-      toast.error(error.message || "Erreur lors de la création de la réservation");
+      toast.error(error instanceof Error ? error.message : "Erreur lors de la création de la réservation");
       return null;
     } finally {
       setLoading(false);

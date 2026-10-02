@@ -17,8 +17,8 @@ const Footer = () => {
 
   // Fonction pour installer l'app depuis le footer (compatible tous appareils)
   const handleAppInstall = () => {
-    const appStoreUrl = "https://apps.apple.com/app/b-reserve/id123456789";
-    const playStoreUrl = "https://play.google.com/store/apps/details?id=com.breserve.app";
+    const appStoreUrl = "https://apps.apple.com/app/bossiz-plus/id123456789";
+    const playStoreUrl = "https://play.google.com/store/apps/details?id=com.bossizplus.app";
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
     
@@ -237,6 +237,12 @@ const Footer = () => {
             </Link>
             <Link to="/privacy" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.privacy")}
+            </Link>
+            <Link to="/politique-cookies" className="text-white/80 hover:text-secondary transition-smooth">
+              Cookies
+            </Link>
+            <Link to="/mentions-legales" className="text-white/80 hover:text-secondary transition-smooth">
+              Mentions légales
             </Link>
             <button
               type="button"

@@ -61,7 +61,7 @@ const TestimonialsSection = () => {
 
       const real: Testimonial[] = reviews
         .map(r => {
-          const name = (r.user_id && profilesById.get(r.user_id)) || r.reviewer_name || "Client B-Reserve";
+          const name = (r.user_id && profilesById.get(r.user_id)) || r.reviewer_name || "Client Bossiz+";
           return {
             id: r.id,
             name,

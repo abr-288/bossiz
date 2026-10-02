@@ -220,7 +220,7 @@ const Partnership = () => {
       <section className="relative py-16 md:py-20 bg-primary overflow-hidden">
         <LazyImage
           src={bannerTours}
-          alt="Devenir partenaire B-Reserve"
+          alt="Devenir partenaire Bossiz+"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-primary/70" />

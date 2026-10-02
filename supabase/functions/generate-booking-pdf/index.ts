@@ -313,7 +313,7 @@ const generatePDFHTML = (booking: any, qrCodeSvg: string): string => {
             <!-- Section gauche blanche -->
             <div class="left-section">
               <div class="header">
-                <div class="logo">B-RESERVE</div>
+                <div class="logo">BOSSIZ+</div>
                 <div class="company-name">Travel & Tourism</div>
               </div>
 
@@ -387,7 +387,7 @@ const generatePDFHTML = (booking: any, qrCodeSvg: string): string => {
 
             <!-- Section droite avec gradient personnalisé -->
             <div class="right-section">
-              <div class="right-logo">B-RESERVE</div>
+              <div class="right-logo">BOSSIZ+</div>
               
               <div class="status-badge">
                 ${statusText}

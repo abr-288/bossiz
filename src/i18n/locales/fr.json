@@ -10,7 +10,7 @@
     "support": "Assistance",
     "login": "Connexion",
     "signup": "S'inscrire",
-    "myAccount": "Mon Compte",
+    "myAccount": "MyBossiz",
     "admin": "Admin",
     "logout": "Déconnexion",
     "logoutSuccess": "Déconnexion réussie",
@@ -24,7 +24,7 @@
     "wellness": "Bien-être & Beauté",
     "help": "Centre d'aide",
     "register": "S'inscrire",
-    "tours": "Tours",
+    "tours": "Circuits",
     "chooseLanguage": "Choisissez votre langue",
     "chooseLanguageDescription": "Sélectionnez la langue d'affichage du site",
     "searchLanguage": "Rechercher une langue...",
@@ -96,7 +96,7 @@
     "chooseDate": "Choisir date"
   },
   "features": {
-    "title": "Pourquoi Choisir B-Reserve?",
+    "title": "Pourquoi Choisir Bossiz+?",
     "bestPrices": {
       "title": "Meilleurs Prix Garantis",
       "description": "Nous vous garantissons les meilleurs tarifs du marché"
@@ -237,6 +237,7 @@
       "completed": "Terminée"
     },
     "payment": {
+      "partially_paid": "Acompte payé",
       "paid": "Payé",
       "pending": "En attente",
       "failed": "Échoué",
@@ -542,7 +543,7 @@
       "signup": "Inscription réussie",
       "signupDesc": "Vérifiez votre email pour confirmer votre compte",
       "login": "Connexion réussie",
-      "loginDesc": "Bienvenue sur B-Reserve!",
+      "loginDesc": "Bienvenue sur Bossiz+!",
       "resetSent": "Email envoyé",
       "resetSentDesc": "Vérifiez votre boîte mail pour réinitialiser votre mot de passe",
       "passwordUpdated": "Mot de passe mis à jour",
@@ -1177,7 +1178,7 @@
       "bookings": "Réservations",
       "priceAlerts": "Alertes prix",
       "explore": "Explorer",
-      "account": "Compte",
+      "account": "MyBossiz",
       "support": "Support"
     }
   },
@@ -1260,7 +1261,7 @@
   },
   "iosDownload": {
     "badge": "Application Mobile",
-    "title": "Téléchargez B-Reserve",
+    "title": "Téléchargez Bossiz+",
     "titleHighlight": "SUR VOTRE MOBILE",
     "subtitle": "Accédez à tous nos services de réservation directement depuis votre smartphone",
     "detected": {
@@ -1286,7 +1287,7 @@
       "scanQR": "Scanner le QR Code",
       "hideQR": "Masquer le QR Code",
       "qrHint": "Scannez ce QR Code avec votre appareil iOS",
-      "qrAlt": "QR Code pour télécharger B-Reserve sur iOS"
+      "qrAlt": "QR Code pour télécharger Bossiz+ sur iOS"
     },
     "android": {
       "devices": "Téléphones & Tablettes",
@@ -1315,7 +1316,7 @@
         "Scannez le QR Code avec votre appareil photo",
         "Cliquez sur \"Ouvrir dans l'App Store\"",
         "Tapez sur \"Obtenir\" pour installer",
-        "L'icône B-Reserve apparaîtra sur votre écran d'accueil"
+        "L'icône Bossiz+ apparaîtra sur votre écran d'accueil"
       ],
       "androidSteps": [
         "Cliquez sur le bouton de téléchargement",
@@ -2084,7 +2085,7 @@
       "general": {
         "label": "Général",
         "q0": {
-          "question": "Comment créer un compte sur B-Reserve ?",
+          "question": "Comment créer un compte sur Bossiz+ ?",
           "answer": "Cliquez sur \"Connexion\" en haut de la page puis sur \"Créer un compte\". Renseignez vos informations et validez votre email."
         },
         "q1": {

@@ -521,7 +521,7 @@ export const PassengerStep = ({
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="text-sm font-normal cursor-pointer">
-                    J'accepte les conditions générales de vente et la politique de confidentialité de B-reserve
+                    J'accepte les conditions générales de vente et la politique de confidentialité de Bossiz+
                   </FormLabel>
                   <FormMessage className="text-xs" />
                 </div>

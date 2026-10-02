@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,12 +23,33 @@ serve(async (req) => {
 
     console.log('Sending invoice email to:', customerEmail);
 
-    const emailHtml = generateInvoiceEmailHtml(customerName, invoiceNumber, invoiceDate, items, subtotal, tax, total, currency, paymentMethod);
+    const itemsHtml = (items || []).map((item: any) => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(String(item.description))}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.unitPrice} ${currency}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.total} ${currency}</td>
+      </tr>
+    `).join('');
+    const vars = {
+      invoiceNumber: String(invoiceNumber),
+      invoiceDate: String(invoiceDate),
+      customerName: String(customerName),
+      paymentMethod: String(paymentMethod),
+      itemsHtml,
+      subtotal: String(subtotal),
+      tax: String(tax),
+      total: String(total),
+      currency: String(currency),
+      year: String(new Date().getFullYear()),
+    };
+    const rendered = await renderEmailTemplate(supabase, "invoice", vars, ["itemsHtml"]);
+    const emailHtml = rendered?.html ?? generateInvoiceEmailHtml(customerName, invoiceNumber, invoiceDate, items, subtotal, tax, total, currency, paymentMethod);
 
     const result = await sendEmail(supabase, {
-      from: 'B-Reserve <noreply@bossiz.com>',
+      from: 'Bossiz+ <noreply@bossiz.com>',
       to: [customerEmail],
-      subject: `Invoice ${invoiceNumber}`,
+      subject: rendered?.subject ?? `Invoice ${invoiceNumber}`,
       html: emailHtml,
     });
 
@@ -128,10 +150,10 @@ function generateInvoiceEmailHtml(customerName: string, invoiceNumber: string, i
           </div>
 
           <p>Thank you for your business!</p>
-          <p>Best regards,<br>The B-Reserve Team</p>
+          <p>Best regards,<br>The Bossiz+ Team</p>
         </div>
         <div class="footer">
-          <p>&copy; 2026 B-Reserve. All rights reserved.</p>
+          <p>&copy; 2026 Conciergerie Bossiz. All rights reserved.</p>
         </div>
       </div>
     </body>

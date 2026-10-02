@@ -97,7 +97,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-2xl font-bold text-foreground">Informations relatives au voyage</h2>
-                  <p className="text-sm text-muted-foreground mt-1">B-reserve by Bossiz</p>
+                  <p className="text-sm text-muted-foreground mt-1">Bossiz+</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="hover:bg-background/50">
                   <X className="h-5 w-5" />
@@ -362,7 +362,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">Remboursement instantané en crédit B-Reserve en cas d&apos;annulation de la compagnie aérienne</span>
+                        <span className="line-through text-muted-foreground">Remboursement instantané en crédit Bossiz+ en cas d&apos;annulation de la compagnie aérienne</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
