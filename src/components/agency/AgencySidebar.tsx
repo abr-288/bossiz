@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const menuItems = [
   { title: "Tableau de bord", url: "/agency", icon: LayoutDashboard },
@@ -28,7 +29,15 @@ const menuItems = [
   { title: "Paramètres", url: "/agency/settings", icon: Settings },
 ];
 
-export function AgencySidebar({ enabledFeatures = {} }: { enabledFeatures?: Record<string, boolean> }) {
+export function AgencySidebar({
+  enabledFeatures = {},
+  profileName = "Partenaire",
+  profilePhoto,
+}: {
+  enabledFeatures?: Record<string, boolean>;
+  profileName?: string;
+  profilePhoto?: string;
+}) {
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,10 +63,21 @@ export function AgencySidebar({ enabledFeatures = {} }: { enabledFeatures?: Reco
   return (
     <Sidebar className={collapsed ? "w-14" : "w-60 md:w-64"} collapsible="icon">
       <SidebarContent className="flex flex-col h-full">
-        <div className="p-3 md:p-4 flex-shrink-0" style={{ backgroundColor: "#0d9488" }}>
+        <div className="p-3 md:p-4 flex-shrink-0" style={{ backgroundColor: "#0f766e" }}>
           <h2 className={`font-bold text-lg md:text-xl text-white ${collapsed ? "text-center" : ""}`}>
             {collapsed ? "BB" : "BizBossiz"}
           </h2>
+          {!collapsed && (
+            <Link to="/account" className="mt-3 flex items-center gap-2 rounded-md bg-white/10 p-2 text-white hover:bg-white/20">
+              <Avatar className="h-9 w-9 border border-white/40">
+                <AvatarImage src={profilePhoto} />
+                <AvatarFallback className="bg-white/20 text-white text-xs">
+                  {profileName.trim().slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="truncate text-sm">{profileName}</span>
+            </Link>
+          )}
         </div>
 
         <SidebarGroup className="flex-1 overflow-y-auto">
@@ -85,7 +105,7 @@ export function AgencySidebar({ enabledFeatures = {} }: { enabledFeatures?: Reco
                       title={disabled ? "Désactivé par l’administrateur" : undefined}
                       onClick={(event) => { if (disabled) event.preventDefault(); }}
                       className={`flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
-                        disabled ? "opacity-40 cursor-not-allowed" : isActive(item.url) ? "bg-[#0d9488]/10 text-[#0d9488] font-medium" : ""
+                        disabled ? "text-muted-foreground cursor-not-allowed" : isActive(item.url) ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold" : ""
                       }`}
                     >
                       <item.icon className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />

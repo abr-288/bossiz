@@ -37,6 +37,9 @@ interface Commission {
   commission_amount: number;
   status: string;
   paid_at: string | null;
+  payout_status: string;
+  payout_due_at: string | null;
+  payout_error: string | null;
   created_at: string;
   agency_name?: string;
 }
@@ -46,6 +49,16 @@ const sourceLabels: Record<string, string> = {
   restaurant_reservation: "Restaurant",
   wellness_booking: "Bien-être & Beauté",
   artisan_order: "Artisan",
+};
+
+const payoutStatusLabels: Record<string, string> = {
+  not_scheduled: "Hors reversement auto",
+  awaiting_details: "Coordonnées manquantes",
+  ready: "À reverser",
+  processing: "En cours chez Jèko",
+  paid: "Versé",
+  failed: "Échec",
+  needs_review: "À vérifier chez Jèko",
 };
 
 interface Stats {
@@ -118,6 +131,7 @@ export default function AdminCommissions() {
       const updateData: any = { status };
       if (status === "paid") {
         updateData.paid_at = new Date().toISOString();
+        updateData.payout_status = "paid";
       }
 
       const { error } = await supabase
@@ -179,33 +193,33 @@ export default function AdminCommissions() {
           <div>
             <h1 className="text-2xl font-bold">Gestion des Commissions</h1>
             <p className="text-muted-foreground">
-              Suivez et gérez les commissions des sous-agences
+              Suivez les parts dues aux agences et l'état de leur reversement
             </p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link to="/admin/agencies">
                 <Settings className="h-4 w-4 mr-2" />
-                Taux par agence
+                Paramètres des agences
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
               <Link to="/admin/car-partner-plans">
                 <Car className="h-4 w-4 mr-2" />
-                Taux forfaits voiture
+                Forfaits voiture
               </Link>
             </Button>
           </div>
         </div>
         <p className="text-xs text-muted-foreground -mt-2">
-          Le taux appliqué est celui de l'agence (configurable dans "Sous-Agences"), y compris pour les
-          restaurants et le bien-être. Les forfaits voiture ont leur propre taux, modifiable ci-dessus.
+          Pour les paiements encaissés via Jèko, l'agence reçoit 90% et Bossiz conserve 10%.
+          Les paiements directs au partenaire ne sont pas reversés automatiquement par Jèko.
         </p>
 
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Commissions</CardTitle>
+              <CardTitle className="text-sm font-medium">Total dû aux agences</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -214,7 +228,7 @@ export default function AdminCommissions() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">En Attente</CardTitle>
+              <CardTitle className="text-sm font-medium">À reverser</CardTitle>
               <Clock className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
@@ -223,7 +237,7 @@ export default function AdminCommissions() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Payées</CardTitle>
+              <CardTitle className="text-sm font-medium">Déjà reversé</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
@@ -263,9 +277,9 @@ export default function AdminCommissions() {
                 <TableHead>Type</TableHead>
                 <TableHead>Réservation</TableHead>
                 <TableHead>Montant Vente</TableHead>
-                <TableHead>Taux</TableHead>
-                <TableHead>Commission</TableHead>
-                <TableHead>Statut</TableHead>
+                <TableHead>Part agence</TableHead>
+                <TableHead>Montant dû à l'agence</TableHead>
+                <TableHead>État du reversement</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -301,12 +315,27 @@ export default function AdminCommissions() {
                     <TableCell className="font-medium">
                       {formatCurrency(commission.commission_amount)}
                     </TableCell>
-                    <TableCell>{getStatusBadge(commission.status)}</TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {getStatusBadge(commission.status)}
+                        <p className="text-xs text-muted-foreground">
+                          {payoutStatusLabels[commission.payout_status] || commission.payout_status}
+                        </p>
+                        {commission.payout_due_at && commission.payout_status !== "paid" && (
+                          <p className="text-xs text-muted-foreground">
+                            Échéance : {format(new Date(commission.payout_due_at), "dd MMM yyyy HH:mm", { locale: fr })}
+                          </p>
+                        )}
+                        {commission.payout_error && (
+                          <p className="text-xs text-destructive">{commission.payout_error}</p>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {format(new Date(commission.created_at), "dd MMM yyyy", { locale: fr })}
                     </TableCell>
                     <TableCell className="text-right">
-                      {commission.status === "pending" && (
+                      {commission.status === "pending" && !["ready", "processing", "needs_review"].includes(commission.payout_status) && (
                         <Button
                           size="sm"
                           onClick={() => updateStatus(commission.id, "paid")}

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getProfilePhotoUrl } from "@/lib/profilePhoto";
 
 interface UserSidebarProps {
   userProfile?: {
@@ -153,7 +154,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       <SidebarHeader className="border-b p-4">
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
           <Avatar className="h-10 w-10 border-2 border-primary/20">
-            <AvatarImage src={userProfile?.avatar_url} />
+            <AvatarImage src={getProfilePhotoUrl(userProfile?.avatar_url)} />
             <AvatarFallback className="bg-primary/10 text-primary font-semibold">
               {userProfile?.full_name ? getInitials(userProfile.full_name) : "U"}
             </AvatarFallback>

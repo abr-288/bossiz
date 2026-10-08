@@ -55,6 +55,18 @@ export async function createJekoPaymentLink(
   credentials: JekoCredentials,
   params: CreateJekoPaymentLinkParams
 ): Promise<CreateJekoPaymentLinkResult | { ok: false; error: string }> {
+  const storeId = credentials.store_id.trim();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(storeId)) {
+    return {
+      ok: false,
+      error: "Store ID Jèko invalide : renseignez l’UUID du magasin (format 8-4-4-4-12) dans Admin > Intégrations.",
+    };
+  }
+
+  if (!Number.isFinite(params.amountXof) || params.amountXof < 100) {
+    return { ok: false, error: "Le montant Jèko doit être d'au moins 100 XOF." };
+  }
+
   // L'API Jèko exprime les montants en "amountCents" pour toutes les devises,
   // XOF y compris (confirmé par les exemples de la doc : 50000 amountCents
   // pour un exemple de paiement service). On applique donc ×100 comme pour
@@ -63,7 +75,9 @@ export async function createJekoPaymentLink(
   const amountCents = Math.round(params.amountXof * 100);
 
   // Contrainte documentée : title entre 10 et 255 caractères.
-  const title = params.title.length >= 10 ? params.title : `${params.title} - Réservation Bossiz+`.slice(0, 255);
+  const title = (params.title.length >= 10 ? params.title : `${params.title} - Réservation Bossiz+`)
+    .trim()
+    .slice(0, 255);
 
   const response = await fetch(`${JEKO_API_BASE}/payment_links`, {
     method: "POST",
@@ -73,7 +87,7 @@ export async function createJekoPaymentLink(
       "X-API-KEY-ID": credentials.api_key_id,
     },
     body: JSON.stringify({
-      storeId: credentials.store_id,
+      storeId,
       title,
       amountCents,
       currency: "XOF",
@@ -90,7 +104,17 @@ export async function createJekoPaymentLink(
   }
 
   if (!response.ok || !data?.link || !data?.id) {
-    return { ok: false, error: data?.message || `Erreur Jèko (HTTP ${response.status})` };
+    // Preserve Jèko's validation details (for example, the rejected field on
+    // HTTP 422) so process-payment logs explain why the provider refused the
+    // request. Never include request headers, which contain API credentials.
+    const providerDetails = data?.errors ?? data?.details ?? data?.message ?? data?.error;
+    const details = typeof providerDetails === "string"
+      ? providerDetails
+      : providerDetails != null
+        ? JSON.stringify(providerDetails)
+        : "";
+    const suffix = details ? `: ${details.slice(0, 1000)}` : "";
+    return { ok: false, error: `Erreur Jèko (HTTP ${response.status})${suffix}` };
   }
 
   return { ok: true, id: data.id, link: data.link };

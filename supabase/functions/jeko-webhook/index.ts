@@ -89,6 +89,71 @@ serve(async (req) => {
     const jekoEvent = req.headers.get('Jeko-Event');
     const jekoTransaction = payload;
 
+    if (jekoEvent === 'TRANSACTION_COMPLETED' && jekoTransaction.transactionType === 'transfer') {
+      const reference = jekoTransaction.transactionDetails?.reference;
+      if (!reference || !String(reference).startsWith('bossiz-')) {
+        console.log('   - Transfert Jèko sans référence de reversement Bossiz, ignoré');
+        return jsonResponse({ success: true, ignored: true });
+      }
+      if (jekoTransaction.storeId !== jekoRow.credentials?.store_id) {
+        console.error('❌ Magasin Jèko inattendu pour un reversement:', reference);
+        return jsonResponse({ success: false, error: 'Unexpected payout store' }, 400);
+      }
+
+      const { data: payout, error: payoutLookupError } = await supabase
+        .from('commissions')
+        .select('id, commission_amount, payout_status')
+        .eq('payout_reference', reference)
+        .maybeSingle();
+
+      if (payoutLookupError) {
+        console.error('❌ Erreur de recherche du reversement:', payoutLookupError.message);
+        return jsonResponse({ success: false, error: 'Could not find payout' }, 500);
+      }
+      if (!payout) {
+        console.warn('⚠️ Référence de reversement Jèko inconnue:', reference);
+        return jsonResponse({ success: true, ignored: true });
+      }
+      if (payout.payout_status === 'paid') {
+        return jsonResponse({ success: true, payout_status: 'paid', already_processed: true });
+      }
+      if (payout.payout_status === 'failed' && jekoTransaction.status === 'pending') {
+        return jsonResponse({ success: true, payout_status: 'failed', stale_event: true });
+      }
+
+      const expectedAmountCents = Math.round(Number(payout.commission_amount) * 100);
+      if (Number(jekoTransaction.amount?.amount) !== expectedAmountCents
+        || jekoTransaction.amount?.currency !== 'XOF') {
+        console.error('❌ Montant ou devise du reversement Jèko inattendu:', reference);
+        return jsonResponse({ success: false, error: 'Payout amount mismatch' }, 400);
+      }
+
+      if (!['success', 'error', 'pending'].includes(jekoTransaction.status)) {
+        return jsonResponse({ success: true, ignored: true });
+      }
+
+      const payoutStatus = jekoTransaction.status === 'success'
+        ? 'paid'
+        : jekoTransaction.status === 'error'
+          ? 'failed'
+          : 'processing';
+      const { error: payoutUpdateError } = await supabase
+        .from('commissions')
+        .update({
+          payout_status: payoutStatus,
+          payout_error: jekoTransaction.status === 'error' ? 'Jèko a signalé un échec du transfert' : null,
+          ...(payoutStatus === 'paid' ? { status: 'paid', paid_at: new Date().toISOString() } : {}),
+        })
+        .eq('id', payout.id);
+
+      if (payoutUpdateError) {
+        console.error('❌ Erreur de mise à jour du reversement:', payoutUpdateError.message);
+        return jsonResponse({ success: false, error: 'Could not update payout' }, 500);
+      }
+
+      return jsonResponse({ success: true, payout_status: payoutStatus });
+    }
+
     if (jekoEvent !== 'TRANSACTION_COMPLETED' || jekoTransaction.transactionType !== 'payment' || jekoTransaction.status !== 'success') {
       // Événement non pertinent (ex: transfert) : on accuse quand même
       // réception pour éviter des retries inutiles côté Jèko.
@@ -107,7 +172,7 @@ serve(async (req) => {
 
     const { data: existingPayment, error: fetchError } = await supabase
       .from('payments')
-      .select('id, status, transaction_id, booking_id, subscription_id, payment_method')
+      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method')
       .eq('transaction_id', paymentLinkId)
       .eq('payment_provider', 'jeko')
       .maybeSingle();
@@ -119,6 +184,32 @@ serve(async (req) => {
 
     if (existingPayment.status === 'completed') {
       console.log('⚠️ Paiement déjà traité, ignoré');
+      if (existingPayment.car_partner_subscription_id) {
+        await handlePaymentSuccess({
+          supabase,
+          supabaseUrl,
+          supabaseServiceKey,
+          transactionId: paymentLinkId,
+          bookingId: null,
+          subscriptionId: null,
+          carPartnerSubscriptionId: existingPayment.car_partner_subscription_id,
+          paymentMethod: existingPayment.payment_method || 'jeko',
+          paymentProvider: 'jeko',
+        });
+      }
+      if (existingPayment.agency_branding_subscription_id) {
+        await handlePaymentSuccess({
+          supabase,
+          supabaseUrl,
+          supabaseServiceKey,
+          transactionId: paymentLinkId,
+          bookingId: null,
+          subscriptionId: null,
+          agencyBrandingSubscriptionId: existingPayment.agency_branding_subscription_id,
+          paymentMethod: existingPayment.payment_method || 'jeko',
+          paymentProvider: 'jeko',
+        });
+      }
       return jsonResponse({ success: true, message: 'Already processed', status: 'completed' });
     }
 
@@ -154,7 +245,10 @@ serve(async (req) => {
         transactionId: paymentLinkId,
         bookingId: existingPayment.booking_id,
         subscriptionId: existingPayment.subscription_id,
+        carPartnerSubscriptionId: existingPayment.car_partner_subscription_id,
+        agencyBrandingSubscriptionId: existingPayment.agency_branding_subscription_id,
         paymentMethod: jekoTransaction.paymentMethod || existingPayment.payment_method || 'jeko',
+        paymentProvider: 'jeko',
       });
     }
 

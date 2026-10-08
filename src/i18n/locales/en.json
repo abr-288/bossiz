@@ -433,7 +433,7 @@
     "city": "City",
     "payButton": "Pay",
     "processing": "Processing...",
-    "securedBy": "Payment secured by CinetPay",
+    "securedBy": "Payment secured by Jèko",
     "errors": {
       "missingFields": "Please fill in all required fields",
       "invalidPhone": "Invalid phone number (minimum 8 digits)",
@@ -806,7 +806,7 @@
           "q3": "How can I get my invoice?",
           "a3": "Your invoice is available in 'My Bookings' once payment is confirmed, and is also sent to you by email. You can download it as a PDF at any time.",
           "q4": "Is my payment information secure?",
-          "a4": "Yes, all payments are processed via CinetPay with secure encryption. We never store your card details on our servers."
+          "a4": "Yes, all payments are processed via Jèko with secure encryption. We never store your card details on our servers."
         },
         "refunds": {
           "q1": "How can I get a refund?",

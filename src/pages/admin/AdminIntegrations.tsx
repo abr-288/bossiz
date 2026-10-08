@@ -48,12 +48,8 @@ const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boo
     { key: "api_token", label: "Token du dashboard (Basic Auth)", secret: true },
     { key: "sender_id", label: "Nom de l'expéditeur (optionnel)" },
   ],
-  cinetpay: [
-    { key: "api_key", label: "Clé API CinetPay", secret: true },
-    { key: "site_id", label: "Site ID CinetPay" },
-  ],
   jeko: [
-    { key: "store_id", label: "Store ID (Cockpit Jèko > Magasins)" },
+    { key: "store_id", label: "Store ID — UUID (Cockpit Jèko > Magasins)" },
     { key: "api_key", label: "Clé API (X-API-KEY)", secret: true },
     { key: "api_key_id", label: "Identifiant de clé (X-API-KEY-ID)" },
     { key: "webhook_secret", label: "Secret Webhook (Cockpit > API & Webhooks)", secret: true },
@@ -64,7 +60,6 @@ const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boo
 // configurés (contrairement aux autres, ils restent activables même si les
 // champs ci-dessous sont laissés vides).
 const ENV_FALLBACK_HINTS: Record<string, string> = {
-  cinetpay: "Laissez ces champs vides pour continuer à utiliser les secrets d'Edge Function déjà configurés (CINETPAY_API_KEY, CINETPAY_SITE_ID) — ou renseignez-les ici pour les remplacer sans passer par la CLI Supabase.",
   resend: "Laissez ce champ vide pour continuer à utiliser le secret d'Edge Function déjà configuré (RESEND_API_KEY) — ou renseignez-le ici pour le remplacer sans passer par la CLI Supabase.",
 };
 
@@ -91,8 +86,10 @@ function ExclusiveProviderCard({
 
   const fields = PROVIDER_FIELDS[integration.provider] || [];
   const hasAllRequiredKeys = fields.every((f) => credentials[f.key]?.trim());
+  const hasValidJekoStoreId = integration.provider !== "jeko" ||
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(credentials.store_id?.trim() || "");
   const envFallbackHint = ENV_FALLBACK_HINTS[integration.provider];
-  const canActivate = hasAllRequiredKeys || !!envFallbackHint;
+  const canActivate = (hasAllRequiredKeys || !!envFallbackHint) && hasValidJekoStoreId;
 
   const handleSave = async () => {
     setSaving(true);
@@ -135,8 +132,18 @@ function ExclusiveProviderCard({
               onChange={(e) => setCredentials({ ...credentials, [field.key]: e.target.value })}
               placeholder={field.secret ? "••••••••" : ""}
             />
+            {integration.provider === "jeko" && field.key === "store_id" && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Saisissez l’UUID du magasin (format 8-4-4-4-12), pas son nom ni sa clé API.
+              </p>
+            )}
           </div>
         ))}
+        {integration.provider === "jeko" && credentials.store_id?.trim() && !hasValidJekoStoreId && (
+          <p className="text-sm text-destructive">
+            Store ID invalide : copiez l’UUID du magasin depuis le Cockpit Jèko.
+          </p>
+        )}
         <div className="flex items-center justify-between pt-2">
           <button
             type="button"
@@ -196,7 +203,7 @@ export default function AdminIntegrations() {
   };
   const smsIntegrations = integrations.filter((i) => i.category === "sms");
   const whatsappIntegrations = integrations.filter((i) => i.category === "whatsapp");
-  const paymentIntegrations = integrations.filter((i) => i.category === "payment");
+  const paymentIntegrations = integrations.filter((i) => i.category === "payment" && i.provider === "jeko");
 
   return (
     <AdminLayout>

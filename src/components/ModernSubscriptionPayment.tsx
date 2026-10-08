@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -96,7 +97,6 @@ const ModernSubscriptionPayment = () => {
   const [processing, setProcessing] = useState(false);
   const [planData, setPlanData] = useState<PaymentData | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [selectedOperator, setSelectedOperator] = useState<string>('');
 
   const planId = searchParams.get('planId');
 
@@ -294,7 +294,7 @@ const ModernSubscriptionPayment = () => {
           end_date: new Date(Date.now() + (billingCycle === 'yearly' ? 365 : 30) * 24 * 60 * 60 * 1000).toISOString(),
           amount_paid: planData.pricing.price,
           currency: planData.pricing.currency,
-          payment_method: 'cinetpay',
+          payment_method: 'jeko',
         })
         .select()
         .single();
@@ -311,7 +311,7 @@ const ModernSubscriptionPayment = () => {
       const { data, error } = await supabase.functions.invoke('process-payment', {
         body: {
           subscriptionId: (subscription as any).id,
-          paymentMethod: selectedOperator || 'all',
+          paymentMethod: 'jeko',
           customerInfo: {
             name: (profile as any)?.full_name || user.email?.split('@')[0] || 'Client',
             email: user.email || '',
@@ -321,11 +321,13 @@ const ModernSubscriptionPayment = () => {
       });
 
       if (error || !data?.success) {
-        throw new Error(data?.error || error?.message || 'Impossible d\'initier le paiement');
+        throw new Error(error
+          ? await getEdgeFunctionErrorMessage(error, 'Impossible d\'initier le paiement Jèko.')
+          : data?.error || 'Impossible d\'initier le paiement Jèko.');
       }
 
       toast({
-        title: 'Redirection vers CinetPay',
+        title: 'Redirection vers Jèko',
         description: 'Vous allez être redirigé vers la page de paiement sécurisée.',
       });
 
@@ -576,7 +578,7 @@ const ModernSubscriptionPayment = () => {
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-2">Méthode de paiement</h4>
                           <div className="space-y-2 text-sm">
-                            <p><span className="font-medium">Prestataire:</span> CinetPay</p>
+                            <p><span className="font-medium">Prestataire:</span> Jèko</p>
                             <p><span className="font-medium">Devise:</span> {planData.pricing.currency}</p>
                             <p><span className="font-medium">Sécurité:</span> Paiement sécurisé SSL</p>
                           </div>
@@ -699,82 +701,17 @@ const ModernSubscriptionPayment = () => {
                 <div className="mt-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Wallet className="w-6 h-6 text-indigo-600" />
-                    Méthode de Paiement
+                    Méthode de paiement
                   </h3>
-                  
-                  {/* Operator Selection */}
-                  <div className="mb-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <Smartphone className="w-5 h-5 text-indigo-600" />
-                      Choisissez votre opérateur de paiement
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { name: 'Orange Money', id: 'CM_OM', color: 'text-orange-600' },
-                        { name: 'MTN Money', id: 'CM_TMO', color: 'text-yellow-600' },
-                        { name: 'Moov Money', id: 'CM_MOOV', color: 'text-green-600' },
-                        { name: 'Carte bancaire', id: 'CARD', color: 'text-blue-600' }
-                      ].map((operator) => (
-                        <button
-                          key={operator.id}
-                          onClick={() => setSelectedOperator(operator.id)}
-                          className={`p-4 border-2 rounded-lg transition-all duration-200 ${
-                            selectedOperator === operator.id 
-                              ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
-                              : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Smartphone className={`w-6 h-6 ${operator.color}`} />
-                            <div className="text-left">
-                              <div className="font-semibold text-gray-900">{operator.name}</div>
-                              <div className="text-sm text-gray-500">
-                                {operator.id === 'CM_OM' && 'Paiement par Orange Money'}
-                                {operator.id === 'CM_TMO' && 'Paiement par MTN Mobile Money'}
-                                {operator.id === 'CM_MOOV' && 'Paiement par Moov Money'}
-                                {operator.id === 'CARD' && 'Paiement par Carte Bancaire'}
-                              </div>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-md">
-                          <Wallet className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-gray-900">CinetPay</div>
-                          <div className="text-sm text-gray-600">Plateforme de paiement sécurisée</div>
-                          {selectedOperator && (
-                            <div className="text-xs text-indigo-600 font-medium mt-1">
-                              Opérateur sélectionné: {selectedOperator}
-                            </div>
-                          )}
-                        </div>
+                  <div className="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                        <Wallet className="w-6 h-6 text-white" />
                       </div>
-                      <Badge className="bg-green-100 text-green-800 font-medium">
-                        <Lock className="w-3 h-3 mr-1" />
-                        Sécurisé
-                      </Badge>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { name: 'Orange Money', icon: Smartphone, color: 'text-orange-600' },
-                        { name: 'MTN Money', icon: Smartphone, color: 'text-yellow-600' },
-                        { name: 'Moov Money', icon: Smartphone, color: 'text-green-600' },
-                        { name: 'Carte bancaire', icon: CreditCard, color: 'text-blue-600' }
-                      ].map((method, index) => (
-                        <div key={index} className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-100">
-                          <method.icon className={`w-4 h-4 ${method.color}`} />
-                          <span className="text-sm text-gray-700 font-medium">{method.name}</span>
-                        </div>
-                      ))}
+                      <div>
+                        <div className="font-bold text-gray-900">Paiement sécurisé avec Jèko</div>
+                        <div className="text-sm text-gray-600">Choisissez votre moyen de paiement sur la page sécurisée Jèko.</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -849,7 +786,7 @@ const ModernSubscriptionPayment = () => {
                 <div className="mt-6 text-center">
                   <div className="flex items-center justify-center gap-2 text-gray-600 text-sm mb-2">
                     <Shield className="w-4 h-4" />
-                    <span>Paiement sécurisé via CinetPay</span>
+                    <span>Paiement sécurisé via Jèko</span>
                   </div>
                   <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
                     <Globe className="w-3 h-3" />

@@ -38,7 +38,7 @@ const menuItems = [
 ];
 
 export function AdminSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const location = useLocation();
   const collapsed = state === "collapsed";
 
@@ -68,7 +68,8 @@ export function AdminSidebar() {
                     <Link
                       to={item.url}
                       aria-label={item.title}
-                      className={`flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
+                      onClick={() => setOpenMobile(false)}
+                      className={`min-h-11 flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
                         isActive(item.url) ? "bg-[#334155]/10 text-[#334155] dark:text-slate-300 font-medium" : ""
                       }`}
                     >

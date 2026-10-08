@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTranslation } from "react-i18next";
+import { NationalitySelect } from "@/components/NationalitySelect";
 
 export interface Passenger {
   first_name: string;
@@ -29,7 +28,6 @@ export const PassengersForm = ({
   minPassengers = 1,
   maxPassengers = 9,
 }: PassengersFormProps) => {
-  const { t } = useTranslation();
   const addPassenger = () => {
     if (passengers.length < maxPassengers) {
       onChange([
@@ -130,11 +128,10 @@ export const PassengersForm = ({
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`nationality_${index}`}>Nationalité</Label>
-                <Input
+                <NationalitySelect
                   id={`nationality_${index}`}
                   value={passenger.nationality || ""}
-                  onChange={(e) => updatePassenger(index, "nationality", e.target.value)}
-                  placeholder={t('passengersForm.nationalityPlaceholder')}
+                  onValueChange={(value) => updatePassenger(index, "nationality", value)}
                 />
               </div>
             </div>

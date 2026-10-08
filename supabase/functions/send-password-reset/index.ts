@@ -24,10 +24,22 @@ import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": [
+    "authorization",
+    "x-client-info",
+    "apikey",
+    "content-type",
+    "x-supabase-api-version",
+    "x-supabase-client-platform",
+    "x-supabase-client-platform-version",
+    "x-supabase-client-runtime",
+    "x-supabase-client-runtime-version",
+  ].join(", "),
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
-const SITE_URL = "https://app.bossiz.com";
+const SITE_URL = (Deno.env.get("SITE_URL") || "https://app.bossiz.com").replace(/\/+$/, "");
 const ALLOWED_REDIRECT_PATHS = ["/reset-password", "/auth"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -76,12 +88,18 @@ serve(async (req) => {
     });
 
     const actionLink = data?.properties?.action_link;
-    if (error || !actionLink) {
-      // Unknown email (or transient error): say nothing different.
-      if (error && !/not.?found/i.test(error.message)) {
-        console.error("generateLink error:", error.message);
-      }
+    if (error && /not.?found/i.test(error.message)) {
+      // Keep the response identical for an unknown address to prevent account enumeration.
       return ok();
+    }
+    if (error || !actionLink) {
+      console.error("Password reset link generation failed");
+      return new Response(JSON.stringify({
+        error: "Impossible de préparer le lien. Vérifiez que l'URL de retour Bossiz est autorisée dans la configuration Auth, puis réessayez.",
+      }), {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const vars = { resetLink: actionLink, year: String(new Date().getFullYear()) };
@@ -93,11 +111,19 @@ serve(async (req) => {
       subject: rendered?.subject ?? "Réinitialisation de votre mot de passe - Bossiz+",
       html: rendered?.html ?? emailHtml(actionLink),
     });
-    if (!result.ok) console.error("Password reset email error:", result.error);
+    if (!result.ok) {
+      console.error("Password reset email delivery failed");
+      return new Response(JSON.stringify({
+        error: "Impossible d'envoyer l'e-mail pour le moment. Réessayez plus tard ou contactez le support.",
+      }), {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     return ok();
-  } catch (error) {
-    console.error("send-password-reset error:", error);
+  } catch {
+    console.error("send-password-reset request failed");
     return new Response(JSON.stringify({ error: "Erreur interne du serveur" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

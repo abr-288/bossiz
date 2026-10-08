@@ -217,7 +217,7 @@ export const paymentSchema = z.object({
     .min(2, "La ville doit contenir au moins 2 caractères")
     .max(100, "La ville est trop longue")
     .trim(),
-  paymentMethod: z.enum(["cinetpay", "wave", "mobile_money", "card", "bank_transfer"], {
+  paymentMethod: z.enum(["jeko"], {
     errorMap: () => ({ message: "Méthode de paiement invalide" })
   })
 });

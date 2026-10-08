@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import { ValidationIndicator } from "@/components/forms/ValidationIndicator";
 import { ContextualHelp } from "@/components/forms/ContextualHelp";
+import { PhoneNumberInput } from "@/components/PhoneNumberInput";
 
 interface UnifiedFormFieldProps {
   label?: string;
@@ -15,6 +16,7 @@ interface UnifiedFormFieldProps {
   placeholder?: string;
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onPhoneChange?: (value: string) => void;
   onBlur?: () => void;
   required?: boolean;
   error?: string;
@@ -44,6 +46,7 @@ export const UnifiedFormField = ({
   placeholder,
   value,
   onChange,
+  onPhoneChange,
   onBlur,
   required = false,
   error,
@@ -121,6 +124,22 @@ export const UnifiedFormField = ({
               "placeholder:text-muted-foreground/60",
               error && touched && "border-destructive focus:border-destructive",
               !error && touched && value && "border-green-500 focus:ring-green-500"
+            )}
+          />
+        ) : type === "tel" ? (
+          <PhoneNumberInput
+            id={fieldId}
+            name={name}
+            value={typeof value === "string" ? value : undefined}
+            defaultValue={defaultValue}
+            onValueChange={onPhoneChange}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            required={required}
+            disabled={disabled}
+            className={cn(
+              error && touched && "[&_input]:border-destructive",
+              !error && touched && value && "[&_input]:border-green-500"
             )}
           />
         ) : (

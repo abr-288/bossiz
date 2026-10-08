@@ -2,8 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Demande d'e-mail de réinitialisation via l'Edge Function send-password-reset
 // (envoi par le prestataire e-mail du site plutôt que par le mailer de
-// Supabase Auth). La fonction répond toujours "succès" que le compte existe
-// ou non ; on ne lève d'erreur que si l'appel lui-même échoue.
+// Supabase Auth). Le backend ne révèle pas si le compte existe ; les erreurs
+// d'appel ou d'envoi sont remontées pour permettre une action utile.
 export async function requestPasswordReset(
   email: string,
   redirectPath: "/reset-password" | "/auth" = "/reset-password",

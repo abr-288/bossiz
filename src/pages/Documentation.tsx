@@ -265,7 +265,7 @@ const Documentation = () => {
         'Recherche de destinations',
         'Sélection des dates et options',
         'Configuration des détails du voyage',
-        'Validation avec CinetPay',
+        'Validation avec Jèko',
         'Confirmation de réservation'
       ],
       'profile': [
@@ -452,7 +452,7 @@ const Documentation = () => {
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <div className="text-center mb-4">
             <CreditCard className="w-12 h-12 mx-auto mb-2 text-blue-600" />
-            <h4 className="font-semibold">Paiement CinetPay</h4>
+            <h4 className="font-semibold">Paiement Jèko</h4>
           </div>
           <div className="space-y-2">
             <input type="text" placeholder="Numéro de carte" className="w-full p-2 border rounded" />
@@ -544,7 +544,7 @@ const Documentation = () => {
             </div>
             <div className="p-3 border rounded-lg">
               <h5 className="font-medium mb-1">Modes de paiement</h5>
-              <p className="text-sm text-gray-600">CinetPay, carte bancaire...</p>
+              <p className="text-sm text-gray-600">Jèko, carte bancaire...</p>
             </div>
           </div>
         </div>,
@@ -674,7 +674,7 @@ const Documentation = () => {
         "Recherchez parmi des centaines de destinations disponibles avec notre moteur de recherche avancé.",
         "Sélectionnez vos dates de voyage, le nombre de voyageurs et vos préférences de vol.",
         "Personnalisez votre voyage avec des options supplémentaires et des services premium.",
-        "Payez en toute sécurité avec CinetPay ou votre carte bancaire préférée.",
+        "Payez en toute sécurité avec Jèko ou votre carte bancaire préférée.",
         "Recevez une confirmation instantanée avec tous les détails de votre réservation."
       ],
       'profile': [
@@ -1104,7 +1104,7 @@ const Documentation = () => {
                 {
                   icon: <CreditCard className="w-8 h-8 text-green-600" />,
                   title: "Paiements Sécurisés",
-                  description: "Intégration CinetPay et multiples méthodes de paiement sécurisées"
+                  description: "Intégration Jèko et multiples méthodes de paiement sécurisées"
                 },
                 {
                   icon: <BarChart3 className="w-8 h-8 text-purple-600" />,
@@ -1144,7 +1144,7 @@ const Documentation = () => {
                 },
                 {
                   title: "Guide des paiements",
-                  description: "Tout sur CinetPay et les méthodes de paiement",
+                  description: "Tout sur Jèko et les méthodes de paiement",
                   icon: <CreditCard className="w-6 h-6" />,
                   level: "Intermédiaire"
                 },
@@ -1182,7 +1182,7 @@ const Documentation = () => {
                 },
                 {
                   question: "Quelles méthodes de paiement sont acceptées ?",
-                  answer: "Nous acceptons CinetPay, les cartes bancaires Visa/Mastercard, les portefeuilles mobiles et les virements bancaires selon votre pays."
+                  answer: "Nous acceptons Jèko, les cartes bancaires Visa/Mastercard, les portefeuilles mobiles et les virements bancaires selon votre pays."
                 },
                 {
                   question: "Comment puis-je annuler ma réservation ?",

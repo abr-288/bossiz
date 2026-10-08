@@ -42,7 +42,13 @@ sequenceDiagram
     U->>CB: Paiement effectué sur la page du PSP
     CB->>CB: (CinetPay) re-vérification serveur-à-serveur du statut réel<br/>(Jèko) vérification signature HMAC webhook
     CB->>DB: UPDATE payments.status=completed, bookings.payment_status=paid
-    CB->>DB: INSERT commissions (agence, idempotent)
+    CB->>DB: INSERT part agence = 90% (Bossiz conserve 10%)
+    opt Paiement Jèko complet et coordonnées agence renseignées
+        CB->>Jèko: POST /partner_api/transfers (reversement immédiat)
+        Jèko-->>CB: statut pending/success
+        Jèko-->>CB: webhook signé de résultat du transfert
+        CB->>DB: UPDATE commission payout_status / paid_at
+    end
     CB->>PNR: invoke create-pnr (fetch interne)
 
     PNR->>PNR: Appel Amadeus (⚠️ environnement test.api.amadeus.com)
@@ -106,7 +112,15 @@ sequenceDiagram
 - Secret stocké dans `integration_credentials` (admin-only RLS).
 - Idempotent par `transaction_id` + `payment_provider='jeko'`.
 
-Les deux chemins convergent vers `handlePaymentSuccess()` ([_shared/postPaymentSuccess.ts](../../supabase/functions/_shared/postPaymentSuccess.ts)), qui : active l'abonnement OU confirme la réservation (statut `pending` si vol, en attendant `create-pnr`), calcule et insère la commission agence de façon idempotente, puis déclenche en asynchrone les confirmations (email, facture, PNR).
+Les deux chemins convergent vers `handlePaymentSuccess()` ([_shared/postPaymentSuccess.ts](../../supabase/functions/_shared/postPaymentSuccess.ts)). Pour une vente liée à une agence, la part agence est enregistrée à 90% du montant (Bossiz conserve 10%). Seuls les paiements complets encaissés par Jèko peuvent déclencher un transfert automatique. Les billets d'avion attendent l'émission du vrai PNR avant de programmer le transfert, afin qu'un échec fournisseur suivi d'un remboursement ne paie pas l'agence.
+
+### Reversements agence Jèko
+
+- Le partenaire choisit à sa candidature un moyen de réception pris en charge par Jèko : Wave, Orange Money, MTN, Moov, DJAMO ou virement bancaire (RIB). Après validation, il saisit le nom du bénéficiaire et ses coordonnées dans **Espace agence → Paramètres**. Les coordonnées sont dans une table privée dont la lecture/écriture est limitée au propriétaire de l'agence et aux admins.
+- À la confirmation d'un paiement Jèko complet, une ligne de reversement est créée avec échéance à 24 h et une référence idempotente `bossiz-<commission_id>`. Si les coordonnées sont complètes, l'appel au transfert Jèko est initié immédiatement; sinon le reversement attend leur saisie. Le webhook Jèko signé confirme ensuite le statut final. Le traitement n'effectue pas de nouvel envoi automatique en cas de résultat ambigu : l'admin doit d'abord vérifier la référence dans le cockpit Jèko.
+- L'appel sortant est désactivé par défaut. Définir le secret Supabase Edge `JEKO_PAYOUTS_ENABLED=true` active les transferts réels; il faut d'abord confirmer les clés Jèko, le solde du magasin marchand et les coordonnées bénéficiaires. **Jèko ne fournit pas d'environnement sandbox : un appel de transfert déplace de l'argent réel. Aucun transfert réel ne doit être utilisé comme test.**
+- La migration recalcule à 90% la part des commissions encore en attente; ces anciennes lignes restent en reversement manuel et ne sont pas envoyées automatiquement.
+- Les paiements CinetPay et les réservations réglées directement auprès du partenaire ne sont pas transférés automatiquement par le portefeuille Jèko. Les virements bancaires ont un minimum documenté de 20 000 XOF; Moov a un minimum de 100 XOF. Les autres méthodes Mobile Money ont un minimum de 5 XOF.
 
 ## 4. Remboursement ([refund-payment](../../supabase/functions/refund-payment/index.ts))
 
@@ -183,3 +197,15 @@ stateDiagram-v2
 ```
 
 **Note méthodologique** : cette machine à états combine les colonnes `bookings.status` (`pending`/`confirmed`/`cancelled`/`completed`, enum `booking_status`) et `bookings.payment_status` (`pending`/`processing`/`paid`/`refunded`/`failed`, enum `payment_status`), qui évoluent en partie indépendamment dans le code. La transition `confirmed → completed` n'a été localisée dans aucune Edge Function analysée — **[déduction]** elle est probablement déclenchée manuellement par un admin (page `/admin/bookings`) plutôt que par une automatisation, mais ceci n'a pas été vérifié directement dans le code de cette page.
+
+## 5. Abonnement partenaire voiture
+
+- Les forfaits « Découverte » gratuits sont supprimés; chaque forfait restant doit avoir un tarif mensuel et annuel strictement positif. Les montants existants des forfaits Pro/Flotte restent la source de vérité.
+- Un partenaire authentifié choisit un forfait et une périodicité sur `/partenaires/voitures`. PostgreSQL recalcule le montant à partir de `car_partner_plans`; `process-payment` relit le montant enregistré, réclame atomiquement l'abonnement, puis crée un lien Jèko. Seul le webhook signé Jèko active l'abonnement.
+- `car_partner_subscriptions` ne permet aux partenaires que de créer une demande `pending` et de lire leurs propres demandes. Aucune écriture client ne peut marquer un paiement comme réussi. Une souscription payée, active, non expirée et liée à un forfait actif est exigée par un trigger PostgreSQL pour toute nouvelle annonce voiture et toute publication; le plafond de véhicules du forfait est aussi vérifié côté base.
+- La migration conserve les services voiture déjà enregistrés. Les mises à jour des offres existantes restent possibles; une nouvelle annonce ou la republication après expiration exige une souscription payée valide. Appliquer la migration et déployer `process-payment`, `payment-callback` et `jeko-webhook` ensemble avant d'ouvrir le parcours en production. Aucun paiement n'est déclenché par ces changements locaux.
+
+## 6. Photos de profil et récupération de mot de passe
+
+- `Account` enregistre la photo de profil dans `profiles.avatar_url`. Le téléchargement passe par `upload-site-asset` vers le bucket public `site-assets`; un utilisateur ordinaire est autorisé uniquement dans `profile-avatars/<son-UUID>`, tandis que les rôles admin/agence gardent leurs dossiers existants. L'URL publique et l'aperçu synchronisé sont réutilisés dans les barres latérales utilisateur et agence.
+- Les liens de récupération sont créés par `send-password-reset` et redirigent en PKCE vers `/reset-password`. `SITE_URL` (par défaut `https://app.bossiz.com`) doit être une URL de redirection autorisée dans **Supabase Auth → URL Configuration** du projet déployé; les URLs locales sont aussi déclarées dans `supabase/config.toml`. Un utilisateur Google peut définir un mot de passe Bossiz après récupération; cela ne réinitialise pas son mot de passe Google.

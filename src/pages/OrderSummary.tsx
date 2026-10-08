@@ -170,7 +170,7 @@ const OrderSummary = () => {
         email: 'client@bossiz.com',
         phone: '+225000000000'
       },
-      paymentMethod: 'CinetPay',
+      paymentMethod: 'Jèko',
       orderDate: new Date().toISOString(),
       orderId: orderId || `BOSSIZ_${Date.now()}`
     };

@@ -30,13 +30,12 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
 import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 interface Service {
   id: string;
@@ -53,7 +52,7 @@ interface Service {
   available: boolean;
   image_url: string | null;
   images: string[] | null;
-  specifications: Record<string, any> | null;
+  specifications: Json | null;
   created_at: string;
 }
 
@@ -142,20 +141,35 @@ export default function AgencyServices() {
 
     const { data: agency } = await supabase
       .from("agencies")
-      .select("id, car_plan_id")
+      .select("id")
       .eq("owner_id", user.id)
       .single();
 
     if (!agency) return;
     setAgencyId(agency.id);
+    setCarPlan(null);
 
-    if (agency.car_plan_id) {
+    const now = new Date().toISOString();
+    const { data: activeSubscription } = await supabase
+      .from("car_partner_subscriptions")
+      .select("plan_id")
+      .eq("agency_id", agency.id)
+      .eq("status", "active")
+      .lte("starts_at", now)
+      .gt("ends_at", now)
+      .order("ends_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (activeSubscription?.plan_id) {
       const { data: plan } = await supabase
         .from("car_partner_plans")
         .select("name, max_vehicles")
-        .eq("plan_id", agency.car_plan_id)
+        .eq("plan_id", activeSubscription.plan_id)
         .single();
       if (plan) setCarPlan(plan);
+    } else {
+      setCarPlan(null);
     }
 
     const { data, error } = await supabase
@@ -178,6 +192,15 @@ export default function AgencyServices() {
 
     const isCarType = formData.type === "car";
     if (isCarType) {
+      if (!carPlan && (!editingService || editingService.type !== "car" || !editingService.available && formData.available)) {
+        toast({
+          title: "Forfait payant requis",
+          description: "Souscrivez à un forfait voiture payant et attendez la confirmation du paiement avant d'ajouter ou publier un véhicule.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { front, back, left, right, interior1, interior2 } = formData.carPhotos;
       if (!front || !back || !left || !right || !interior1 || !interior2) {
         toast({
@@ -243,7 +266,7 @@ export default function AgencyServices() {
 
       const serviceData = {
         name: formData.name,
-        type: formData.type as any,
+        type: formData.type as Database["public"]["Enums"]["service_type"],
         description: formData.description || null,
         location: formData.location,
         maps_url: formData.maps_url || null,
@@ -279,10 +302,10 @@ export default function AgencyServices() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndServices();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Impossible d'enregistrer le service",
         variant: "destructive",
       });
     }
@@ -290,7 +313,16 @@ export default function AgencyServices() {
 
   const handleEdit = (service: Service) => {
     setEditingService(service);
-    const specs = service.specifications || {};
+    const specs: Record<string, Json | undefined> =
+      service.specifications && typeof service.specifications === "object" && !Array.isArray(service.specifications)
+        ? service.specifications as Record<string, Json | undefined>
+        : {};
+    const stringSpec = (key: string, fallback: string) =>
+      typeof specs[key] === "string" ? specs[key] as string : fallback;
+    const numberSpec = (key: string, fallback: number) => {
+      const value = specs[key];
+      return typeof value === "number" || typeof value === "string" ? String(value) : String(fallback);
+    };
     const images = service.images || [];
     setFormData({
       name: service.name,
@@ -306,17 +338,17 @@ export default function AgencyServices() {
       image_url: service.image_url || "",
       carSpecs: service.type === "car"
         ? {
-            brand: specs.brand || "",
-            model: specs.model || "",
-            category: specs.category || "Berline",
-            seats: (specs.seats ?? 5).toString(),
-            doors: (specs.doors ?? 4).toString(),
-            transmission: specs.transmission || "Automatique",
-            fuel: specs.fuel || "Essence",
-            luggage: (specs.luggage ?? 3).toString(),
-            year: (specs.year ?? new Date().getFullYear()).toString(),
-            unlimitedMileage: !!specs.unlimitedMileage,
-            freeCancellation: !!specs.freeCancellation,
+            brand: stringSpec("brand", ""),
+            model: stringSpec("model", ""),
+            category: stringSpec("category", "Berline"),
+            seats: numberSpec("seats", 5),
+            doors: numberSpec("doors", 4),
+            transmission: stringSpec("transmission", "Automatique"),
+            fuel: stringSpec("fuel", "Essence"),
+            luggage: numberSpec("luggage", 3),
+            year: numberSpec("year", new Date().getFullYear()),
+            unlimitedMileage: specs.unlimitedMileage === true,
+            freeCancellation: specs.freeCancellation === true,
           }
         : emptyCarSpecs,
       carPhotos: service.type === "car"
@@ -331,14 +363,14 @@ export default function AgencyServices() {
         : emptyCarPhotos,
       tourSpecs: service.type === "tour"
         ? {
-            duration: specs.duration || "",
-            groupSizeMax: (specs.groupSizeMax ?? 10).toString(),
-            meetingPoint: specs.meetingPoint || "",
-            included: specs.included || "",
-            excluded: specs.excluded || "",
-            languages: specs.languages || "Français",
-            difficulty: specs.difficulty || "Facile",
-            category: specs.category || "Culture & Patrimoine",
+            duration: stringSpec("duration", ""),
+            groupSizeMax: numberSpec("groupSizeMax", 10),
+            meetingPoint: stringSpec("meetingPoint", ""),
+            included: stringSpec("included", ""),
+            excluded: stringSpec("excluded", ""),
+            languages: stringSpec("languages", "Français"),
+            difficulty: stringSpec("difficulty", "Facile"),
+            category: stringSpec("category", "Culture & Patrimoine"),
             availableDates: service.available_dates || [],
           }
         : emptyTourSpecs,
@@ -390,6 +422,12 @@ export default function AgencyServices() {
           <div>
             <h1 className="text-2xl font-bold">{typeFilter === "tour" ? "Mes Circuits" : "Mes Services"}</h1>
             <p className="text-muted-foreground">{typeFilter === "tour" ? "Gérez vos circuits touristiques" : "Gérez vos services de voyage"}</p>
+            {!carPlan && (
+              <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                Aucun forfait voiture payant actif. Les nouvelles annonces de véhicules sont bloquées jusqu'à confirmation du paiement.{" "}
+                <a href="/partenaires/voitures" className="font-medium underline">Voir les forfaits</a>
+              </p>
+            )}
             {carPlan && (
               <Badge variant="outline" className="mt-2 gap-1.5">
                 Forfait {carPlan.name} ·{" "}

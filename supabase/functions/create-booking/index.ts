@@ -28,6 +28,24 @@ function daysBetween(startDate: string, endDate: string): number {
   return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 }
 
+function convertToXof(amount: number, currency: string): number {
+  const ratesToXof: Record<string, number> = {
+    XOF: 1,
+    FCFA: 1,
+    EUR: 655.957,
+    USD: 602.123,
+    GBP: 785.234,
+    CHF: 703.891,
+  };
+  const rate = ratesToXof[currency.toUpperCase()];
+
+  if (!Number.isFinite(amount) || !rate) {
+    throw new Error(`Unsupported catalog price currency: ${currency}`);
+  }
+
+  return Math.round(amount * rate);
+}
+
 interface Passenger {
   first_name: string;
   last_name: string;
@@ -233,7 +251,7 @@ serve(async (req) => {
     if (requestData.service_id && catalogTable) {
       const { data: catalogRow, error: catalogError } = await supabase
         .from(catalogTable)
-        .select('price_per_unit')
+        .select('price_per_unit, currency')
         .eq('id', requestData.service_id)
         .single();
 
@@ -242,7 +260,10 @@ serve(async (req) => {
         throw new Error('Referenced service not found');
       }
 
-      verifiedTotalPrice = catalogRow.price_per_unit * requestData.guests;
+      verifiedTotalPrice = convertToXof(
+        catalogRow.price_per_unit,
+        catalogRow.currency
+      ) * requestData.guests;
       console.log(`✅ ${catalogTable} price verified - server-computed total:`, verifiedTotalPrice);
     }
 
@@ -274,7 +295,7 @@ serve(async (req) => {
       // its own stored price is the source of truth, never the client's total.
       const { data: existingService, error: existingServiceError } = await supabase
         .from('services')
-        .select('price_per_unit')
+        .select('price_per_unit, currency')
         .eq('id', serviceId)
         .single();
 
@@ -283,7 +304,10 @@ serve(async (req) => {
         throw new Error('Referenced service not found');
       }
 
-      verifiedTotalPrice = existingService.price_per_unit * requestData.guests;
+      verifiedTotalPrice = convertToXof(
+        existingService.price_per_unit,
+        existingService.currency
+      ) * requestData.guests;
       console.log('✅ Existing service price verified - server-computed total:', verifiedTotalPrice);
     }
 

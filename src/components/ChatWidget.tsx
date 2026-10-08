@@ -63,6 +63,17 @@ const ChatWidget = () => {
     if (isTransactionalPage) setIsOpen(false);
   }, [isTransactionalPage, pathname]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
   const [unreadCount, setUnreadCount] = useState(() => {
     const saved = localStorage.getItem("b_reserve_chat_messages");
     return (!isOpen && !saved) ? 1 : 0;
@@ -153,7 +164,15 @@ const ChatWidget = () => {
   if (isTransactionalPage) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[10000] flex flex-col items-end pointer-events-none">
+    <div
+      className={cn(
+        "chat-widget-container fixed z-[10000] flex flex-col items-end pointer-events-none",
+        isOpen
+          ? "inset-0 sm:bottom-6 sm:left-auto sm:right-6 sm:top-auto"
+          : "bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))]"
+      )}
+      data-open={isOpen}
+    >
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -161,23 +180,26 @@ const ChatWidget = () => {
             animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, scale: 0.85, y: 30, filter: "blur(10px)" }}
             transition={{ type: "spring", damping: 20, stiffness: 200 }}
-            className="w-[calc(100vw-2rem)] max-w-[340px] sm:w-[340px] md:w-[380px] h-[min(72vh,480px)] sm:h-[500px] md:h-[540px] bg-white/80 backdrop-blur-2xl rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 overflow-hidden flex flex-col pointer-events-auto mb-4 sm:mb-6 sm:mr-1"
+            role="dialog"
+            aria-label="Conciergerie Bossiz+"
+            id="bossiz-chat-dialog"
+            className="chat-widget-panel flex h-[100dvh] max-h-[100dvh] w-full max-w-none flex-col overflow-hidden rounded-none border-0 bg-white/95 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] shadow-2xl backdrop-blur-2xl pointer-events-auto sm:mb-4 sm:mr-1 sm:h-[min(680px,calc(100dvh-6rem))] sm:max-h-[calc(100dvh-6rem)] sm:w-[min(420px,calc(100vw-3rem))] sm:rounded-[1.5rem] sm:rounded-b-[1.5rem] sm:border sm:border-white/40 sm:bg-white/80 sm:pt-0 sm:pb-0 sm:shadow-[0_20px_50px_rgba(0,0,0,0.15)] md:h-[min(720px,calc(100dvh-6rem))]"
           >
             {/* Header */}
-            <div className="bg-gradient-to-br from-primary/95 via-primary to-primary-dark p-6 text-white pb-8 relative">
+            <div className="bg-gradient-to-br from-primary/95 via-primary to-primary-dark p-4 pb-6 text-white relative sm:p-6 sm:pb-8">
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)]" />
               <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-4">
+                <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                   <div className="relative group">
-                    <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/30 shadow-inner overflow-hidden transition-transform group-hover:scale-105">
-                      <Headphones className="w-8 h-8 text-secondary" />
+                    <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-white/20 shadow-inner backdrop-blur-xl transition-transform group-hover:scale-105 sm:h-14 sm:w-14">
+                      <Headphones className="h-6 w-6 text-secondary sm:h-8 sm:w-8" />
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm">
                       <div className="w-full h-full bg-green-400 rounded-full animate-ping opacity-75" />
                     </div>
                   </div>
                   <div className="space-y-0.5">
-                    <h3 className="font-extrabold text-lg tracking-tight">Conciergerie Bossiz+</h3>
+                    <h3 className="truncate font-extrabold text-base tracking-tight sm:text-lg">Conciergerie Bossiz+</h3>
                     <div className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                       <p className="text-xs text-white/80 font-semibold uppercase tracking-widest">IA Active</p>
@@ -189,7 +211,7 @@ const ChatWidget = () => {
                   size="icon"
                   onClick={() => setIsOpen(false)}
                   aria-label="Fermer le chat"
-                  className="hover:bg-white/10 text-white rounded-2xl h-10 w-10 border border-white/10 transition-colors"
+                  className="h-11 w-11 shrink-0 rounded-2xl border border-white/10 text-white transition-colors hover:bg-white/10"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -197,7 +219,7 @@ const ChatWidget = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="flex gap-2 px-6 -mt-4 relative z-20 overflow-x-auto scrollbar-none pb-2">
+            <div className="relative z-20 -mt-3 flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mt-4 sm:px-6">
               <Badge variant="secondary" className="bg-white/90 backdrop-blur-md border border-primary/10 shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors py-1.5 px-3 rounded-full text-[10px] font-black uppercase tracking-widest flex-shrink-0">
                 Aide AI
               </Badge>
@@ -210,7 +232,7 @@ const ChatWidget = () => {
             </div>
 
             {/* Message List */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 pt-8 scrollbar-thin scrollbar-thumb-primary/5">
+            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 pt-5 scrollbar-thin scrollbar-thumb-primary/5 sm:space-y-6 sm:p-6 sm:pt-8">
               {messages.map((m) => (
                 <div 
                   key={m.id} 
@@ -221,7 +243,7 @@ const ChatWidget = () => {
                 >
                   <div 
                     className={cn(
-                      "px-5 py-3.5 rounded-3xl text-sm leading-[1.6] shadow-sm transition-all duration-300",
+                      "max-w-full break-words rounded-3xl px-4 py-3 text-sm leading-[1.6] shadow-sm transition-all duration-300 sm:px-5 sm:py-3.5",
                       m.sender === 'user' 
                         ? "bg-primary text-white rounded-tr-none shadow-primary/10" 
                         : "bg-white/60 text-foreground border border-white/60 backdrop-blur-lg rounded-tl-none"
@@ -253,14 +275,15 @@ const ChatWidget = () => {
             </div>
 
             {/* Input Area */}
-            <div className="p-6 bg-white/40 border-t border-white/60 backdrop-blur-xl">
-              <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+            <div className="border-t border-white/60 bg-white/60 p-4 backdrop-blur-xl sm:p-6">
+              <form onSubmit={handleSendMessage} className="flex items-center gap-2 sm:gap-3">
                 <div className="flex-1 relative group">
                   <Input 
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
+                    aria-label="Votre message à l'assistant"
                     placeholder={aiLoading ? "L'IA réfléchit..." : "Posez votre question..."}
-                    className="bg-white/80 border-white/60 h-14 pl-5 pr-12 rounded-2xl shadow-inner focus-visible:ring-1 focus-visible:ring-primary/20 transition-all text-sm font-medium"
+                    className="h-12 rounded-2xl border-white/60 bg-white/80 pl-4 pr-11 text-sm font-medium shadow-inner transition-all focus-visible:ring-1 focus-visible:ring-primary/20 sm:h-14 sm:pl-5"
                     disabled={aiLoading}
                   />
                   <Button
@@ -278,7 +301,7 @@ const ChatWidget = () => {
                   type="submit"
                   size="icon"
                   aria-label="Envoyer le message"
-                  className="h-14 w-14 rounded-2xl bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg shadow-secondary/30 transition-all active:scale-90 flex-shrink-0"
+                  className="h-12 w-12 flex-shrink-0 rounded-2xl bg-secondary text-secondary-foreground shadow-lg shadow-secondary/30 transition-all hover:bg-secondary/90 active:scale-90 sm:h-14 sm:w-14"
                   disabled={!inputValue.trim() || aiLoading}
                 >
                   {aiLoading ? (
@@ -288,7 +311,7 @@ const ChatWidget = () => {
                   )}
                 </Button>
               </form>
-              <div className="mt-3 text-center">
+              <div className="mt-2 text-center sm:mt-3">
                 <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-60">IA Intelligente Bossiz+ • Sécurisé</p>
               </div>
             </div>
@@ -299,8 +322,11 @@ const ChatWidget = () => {
       <motion.button
         onClick={toggleChat}
         aria-label={isOpen ? "Fermer le chat" : "Ouvrir le chat"}
+        aria-expanded={isOpen}
+        aria-controls="bossiz-chat-dialog"
         className={cn(
-          "h-12 w-12 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 transition-all pointer-events-auto border overflow-hidden relative group",
+          "chat-widget-launcher pointer-events-auto relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border shadow-2xl shadow-primary/30 transition-all group sm:h-16 sm:w-16",
+          isOpen && "hidden sm:flex",
           isOpen 
             ? "bg-white text-primary border-border" 
             : "bg-primary text-white border-white/20"

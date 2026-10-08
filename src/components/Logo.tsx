@@ -47,9 +47,7 @@ const Logo = ({ variant = "dark", className, showWordmark = true }: LogoProps) =
           letterSpacing="-0.02em"
           fill={wordColor}
         >
-          <tspan>B</tspan>
-          <tspan fill={ACCENT}>-</tspan>
-          <tspan>Reserve</tspan>
+          Bossiz+
         </text>
       )}
     </svg>

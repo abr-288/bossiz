@@ -16,7 +16,7 @@ export interface RouteSeo {
 export const DEFAULT_SEO: RouteSeo = {
   title: "Bossiz+ - Réservation de Voyages en Côte d'Ivoire | Vols, Hôtels, Tours",
   description:
-    "Réservez vos voyages en Côte d'Ivoire facilement : vols, hôtels, locations de voiture, circuits touristiques, trains et événements. Paiement sécurisé avec CinetPay.",
+    "Réservez vos voyages en Côte d'Ivoire facilement : vols, hôtels, locations de voiture, circuits touristiques, trains et événements. Paiement sécurisé via Jèko.",
 };
 
 const ROUTES: Record<string, RouteSeo> = {

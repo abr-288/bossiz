@@ -611,40 +611,174 @@ export type Database = {
         }
         Relationships: []
       }
+      car_partner_subscriptions: {
+        Row: {
+          agency_id: string
+          amount_due: number
+          billing_cycle: string
+          created_at: string
+          currency: string
+          ends_at: string | null
+          id: string
+          paid_at: string | null
+          plan_id: string
+          starts_at: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          amount_due?: number
+          billing_cycle: string
+          created_at?: string
+          currency?: string
+          ends_at?: string | null
+          id?: string
+          paid_at?: string | null
+          plan_id: string
+          starts_at?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          amount_due?: number
+          billing_cycle?: string
+          created_at?: string
+          currency?: string
+          ends_at?: string | null
+          id?: string
+          paid_at?: string | null
+          plan_id?: string
+          starts_at?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_partner_subscriptions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "car_partner_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "car_partner_plans"
+            referencedColumns: ["plan_id"]
+          },
+        ]
+      }
+      agency_branding_subscriptions: {
+        Row: {
+          agency_id: string
+          amount_due: number
+          created_at: string
+          currency: string
+          ends_at: string | null
+          id: string
+          paid_at: string | null
+          starts_at: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          amount_due?: number
+          created_at?: string
+          currency?: string
+          ends_at?: string | null
+          id?: string
+          paid_at?: string | null
+          starts_at?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          amount_due?: number
+          created_at?: string
+          currency?: string
+          ends_at?: string | null
+          id?: string
+          paid_at?: string | null
+          starts_at?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_branding_subscriptions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commissions: {
         Row: {
           agency_id: string
           booking_amount: number
-          booking_id: string
+          booking_id: string | null
           commission_amount: number
           commission_rate: number
           created_at: string
           id: string
           paid_at: string | null
+          payout_due_at: string | null
+          payout_error: string | null
+          payout_provider_id: string | null
+          payout_reference: string | null
+          payout_status: string
+          source_id: string | null
+          source_type: string
           status: string
           updated_at: string
         }
         Insert: {
           agency_id: string
           booking_amount: number
-          booking_id: string
+          booking_id?: string | null
           commission_amount: number
           commission_rate: number
           created_at?: string
           id?: string
           paid_at?: string | null
+          payout_due_at?: string | null
+          payout_error?: string | null
+          payout_provider_id?: string | null
+          payout_reference?: string | null
+          payout_status?: string
+          source_id?: string | null
+          source_type?: string
           status?: string
           updated_at?: string
         }
         Update: {
           agency_id?: string
           booking_amount?: number
-          booking_id?: string
+          booking_id?: string | null
           commission_amount?: number
           commission_rate?: number
           created_at?: string
           id?: string
           paid_at?: string | null
+          payout_due_at?: string | null
+          payout_error?: string | null
+          payout_provider_id?: string | null
+          payout_reference?: string | null
+          payout_status?: string
+          source_id?: string | null
+          source_type?: string
           status?: string
           updated_at?: string
         }
@@ -661,6 +795,41 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: true
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agency_payout_details: {
+        Row: {
+          agency_id: string
+          bank_details: Json | null
+          beneficiary_name: string | null
+          mobile_money_number: string | null
+          payment_method: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          bank_details?: Json | null
+          beneficiary_name?: string | null
+          mobile_money_number?: string | null
+          payment_method: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          bank_details?: Json | null
+          beneficiary_name?: string | null
+          mobile_money_number?: string | null
+          payment_method?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_payout_details_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
             referencedColumns: ["id"]
           },
         ]
@@ -1957,6 +2126,7 @@ export type Database = {
           id: string
           logo_url: string | null
           name: string
+          preferred_payout_method: string | null
           requested_car_plan_id: string | null
           status: string
           updated_at: string
@@ -1969,6 +2139,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name: string
+          preferred_payout_method?: string | null
           requested_car_plan_id?: string | null
           status?: string
           updated_at?: string
@@ -1981,6 +2152,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name?: string
+          preferred_payout_method?: string | null
           requested_car_plan_id?: string | null
           status?: string
           updated_at?: string
@@ -2144,7 +2316,9 @@ export type Database = {
       payments: {
         Row: {
           amount: number
+          agency_branding_subscription_id: string | null
           booking_id: string | null
+          car_partner_subscription_id: string | null
           created_at: string | null
           currency: string
           id: string
@@ -2163,7 +2337,9 @@ export type Database = {
         }
         Insert: {
           amount: number
+          agency_branding_subscription_id?: string | null
           booking_id?: string | null
+          car_partner_subscription_id?: string | null
           created_at?: string | null
           currency?: string
           id?: string
@@ -2182,7 +2358,9 @@ export type Database = {
         }
         Update: {
           amount?: number
+          agency_branding_subscription_id?: string | null
           booking_id?: string | null
+          car_partner_subscription_id?: string | null
           created_at?: string | null
           currency?: string
           id?: string
@@ -2205,6 +2383,20 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_agency_branding_subscription_id_fkey"
+            columns: ["agency_branding_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "agency_branding_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_car_partner_subscription_id_fkey"
+            columns: ["car_partner_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "car_partner_subscriptions"
             referencedColumns: ["id"]
           },
           {

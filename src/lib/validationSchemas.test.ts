@@ -170,14 +170,26 @@ describe('Validation Schemas', () => {
         customerPhone: '+2250708090102',
         customerAddress: '123 Main St',
         customerCity: 'Abidjan',
-        paymentMethod: 'card' as const
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should accept the preselected CinetPay payment method', () => {
+    it('should accept Jèko as the payment method', () => {
+      const result = paymentSchema.safeParse({
+        customerName: 'John Doe',
+        customerEmail: 'john@example.com',
+        customerPhone: '+2250708090102',
+        customerCity: 'Abidjan',
+        paymentMethod: 'jeko',
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject payment methods other than Jèko', () => {
       const result = paymentSchema.safeParse({
         customerName: 'John Doe',
         customerEmail: 'john@example.com',
@@ -186,7 +198,7 @@ describe('Validation Schemas', () => {
         paymentMethod: 'cinetpay',
       });
 
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
     });
 
     it('should reject invalid email', () => {
@@ -194,7 +206,7 @@ describe('Validation Schemas', () => {
         customerName: 'John Doe',
         customerEmail: 'invalid-email',
         customerPhone: '+2250708090102',
-        paymentMethod: 'card' as const
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(invalidData);
@@ -206,7 +218,7 @@ describe('Validation Schemas', () => {
         customerName: 'John Doe',
         customerEmail: 'john@example.com',
         customerPhone: '123',
-        paymentMethod: 'card' as const
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(invalidData);
@@ -219,7 +231,7 @@ describe('Validation Schemas', () => {
         customerEmail: '  JOHN@EXAMPLE.COM  ',
         customerPhone: '+2250708090102',
         customerCity: 'Abidjan',
-        paymentMethod: 'card' as const
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(data);

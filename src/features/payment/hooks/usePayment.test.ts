@@ -43,7 +43,7 @@ describe('usePayment', () => {
     (validateWithSchema as any).mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -64,7 +64,7 @@ describe('usePayment', () => {
     });
 
     (supabase.functions.invoke as any).mockResolvedValue({
-      data: { success: true, payment_url: 'https://cinetpay.com/payment/123' },
+      data: { success: true, payment_url: 'https://checkout.jeko.africa/payment/123' },
       error: null,
     });
 
@@ -74,7 +74,7 @@ describe('usePayment', () => {
       'booking-123',
       { total_price: 850000 },
       {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -85,7 +85,7 @@ describe('usePayment', () => {
 
     await waitFor(() => {
       expect(paymentResult.success).toBe(true);
-      expect(paymentResult.paymentUrl).toBe('https://cinetpay.com/payment/123');
+      expect(paymentResult.paymentUrl).toBe('https://checkout.jeko.africa/payment/123');
     });
   });
 
@@ -101,7 +101,7 @@ describe('usePayment', () => {
       'booking-123',
       { total_price: 850000 },
       {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'invalid-email',
         customerPhone: '+2250707070707',
@@ -119,7 +119,7 @@ describe('usePayment', () => {
     (validateWithSchema as any).mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -144,7 +144,7 @@ describe('usePayment', () => {
       'booking-123',
       { total_price: 850000 },
       {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -162,7 +162,7 @@ describe('usePayment', () => {
     (validateWithSchema as any).mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -187,7 +187,7 @@ describe('usePayment', () => {
       'booking-123',
       { total_price: 850000 },
       {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -205,7 +205,7 @@ describe('usePayment', () => {
     (validateWithSchema as any).mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -224,7 +224,7 @@ describe('usePayment', () => {
       })),
     });
     (supabase.functions.invoke as any).mockResolvedValue({
-      data: { success: true, payment_url: 'https://cinetpay.com/payment/123' },
+      data: { success: true, payment_url: 'https://checkout.jeko.africa/payment/123' },
       error: null,
     });
 
@@ -238,7 +238,7 @@ describe('usePayment', () => {
       'booking-123',
       { total_price: 850000 },
       {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -255,7 +255,7 @@ describe('usePayment', () => {
     (validateWithSchema as any).mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',
@@ -277,7 +277,7 @@ describe('usePayment', () => {
       'booking-123',
       { total_price: 850000 },
       {
-        paymentMethod: 'mobile_money',
+        paymentMethod: 'jeko',
         customerName: 'Jean Dupont',
         customerEmail: 'jean@example.com',
         customerPhone: '+2250707070707',

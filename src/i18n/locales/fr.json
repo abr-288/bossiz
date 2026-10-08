@@ -433,7 +433,7 @@
     "city": "Ville",
     "payButton": "Payer",
     "processing": "Traitement...",
-    "securedBy": "Paiement sécurisé par CinetPay",
+    "securedBy": "Paiement sécurisé par Jèko",
     "errors": {
       "missingFields": "Veuillez remplir tous les champs obligatoires",
       "invalidPhone": "Numéro de téléphone invalide (minimum 8 chiffres)",
@@ -806,7 +806,7 @@
           "q3": "Comment obtenir ma facture ?",
           "a3": "Votre facture est disponible dans 'Mes Réservations' après confirmation du paiement, et vous est également envoyée par email. Vous pouvez la télécharger en PDF à tout moment.",
           "q4": "Mes données bancaires sont-elles sécurisées ?",
-          "a4": "Oui, tous les paiements sont traités via CinetPay avec chiffrement sécurisé. Nous ne stockons jamais vos données de carte bancaire sur nos serveurs."
+          "a4": "Oui, tous les paiements sont traités via Jèko avec chiffrement sécurisé. Nous ne stockons jamais vos données de carte bancaire sur nos serveurs."
         },
         "refunds": {
           "q1": "Comment obtenir un remboursement ?",

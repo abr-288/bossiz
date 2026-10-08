@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,10 @@ export function ImageUpload({
   const [preview, setPreview] = useState<string | null>(value || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setPreview(value || null);
+  }, [value]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -64,8 +68,11 @@ export function ImageUpload({
       formData.append("folder", folder);
 
       // Call edge function
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!supabaseUrl) throw new Error("Configuration de stockage indisponible");
+
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-site-asset`,
+        `${supabaseUrl}/functions/v1/upload-site-asset`,
         {
           method: "POST",
           headers: {
@@ -88,11 +95,11 @@ export function ImageUpload({
         title: "Image téléchargée",
         description: "L'image a été téléchargée avec succès",
       });
-    } catch (error: any) {
-      console.error("Upload error:", error);
+    } catch (error: unknown) {
+      console.error("Upload error");
       toast({
         title: "Erreur d'upload",
-        description: error.message || "Impossible de télécharger l'image",
+        description: error instanceof Error ? error.message : "Impossible de télécharger l'image",
         variant: "destructive",
       });
     } finally {

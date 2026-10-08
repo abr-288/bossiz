@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Loader2, RefreshCw, Car, Users } from "lucide-react";
+import { Plus, Edit, Loader2, RefreshCw, Car } from "lucide-react";
 
 interface CarPartnerPlan {
   id: string;
@@ -56,7 +56,7 @@ export default function AdminCarPartnerPlans() {
   const [featuresText, setFeaturesText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const fetchPlans = async () => {
+  const fetchPlans = useCallback(async () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -66,16 +66,16 @@ export default function AdminCarPartnerPlans() {
 
       if (error) throw error;
       setPlans((data as CarPartnerPlan[]) || []);
-    } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Erreur", description: error instanceof Error ? error.message : "Impossible de charger les forfaits", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchPlans();
-  }, []);
+  }, [fetchPlans]);
 
   const handleEdit = (plan: CarPartnerPlan) => {
     setEditingPlan(plan);
@@ -96,15 +96,19 @@ export default function AdminCarPartnerPlans() {
       toast({ title: "Erreur", description: "L'identifiant et le nom sont obligatoires", variant: "destructive" });
       return;
     }
-    if (formData.commission_rate < 0 || formData.commission_rate > 100) {
-      toast({ title: "Erreur", description: "La commission doit être comprise entre 0 et 100%", variant: "destructive" });
+    if (Number(formData.monthly_price) <= 0 || Number(formData.yearly_price) <= 0) {
+      toast({
+        title: "Tarif invalide",
+        description: "Les deux prix du forfait doivent être strictement positifs. Aucun forfait gratuit ne peut être créé.",
+        variant: "destructive",
+      });
       return;
     }
-
     setIsSaving(true);
     try {
       const dataToSave = {
         ...formData,
+        commission_rate: 10,
         features: featuresText.split("\n").filter((f) => f.trim()),
       };
 
@@ -123,41 +127,10 @@ export default function AdminCarPartnerPlans() {
 
       setIsDialogOpen(false);
       fetchPlans();
-    } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Erreur", description: error instanceof Error ? error.message : "Impossible d'enregistrer le forfait", variant: "destructive" });
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const [applyingRateFor, setApplyingRateFor] = useState<string | null>(null);
-
-  // agencies.commission_rate is the rate actually charged (used by
-  // postPaymentSuccess.ts) - it's copied from the plan's rate only at the
-  // moment an admin assigns that plan to an agency (see AdminAgencies.tsx),
-  // so editing a plan's rate above never retroactively changes what's
-  // already been assigned. This is the explicit "apply it anyway" action
-  // for when the old rate genuinely no longer applies to agencies already
-  // on this plan, not just new ones.
-  const applyRateToExistingAgencies = async (plan: CarPartnerPlan) => {
-    if (!confirm(`Appliquer ${plan.commission_rate}% à TOUTES les agences actuellement sur le forfait "${plan.name}" ?`)) return;
-
-    setApplyingRateFor(plan.id);
-    try {
-      const { data, error } = await supabase
-        .from("agencies")
-        .update({ commission_rate: plan.commission_rate })
-        .eq("car_plan_id", plan.plan_id)
-        .select("id");
-      if (error) throw error;
-      toast({
-        title: "Succès",
-        description: `Taux appliqué à ${data?.length ?? 0} agence(s) sur le forfait ${plan.name}`,
-      });
-    } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    } finally {
-      setApplyingRateFor(null);
     }
   };
 
@@ -169,8 +142,8 @@ export default function AdminCarPartnerPlans() {
         .eq("id", plan.id);
       if (error) throw error;
       fetchPlans();
-    } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Erreur", description: error instanceof Error ? error.message : "Impossible de modifier le forfait", variant: "destructive" });
     }
   };
 
@@ -181,7 +154,7 @@ export default function AdminCarPartnerPlans() {
           <div>
             <h1 className="text-2xl font-bold">Forfaits partenaires voiture</h1>
             <p className="text-muted-foreground">
-              Ajustez les taux de commission et tarifs des forfaits Découverte / Pro / Flotte
+              Ajustez les tarifs et fonctionnalités des forfaits ; le partage des ventes est fixe (90% agence, 10% Bossiz)
             </p>
           </div>
           <div className="flex gap-2">
@@ -213,7 +186,7 @@ export default function AdminCarPartnerPlans() {
                   <TableRow>
                     <TableHead>Forfait</TableHead>
                     <TableHead>Tarif mensuel</TableHead>
-                    <TableHead>Commission</TableHead>
+                    <TableHead>Part reversée</TableHead>
                     <TableHead>Véhicules max</TableHead>
                     <TableHead>Actif</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -232,29 +205,16 @@ export default function AdminCarPartnerPlans() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {plan.monthly_price === 0 ? "Gratuit" : `${plan.monthly_price.toLocaleString()} ${plan.currency}`}
+                        {plan.monthly_price.toLocaleString()} {plan.currency}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="font-mono">{plan.commission_rate}%</Badge>
+                        <Badge variant="outline" className="font-mono">90%</Badge>
                       </TableCell>
                       <TableCell>{plan.max_vehicles ?? "Illimité"}</TableCell>
                       <TableCell>
                         <Switch checked={plan.is_active} onCheckedChange={() => toggleActive(plan)} />
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Appliquer ce taux aux agences déjà sur ce forfait"
-                          onClick={() => applyRateToExistingAgencies(plan)}
-                          disabled={applyingRateFor === plan.id}
-                        >
-                          {applyingRateFor === plan.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Users className="w-4 h-4" />
-                          )}
-                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleEdit(plan)}>
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -307,7 +267,7 @@ export default function AdminCarPartnerPlans() {
                   <Label>Prix mensuel (XOF)</Label>
                   <Input
                     type="number"
-                    min="0"
+                    min="1"
                     value={formData.monthly_price}
                     onChange={(e) => setFormData({ ...formData, monthly_price: parseFloat(e.target.value) || 0 })}
                   />
@@ -316,20 +276,9 @@ export default function AdminCarPartnerPlans() {
                   <Label>Prix annuel (XOF)</Label>
                   <Input
                     type="number"
-                    min="0"
+                    min="1"
                     value={formData.yearly_price}
                     onChange={(e) => setFormData({ ...formData, yearly_price: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Commission (%) *</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={formData.commission_rate}
-                    onChange={(e) => setFormData({ ...formData, commission_rate: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
               </div>

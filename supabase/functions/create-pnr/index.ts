@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { refundBookingPayment } from "../_shared/cinetpayRefund.ts";
+import { scheduleAgencyPayout } from "../_shared/agencyPayouts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -154,6 +155,16 @@ serve(async (req) => {
         );
       }
 
+      const { error: commissionCancelError } = await supabase
+        .from('commissions')
+        .update({ status: 'cancelled' })
+        .eq('booking_id', booking_id)
+        .eq('payout_status', 'not_scheduled')
+        .eq('status', 'pending');
+      if (commissionCancelError) {
+        console.error('Could not cancel partner share after flight refund:', commissionCancelError.message);
+      }
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -182,6 +193,8 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
+
+    await scheduleAgencyPayout({ supabase, supabaseUrl, supabaseServiceKey, bookingId: booking_id });
 
     console.log('PNR created successfully:', pnr);
 

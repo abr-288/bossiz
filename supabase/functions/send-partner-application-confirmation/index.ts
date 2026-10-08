@@ -18,7 +18,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_NOTIFICATION_EMAIL = "contact@bossiz.com";
+const ADMIN_NOTIFICATION_EMAIL = "r@bossiz.com";
 
 const carPlanLabels: Record<string, string> = {
   decouverte: "Découverte",

@@ -15,6 +15,7 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function ResetPassword() {
         toast.error("Lien de réinitialisation invalide ou expiré");
         navigate("/forgot-password");
       }
-    }, 1500);
+    }, 5000);
 
     return () => {
       subscription.unsubscribe();
@@ -54,6 +55,7 @@ export default function ResetPassword() {
     try {
       const validated = updatePasswordSchema.parse({ password, confirmPassword });
       setLoading(true);
+      setErrorMessage("");
 
       const { error } = await supabase.auth.updateUser({
         password: validated.password,
@@ -69,11 +71,17 @@ export default function ResetPassword() {
         await supabase.auth.signOut();
         navigate("/auth");
       }, 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
+        const message = error.errors[0].message;
+        setErrorMessage(message);
+        toast.error(message);
       } else {
-        toast.error("Erreur lors de la réinitialisation du mot de passe");
+        const message = error instanceof Error
+          ? error.message
+          : "Le mot de passe n'a pas pu être mis à jour. Redemandez un lien puis réessayez.";
+        setErrorMessage(message);
+        toast.error(message);
       }
     } finally {
       setLoading(false);
@@ -147,7 +155,7 @@ export default function ResetPassword() {
               <div className="space-y-2 text-center lg:text-left">
                 <h1 className="text-3xl font-bold tracking-tight">Nouveau mot de passe</h1>
                 <p className="text-muted-foreground">
-                  Entrez votre nouveau mot de passe ci-dessous
+                  Entrez votre nouveau mot de passe Bossiz. Pour un compte Google, cela ne change pas le mot de passe Google.
                 </p>
               </div>
 
@@ -166,6 +174,9 @@ export default function ResetPassword() {
                       className="h-12 rounded-xl"
                     />
                   </div>
+                  {errorMessage && (
+                    <p role="alert" className="text-sm text-destructive">{errorMessage}</p>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
                     <Input

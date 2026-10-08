@@ -35,6 +35,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { JEKO_PAYOUT_METHODS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { partnerApplicationSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { LazyImage } from "@/components/ui/lazy-image";
@@ -52,13 +53,11 @@ const partnerTypeOptions = [
 type PartnerTypeValue = (typeof partnerTypeOptions)[number]["value"];
 
 const carPlanOptions = [
-  { value: "decouverte", label: "Découverte — Gratuit, commission 12%, jusqu'à 3 véhicules" },
-  { value: "pro", label: "Pro — 25 000 XOF/mois, commission 8%, jusqu'à 15 véhicules" },
-  { value: "flotte", label: "Flotte — 60 000 XOF/mois, commission 5%, véhicules illimités" },
+  { value: "pro", label: "Pro — 25 000 XOF/mois, jusqu'à 15 véhicules" },
+  { value: "flotte", label: "Flotte — 60 000 XOF/mois, véhicules illimités" },
 ];
 
 const carPlanLabels: Record<string, string> = {
-  decouverte: "Découverte",
   pro: "Pro",
   flotte: "Flotte",
 };
@@ -72,35 +71,35 @@ const conditionsByType: Record<PartnerTypeValue, string[]> = {
   hotel: [
     "Inscription gratuite, sans engagement.",
     "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client.",
-    "Une commission de 10% est prélevée sur chaque réservation confirmée.",
+    "Bossiz conserve 10% et vous reverse 90% des réservations réglées en ligne via Jèko sous 24 heures.",
     "Votre établissement est géré en autonomie depuis votre espace agence une fois la candidature validée.",
   ],
   restaurant: [
     "Inscription gratuite, sans engagement.",
-    "Une commission de 10% est calculée sur chaque réservation confirmée, sur la base du prix moyen par personne que vous renseignez (la table n'a pas de prix fixe).",
+    "Bossiz conserve 10% et vous reverse 90% des ventes encaissées par la plateforme via Jèko sous 24 heures.",
     "Vous gérez votre menu, vos disponibilités et votre prix moyen depuis votre espace agence.",
   ],
   activity: [
     "Inscription gratuite, sans engagement.",
-    "Une commission de 10% est prélevée sur chaque réservation.",
+    "Bossiz conserve 10% et vous reverse 90% des réservations réglées en ligne via Jèko sous 24 heures.",
     "Votre activité est visible dans les résultats Activités & Tours.",
   ],
   artisan: [
     "Inscription gratuite, sans engagement.",
-    "Une commission de 10% est calculée sur chaque commande que vous confirmez, sur la base du prix affiché de la création.",
+    "Bossiz conserve 10% et vous reverse 90% des commandes encaissées par la plateforme via Jèko sous 24 heures.",
     "Les demandes de commande sont à valider vous-même depuis votre espace agence avant qu'une commission ne soit due.",
     "Une fiche dédiée présente votre savoir-faire avec photos et description.",
   ],
   wellness: [
     "Regroupe spas, salons de manucure/pédicure, barbershops, instituts de beauté et studios de yoga.",
     "Inscription gratuite, sans engagement.",
-    "Une commission de 10% est calculée sur chaque rendez-vous confirmé, sur la base du prix de la prestation choisie.",
+    "Les prestations réglées directement auprès de l'agence ne sont pas encaissées par Bossiz et ne peuvent donc pas être reversées automatiquement par Jèko.",
     "Vos clients prennent rendez-vous en ligne sur vos créneaux et prestations ; le règlement de la prestation reste géré directement avec vous.",
     "Vous gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence.",
   ],
   cars: [
-    "L'inscription se fait via l'un de nos 3 forfaits : Découverte (gratuit), Pro ou Flotte.",
-    "Une commission dégressive s'applique selon le forfait choisi : 12% (Découverte), 8% (Pro) ou 5% (Flotte).",
+    "Un forfait voiture payant (Pro ou Flotte) est nécessaire avant la mise en ligne de vos véhicules.",
+    "La commission applicable dépend du forfait souscrit.",
     "Le nombre de véhicules en ligne et les mises en avant dépendent du forfait souscrit.",
   ],
 };
@@ -147,6 +146,7 @@ const BecomePartner = () => {
     description: "",
   });
   const [partnerType, setPartnerType] = useState<PartnerTypeValue | "">(initialType);
+  const [preferredPayoutMethod, setPreferredPayoutMethod] = useState<JekoPayoutMethod | "">("");
   const [carPlan, setCarPlan] = useState(
     requestedCarPlan && carPlanLabels[requestedCarPlan] ? requestedCarPlan : "decouverte"
   );
@@ -208,6 +208,11 @@ const BecomePartner = () => {
       return;
     }
 
+    if (!preferredPayoutMethod) {
+      toast.error("Veuillez choisir votre moyen de réception des reversements.");
+      return;
+    }
+
     try {
       partnerApplicationSchema.parse(formData);
     } catch (error) {
@@ -240,6 +245,7 @@ const BecomePartner = () => {
       description: finalDescription || null,
       logo_url: logoUrl || null,
       requested_car_plan_id: partnerType === "cars" ? carPlan : null,
+      preferred_payout_method: preferredPayoutMethod,
     });
     setLoading(false);
 
@@ -261,6 +267,7 @@ const BecomePartner = () => {
   const resetForm = () => {
     setFormData({ name: "", contactEmail: "", contactPhone: "", description: "" });
     setPartnerType("");
+    setPreferredPayoutMethod("");
     setCarPlan("decouverte");
     setAcceptedConditions(false);
     setLogoUrl("");
@@ -460,8 +467,30 @@ const BecomePartner = () => {
                             type="tel"
                             placeholder="+225 XX XX XX XX XX"
                             value={formData.contactPhone}
-                            onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                            onPhoneChange={(contactPhone) => setFormData({ ...formData, contactPhone })}
                           />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium block">
+                            Moyen souhaité pour recevoir vos reversements Jèko <span className="text-destructive">*</span>
+                          </label>
+                          <Select
+                            value={preferredPayoutMethod}
+                            onValueChange={(value) => setPreferredPayoutMethod(value as JekoPayoutMethod)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choisissez votre moyen de réception" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {JEKO_PAYOUT_METHODS.map((method) => (
+                                <SelectItem key={method.value} value={method.value}>{method.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            Vos coordonnées de réception seront demandées dans votre espace agence après validation.
+                          </p>
                         </div>
 
                         <div className="space-y-2">

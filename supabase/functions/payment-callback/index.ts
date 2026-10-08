@@ -127,7 +127,7 @@ serve(async (req) => {
     
     const { data: existingPayment, error: fetchError } = await supabase
       .from('payments')
-      .select('id, status, transaction_id, booking_id, payment_method')
+      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method')
       .eq('transaction_id', cpm_trans_id)
       .single();
 
@@ -219,24 +219,32 @@ serve(async (req) => {
     // Extraire la cible (réservation ou abonnement) des métadonnées
     let bookingId: string | null = null;
     let subscriptionId: string | null = null;
+    let carPartnerSubscriptionId: string | null = existingPayment?.car_partner_subscription_id || null;
+    let agencyBrandingSubscriptionId: string | null = existingPayment?.agency_branding_subscription_id || null;
 
     if (verifyData.data?.metadata) {
       try {
         const metadata = JSON.parse(verifyData.data.metadata);
         bookingId = metadata.booking_id || null;
         subscriptionId = metadata.subscription_id || null;
+        carPartnerSubscriptionId = metadata.car_partner_subscription_id || carPartnerSubscriptionId;
+        agencyBrandingSubscriptionId = metadata.agency_branding_subscription_id || agencyBrandingSubscriptionId;
       } catch (e) {
         console.warn('⚠️ Impossible de parser les métadonnées');
       }
     }
 
     // Fallback: utiliser la cible du paiement existant
-    if (!bookingId && !subscriptionId && existingPayment?.booking_id) {
+    if (!bookingId && !subscriptionId && !carPartnerSubscriptionId && !agencyBrandingSubscriptionId && existingPayment) {
       bookingId = existingPayment.booking_id;
+      subscriptionId = existingPayment.subscription_id;
+      carPartnerSubscriptionId = existingPayment.car_partner_subscription_id;
+      agencyBrandingSubscriptionId = existingPayment.agency_branding_subscription_id;
     }
 
     console.log('   - Booking ID:', bookingId || 'Non trouvé');
     console.log('   - Subscription ID:', subscriptionId || 'Non trouvé');
+    console.log('   - Car subscription ID:', carPartnerSubscriptionId || 'Non trouvé');
 
     // ================================================================
     // ÉTAPE 7: Mise à jour du paiement
@@ -296,7 +304,10 @@ serve(async (req) => {
         transactionId: cpm_trans_id,
         bookingId,
         subscriptionId,
+        carPartnerSubscriptionId,
+        agencyBrandingSubscriptionId,
         paymentMethod: existingPayment?.payment_method || 'unknown',
+        paymentProvider: 'cinetpay',
         legacySubscriptionRequestId,
         legacyPlanId,
         legacyPlanName,

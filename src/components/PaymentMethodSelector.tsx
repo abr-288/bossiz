@@ -1,4 +1,4 @@
-import { CreditCard, Smartphone, Building2, Check, Wallet } from "lucide-react";
+import { Check, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PaymentMethod {
@@ -11,39 +11,11 @@ interface PaymentMethod {
 
 const paymentMethods: PaymentMethod[] = [
   {
-    id: "cinetpay",
-    name: "CinetPay",
-    description: "Orange Money, MTN, Moov, Carte bancaire",
+    id: "jeko",
+    name: "Jèko",
+    description: "Mobile Money ou carte bancaire sur la page sécurisée Jèko",
     icon: <Wallet className="h-6 w-6" />,
     color: "bg-orange-500/10 text-orange-500 border-orange-500/30",
-  },
-  {
-    id: "orange_money",
-    name: "Orange Money",
-    description: "Paiement mobile Orange",
-    icon: <Smartphone className="h-6 w-6" />,
-    color: "bg-orange-500/10 text-orange-500 border-orange-500/30",
-  },
-  {
-    id: "mtn_money",
-    name: "MTN Mobile Money",
-    description: "Paiement mobile MTN",
-    icon: <Smartphone className="h-6 w-6" />,
-    color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/30",
-  },
-  {
-    id: "moov_money",
-    name: "Moov Money",
-    description: "Paiement mobile Moov",
-    icon: <Smartphone className="h-6 w-6" />,
-    color: "bg-green-500/10 text-green-500 border-green-500/30",
-  },
-  {
-    id: "card",
-    name: "Carte bancaire",
-    description: "Visa, Mastercard via CinetPay",
-    icon: <CreditCard className="h-6 w-6" />,
-    color: "bg-blue-500/10 text-blue-500 border-blue-500/30",
   },
 ];
 

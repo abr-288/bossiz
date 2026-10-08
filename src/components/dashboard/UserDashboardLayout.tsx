@@ -9,6 +9,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getProfilePhotoUrl, getUserPhotoFromMetadata, PROFILE_UPDATED_EVENT } from "@/lib/profilePhoto";
 
 interface UserDashboardLayoutProps {
   children: ReactNode;
@@ -38,23 +39,33 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
         return;
       }
 
-      // Fetch user profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("full_name, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-      
-      setUserProfile({
-        full_name: profileData?.full_name || "Utilisateur",
-        email: user.email || "",
-        avatar_url: profileData?.avatar_url,
-      });
-      
+      await refreshProfile(user.id, user.email || "", getUserPhotoFromMetadata(user));
       setLoading(false);
     };
 
+    const refreshProfile = async (userId: string, email: string, metadataPhoto?: string) => {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", userId)
+        .maybeSingle();
+
+      setUserProfile({
+        full_name: profileData?.full_name || "Utilisateur",
+        email,
+        avatar_url: getProfilePhotoUrl(profileData?.avatar_url) || metadataPhoto,
+      });
+    };
+
     checkAuth();
+
+    const handleProfileUpdated = () => {
+      void supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) void refreshProfile(user.id, user.email || "", getUserPhotoFromMetadata(user));
+      });
+    };
+    window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
   }, [navigate]);
 
   if (loading) {

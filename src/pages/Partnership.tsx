@@ -46,11 +46,11 @@ const partnershipTypes: PartnershipType[] = [
     icon: Hotel,
     title: "Hôtels & hébergements",
     tagline: "Chambres, résidences, villas",
-    facts: ["Gratuit", "Commission 10%"],
+    facts: ["Gratuit", "Partage 90/10*"],
     conditions: [
       "Inscription gratuite, sans engagement",
       "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client",
-      "Commission de 10% prélevée sur chaque réservation confirmée",
+      "Pour les réservations réglées en ligne via Jèko, Bossiz conserve 10% et vous reverse 90% sous 24 heures après confirmation de la réservation.",
       "Espace de gestion autonome (offres, disponibilités) une fois la candidature validée",
     ],
     ctaLabel: "Devenir partenaire hôtel",
@@ -61,10 +61,11 @@ const partnershipTypes: PartnershipType[] = [
     icon: UtensilsCrossed,
     title: "Restaurants",
     tagline: "Réservation de table en ligne",
-    facts: ["Gratuit", "Commission 10%"],
+    facts: ["Gratuit", "Partage 90/10*"],
     conditions: [
       "Inscription gratuite, sans engagement",
-      "Commission de 10% calculée sur chaque réservation confirmée, sur la base de votre prix moyen par personne",
+      "Les réservations de table sont réglées directement au restaurant ; aucun reversement automatique Jèko n'est déclenché pour ces paiements.",
+      "Les paiements encaissés par Bossiz via Jèko suivent le partage 90/10 et sont reversés sous 24 heures.",
       "Gérez votre menu et vos disponibilités depuis votre espace agence",
     ],
     ctaLabel: "Devenir partenaire restaurant",
@@ -75,10 +76,10 @@ const partnershipTypes: PartnershipType[] = [
     icon: Compass,
     title: "Activités & tours",
     tagline: "Excursions, visites guidées",
-    facts: ["Gratuit", "Commission 10%"],
+    facts: ["Gratuit", "Partage 90/10*"],
     conditions: [
       "Inscription gratuite, sans engagement",
-      "Commission de 10% sur chaque réservation",
+      "Pour les réservations réglées en ligne via Jèko, Bossiz conserve 10% et vous reverse 90% sous 24 heures.",
       "Visibilité dans les résultats Activités & Tours",
     ],
     ctaLabel: "Devenir partenaire activité",
@@ -89,10 +90,11 @@ const partnershipTypes: PartnershipType[] = [
     icon: Hammer,
     title: "Artisans & guides",
     tagline: "Créations & savoir-faire local",
-    facts: ["Gratuit", "Commission 10%"],
+    facts: ["Gratuit", "Partage 90/10*"],
     conditions: [
       "Inscription gratuite, sans engagement",
-      "Commission de 10% sur les commandes que vous confirmez, calculée sur le prix affiché de la création",
+      "Les commandes réglées via Jèko suivent le partage 90/10 ; les demandes doivent être confirmées depuis votre espace agence.",
+      "Les paiements reçus directement par vous ne sont pas reversés automatiquement par Jèko.",
       "Fiche dédiée avec photos et description",
     ],
     ctaLabel: "Devenir partenaire artisan",
@@ -103,11 +105,11 @@ const partnershipTypes: PartnershipType[] = [
     icon: Sparkles,
     title: "Bien-être & Beauté",
     tagline: "Spa, coiffure, institut, yoga",
-    facts: ["Gratuit", "Commission 10%"],
+    facts: ["Gratuit", "Partage 90/10*"],
     conditions: [
       "Inscription gratuite, sans engagement",
-      "Commission de 10% calculée sur chaque rendez-vous confirmé, sur la base du prix de la prestation choisie",
       "Gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence",
+      "Le règlement des prestations se fait directement auprès de vous ; aucun reversement automatique Jèko n'est déclenché pour ces paiements.",
     ],
     ctaLabel: "Devenir partenaire bien-être",
     ctaTo: "/devenir-partenaire?type=wellness",
@@ -116,11 +118,11 @@ const partnershipTypes: PartnershipType[] = [
     id: "cars",
     icon: Car,
     title: "Location de voitures",
-    tagline: "Découverte, Pro ou Flotte",
-    facts: ["Dès 0 XOF/mois", "Commission 5 à 12%"],
+    tagline: "Pro ou Flotte",
+    facts: ["Dès 25 000 XOF/mois", "Commission selon le forfait"],
     conditions: [
-      "3 forfaits : Découverte (gratuit), Pro (25 000 XOF/mois) et Flotte (60 000 XOF/mois)",
-      "Commission dégressive selon le forfait : 12% → 8% → 5%",
+      "Deux forfaits payants : Pro (25 000 XOF/mois) et Flotte (60 000 XOF/mois). Un forfait actif est requis pour publier un véhicule.",
+      "La commission applicable dépend du forfait souscrit.",
       "Mise en avant, support prioritaire et badge vérifié selon le forfait choisi",
     ],
     ctaLabel: "Devenir partenaire voiture",
@@ -243,7 +245,7 @@ const Partnership = () => {
             </span>
             <span className="flex items-center gap-2">
               <Percent className="w-4 h-4 text-gold" />
-              Commission dès 5%
+              Partage 90/10*
             </span>
             <span className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gold" />
@@ -260,6 +262,11 @@ const Partnership = () => {
             <PartnershipCard key={type.id} type={type} index={index} />
           ))}
         </div>
+        <p className="text-sm text-muted-foreground text-center max-w-3xl mx-auto -mt-10 mb-16">
+          * Le partage 90/10 et le reversement sous 24 heures s'appliquent aux paiements encaissés via Jèko.
+          Les règlements effectués directement auprès du partenaire ne transitent pas par Bossiz et ne peuvent
+          pas être reversés automatiquement.
+        </p>
 
         {/* How it works */}
         <div className="mb-16">

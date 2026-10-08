@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { NationalitySelect } from "@/components/NationalitySelect";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -172,30 +173,45 @@ export const PassengerStep = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-6 md:space-y-7"
     >
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border border-primary/20">
-        <h2 className="text-2xl font-bold text-primary mb-2">{labels.title}</h2>
-        <p className="text-muted-foreground">
-          Veuillez renseigner les informations exactement comme indiqué sur les documents d'identité
-        </p>
+      <div className="flex flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm md:flex-row md:items-center md:justify-between md:p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <Users className="h-6 w-6" />
+          </div>
+          <div>
+            <Badge variant="secondary" className="mb-2 rounded-full px-3 text-[11px]">
+              ÉTAPE 1 · PARTICIPANTS
+            </Badge>
+            <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl">{labels.title}</h2>
+            <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              Indiquez les informations du contact principal pour préparer votre réservation.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 self-start rounded-full bg-muted/70 px-3 py-2 text-xs font-medium text-muted-foreground md:self-center">
+          <Users className="h-4 w-4 text-primary" />
+          {totalPassengers} participant{totalPassengers > 1 ? "s" : ""}
+        </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-7">
           {/* Participant principal */}
-          <Card className="p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <User className="h-5 w-5 text-white" />
+          <Card className="overflow-hidden rounded-2xl border shadow-sm">
+            <div className="flex items-center gap-4 border-b bg-muted/20 px-5 py-4 md:px-7 md:py-5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                <User className="h-5 w-5" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">{labels.main}</h3>
-                <p className="text-sm text-muted-foreground">Contact de réservation</p>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-foreground">{labels.main}</h3>
+                <p className="mt-0.5 text-sm text-muted-foreground">Contact de réservation</p>
               </div>
+              <Badge variant="outline" className="shrink-0 rounded-full bg-background">Principal</Badge>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-6 p-5 md:p-8 lg:grid-cols-2">
               <FormField
                 control={form.control}
                 name="passengers.0.firstName"
@@ -209,7 +225,7 @@ export const PassengerStep = ({
                       <Input
                         {...field}
                         placeholder={t('passengerStep.firstNamePlaceholder')}
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -230,7 +246,7 @@ export const PassengerStep = ({
                       <Input
                         {...field}
                         placeholder="Nom"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -251,7 +267,7 @@ export const PassengerStep = ({
                       <Input
                         {...field}
                         type="date"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -284,7 +300,7 @@ export const PassengerStep = ({
                     <FormLabel>Type de document *</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="h-12 border-2">
+                        <SelectTrigger className="h-11 rounded-xl bg-background">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -311,7 +327,7 @@ export const PassengerStep = ({
                       <Input
                         {...field}
                         placeholder="Ex: 123456789"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -332,7 +348,7 @@ export const PassengerStep = ({
                       <Input
                         {...field}
                         type="date"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -353,7 +369,7 @@ export const PassengerStep = ({
                       <Input
                         {...field}
                         type="date"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -367,19 +383,23 @@ export const PassengerStep = ({
           {totalPassengers > 1 && (
             <div className="space-y-4">
               {Array.from({ length: totalPassengers - 1 }, (_, i) => i + 1).map((index) => (
-                <Card key={index} className="p-6 border border-border/50">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                      <Users className="h-5 w-5 text-primary" />
+                <Card key={index} className="overflow-hidden rounded-2xl border shadow-sm">
+                  <div className="flex items-center gap-4 border-b bg-muted/20 px-5 py-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-primary">
+                      <Users className="h-5 w-5" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {labels.other} {index + 1} ({index < adultsCount ? "Adulte" : "Enfant"})
-                      </h3>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-foreground">{labels.other} {index + 1}</h3>
+                      <p className="mt-0.5 text-sm text-muted-foreground">
+                        Participant {index < adultsCount ? "adulte" : "enfant"}
+                      </p>
                     </div>
+                    <Badge variant="outline" className="shrink-0 rounded-full bg-background">
+                      {index < adultsCount ? "Adulte" : "Enfant"}
+                    </Badge>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-x-6 gap-y-6 p-5 md:p-7 lg:grid-cols-2">
                     <FormField
                       control={form.control}
                       name={`passengers.${index}.firstName`}
@@ -393,7 +413,7 @@ export const PassengerStep = ({
                             <Input
                               {...field}
                               placeholder={t('passengerStep.firstNamePlaceholder')}
-                              className="h-12 border-2"
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -414,7 +434,7 @@ export const PassengerStep = ({
                             <Input
                               {...field}
                               placeholder="Nom"
-                              className="h-12 border-2"
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -435,7 +455,7 @@ export const PassengerStep = ({
                             <Input
                               {...field}
                               type="date"
-                              className="h-12 border-2"
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -468,7 +488,7 @@ export const PassengerStep = ({
                           <FormLabel>Type de document *</FormLabel>
                           <FormControl>
                             <Select value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger className="h-12 border-2">
+                              <SelectTrigger className="h-11 rounded-xl bg-background">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -495,7 +515,7 @@ export const PassengerStep = ({
                             <Input
                               {...field}
                               placeholder="Ex: 123456789"
-                              className="h-12 border-2"
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -512,7 +532,7 @@ export const PassengerStep = ({
             control={form.control}
             name="termsAccepted"
             render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 p-4 bg-muted/50 rounded-lg">
+              <FormItem className="flex items-start space-x-3 rounded-xl border bg-card p-4 shadow-sm">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -532,7 +552,7 @@ export const PassengerStep = ({
           <div className="mt-8">
             <Button
               type="submit"
-              className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="h-12 w-full rounded-xl text-base font-semibold shadow-sm"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Vérification..." : getNextButtonText()}

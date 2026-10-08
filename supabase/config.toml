@@ -9,6 +9,9 @@ project_id = "gpwlzhegvjsbgbaepfjz"
 [functions.jeko-webhook]
 verify_jwt = false
 
+[functions.send-password-reset]
+verify_jwt = false
+
 [api]
 enabled = true
 # Port to use for the API URL.
@@ -158,7 +161,7 @@ enabled = true
 # in emails.
 site_url = "https://app.bossiz.com"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://app.bossiz.com", "https://app.bossiz.com/**", "http://localhost:8080", "http://localhost:8080/**"]
+additional_redirect_urls = ["https://app.bossiz.com", "https://app.bossiz.com/**", "http://localhost:8080", "http://localhost:8080/**", "http://localhost:5173/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).

@@ -31,7 +31,9 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { PhoneNumberInput } from "@/components/PhoneNumberInput";
 import { supabase } from "@/integrations/supabase/client";
+import type { JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Building2, Search, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
@@ -84,7 +86,7 @@ export default function AdminAgencies() {
   const { toast } = useToast();
   const location = useLocation();
   const prefillApplication = location.state?.prefillApplication as
-    | { id: string; name: string; description: string | null; contact_email: string | null; contact_phone: string | null; logo_url: string | null; requested_car_plan_id?: string | null }
+    | { id: string; name: string; description: string | null; contact_email: string | null; contact_phone: string | null; logo_url: string | null; requested_car_plan_id?: string | null; preferred_payout_method?: JekoPayoutMethod | null }
     | undefined;
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
@@ -265,7 +267,11 @@ export default function AdminAgencies() {
             description: formData.description || null,
             logo_url: formData.logo_url || null,
             contact_email: formData.contact_email || null,
-            contact_phone: formData.contact_phone || null,
+            contact_phone: formData.contact_phone
+              ? formData.contact_phone.startsWith("+")
+                ? formData.contact_phone
+                : `+225 ${formData.contact_phone}`
+              : null,
             is_visible: formData.is_visible,
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
@@ -276,6 +282,18 @@ export default function AdminAgencies() {
           .eq("id", editingAgency.id);
 
         if (error) throw error;
+
+        const { error: roleError } = await supabase
+          .from("user_roles")
+          .upsert(
+            {
+              user_id: editingAgency.owner_id,
+              role: "sub_agency",
+            },
+            { onConflict: "user_id,role", ignoreDuplicates: true },
+          );
+
+        if (roleError) throw roleError;
 
         toast({
           title: "Succès",
@@ -290,7 +308,11 @@ export default function AdminAgencies() {
             description: formData.description || null,
             logo_url: formData.logo_url || null,
             contact_email: formData.contact_email || null,
-            contact_phone: formData.contact_phone || null,
+            contact_phone: formData.contact_phone
+              ? formData.contact_phone.startsWith("+")
+                ? formData.contact_phone
+                : `+225 ${formData.contact_phone}`
+              : null,
             owner_id: formData.owner_id,
             is_visible: formData.is_visible,
             is_active: formData.is_active,
@@ -304,17 +326,36 @@ export default function AdminAgencies() {
 
         if (agencyError) throw agencyError;
 
+        if (prefillApplication?.preferred_payout_method) {
+          const { error: payoutDetailsError } = await supabase
+            .from("agency_payout_details")
+            .upsert({
+              agency_id: newAgency.id,
+              payment_method: prefillApplication.preferred_payout_method,
+              beneficiary_name: formData.name,
+            });
+          if (payoutDetailsError) {
+            console.error("Could not save the partner's preferred payout method:", payoutDetailsError);
+            toast({
+              title: "Agence créée, reversement à configurer",
+              description: "Le moyen choisi n'a pas pu être enregistré. Le partenaire devra le sélectionner dans ses paramètres.",
+              variant: "destructive",
+            });
+          }
+        }
+
         // Add sub_agency role to user
         const { error: roleError } = await supabase
           .from("user_roles")
-          .insert({
-            user_id: formData.owner_id,
-            role: "sub_agency" as any,
-          });
+          .upsert(
+            {
+              user_id: formData.owner_id,
+              role: "sub_agency",
+            },
+            { onConflict: "user_id,role", ignoreDuplicates: true },
+          );
 
-        if (roleError && !roleError.message.includes("duplicate")) {
-          console.error("Error adding role:", roleError);
-        }
+        if (roleError) throw roleError;
 
         if (prefillApplication?.id) {
           await supabase
@@ -531,10 +572,10 @@ export default function AdminAgencies() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="contact_phone">Téléphone</Label>
-                    <Input
+                    <PhoneNumberInput
                       id="contact_phone"
                       value={formData.contact_phone}
-                      onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+                      onValueChange={(contact_phone) => setFormData({ ...formData, contact_phone })}
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
@@ -554,16 +595,8 @@ export default function AdminAgencies() {
                       rows={3}
                     />
                   <div className="space-y-2">
-                    <Label htmlFor="commission_rate">Taux de commission (%)</Label>
-                    <Input
-                      id="commission_rate"
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.5"
-                      value={formData.commission_rate}
-                      onChange={(e) => setFormData({ ...formData, commission_rate: parseFloat(e.target.value) || 0 })}
-                    />
+                    <Label>Partage des ventes en ligne</Label>
+                    <p className="text-sm text-muted-foreground">10% pour Bossiz, 90% pour l'agence. Le taux n'est pas modifiable.</p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="car_plan_id">Forfait voiture</Label>
@@ -590,9 +623,6 @@ export default function AdminAgencies() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Choisir un forfait ajuste automatiquement le taux de commission ci-dessus ; vous pouvez ensuite l'affiner manuellement.
-                    </p>
                   </div>
                   </div>
                 </div>
@@ -602,8 +632,14 @@ export default function AdminAgencies() {
                       id="is_visible"
                       checked={formData.is_visible}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_visible: checked })}
+                      disabled={!formData.is_visible}
                     />
-                    <Label htmlFor="is_visible">Branding visible aux clients</Label>
+                    <div>
+                      <Label htmlFor="is_visible">Branding visible aux clients — 2 500 F/mois</Label>
+                      {!formData.is_visible && (
+                        <p className="text-xs text-muted-foreground">Le partenaire doit payer l’abonnement depuis ses paramètres pour activer le branding.</p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
@@ -667,7 +703,7 @@ export default function AdminAgencies() {
                 <TableHead>Agence</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Propriétaire</TableHead>
-                <TableHead>Commission</TableHead>
+                <TableHead>Part agence</TableHead>
                 <TableHead>Forfait voiture</TableHead>
                 <TableHead>Visibilité</TableHead>
                 <TableHead>Statut</TableHead>
@@ -729,7 +765,7 @@ export default function AdminAgencies() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">
-                        {agency.commission_rate ?? 10}%
+                        90%
                       </Badge>
                     </TableCell>
                     <TableCell>

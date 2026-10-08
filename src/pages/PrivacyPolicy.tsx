@@ -57,7 +57,7 @@ const PrivacyPolicy = () => {
       content: [
         "Vos données peuvent être partagées avec :",
         "• **Compagnies aériennes et hôtels** : pour l'exécution de vos réservations (transmission des informations passagers obligatoires).",
-        "• **Prestataires de paiement** : pour le traitement sécurisé des transactions (CinetPay, Lygos).",
+        "• **Prestataires de paiement** : pour le traitement sécurisé des transactions Jèko.",
         "• **Sous-agences partenaires** : uniquement les données nécessaires à l'exécution du service réservé.",
         "• **Autorités compétentes** : en cas d'obligation légale (réglementations aériennes, fiscales, judiciaires).",
         "",

@@ -1,31 +1,17 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, AlertCircle, Smartphone, CheckCircle2, Wallet } from "lucide-react";
+import { AlertCircle, ArrowRight, CalendarDays, CheckCircle2, CreditCard, Loader2, MapPin, ShieldCheck, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { paymentSchema, type PaymentInput } from "@/lib/validationSchemas";
-import { validateWithSchema, getUserFriendlyErrorMessage } from "@/lib/formHelpers";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ErrorBoundary, { ErrorFallback } from "@/components/ErrorBoundary";
-import PaymentMethodSelector from "@/components/PaymentMethodSelector";
+import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 interface PaymentBooking {
   id: string;
@@ -57,26 +43,14 @@ export default function Payment() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [booking, setBooking] = useState<PaymentBooking | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState("cinetpay");
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [validatedFormData, setValidatedFormData] = useState<PaymentInput | null>(null);
   const amountToPay = booking?.payment_plan === "deposit" && Number(booking.balance_due) > 0
     ? Number(booking.amount_due_now)
     : Number(booking?.total_price || 0);
-  
-  // Customer info
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerAddress, setCustomerAddress] = useState("");
-  const [customerCity, setCustomerCity] = useState("Abidjan");
 
   useEffect(() => {
     if (bookingId) {
       loadBooking();
-      loadUserProfile();
     } else {
       navigate("/dashboard?tab=bookings");
     }
@@ -144,9 +118,6 @@ export default function Payment() {
       }
 
       setBooking(data);
-      setCustomerName(data.customer_name || "");
-      setCustomerEmail(data.customer_email || "");
-      setCustomerPhone(data.customer_phone || "");
     } catch (error: unknown) {
       console.error("Error loading booking:", error);
       toast({
@@ -160,75 +131,14 @@ export default function Payment() {
     }
   };
 
-  const loadUserProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (profile) {
-          if (!customerName) setCustomerName(profile.full_name || "");
-          if (!customerPhone) setCustomerPhone(profile.phone || "");
-          if (!customerEmail) setCustomerEmail(user.email || "");
-        } else if (!customerEmail) {
-          setCustomerEmail(user.email || "");
-        }
-      }
-    } catch (error) {
-      console.error("Error loading user profile:", error);
-    }
+  const handlePayment = async () => {
+    setGeneralError(null);
+    await processPayment();
   };
 
-  const handlePayment = async () => {
+  const processPayment = async () => {
     if (!booking) return;
 
-    // Clear previous errors
-    setValidationErrors({});
-    setGeneralError(null);
-
-    // Validate form data with Zod
-    const formData: PaymentInput = {
-      customerName,
-      customerEmail,
-      customerPhone,
-      customerAddress: customerAddress || undefined,
-      customerCity,
-      paymentMethod: paymentMethod as "wave" | "mobile_money" | "card" | "bank_transfer",
-    };
-
-    const validation = validateWithSchema(paymentSchema, formData);
-
-    if (validation.success === false) {
-      // Accès safe aux erreurs après vérification explicite
-      setValidationErrors(validation.errors);
-      toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
-        variant: "destructive",
-      });
-      
-      // Scroll to first error
-      const firstErrorField = Object.keys(validation.errors)[0];
-      document.getElementById(firstErrorField)?.focus();
-      return;
-    }
-
-    // Show confirmation dialog for mobile payment methods
-    if (paymentMethod === 'wave' || paymentMethod === 'mobile_money') {
-      setValidatedFormData(validation.data);
-      setShowConfirmDialog(true);
-      return;
-    }
-
-    // For card and bank transfer, proceed directly
-    await processPayment(validation.data);
-  };
-
-  const processPayment = async (validatedData: PaymentInput) => {
     // Prevent double processing
     if (processing) return;
 
@@ -286,13 +196,12 @@ export default function Payment() {
           bookingId: bookingId,
           amount: amountToPay,
           currency: "XOF",
-          paymentMethod: validatedData.paymentMethod,
+          paymentMethod: "jeko",
           customerInfo: {
-            name: validatedData.customerName,
-            email: validatedData.customerEmail,
-            phone: validatedData.customerPhone,
-            address: validatedData.customerAddress,
-            city: validatedData.customerCity,
+            name: booking.customer_name,
+            email: booking.customer_email,
+            phone: booking.customer_phone,
+            city: booking.services?.location,
           },
         },
       });
@@ -304,15 +213,7 @@ export default function Payment() {
         console.error("Erreur edge function:", error);
         
         // Extraire le message d'erreur
-        let errorMessage = "Une erreur est survenue lors du traitement du paiement";
-        
-        if (error.message) {
-          errorMessage = error.message;
-        } else if (typeof error === 'string') {
-          errorMessage = error;
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(await getEdgeFunctionErrorMessage(error, "Une erreur est survenue lors du traitement du paiement."));
       }
 
       // Vérifier le succès de la réponse
@@ -377,23 +278,6 @@ export default function Payment() {
     }
   };
 
-  const handleConfirmPayment = () => {
-    setShowConfirmDialog(false);
-    if (validatedFormData) {
-      processPayment(validatedFormData);
-    }
-  };
-
-  const getPaymentMethodLabel = () => {
-    switch (paymentMethod) {
-      case 'wave': return 'Wave';
-      case 'mobile_money': return 'Mobile Money';
-      case 'card': return 'Carte bancaire';
-      case 'bank_transfer': return 'Virement bancaire';
-      default: return paymentMethod;
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -410,12 +294,22 @@ export default function Payment() {
     <ErrorBoundary fallback={<ErrorFallback title={t('payment.errors.paymentErrorTitle')} description={t('payment.errors.loadPageDescription')} />}>
       <div className="min-h-screen flex flex-col pt-16">
         <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
-          <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Paiement</h1>
-            <p className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8">
-              {t('payment.subtitle')}
-            </p>
+        <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <CheckCircle2 className="h-7 w-7" />
+              </div>
+              <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">
+                Récapitulatif de réservation
+              </p>
+              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                Vérifiez les informations
+              </h1>
+              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+                Consultez les détails ci-dessous. Vous serez ensuite redirigé vers Jèko pour effectuer votre paiement sécurisé.
+              </p>
+            </div>
 
             {generalError && (
               <Alert variant="destructive" className="mb-6">
@@ -424,326 +318,138 @@ export default function Payment() {
               </Alert>
             )}
 
-            {/* Mobile payment confirmation info */}
-            {(paymentMethod === 'wave' || paymentMethod === 'mobile_money') && customerPhone && (
-              <Alert className="mb-6 border-primary/30 bg-primary/5">
-                <Smartphone className="h-4 w-4 text-primary" />
-                <AlertDescription className="text-foreground">
-                  {t('payment.mobileRequestNote')} <strong>{customerPhone}</strong>
-                </AlertDescription>
-              </Alert>
-            )}
+            <Card className="overflow-hidden border-0 shadow-lg">
+              <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 md:p-8">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Votre séjour</p>
+                    <h2 className="mt-1 text-2xl font-bold">
+                      {booking.services?.name || "Réservation Bossiz+"}
+                    </h2>
+                    {booking.services?.type && (
+                      <p className="mt-1 text-sm capitalize text-muted-foreground">
+                        {booking.services.type}
+                      </p>
+                    )}
+                  </div>
+                  <div className="rounded-full border bg-background/80 px-3 py-1 text-xs font-medium">
+                    Réf. {booking.id.substring(0, 8).toUpperCase()}
+                  </div>
+                </div>
+              </div>
 
-          <Card className="p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Détails de la réservation</h2>
-            <div className="space-y-3">
-              {/* Service Information */}
-              {booking.services && (
-                <>
-                  <div className="flex justify-between items-start">
-                    <span className="text-muted-foreground">Service:</span>
-                    <span className="font-medium text-right">{booking.services.name}</span>
-                  </div>
-                  <div className="flex justify-between items-start">
-                    <span className="text-muted-foreground">Type:</span>
-                    <span className="font-medium text-right capitalize">{booking.services.type}</span>
-                  </div>
-                  <div className="flex justify-between items-start">
-                    <span className="text-muted-foreground">Localisation:</span>
-                    <span className="font-medium text-right">{booking.services.location}</span>
-                  </div>
-                </>
-              )}
-              
-              {/* Dates - Ne pas afficher date de fin pour vols aller simple */}
-              <div className="flex justify-between items-start">
-                <span className="text-muted-foreground">Date de début:</span>
-                <span className="font-medium text-right">
-                  {new Date(booking.start_date).toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </span>
-              </div>
-              
-              {booking.end_date && booking.end_date !== booking.start_date && booking.services?.type !== 'flight' && (
-                <div className="flex justify-between items-start">
-                  <span className="text-muted-foreground">Date de fin:</span>
-                  <span className="font-medium text-right">
-                    {new Date(booking.end_date).toLocaleDateString('fr-FR', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
-                  </span>
-                </div>
-              )}
-              
-              {/* Guests */}
-              <div className="flex justify-between items-start">
-                <span className="text-muted-foreground">Nombre de personnes:</span>
-                <span className="font-medium text-right">{booking.guests}</span>
-              </div>
-              
-              {/* Customer Info */}
-              <div className="border-t pt-3 mt-3">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-muted-foreground">Nom du client:</span>
-                  <span className="font-medium text-right">{booking.customer_name}</span>
-                </div>
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-muted-foreground">Email:</span>
-                  <span className="font-medium text-right">{booking.customer_email}</span>
-                </div>
-                <div className="flex justify-between items-start">
-                  <span className="text-muted-foreground">Téléphone:</span>
-                  <span className="font-medium text-right">{booking.customer_phone}</span>
-                </div>
-              </div>
-              
-              {/* Notes if available */}
-              {booking.notes && (
-                <div className="border-t pt-3 mt-3">
-                  <span className="text-muted-foreground block mb-1">Notes:</span>
-                  <p className="text-sm">{booking.notes}</p>
-                </div>
-              )}
-              
-              {/* Booking Reference & Total */}
-              <div className="border-t pt-3 mt-3">
-                <div className="flex justify-between mb-2">
-                  <span className="text-muted-foreground">Référence:</span>
-                  <span className="font-mono text-sm">{booking.id.substring(0, 8).toUpperCase()}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground text-lg">Montant total:</span>
-                  <span className="font-bold text-2xl text-primary">
-                    <Price amount={booking.total_price} fromCurrency={booking.currency} />
-                  </span>
-                </div>
-                {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0 && (
-                  <>
-                    <div className="flex justify-between items-center text-primary">
-                      <span>À payer maintenant ({booking.deposit_percent} %):</span>
-                      <span className="font-bold"><Price amount={booking.amount_due_now} fromCurrency={booking.currency} /></span>
+              <div className="space-y-6 p-6 md:p-8">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
+                    <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Date de début</p>
+                      <p className="mt-1 font-medium">
+                        {new Date(booking.start_date).toLocaleDateString("fr-FR", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </p>
                     </div>
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Solde à régler sur place:</span>
-                      <span><Price amount={booking.balance_due} fromCurrency={booking.currency} /></span>
+                  </div>
+                  {booking.end_date && booking.end_date !== booking.start_date && booking.services?.type !== "flight" && (
+                    <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
+                      <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Date de fin</p>
+                        <p className="mt-1 font-medium">
+                          {new Date(booking.end_date).toLocaleDateString("fr-FR", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
                     </div>
-                  </>
+                  )}
+                  {booking.services?.location && (
+                    <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
+                      <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Destination</p>
+                        <p className="mt-1 font-medium">{booking.services.location}</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
+                    <Users className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Voyageurs</p>
+                      <p className="mt-1 font-medium">{booking.guests}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap justify-between gap-2 border-t pt-5 text-sm">
+                  <span className="text-muted-foreground">Réservation au nom de</span>
+                  <span className="font-medium">{booking.customer_name}</span>
+                </div>
+
+                <div className="rounded-xl border bg-background p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0
+                          ? `Acompte à régler (${booking.deposit_percent} %)`
+                          : "Total à régler"}
+                      </p>
+                      <p className="mt-1 text-3xl font-bold text-primary">
+                        <Price amount={amountToPay} fromCurrency={booking.currency} />
+                      </p>
+                    </div>
+                    <CreditCard className="h-8 w-8 text-primary/70" />
+                  </div>
+                  {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0 && (
+                    <div className="mt-4 flex justify-between border-t pt-3 text-sm">
+                      <span className="text-muted-foreground">Solde restant à régler sur place</span>
+                      <span className="font-medium">
+                        <Price amount={booking.balance_due} fromCurrency={booking.currency} />
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {booking.notes && (
+                  <div className="rounded-xl border p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Note de réservation</p>
+                    <p className="mt-2 text-sm">{booking.notes}</p>
+                  </div>
                 )}
-              </div>
-            </div>
-          </Card>
 
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Informations de paiement</h2>
-            
-            <div className="space-y-6">
-              {/* Payment Method */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">
-                  {t('payment.method')}
-                </Label>
-                <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
-              </div>
-
-              {/* Customer Information */}
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="customerName">Nom complet *</Label>
-                  <Input
-                    id="customerName"
-                    value={customerName}
-                    onChange={(e) => {
-                      setCustomerName(e.target.value);
-                      if (validationErrors.customerName) {
-                        setValidationErrors(prev => {
-                          const { customerName, ...rest } = prev;
-                          return rest;
-                        });
-                      }
-                    }}
-                    placeholder={t('payment.fullNamePlaceholder')}
-                    className={validationErrors.customerName ? "border-destructive" : ""}
-                    aria-invalid={!!validationErrors.customerName}
-                    aria-describedby={validationErrors.customerName ? "customerName-error" : undefined}
-                  />
-                  {validationErrors.customerName && (
-                    <p id="customerName-error" className="text-xs text-destructive mt-1">
-                      {validationErrors.customerName}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="customerEmail">Email *</Label>
-                  <Input
-                    id="customerEmail"
-                    type="email"
-                    value={customerEmail}
-                    onChange={(e) => {
-                      setCustomerEmail(e.target.value);
-                      if (validationErrors.customerEmail) {
-                        setValidationErrors(prev => {
-                          const { customerEmail, ...rest } = prev;
-                          return rest;
-                        });
-                      }
-                    }}
-                    placeholder={t('payment.emailPlaceholder')}
-                    className={validationErrors.customerEmail ? "border-destructive" : ""}
-                    aria-invalid={!!validationErrors.customerEmail}
-                    aria-describedby={validationErrors.customerEmail ? "customerEmail-error" : undefined}
-                  />
-                  {validationErrors.customerEmail && (
-                    <p id="customerEmail-error" className="text-xs text-destructive mt-1">
-                      {validationErrors.customerEmail}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="customerPhone">Téléphone *</Label>
-                  <Input
-                    id="customerPhone"
-                    type="tel"
-                    value={customerPhone}
-                    onChange={(e) => {
-                      setCustomerPhone(e.target.value);
-                      if (validationErrors.customerPhone) {
-                        setValidationErrors(prev => {
-                          const { customerPhone, ...rest } = prev;
-                          return rest;
-                        });
-                      }
-                    }}
-                    placeholder="+225 07 XX XX XX XX"
-                    className={validationErrors.customerPhone ? "border-destructive" : ""}
-                    aria-invalid={!!validationErrors.customerPhone}
-                    aria-describedby={validationErrors.customerPhone ? "customerPhone-error" : undefined}
-                  />
-                  {validationErrors.customerPhone && (
-                    <p id="customerPhone-error" className="text-xs text-destructive mt-1">
-                      {validationErrors.customerPhone}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t('payment.phoneNote')}
+                <div className="flex gap-3 rounded-xl border border-green-500/20 bg-green-500/5 p-4">
+                  <ShieldCheck className="h-5 w-5 shrink-0 text-green-600" />
+                  <p className="text-sm text-muted-foreground">
+                    Le paiement sera effectué sur la page sécurisée de Jèko. Vos données bancaires ne sont pas saisies ni conservées sur Bossiz+.
                   </p>
                 </div>
 
-                <div>
-                  <Label htmlFor="customerAddress">Adresse</Label>
-                  <Input
-                    id="customerAddress"
-                    value={customerAddress}
-                    onChange={(e) => setCustomerAddress(e.target.value)}
-                    placeholder={t('payment.addressPlaceholder')}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="customerCity">Ville *</Label>
-                  <Input
-                    id="customerCity"
-                    value={customerCity}
-                    onChange={(e) => {
-                      setCustomerCity(e.target.value);
-                      if (validationErrors.customerCity) {
-                        setValidationErrors(prev => {
-                          const { customerCity, ...rest } = prev;
-                          return rest;
-                        });
-                      }
-                    }}
-                    placeholder="Abidjan"
-                    className={validationErrors.customerCity ? "border-destructive" : ""}
-                    aria-invalid={!!validationErrors.customerCity}
-                    aria-describedby={validationErrors.customerCity ? "customerCity-error" : undefined}
-                  />
-                  {validationErrors.customerCity && (
-                    <p id="customerCity-error" className="text-xs text-destructive mt-1">
-                      {validationErrors.customerCity}
-                    </p>
+                <Button onClick={handlePayment} disabled={processing} className="h-12 w-full text-base" size="lg">
+                  {processing ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Préparation du paiement...
+                    </>
+                  ) : (
+                    <>
+                      Continuer vers le paiement Jèko
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
                   )}
-                </div>
-              </div>
-
-              <Button
-                onClick={handlePayment}
-                disabled={processing}
-                className="w-full"
-                size="lg"
-              >
-                {processing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Traitement...
-                  </>
-                ) : (
-                  <>Payer <Price amount={amountToPay} fromCurrency={booking.currency} /></>
-                )}
-              </Button>
-
-              <p className="text-sm text-center text-muted-foreground">
-                {t('payment.securedBy')}
-              </p>
-            </div>
-          </Card>
-        </div>
-      </main>
-      <Footer />
-
-      {/* Payment Confirmation Dialog */}
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Smartphone className="h-5 w-5 text-primary" />
-              Confirmer le paiement {getPaymentMethodLabel()}
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-4 pt-2">
-                <p>
-                  Une demande de paiement de{" "}
-                  <strong className="text-foreground">
-                    <Price amount={amountToPay} fromCurrency={booking?.currency} />
-                  </strong>{" "}
-                  sera envoyée au numéro:
+                </Button>
+                <p className="text-center text-xs text-muted-foreground">
+                  Vous quitterez Bossiz+ pour finaliser le paiement sur Jèko.
                 </p>
-                <div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-primary/10 border border-primary/20">
-                  <Smartphone className="h-6 w-6 text-primary" />
-                  <span className="text-xl font-bold text-foreground">{customerPhone}</span>
-                </div>
-                <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>Vous recevrez une notification sur ce numéro pour confirmer le paiement</span>
-                </div>
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel disabled={processing}>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmPayment}
-              disabled={processing}
-              className="gap-2"
-            >
-              {processing ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Traitement...
-                </>
-              ) : (
-                "Confirmer et payer"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Card>
+          </div>
+        </main>
+      <Footer />
     </div>
   </ErrorBoundary>
   );

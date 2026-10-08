@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { requestPasswordReset } from "@/lib/requestPasswordReset";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Lock, Mail, User, ArrowLeft } from "lucide-react";
@@ -14,12 +13,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import bannerHotels from "@/assets/ordinateur.jpg";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
-import Logo from "@/components/Logo";
 import AnimatedFormField from "@/components/forms/AnimatedFormField";
 import {
   signUpSchema,
   signInSchema,
-  resetPasswordSchema,
   updatePasswordSchema,
   validateForm,
   getPasswordStrength,
@@ -29,7 +26,6 @@ const Auth = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [showResetPassword, setShowResetPassword] = useState(false);
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const [showMFAVerification, setShowMFAVerification] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
@@ -41,13 +37,11 @@ const Auth = () => {
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
   const [signUpForm, setSignUpForm] = useState({ fullName: "", email: "", password: "" });
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [resetForm, setResetForm] = useState({ email: "" });
   const [updateForm, setUpdateForm] = useState({ password: "", confirmPassword: "" });
   
   // Error states
   const [signInErrors, setSignInErrors] = useState<Record<string, string>>({});
   const [signUpErrors, setSignUpErrors] = useState<Record<string, string>>({});
-  const [resetErrors, setResetErrors] = useState<Record<string, string>>({});
   const [updateErrors, setUpdateErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -176,41 +170,6 @@ const Auth = () => {
     }
   };
 
-  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    const validation = validateForm(resetPasswordSchema, resetForm);
-    setResetErrors(validation.errors);
-    
-    if (!validation.valid) return;
-    
-    setLoading(true);
-
-    let resetError: Error | null = null;
-    try {
-      await requestPasswordReset(resetForm.email.trim(), "/auth");
-    } catch (err) {
-      resetError = err instanceof Error ? err : new Error(String(err));
-    }
-
-    setLoading(false);
-
-    if (resetError) {
-      toast({
-        title: t('common.error'),
-        description: resetError.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: t('auth.success.resetSent'),
-        description: t('auth.success.resetSentDesc'),
-      });
-      setShowResetPassword(false);
-      setResetForm({ email: "" });
-    }
-  };
-
   const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -280,12 +239,6 @@ const Auth = () => {
         <div className="flex-1 flex flex-col items-center justify-center">
           <Card className="bg-white border border-gray-200 shadow-sm rounded-3xl w-full max-w-lg">
             <CardHeader className="text-center pb-6 pt-4 px-6">
-              <div className="flex justify-center mb-4">
-                <Logo variant="dark" className="h-10 w-auto" />
-              </div>
-              <CardTitle className="text-2xl font-semibold text-gray-900 mb-2">
-                Bossiz+
-              </CardTitle>
               <CardDescription className="text-gray-600">
                 {t('auth.yourAgency')}
               </CardDescription>
@@ -326,37 +279,6 @@ const Auth = () => {
                       disabled={loading}
                     >
                       {loading ? t('common.loading') : t('auth.updateBtn')}
-                    </Button>
-                  </form>
-                </div>
-              ) : showResetPassword ? (
-                <div key="reset-password" className="space-y-4">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setShowResetPassword(false)}
-                    className="mb-4 text-gray-600 hover:text-gray-900"
-                  >
-                    ← Retour à la connexion
-                  </Button>
-                  <form onSubmit={handleResetPassword} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                      </label>
-                      <Input
-                        type="email"
-                        placeholder={t('auth.emailPlaceholder')}
-                        value={resetForm.email}
-                        onChange={(e) => setResetForm({ email: e.target.value })}
-                        className="h-11 border-gray-300 rounded-md"
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-md transition-colors" 
-                      disabled={loading}
-                    >
-                      {loading ? t('common.loading') : t('auth.resetPasswordBtn')}
                     </Button>
                   </form>
                 </div>
@@ -416,7 +338,7 @@ const Auth = () => {
                             </label>
                             <button
                               type="button"
-                              onClick={() => setShowResetPassword(true)}
+                              onClick={() => navigate("/forgot-password")}
                               className="text-sm font-medium text-primary hover:text-primary-dark transition-colors"
                             >
                               Mot de passe oublié ?

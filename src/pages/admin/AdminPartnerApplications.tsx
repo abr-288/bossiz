@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { JEKO_PAYOUT_METHOD_LABELS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { useToast } from "@/hooks/use-toast";
 import { FileText, Search, Check, X } from "lucide-react";
 import { format } from "date-fns";
@@ -28,6 +29,7 @@ interface PartnerApplication {
   status: string;
   created_at: string;
   requested_car_plan_id: string | null;
+  preferred_payout_method: JekoPayoutMethod | null;
 }
 
 const carPlanLabels: Record<string, string> = {
@@ -108,6 +110,7 @@ export default function AdminPartnerApplications() {
           contact_phone: application.contact_phone,
           logo_url: application.logo_url,
           requested_car_plan_id: application.requested_car_plan_id,
+          preferred_payout_method: application.preferred_payout_method,
         },
       },
     });
@@ -155,6 +158,7 @@ export default function AdminPartnerApplications() {
                 <TableHead>Contact</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Forfait demandé</TableHead>
+                <TableHead>Reversement souhaité</TableHead>
                 <TableHead>Statut</TableHead>
                 <TableHead>Reçue le</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -163,13 +167,13 @@ export default function AdminPartnerApplications() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : filteredApplications.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     Aucune candidature trouvée
                   </TableCell>
@@ -199,6 +203,11 @@ export default function AdminPartnerApplications() {
                       ) : (
                         <span className="text-sm text-muted-foreground">—</span>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      {application.preferred_payout_method
+                        ? JEKO_PAYOUT_METHOD_LABELS[application.preferred_payout_method]
+                        : "—"}
                     </TableCell>
                     <TableCell>{statusBadge(application.status)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">

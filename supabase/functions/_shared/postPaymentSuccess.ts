@@ -7,6 +7,8 @@
 // déjà vérifié que le paiement est bien accepté avant d'invoquer cette
 // fonction (vérification de statut CinetPay, ou signature webhook Jèko).
 
+import { scheduleAgencyPayout } from "./agencyPayouts.ts";
+
 // deno-lint-ignore no-explicit-any
 type SupabaseClient = any;
 
@@ -17,7 +19,10 @@ export interface HandlePaymentSuccessParams {
   transactionId: string;
   bookingId: string | null;
   subscriptionId: string | null;
+  carPartnerSubscriptionId?: string | null;
+  agencyBrandingSubscriptionId?: string | null;
   paymentMethod: string;
+  paymentProvider?: "jeko" | "cinetpay";
   legacySubscriptionRequestId?: string | null;
   legacyPlanId?: string;
   legacyPlanName?: string;
@@ -31,13 +36,124 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     transactionId,
     bookingId,
     subscriptionId,
+    carPartnerSubscriptionId,
+    agencyBrandingSubscriptionId,
     paymentMethod,
+    paymentProvider,
     legacySubscriptionRequestId,
     legacyPlanId,
     legacyPlanName,
   } = params;
 
-  if (subscriptionId) {
+  if (carPartnerSubscriptionId) {
+    const now = new Date();
+    const { data: pendingSubscription, error: lookupError } = await supabase
+      .from("car_partner_subscriptions")
+      .select("id, agency_id, plan_id, billing_cycle")
+      .eq("id", carPartnerSubscriptionId)
+      .eq("status", "processing")
+      .maybeSingle();
+    if (lookupError || !pendingSubscription) {
+      const { data: completedSubscription } = await supabase
+        .from("car_partner_subscriptions")
+        .select("status, transaction_id")
+        .eq("id", carPartnerSubscriptionId)
+        .maybeSingle();
+      if (completedSubscription?.status === "active" && completedSubscription.transaction_id === transactionId) {
+        return;
+      }
+      console.error("Car partner subscription was not in a payable state");
+      throw new Error("Car partner subscription was not in a payable state");
+    }
+
+    const endsAt = new Date(now);
+    endsAt.setDate(endsAt.getDate() + (pendingSubscription.billing_cycle === "yearly" ? 365 : 30));
+    const { data: subscription, error } = await supabase
+      .from("car_partner_subscriptions")
+      .update({
+        status: "active",
+        paid_at: now.toISOString(),
+        starts_at: now.toISOString(),
+        ends_at: endsAt.toISOString(),
+        transaction_id: transactionId,
+        updated_at: now.toISOString(),
+      })
+      .eq("id", carPartnerSubscriptionId)
+      .eq("status", "processing")
+      .select("id, agency_id, plan_id, billing_cycle")
+      .maybeSingle();
+
+    if (error || !subscription) {
+      console.error("Car partner subscription activation failed");
+      throw new Error("Car partner subscription activation failed");
+    }
+
+    const { error: agencyUpdateError } = await supabase
+      .from("agencies")
+      .update({ car_plan_id: subscription.plan_id, car_plan_started_at: now.toISOString() })
+      .eq("id", subscription.agency_id);
+    if (agencyUpdateError) console.error("Car partner plan agency sync failed");
+  } else if (agencyBrandingSubscriptionId) {
+    const now = new Date();
+    const { data: pendingSubscription, error: lookupError } = await supabase
+      .from("agency_branding_subscriptions")
+      .select("id, agency_id")
+      .eq("id", agencyBrandingSubscriptionId)
+      .eq("status", "processing")
+      .maybeSingle();
+
+    if (lookupError || !pendingSubscription) {
+      const { data: completedSubscription } = await supabase
+        .from("agency_branding_subscriptions")
+        .select("status, transaction_id, agency_id")
+        .eq("id", agencyBrandingSubscriptionId)
+        .maybeSingle();
+      if (completedSubscription?.status === "active" && completedSubscription.transaction_id === transactionId) {
+        const { error: agencyUpdateError } = await supabase
+          .from("agencies")
+          .update({ is_visible: true })
+          .eq("id", completedSubscription.agency_id);
+        if (agencyUpdateError) {
+          console.error("Agency branding activation retry failed");
+          throw new Error("Agency branding activation retry failed");
+        }
+        return;
+      }
+      console.error("Agency branding subscription was not in a payable state");
+      throw new Error("Agency branding subscription was not in a payable state");
+    }
+
+    const endsAt = new Date(now);
+    endsAt.setDate(endsAt.getDate() + 30);
+    const { data: subscription, error } = await supabase
+      .from("agency_branding_subscriptions")
+      .update({
+        status: "active",
+        paid_at: now.toISOString(),
+        starts_at: now.toISOString(),
+        ends_at: endsAt.toISOString(),
+        transaction_id: transactionId,
+        updated_at: now.toISOString(),
+      })
+      .eq("id", agencyBrandingSubscriptionId)
+      .eq("status", "processing")
+      .select("id, agency_id")
+      .maybeSingle();
+
+    if (error || !subscription) {
+      console.error("Agency branding subscription activation failed");
+      throw new Error("Agency branding subscription activation failed");
+    }
+
+    const { error: agencyUpdateError } = await supabase
+      .from("agencies")
+      .update({ is_visible: true })
+      .eq("id", subscription.agency_id);
+    if (agencyUpdateError) {
+      console.error("Agency branding activation failed");
+      throw new Error("Agency branding activation failed");
+    }
+  } else if (subscriptionId) {
     // Flux réel: activer l'abonnement créé par /subscription-payment
     console.log('   - Traitement abonnement (user_subscriptions)...');
 
@@ -162,25 +278,13 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       console.log(isFlight ? '✅ Paiement confirmé - PNR en attente' : '✅ Réservation confirmée');
     }
 
-    // Commission agence : uniquement si le service réservé appartient à une
-    // agence partenaire (agency_id non nul - jamais le cas pour un résultat
-    // API tiers ou un service créé à la volée sans partenaire). Le montant
-    // n'est JAMAIS repris du booking directement : toujours recalculé ici
-    // depuis le taux de commission stocké sur l'agence, pour ne pas dépendre
-    // d'une valeur que le client aurait pu influencer.
-    // La ligne est créée avec status='pending' - il n'existe pas de délai de
-    // reversement automatique : un admin la marque 'paid' manuellement une
-    // fois le virement/mobile money réellement effectué (voir /admin/commissions).
+    // La part agence est 90% du prix en ligne ; les 10% restants reviennent à Bossiz.
+    // Les transferts automatiques sont déclenchés uniquement pour l'argent encaissé
+    // dans le portefeuille Jèko, pas pour CinetPay ni les paiements en personne.
     const agencyId = bookingRow?.services?.agency_id;
     if (agencyId && bookingRow?.total_price != null) {
-      console.log('   - Calcul de la commission agence...');
-      const { data: agency } = await supabase
-        .from('agencies')
-        .select('commission_rate')
-        .eq('id', agencyId)
-        .single();
-
-      const commissionRate = Number(agency?.commission_rate ?? 10);
+      console.log('   - Calcul de la part agence...');
+      const commissionRate = 90;
       const bookingAmount = Number(bookingRow.total_price);
       const commissionAmount = Math.round(bookingAmount * (commissionRate / 100));
 
@@ -199,8 +303,10 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       // means the row already exists, not a real failure.
       if (commissionError && commissionError.code !== '23505') {
         console.error('❌ Erreur création commission:', commissionError.message);
-      } else if (!commissionError) {
-        console.log(`✅ Commission créée: ${commissionAmount} ${bookingRow.currency || 'XOF'} (${commissionRate}%) pour l'agence ${agencyId}`);
+      }
+
+      if (paymentProvider === 'jeko') {
+        await scheduleAgencyPayout({ supabase, supabaseUrl, supabaseServiceKey, bookingId });
       }
     }
 

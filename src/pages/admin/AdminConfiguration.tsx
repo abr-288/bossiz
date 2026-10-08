@@ -688,7 +688,7 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
       <CardContent className="space-y-4">
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
           <strong>Devise :</strong> le site facture uniquement en XOF (Franc CFA)
-          via CinetPay — ces champs sont indicatifs et n'affectent pas le
+          via Jèko — ces champs sont indicatifs et n'affectent pas le
           site. Passer à un vrai multi-devises (affichage et paiement)
           demanderait un développement dédié.
         </div>

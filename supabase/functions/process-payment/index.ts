@@ -1,13 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getClientIP, checkRateLimit, createRateLimitResponse, RATE_LIMITS } from "../_shared/rate-limiter.ts";
-import { getActivePaymentProvider, getCinetPayCredentials } from "../_shared/integrations.ts";
 import { getJekoCredentials, createJekoPaymentLink } from "../_shared/jeko.ts";
 
 // ============================================================
 // EDGE FUNCTION: process-payment
-// Description: Initie un paiement via le prestataire actif (CinetPay ou
-// Jèko, voir /admin/integrations - catégorie "payment")
+// Description: Tous les nouveaux paiements sont initiés via Jèko.
 // Auteur: Bossiz+
 // Version: 2.1.0 - Multi-prestataire
 // ============================================================
@@ -20,6 +18,8 @@ const corsHeaders = {
 interface PaymentRequestBody {
   bookingId?: string;
   subscriptionId?: string;
+  carPartnerSubscriptionId?: string;
+  agencyBrandingSubscriptionId?: string;
   paymentMethod?: string;
   customerInfo?: {
     email?: string;
@@ -28,13 +28,6 @@ interface PaymentRequestBody {
     address?: string;
     city?: string;
   };
-}
-
-interface CinetPayCreateResponse {
-  code?: string;
-  message?: string;
-  description?: string;
-  data?: { payment_url?: string };
 }
 
 // Fonction utilitaire pour créer une réponse JSON
@@ -144,7 +137,7 @@ serve(async (req) => {
 
   console.log('');
   console.log('╔════════════════════════════════════════════════════════════╗');
-  console.log('║            PROCESS PAYMENT - CINETPAY                       ║');
+  console.log('║            PROCESS PAYMENT - JEKO                       ║');
   console.log('╚════════════════════════════════════════════════════════════╝');
   console.log(`📅 Timestamp: ${new Date().toISOString()}`);
 
@@ -204,14 +197,23 @@ serve(async (req) => {
     
     console.log('   - bookingId:', body.bookingId ? '✓' : '✗');
     console.log('   - subscriptionId:', body.subscriptionId ? '✓' : '✗');
+    console.log('   - carPartnerSubscriptionId:', body.carPartnerSubscriptionId ? '✓' : '✗');
+    console.log('   - agencyBrandingSubscriptionId:', body.agencyBrandingSubscriptionId ? '✓' : '✗');
     console.log('   - paymentMethod:', body.paymentMethod);
     console.log('   - customerInfo:', body.customerInfo ? '✓' : '✗');
 
     const hasBooking = typeof body.bookingId === 'string' && body.bookingId.length > 0;
     const hasSubscription = typeof body.subscriptionId === 'string' && body.subscriptionId.length > 0;
+    const hasCarPartnerSubscription =
+      typeof body.carPartnerSubscriptionId === 'string' && body.carPartnerSubscriptionId.length > 0;
+    const hasAgencyBrandingSubscription =
+      typeof body.agencyBrandingSubscriptionId === 'string' && body.agencyBrandingSubscriptionId.length > 0;
 
-    if (hasBooking === hasSubscription) {
-      return errorResponse('Fournir exactement une cible de paiement: bookingId ou subscriptionId', 400);
+    if ([hasBooking, hasSubscription, hasCarPartnerSubscription, hasAgencyBrandingSubscription].filter(Boolean).length !== 1) {
+      return errorResponse(
+        'Fournir exactement une cible de paiement',
+        400,
+      );
     }
 
     // Validation des infos client
@@ -241,7 +243,7 @@ serve(async (req) => {
     console.log('\n📋 Étape 2bis: Résolution de la cible de paiement...');
 
     let targetId: string;
-    let targetType: 'booking' | 'subscription';
+    let targetType: 'booking' | 'subscription' | 'car_partner_subscription' | 'agency_branding_subscription';
     let sourceAmount: number;
     let sourceCurrency: string;
     let paymentDescription: string;
@@ -290,7 +292,7 @@ serve(async (req) => {
       sourceAmount = Number(booking.amount_due_now || booking.total_price);
       sourceCurrency = booking.currency;
       paymentDescription = `Réservation #${targetId.substring(0, 8)}`;
-    } else {
+    } else if (hasSubscription) {
       targetType = 'subscription';
       targetId = body.subscriptionId;
 
@@ -313,6 +315,73 @@ serve(async (req) => {
       sourceAmount = Number(subscription.amount_paid);
       sourceCurrency = subscription.currency || 'XOF';
       paymentDescription = `Abonnement ${subscription.plan_id}`;
+    } else if (hasCarPartnerSubscription) {
+      targetType = 'car_partner_subscription';
+      targetId = body.carPartnerSubscriptionId;
+
+      const { data: subscription, error: subscriptionError } = await supabase
+        .from('car_partner_subscriptions')
+        .select('id, agency_id, plan_id, billing_cycle, amount_due, currency, status')
+        .eq('id', targetId)
+        .single();
+
+      if (subscriptionError || !subscription) {
+        console.error('❌ Abonnement voiture introuvable ou non autorisé:', subscriptionError?.message);
+        return errorResponse('Abonnement voiture introuvable', 404);
+      }
+      if (subscription.status !== 'pending') {
+        return errorResponse('Cet abonnement voiture n’est pas en attente de paiement', 409);
+      }
+
+      const { data: plan, error: planError } = await adminSupabase!
+        .from('car_partner_plans')
+        .select('monthly_price, yearly_price, is_active')
+        .eq('plan_id', subscription.plan_id)
+        .maybeSingle();
+      const currentPrice = subscription.billing_cycle === 'yearly'
+        ? Number(plan?.yearly_price)
+        : Number(plan?.monthly_price);
+      if (planError || !plan?.is_active || currentPrice <= 0 || currentPrice !== Number(subscription.amount_due)) {
+        return errorResponse(
+          'Le tarif du forfait a changé ou le forfait n’est plus actif. Choisissez de nouveau un forfait.',
+          409,
+        );
+      }
+
+      sourceAmount = Number(subscription.amount_due);
+      sourceCurrency = subscription.currency || 'XOF';
+      paymentDescription = `Forfait voiture ${subscription.plan_id}`;
+    } else {
+      targetType = 'agency_branding_subscription';
+      targetId = body.agencyBrandingSubscriptionId!;
+
+      const { data: subscription, error: subscriptionError } = await supabase
+        .from('agency_branding_subscriptions')
+        .select('id, agency_id, amount_due, currency, status')
+        .eq('id', targetId)
+        .single();
+
+      if (subscriptionError || !subscription) {
+        console.error('❌ Abonnement branding introuvable ou non autorisé:', subscriptionError?.message);
+        return errorResponse('Abonnement branding introuvable', 404);
+      }
+      if (subscription.status !== 'pending' || Number(subscription.amount_due) !== 2500 || subscription.currency !== 'XOF') {
+        return errorResponse('Cet abonnement branding n’est pas payable ou son tarif est invalide', 409);
+      }
+
+      const { data: agency, error: agencyError } = await supabase
+        .from('agencies')
+        .select('id')
+        .eq('id', subscription.agency_id)
+        .eq('owner_id', user.id)
+        .maybeSingle();
+      if (agencyError || !agency) {
+        return errorResponse('Seul le propriétaire de l’agence peut payer son abonnement branding', 403);
+      }
+
+      sourceAmount = Number(subscription.amount_due);
+      sourceCurrency = subscription.currency;
+      paymentDescription = 'Branding partenaire - 1 mois';
     }
 
     const amountValidation = computeAuthoritativeAmount(sourceAmount, sourceCurrency);
@@ -329,32 +398,13 @@ serve(async (req) => {
     // ================================================================
     console.log('\n📋 Étape 3: Résolution du prestataire de paiement actif...');
 
-    const activeProvider = adminSupabase ? await getActivePaymentProvider(adminSupabase) : 'cinetpay';
-    console.log('   - Prestataire actif:', activeProvider);
-
-    let jekoCredentials: Awaited<ReturnType<typeof getJekoCredentials>> = null;
-    let cinetpayApiKey: string | undefined;
-    let cinetpaySiteId: string | undefined;
-
-    if (activeProvider === 'jeko') {
-      jekoCredentials = adminSupabase ? await getJekoCredentials(adminSupabase) : null;
-      if (!jekoCredentials) {
-        console.error('❌ Identifiants Jèko incomplets');
-        return errorResponse('Passerelle de paiement Jèko non configurée (voir /admin/integrations)', 500);
-      }
-      console.log('✅ Credentials Jèko présents');
-    } else {
-      const cinetpayCredentials = adminSupabase ? await getCinetPayCredentials(adminSupabase) : null;
-
-      if (!cinetpayCredentials) {
-        console.error('❌ Identifiants CinetPay manquants (table et secrets)');
-        return errorResponse('Passerelle de paiement non configurée', 500);
-      }
-
-      cinetpayApiKey = cinetpayCredentials.apiKey;
-      cinetpaySiteId = cinetpayCredentials.siteId;
-      console.log('✅ Credentials CinetPay présents');
+    const jekoCredentials = adminSupabase ? await getJekoCredentials(adminSupabase) : null;
+    if (!jekoCredentials) {
+      console.error('❌ Identifiants Jèko manquants ou incomplets');
+      return errorResponse('Passerelle de paiement Jèko non configurée (voir /admin/integrations)', 500);
     }
+    console.log('   - Prestataire de paiement: Jèko (obligatoire)');
+    console.log('✅ Identifiants Jèko présents');
 
     // ================================================================
     // ÉTAPE 3bis: Réclamation atomique (idempotence côté base de données)
@@ -362,7 +412,7 @@ serve(async (req) => {
     // La relecture de payment_status à l'étape 2bis a une fenêtre de course:
     // deux requêtes concurrentes (double-clic, retry réseau) peuvent toutes
     // deux la passer avant qu'aucune n'ait rien écrit. Cette UPDATE avec
-    // condition WHERE est ce qui empêche réellement deux sessions CinetPay
+    // condition WHERE est ce qui empêche réellement deux sessions Jèko
     // distinctes d'être créées pour la même réservation - un seul appelant
     // peut faire passer payment_status de 'pending' à 'processing'.
     if (targetType === 'booking') {
@@ -404,27 +454,90 @@ serve(async (req) => {
       }
 
       console.log('✅ Réservation réclamée pour paiement');
+    } else if (targetType === 'car_partner_subscription') {
+      const { data: claim, error: claimError } = await adminSupabase!
+        .from('car_partner_subscriptions')
+        .update({ status: 'processing', updated_at: new Date().toISOString() })
+        .eq('id', targetId)
+        .eq('status', 'pending')
+        .select('id')
+        .maybeSingle();
+
+      let activeClaim = claim;
+      if (!activeClaim && !claimError) {
+        activeClaim = (await adminSupabase!
+          .from('car_partner_subscriptions')
+          .update({ status: 'processing', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('status', 'processing')
+          .lt('updated_at', new Date(Date.now() - 5 * 60 * 1000).toISOString())
+          .select('id')
+          .maybeSingle()).data;
+      }
+
+      if (claimError || !activeClaim) {
+        return errorResponse(
+          'Un paiement est déjà en cours pour ce forfait. Veuillez patienter avant de réessayer.',
+          409,
+        );
+      }
+    } else if (targetType === 'agency_branding_subscription') {
+      const { data: claim, error: claimError } = await adminSupabase!
+        .from('agency_branding_subscriptions')
+        .update({ status: 'processing', updated_at: new Date().toISOString() })
+        .eq('id', targetId)
+        .eq('status', 'pending')
+        .select('id')
+        .maybeSingle();
+
+      let activeClaim = claim;
+      if (!activeClaim && !claimError) {
+        activeClaim = (await adminSupabase!
+          .from('agency_branding_subscriptions')
+          .update({ status: 'processing', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('status', 'processing')
+          .lt('updated_at', new Date(Date.now() - 5 * 60 * 1000).toISOString())
+          .select('id')
+          .maybeSingle()).data;
+      }
+
+      if (claimError || !activeClaim) {
+        return errorResponse('Un paiement branding est déjà en cours. Veuillez patienter avant de réessayer.', 409);
+      }
     }
 
-    // Si l'appel CinetPay échoue après la réclamation ci-dessus, il faut
+    // Si l'appel au prestataire échoue après la réclamation ci-dessus, il faut
     // repasser payment_status à 'pending' pour ne pas bloquer le client sur
     // une réservation coincée en 'processing' indéfiniment.
     const revertClaim = async () => {
-      if (targetType !== 'booking') return;
-      await supabase
-        .from('bookings')
-        .update({ payment_status: 'pending', updated_at: new Date().toISOString() })
-        .eq('id', targetId)
-        .eq('payment_status', 'processing');
+      if (targetType === 'booking') {
+        await supabase
+          .from('bookings')
+          .update({ payment_status: 'pending', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('payment_status', 'processing');
+      } else if (targetType === 'car_partner_subscription') {
+        await adminSupabase!
+          .from('car_partner_subscriptions')
+          .update({ status: 'pending', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('status', 'processing');
+      } else if (targetType === 'agency_branding_subscription') {
+        await adminSupabase!
+          .from('agency_branding_subscriptions')
+          .update({ status: 'pending', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('status', 'processing');
+      }
     };
 
     // ================================================================
-    // ÉTAPE 4 (Jèko): Création du lien de paiement, si actif
+    // ÉTAPE 4: Création du lien de paiement Jèko
     // ================================================================
-    if (activeProvider === 'jeko' && jekoCredentials) {
+    {
       console.log('\n📋 Étape 4 (Jèko): Création du lien de paiement...');
 
-      const jekoPaymentMethod = (body.paymentMethod || 'all').toLowerCase();
       const result = await createJekoPaymentLink(jekoCredentials, {
         title: paymentDescription,
         amountXof: amountValidation.value,
@@ -443,11 +556,13 @@ serve(async (req) => {
         .insert({
           booking_id: targetType === 'booking' ? targetId : null,
           subscription_id: targetType === 'subscription' ? targetId : null,
+          car_partner_subscription_id: targetType === 'car_partner_subscription' ? targetId : null,
+          agency_branding_subscription_id: targetType === 'agency_branding_subscription' ? targetId : null,
           user_id: user.id,
           ip_address: clientIP,
           amount: amountValidation.value,
           currency: 'XOF',
-          payment_method: jekoPaymentMethod,
+          payment_method: 'jeko',
           payment_provider: 'jeko',
           // Le transaction_id est l'ID du payment_link Jèko lui-même : c'est
           // ce que le webhook renverra dans transactionDetails.paymentLinkId,
@@ -465,7 +580,8 @@ serve(async (req) => {
 
       if (jekoPaymentError) {
         console.error('❌ Erreur d\'enregistrement:', jekoPaymentError.message);
-        console.warn('⚠️ Le paiement est créé mais non enregistré localement');
+        await revertClaim();
+        return errorResponse("Impossible d'enregistrer le paiement. Aucun lien n'a été communiqué; réessayez.", 500);
       } else {
         console.log('✅ Paiement enregistré avec succès');
       }
@@ -484,217 +600,7 @@ serve(async (req) => {
     }
 
     // ================================================================
-    // ÉTAPE 4: Préparation du payload CinetPay
-    // ================================================================
-    console.log('\n📋 Étape 4: Préparation du payload CinetPay...');
-    
-    const transactionId = generateTransactionId(targetId);
-    console.log('   - Transaction ID:', transactionId);
-
-    // Déterminer les canaux de paiement
-    let channels = 'ALL';
-    const paymentMethod = (body.paymentMethod || 'all').toLowerCase();
-    
-    switch (paymentMethod) {
-      case 'card':
-        channels = 'CREDIT_CARD';
-        break;
-      case 'mobile_money':
-        channels = 'MOBILE_MONEY';
-        break;
-      case 'wave':
-        channels = 'WALLET';
-        break;
-      case 'bank_transfer':
-        channels = 'ALL';
-        break;
-      default:
-        channels = 'ALL';
-    }
-    console.log('   - Channels:', channels);
-
-    // Séparer prénom/nom
-    const nameParts = customerName.split(' ').filter(p => p.length > 0);
-    const firstName = nameParts[0] || 'Client';
-    let lastName = nameParts.slice(1).join(' ') || firstName;
-    
-    // CinetPay requiert un nom de famille d'au moins 2 caractères
-    if (lastName.length < 2) {
-      lastName = firstName.length >= 2 ? firstName : 'Client';
-    }
-
-    // URLs de retour et notification
-    const returnUrl = targetType === 'booking'
-      ? `https://traversee-connect.lovable.app/confirmation?bookingId=${targetId}`
-      : `https://traversee-connect.lovable.app/dashboard?subscription=pending`;
-    const notifyUrl = `${supabaseUrl}/functions/v1/payment-callback`;
-
-    console.log('   - Return URL:', returnUrl);
-    console.log('   - Notify URL:', notifyUrl);
-
-    const cinetpayPayload = {
-      apikey: cinetpayApiKey,
-      site_id: cinetpaySiteId,
-      transaction_id: transactionId,
-      amount: amountValidation.value,
-      currency: 'XOF',
-      description: paymentDescription,
-      customer_name: firstName,
-      customer_surname: lastName,
-      customer_email: customerEmail,
-      customer_phone_number: customerPhone || '225000000000',
-      customer_address: sanitizeString(body.customerInfo.address, 255) || 'N/A',
-      customer_city: sanitizeString(body.customerInfo.city, 100) || 'Abidjan',
-      customer_country: 'CI',
-      customer_state: 'CI',
-      customer_zip_code: '00225',
-      notify_url: notifyUrl,
-      return_url: returnUrl,
-      channels: channels,
-      lang: 'fr',
-      metadata: JSON.stringify({
-        type: targetType,
-        booking_id: targetType === 'booking' ? targetId : undefined,
-        subscription_id: targetType === 'subscription' ? targetId : undefined,
-        user_id: user.id,
-        payment_method: paymentMethod,
-        created_at: new Date().toISOString(),
-      }),
-    };
-
-    console.log('✅ Payload préparé');
-
-    // ================================================================
-    // ÉTAPE 5: Appel à l'API CinetPay
-    // ================================================================
-    console.log('\n📋 Étape 5: Appel à l\'API CinetPay...');
-    console.log('   - URL: https://api-checkout.cinetpay.com/v2/payment');
-    
-    let cinetpayResponse: Response;
-    let cinetpayData: CinetPayCreateResponse;
-    
-    try {
-      cinetpayResponse = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(cinetpayPayload),
-      });
-      
-      console.log('   - HTTP Status:', cinetpayResponse.status);
-      
-      const responseText = await cinetpayResponse.text();
-      
-      try {
-        cinetpayData = JSON.parse(responseText);
-      } catch {
-        console.error('❌ Réponse CinetPay non-JSON:', responseText.substring(0, 200));
-        await revertClaim();
-        return errorResponse('Réponse invalide de la passerelle de paiement', 502);
-      }
-
-    } catch (fetchError) {
-      console.error('❌ Erreur réseau lors de l\'appel CinetPay:', fetchError);
-      await revertClaim();
-      return errorResponse('Impossible de contacter la passerelle de paiement. Veuillez réessayer.', 503);
-    }
-
-    console.log('   - Response Code:', cinetpayData.code);
-    console.log('   - Message:', cinetpayData.message || 'N/A');
-
-    // ================================================================
-    // ÉTAPE 6: Traitement de la réponse CinetPay
-    // ================================================================
-    console.log('\n📋 Étape 6: Traitement de la réponse CinetPay...');
-    
-    // CinetPay retourne '201' pour une création réussie
-    if (cinetpayData.code !== '201') {
-      console.error('❌ Création du paiement échouée');
-      console.error('   - Code:', cinetpayData.code);
-      console.error('   - Message:', cinetpayData.message || 'Inconnu');
-      console.error('   - Description:', cinetpayData.description || 'N/A');
-      
-      // Messages d'erreur personnalisés selon le code
-      let userMessage = 'La création du paiement a échoué';
-      
-      if (cinetpayData.code === '401' || cinetpayData.code === '403') {
-        userMessage = 'Erreur de configuration de la passerelle de paiement';
-      } else if (cinetpayData.code === '422') {
-        userMessage = 'Données de paiement invalides';
-      } else if (cinetpayData.message) {
-        userMessage = cinetpayData.message;
-      }
-
-      await revertClaim();
-      return errorResponse(userMessage, 400, `CinetPay code: ${cinetpayData.code}`);
-    }
-
-    // Vérifier la présence de l'URL de paiement
-    if (!cinetpayData.data?.payment_url) {
-      console.error('❌ URL de paiement manquante dans la réponse');
-      await revertClaim();
-      return errorResponse('URL de paiement non reçue. Veuillez réessayer.', 502);
-    }
-
-    console.log('✅ Paiement créé avec succès');
-    console.log('   - Payment URL:', cinetpayData.data.payment_url.substring(0, 50) + '...');
-
-    // ================================================================
-    // ÉTAPE 7: Enregistrement en base de données
-    // ================================================================
-    console.log('\n📋 Étape 7: Enregistrement du paiement...');
-    
-    const { data: payment, error: paymentError } = await supabase
-      .from('payments')
-      .insert({
-        booking_id: targetType === 'booking' ? targetId : null,
-        subscription_id: targetType === 'subscription' ? targetId : null,
-        user_id: user.id,
-        ip_address: clientIP,
-        amount: amountValidation.value,
-        currency: 'XOF',
-        payment_method: paymentMethod,
-        payment_provider: 'cinetpay',
-        transaction_id: transactionId,
-        status: 'pending',
-        payment_data: {
-          transaction_id: transactionId,
-          payment_url: cinetpayData.data.payment_url,
-          payment_token: cinetpayData.data.payment_token || null,
-          channels: channels,
-          cinetpay_code: cinetpayData.code,
-          created_at: new Date().toISOString(),
-        },
-      })
-      .select()
-      .single();
-
-    if (paymentError) {
-      console.error('❌ Erreur d\'enregistrement:', paymentError.message);
-      // On retourne quand même l'URL car le paiement est créé côté CinetPay
-      console.warn('⚠️ Le paiement est créé mais non enregistré localement');
-    } else {
-      console.log('✅ Paiement enregistré avec succès');
-      console.log('   - Payment ID:', payment.id);
-    }
-
-    // ================================================================
-    // SUCCÈS FINAL
-    // ================================================================
-    console.log('\n╔════════════════════════════════════════════════════════════╗');
-    console.log('║                    ✅ SUCCÈS                                ║');
-    console.log('╚════════════════════════════════════════════════════════════╝');
-    console.log('');
-
-    return jsonResponse({
-      success: true,
-      payment_url: cinetpayData.data.payment_url,
-      transaction_id: transactionId,
-      payment_id: payment?.id || null,
-    }, 200);
-
+    // ÉTAPE 4: Préparation du payload Jèko
   } catch (error) {
     // ================================================================
     // GESTION DES ERREURS NON CATCHÉES

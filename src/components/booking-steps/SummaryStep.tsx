@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
+import { CurrencyConverter } from "@/utils/currencyConverter";
 
 interface Passenger {
   firstName: string;
@@ -51,6 +52,7 @@ interface SummaryStepProps {
   serviceId?: string;
   serviceName: string;
   servicePrice: number;
+  serviceCurrency: string;
   serviceLocation: string;
   startDate: string;
   endDate?: string;
@@ -68,6 +70,7 @@ export const SummaryStep = ({
   serviceId,
   serviceName,
   servicePrice,
+  serviceCurrency,
   serviceLocation,
   startDate,
   endDate,
@@ -79,7 +82,6 @@ export const SummaryStep = ({
   onBack,
 }: SummaryStepProps) => {
   const { t } = useTranslation();
-  const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile");
   const [paymentPlan, setPaymentPlan] = useState<"full" | "deposit">("full");
   const [depositPercent, setDepositPercent] = useState(30);
   const [depositAvailable, setDepositAvailable] = useState(false);
@@ -306,7 +308,7 @@ export const SummaryStep = ({
             price_breakdown: checkoutResult.checkout!.price_breakdown,
             options: selectedOptions,
             preferences: selectedPreferences,
-            paymentMethod,
+            paymentMethod: "jeko",
           },
           company_id: billToCompanyId || undefined,
         });
@@ -346,7 +348,7 @@ export const SummaryStep = ({
           booking_details: {
             options: selectedOptions,
             preferences: selectedPreferences,
-            paymentMethod,
+            paymentMethod: "jeko",
           },
           company_id: billToCompanyId || undefined,
           payment_plan: paymentPlan,
@@ -416,18 +418,16 @@ export const SummaryStep = ({
     return selectedSeats.length * 7500;
   };
 
-  // flightData.price comes straight from search-flights, always in EUR (see
-  // supabase/functions/search-flights); servicePrice (non-flight verticals)
-  // is already XOF. Converted to XOF right here (same rate as <Price>) so
-  // this stays in the same currency as getOptionsPrice/getPreferencesPrice
-  // when they're summed together in getTotalPrice() below - summing a raw
-  // EUR number with XOF numbers would silently produce a meaningless total.
+  // Flight search prices are in EUR; catalog prices use the currency stored
+  // on the service row. Convert both to XOF before adding XOF-priced options.
   // This pre-checkout total is DISPLAY ONLY - the real, authoritative amount
   // is server-computed in prebook/checkout - but it must still show the
   // right order of magnitude before the user gets there.
   const EUR_TO_XOF_RATE = 656;
   const getBasePrice = () => {
-    const basePrice = flightData ? parseFloat(flightData.price) * EUR_TO_XOF_RATE : servicePrice;
+    const basePrice = flightData
+      ? parseFloat(flightData.price) * EUR_TO_XOF_RATE
+      : CurrencyConverter.autoConvertToXOF(servicePrice, serviceCurrency).convertedAmount;
     return basePrice * (adultsCount + childrenCount);
   };
 
@@ -783,46 +783,16 @@ export const SummaryStep = ({
                     </button>
                   </div>
                 )}
-                <h4 className="font-semibold">Mode de paiement</h4>
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod("mobile")}
-                    className={`w-full p-4 rounded-lg border-2 transition-all ${
-                      paymentMethod === "mobile"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        📱
-                      </div>
-                      <div className="text-left">
-                        <p className="font-medium">Mobile Money</p>
-                        <p className="text-xs text-muted-foreground">Orange, MTN, Moov, Wave</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod("card")}
-                    className={`w-full p-4 rounded-lg border-2 transition-all ${
-                      paymentMethod === "card"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        💳
-                      </div>
-                      <div className="text-left">
-                        <p className="font-medium">Carte bancaire</p>
-                        <p className="text-xs text-muted-foreground">Visa, Mastercard</p>
-                      </div>
-                    </div>
-                  </button>
+                <div className="flex items-start gap-3 rounded-xl border border-primary/15 bg-primary/5 p-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <CreditCard className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Paiement sécurisé</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Vous pourrez choisir votre moyen de paiement sur la page sécurisée Jèko.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}

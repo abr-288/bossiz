@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { requestPasswordReset } from "@/lib/requestPasswordReset";
+import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { toast } from "sonner";
 import { Car, Mail, ArrowLeft } from "lucide-react";
 import { z } from "zod";
@@ -29,11 +30,13 @@ export default function ForgotPassword() {
 
       setEmailSent(true);
       toast.success("Email de réinitialisation envoyé !");
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error("Erreur lors de l'envoi de l'email");
+        toast.error(error instanceof Error
+          ? await getEdgeFunctionErrorMessage(error, "Impossible d'envoyer le lien. Réessayez ou contactez le support.")
+          : "Impossible d'envoyer le lien. Réessayez ou contactez le support.");
       }
     } finally {
       setLoading(false);
@@ -102,6 +105,9 @@ export default function ForgotPassword() {
                 <p className="text-muted-foreground">
                   Entrez votre email pour recevoir un lien de réinitialisation
                 </p>
+                <p className="text-sm text-muted-foreground">
+                  Si vous utilisez Google, ce lien permet de définir un mot de passe Bossiz uniquement. Il ne modifie pas votre mot de passe Google.
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -133,6 +139,9 @@ export default function ForgotPassword() {
                 <h1 className="text-3xl font-bold tracking-tight">Email envoyé !</h1>
                 <p className="text-muted-foreground">
                   Vérifiez votre boîte de réception et cliquez sur le lien pour réinitialiser votre mot de passe.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Vous pourrez définir un mot de passe Bossiz même si vous vous connectez habituellement avec Google.
                 </p>
               </div>
               <p className="text-sm text-muted-foreground">

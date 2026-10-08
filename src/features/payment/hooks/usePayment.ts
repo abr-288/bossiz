@@ -1,11 +1,12 @@
 // Hook pour la gestion des paiements
-// Gère le traitement des paiements via CinetPay et la validation des données
+// Gère le traitement des paiements via Jèko et la validation des données
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { paymentSchema, type PaymentInput } from "@/lib/validationSchemas";
 import { validateWithSchema, getUserFriendlyErrorMessage } from "@/lib/formHelpers";
 import { useTranslation } from "react-i18next";
+import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 
 export const usePayment = () => {
   const [processing, setProcessing] = useState(false); // État de traitement du paiement
@@ -105,7 +106,7 @@ export const usePayment = () => {
 
       if (error) {
         console.error("Payment error:", error);
-        throw error;
+        throw new Error(await getEdgeFunctionErrorMessage(error, "Impossible d'initialiser le paiement Jèko."));
       }
 
       if (!data?.success) {

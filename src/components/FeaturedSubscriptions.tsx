@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { PhoneNumberInput } from "@/components/PhoneNumberInput";
 import { 
   Building2, 
   Crown, 
@@ -387,7 +388,7 @@ const FeaturedSubscriptions = () => {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleContactSubmit} className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="feat-name">{t("subscriptions.fullName", "Nom complet")} *</Label>
                 <Input
@@ -399,11 +400,10 @@ const FeaturedSubscriptions = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="feat-phone">{t("subscriptions.phone", "Téléphone")} *</Label>
-                <Input
+                <PhoneNumberInput
                   id="feat-phone"
-                  type="tel"
                   value={contactForm.phone}
-                  onChange={(e) => setContactForm({...contactForm, phone: e.target.value})}
+                  onValueChange={(phone) => setContactForm({ ...contactForm, phone })}
                   required
                 />
               </div>

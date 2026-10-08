@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserDashboardLayout } from "@/components/dashboard/UserDashboardLayout";
@@ -9,10 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { User, Mail, Phone, Lock, Bell, CreditCard, Heart, MapPin, Calendar, Eye, EyeOff, Check, X, Loader2, Shield, Save, ShieldCheck, Trash2, ChevronRight, TrendingDown } from "lucide-react";
+import { User, Mail, Phone, Lock, Bell, CreditCard, Heart, MapPin, Calendar, Eye, EyeOff, Check, X, Loader2, Shield, Save, Trash2, ChevronRight, TrendingDown } from "lucide-react";
+import type { User as AuthUser } from "@supabase/supabase-js";
 import { TwoFactorAuth } from "@/components/TwoFactorAuth";
+import { PhoneNumberInput } from "@/components/PhoneNumberInput";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+import { getProfilePhotoUrl, getUserPhotoFromMetadata, notifyProfileUpdated } from "@/lib/profilePhoto";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,7 +60,7 @@ const Account = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState({
     full_name: "",
     phone: "",
@@ -78,11 +82,7 @@ const Account = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState("profile");
 
-  useEffect(() => {
-    checkUser();
-  }, []);
-
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       navigate("/auth");
@@ -101,12 +101,16 @@ const Account = () => {
       setProfile({
         full_name: profileData.full_name || "",
         phone: profileData.phone || "",
-        avatar_url: profileData.avatar_url || "",
+        avatar_url: profileData.avatar_url || getUserPhotoFromMetadata(session.user) || "",
       });
     }
 
     setLoading(false);
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    checkUser();
+  }, [checkUser]);
 
   const validateProfile = () => {
     try {
@@ -136,6 +140,7 @@ const Account = () => {
       .update({
         full_name: profile.full_name.trim(),
         phone: profile.phone.trim(),
+        avatar_url: profile.avatar_url || null,
       })
       .eq("id", user.id);
 
@@ -145,6 +150,7 @@ const Account = () => {
       toast.error("Erreur lors de la mise à jour du profil");
     } else {
       toast.success("Profil mis à jour avec succès");
+      notifyProfileUpdated();
     }
   };
 
@@ -197,8 +203,8 @@ const Account = () => {
       toast.success("Votre compte a été supprimé");
       await supabase.auth.signOut();
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la suppression du compte");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Erreur lors de la suppression du compte");
     } finally {
       setDeletingAccount(false);
     }
@@ -276,7 +282,7 @@ const Account = () => {
                 className="relative"
               >
                 <Avatar className="h-24 w-24 border-4 border-primary/20 shadow-xl">
-                  <AvatarImage src={profile.avatar_url} />
+                  <AvatarImage src={getProfilePhotoUrl(profile.avatar_url)} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
                     {getInitials(profile.full_name || user?.email || "U")}
                   </AvatarFallback>
@@ -348,6 +354,13 @@ const Account = () => {
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
+                          <ImageUpload
+                            label="Photo de profil"
+                            folder={`profile-avatars/${user?.id || ""}`}
+                            value={profile.avatar_url}
+                            onChange={(avatar_url) => setProfile((current) => ({ ...current, avatar_url }))}
+                            accept="image/jpeg,image/png,image/webp"
+                          />
                           <motion.div 
                             className="space-y-2"
                             initial={{ opacity: 0, y: 10 }}
@@ -406,12 +419,11 @@ const Account = () => {
                             <Label htmlFor="phone">Téléphone</Label>
                             <div className="flex items-center gap-2">
                               <Phone className="h-4 w-4 text-muted-foreground" />
-                              <Input
+                              <PhoneNumberInput
                                 id="phone"
-                                type="tel"
                                 value={profile.phone}
-                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                                placeholder="+225 XX XX XX XX XX"
+                                onValueChange={(phone) => setProfile({ ...profile, phone })}
+                                placeholder="XX XX XX XX XX"
                                 className={`flex-1 ${errors.phone ? "border-destructive" : ""}`}
                               />
                             </div>

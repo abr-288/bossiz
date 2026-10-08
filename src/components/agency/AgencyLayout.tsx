@@ -8,6 +8,7 @@ import { Loader2, Home } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { getProfilePhotoUrl, getUserPhotoFromMetadata } from "@/lib/profilePhoto";
 
 interface AgencyLayoutProps {
   children: ReactNode;
@@ -16,6 +17,8 @@ interface AgencyLayoutProps {
 export function AgencyLayout({ children }: AgencyLayoutProps) {
   const [loading, setLoading] = useState(true);
   const [agencyName, setAgencyName] = useState<string>("");
+  const [profilePhoto, setProfilePhoto] = useState<string | undefined>();
+  const [profileName, setProfileName] = useState("");
   const [enabledFeatures, setEnabledFeatures] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -30,6 +33,14 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
         navigate("/auth");
         return;
       }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
+      setProfileName(profile?.full_name || user.email || "Partenaire");
+      setProfilePhoto(getProfilePhotoUrl(profile?.avatar_url) || getUserPhotoFromMetadata(user));
 
       // Check if user has sub_agency role
       const { data: roles } = await supabase
@@ -109,8 +120,12 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <div className="fixed top-0 left-0 right-0 h-1 z-[60]" style={{ backgroundColor: "#0d9488" }} />
-        <AgencySidebar enabledFeatures={enabledFeatures} />
+        <div className="fixed top-0 left-0 right-0 h-1 z-[60]" style={{ backgroundColor: "#0f766e" }} />
+        <AgencySidebar
+          enabledFeatures={enabledFeatures}
+          profileName={profileName}
+          profilePhoto={profilePhoto}
+        />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 md:h-16 border-b flex items-center justify-between px-3 md:px-4 bg-background sticky top-0 z-50">
             <div className="flex items-center gap-2 md:gap-4 min-w-0">
@@ -130,7 +145,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
                 Cette rubrique est désactivée par l’administrateur. Vos éléments restent consultables, mais aucune modification n’est autorisée.
               </div>
             )}
-            <fieldset disabled={featureDisabled} className="m-0 min-w-0 border-0 p-0 disabled:opacity-50">
+            <fieldset disabled={featureDisabled} className="m-0 min-w-0 border-0 p-0 disabled:opacity-100">
               {children}
             </fieldset>
           </main>
