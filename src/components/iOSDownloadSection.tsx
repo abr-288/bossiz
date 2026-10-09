@@ -1,411 +1,109 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Smartphone, 
-  Download, 
-  Apple, 
-  QrCode, 
-  CheckCircle,
-  ExternalLink,
-  Shield,
-  Zap,
-  Monitor
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Apple, ChevronDown, Smartphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
+type OS = "ios" | "android" | "desktop";
+
+const APP_STORE_URL = "https://apps.apple.com/app/bossiz-plus/id123456789";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.bossizplus.app";
+
+const detectOS = (): OS => {
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return "ios";
+  if (/Android/.test(ua)) return "android";
+  return "desktop";
+};
+
+/**
+ * Bandeau compact « Téléchargez Bossiz+ » : un titre, les boutons des stores
+ * (seulement celui du téléphone sur mobile) et les étapes d'installation
+ * repliées. Remplace l'ancienne section pleine page (cartes, statistiques
+ * locales, alertes).
+ */
 const iOSDownloadSection = () => {
   const { t } = useTranslation();
-  const [showQR, setShowQR] = useState(false);
-  const [downloadStats, setDownloadStats] = useState({
-    ios: 0,
-    android: 0
-  });
-  const [detectedOS, setDetectedOS] = useState<string>('');
-  // Sur téléphone, on ne montre que ce qui concerne le système de l'appareil
-  const isMobileOS = detectedOS === 'ios' || detectedOS === 'android';
+  const [os, setOS] = useState<OS>("desktop");
 
-  // Fonction pour détecter le système d'exploitation
-  const detectOS = () => {
-    const userAgent = navigator.userAgent;
-    
-    // Détection iOS
-    if (/iPad|iPhone|iPod/.test(userAgent)) {
-      return 'ios';
-    }
-    
-    // Détection Android
-    if (/Android/.test(userAgent)) {
-      return 'android';
-    }
-    
-    // Détection Windows
-    if (/Win/.test(userAgent)) {
-      return 'windows';
-    }
-    
-    // Détection macOS
-    if (/Mac/.test(userAgent) && !(/iPad|iPhone|iPod/.test(userAgent))) {
-      return 'mac';
-    }
-    
-    // Détection Linux
-    if (/Linux/.test(userAgent) && !(/Android/.test(userAgent))) {
-      return 'linux';
-    }
-    
-    return 'unknown';
-  };
-
-  // Simuler des stats de téléchargement et détecter le système
   useEffect(() => {
-    const stats = localStorage.getItem('downloadStats');
-    if (stats) {
-      setDownloadStats(JSON.parse(stats));
-    }
-    
-    // Détecter le système au chargement
-    const os = detectOS();
-    setDetectedOS(os);
+    setOS(detectOS());
   }, []);
 
-  const handleDownloadClick = (platform: 'ios' | 'android') => {
-    const newStats = {
-      ...downloadStats,
-      [platform]: downloadStats[platform] + 1
-    };
-    setDownloadStats(newStats);
-    localStorage.setItem('downloadStats', JSON.stringify(newStats));
-  };
-
-  const appStoreUrl = "https://apps.apple.com/app/bossiz-plus/id123456789";
-  const playStoreUrl = "https://play.google.com/store/apps/details?id=com.bossizplus.app";
-  const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(appStoreUrl);
-
-  // Fonction pour installer l'app selon le système détecté
-  const handleUniversalInstall = () => {
-    const os = detectOS();
-    
-    switch (os) {
-      case 'ios':
-        // Rediriger vers l'App Store
-        window.open(appStoreUrl, '_blank');
-        setTimeout(() => {
-          alert(t('iosDownload.alerts.redirectAppStore'));
-        }, 500);
-        handleDownloadClick('ios');
-        break;
-
-      case 'android':
-        // Rediriger vers Google Play
-        window.open(playStoreUrl, '_blank');
-        setTimeout(() => {
-          alert(t('iosDownload.alerts.redirectPlayStore'));
-        }, 500);
-        handleDownloadClick('android');
-        break;
-        
-      case 'windows':
-      case 'mac':
-      case 'linux':
-        // Afficher les options pour desktop
-        showDesktopOptions();
-        break;
-        
-      default:
-        // Afficher les options pour système inconnu
-        showDesktopOptions();
-        break;
-    }
-  };
-
-  // Fonction pour afficher les options desktop
-  const showDesktopOptions = () => {
-    if (confirm(t('iosDownload.alerts.choosePlatform'))) {
-      window.open(appStoreUrl, '_blank');
-      handleDownloadClick('ios');
-    } else {
-      window.open(playStoreUrl, '_blank');
-      handleDownloadClick('android');
-    }
-  };
-
-  // Fonction pour installer l'app depuis l'App Store (spécifique iOS)
-  const handleAppInstall = () => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    
-    if (isIOS) {
-      window.open(appStoreUrl, '_blank');
-      setTimeout(() => {
-        alert(t('iosDownload.alerts.redirectAppStore'));
-      }, 500);
-    } else {
-      alert(t('iosDownload.alerts.iosOnly'));
-    }
-  };
-
-  // Fonction pour obtenir le texte du système détecté
-  const getDetectedOSText = () => {
-    switch (detectedOS) {
-      case 'ios': return t('iosDownload.detected.ios');
-      case 'android': return t('iosDownload.detected.android');
-      case 'windows': return t('iosDownload.detected.windows');
-      case 'mac': return t('iosDownload.detected.mac');
-      case 'linux': return t('iosDownload.detected.linux');
-      default: return t('iosDownload.detected.unknown');
-    }
-  };
-
-  // Fonction pour obtenir l'icône du système détecté
-  const getDetectedOSIcon = () => {
-    switch (detectedOS) {
-      case 'ios': return <Apple className="w-4 h-4" />;
-      case 'android': return <Smartphone className="w-4 h-4" />;
-      default: return <Monitor className="w-4 h-4" />;
-    }
-  };
+  const showIOS = os !== "android";
+  const showAndroid = os !== "ios";
+  const steps = (key: string) => t(key, { returnObjects: true }) as string[];
 
   return (
-    <section className="py-20 bg-muted/40 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="h-full w-full" style={{
-          backgroundImage: `radial-gradient(circle at 3px 3px, rgb(59 130 246 / 0.1) 3px, transparent 3px)`,
-          backgroundSize: '100px 100px'
-        }}></div>
-      </div>
-      
-      {/* Floating Elements */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-      
-      <div className="site-container relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 leading-tight">
-            {t('iosDownload.title')}
-            <span className="block text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-success/80 bg-clip-text text-transparent mt-2">
-              {t('iosDownload.titleHighlight')}
-            </span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {t('iosDownload.subtitle')}
-          </p>
-          
-          {/* Système détecté */}
-          {detectedOS && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-card px-4 py-2 rounded-full shadow-md border border-border">
-              {getDetectedOSIcon()}
-              <span className="text-sm font-medium text-foreground">{getDetectedOSText()}</span>
+    <section aria-labelledby="app-title" className="w-full py-10 md:py-14">
+      <div className="site-container">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm md:p-6">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Smartphone className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <div>
+                <h2 id="app-title" className="text-xl font-bold text-foreground md:text-2xl">
+                  {t("iosDownload.title")} {t("iosDownload.titleHighlight").toLowerCase()}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">{t("iosDownload.subtitle")}</p>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Bouton Universel de Téléchargement */}
-        <div className="max-w-md mx-auto mb-12">
-          <Card className="border-2 border-gradient-to-r from-primary to-primary/80  transition-all duration-slow ease-standard hover:shadow-2xl hover:scale-105 group bg-card shadow-lg">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-slow ease-standard">
-                  <Download className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">{t('iosDownload.smart.title')}</h3>
-                <p className="text-muted-foreground">{t('iosDownload.smart.subtitle')}</p>
-              </div>
-
-              <Button
-                size="lg"
-                className="w-full bg-action text-action-foreground hover:bg-action-hover transition-all duration-slow ease-standard shadow-2xl font-extrabold py-6 text-lg border-4 border-white hover:border-border rounded-xl relative overflow-hidden group"
-                onClick={handleUniversalInstall}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-slow ease-standard"></div>
-                <div className="relative z-10 flex items-center justify-center">
-                  <Download className="w-6 h-6 mr-3" />
-                  {detectedOS === 'ios' ? t('iosDownload.smart.ctaIOS') :
-                   detectedOS === 'android' ? t('iosDownload.smart.ctaAndroid') :
-                   t('iosDownload.smart.ctaGeneric')}
-                </div>
-              </Button>
-
-              <p className="text-sm text-muted-foreground mt-4">
-                {detectedOS === 'ios' ? t('iosDownload.smart.hintIOS') :
-                 detectedOS === 'android' ? t('iosDownload.smart.hintAndroid') :
-                 t('iosDownload.smart.hintGeneric')}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {!isMobileOS && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          {/* iOS Download Card */}
-          <Card className="border-2 border-border hover:border-info/30 transition-all duration-slow ease-standard hover:shadow-2xl hover:scale-105 group bg-card shadow-lg">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-slow ease-standard">
-                  <Apple className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">iOS</h3>
-                <p className="text-muted-foreground mb-4">{t('iosDownload.ios.devices')}</p>
-              </div>
-
-              <div className="space-y-4">
-                <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-slow ease-standard shadow-2xl font-extrabold py-6 text-lg border-4 border-white hover:border-border rounded-xl relative overflow-hidden group"
-                  onClick={() => {
-                    handleDownloadClick('ios');
-                    handleAppInstall();
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-slow ease-standard"></div>
-                  <div className="relative z-10 flex items-center justify-center">
-                    <Download className="w-6 h-6 mr-3" />
-                    {t('iosDownload.smart.ctaIOS')}
-                  </div>
+            <div className="flex flex-col gap-2 sm:flex-row md:shrink-0">
+              {showIOS && (
+                <Button asChild variant={os === "ios" ? "default" : "outline"}>
+                  <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">
+                    <Apple />
+                    App Store
+                  </a>
                 </Button>
-
-                <Button
-                  variant="outline"
-                  className="w-full border-2 border-border hover:border-info/30 hover:text-info hover:bg-info/10 transition-all duration-slow ease-standard transform hover:scale-105 font-bold py-6 text-lg"
-                  onClick={() => setShowQR(!showQR)}
-                >
-                  <QrCode className="w-6 h-6 mr-3" />
-                  {showQR ? t('iosDownload.ios.hideQR') : t('iosDownload.ios.scanQR')}
+              )}
+              {showAndroid && (
+                <Button asChild variant={os === "android" ? "default" : "outline"}>
+                  <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer">
+                    <Smartphone />
+                    Google Play
+                  </a>
                 </Button>
-              </div>
+              )}
+            </div>
+          </div>
 
-              {/* QR Code Modal */}
-              {showQR && (
-                <div className="mt-6 p-4 bg-muted rounded-lg border border-border">
-                  <p className="text-sm text-muted-foreground mb-3">{t('iosDownload.ios.qrHint')}</p>
-                  <img
-                    src={qrCodeUrl}
-                    alt={t('iosDownload.ios.qrAlt')}
-                    className="w-32 h-32 mx-auto"
-                  />
+          <details className="group mt-4 border-t border-border pt-3">
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden">
+              {t("iosDownload.instructions.title")}
+              <ChevronDown className="h-4 w-4 transition-transform duration-base ease-standard group-open:rotate-180" aria-hidden="true" />
+            </summary>
+            <div className={os === "desktop" ? "mt-3 grid gap-4 md:grid-cols-2" : "mt-3"}>
+              {showIOS && (
+                <div>
+                  <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                    <Apple className="h-4 w-4" aria-hidden="true" />
+                    {t("iosDownload.instructions.iosTitle")}
+                  </p>
+                  <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
+                    {steps("iosDownload.instructions.iosSteps").map((step, i) => (
+                      <li key={i}>{step}</li>
+                    ))}
+                  </ol>
                 </div>
               )}
-
-              {/* Download Stats */}
-              <div className="mt-6 pt-6 border-t border-border">
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Download className="w-4 h-4" />
-                  <span>{t('iosDownload.downloadsCount', { count: downloadStats.ios })}</span>
+              {showAndroid && (
+                <div>
+                  <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                    <Smartphone className="h-4 w-4" aria-hidden="true" />
+                    Android
+                  </p>
+                  <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
+                    {steps("iosDownload.instructions.androidSteps").map((step, i) => (
+                      <li key={i}>{step}</li>
+                    ))}
+                  </ol>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Android Download Card */}
-          <Card className="border-2 border-border hover:border-success/30 transition-all duration-slow ease-standard hover:shadow-2xl hover:scale-105 group bg-card shadow-lg">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-slow ease-standard">
-                  <Smartphone className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">Android</h3>
-                <p className="text-muted-foreground mb-4">{t('iosDownload.android.devices')}</p>
-              </div>
-
-              <div className="space-y-4">
-                <Button
-                  size="lg"
-                  className="w-full bg-success text-success-foreground hover:bg-success/90 shadow-md font-bold py-6 text-lg"
-                  onClick={() => {
-                    handleDownloadClick('android');
-                    window.open(playStoreUrl, '_blank');
-                  }}
-                >
-                  <Download className="w-6 h-6 mr-3" />
-                  {t('iosDownload.android.ctaDownload')}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="w-full border-2 border-border hover:border-success/30 hover:text-success hover:bg-success/10 transition-all duration-slow ease-standard transform hover:scale-105 font-bold py-6 text-lg"
-                  onClick={() => window.open(playStoreUrl, '_blank')}
-                >
-                  <ExternalLink className="w-6 h-6 mr-3" />
-                  {t('iosDownload.android.ctaView')}
-                </Button>
-              </div>
-
-              {/* Download Stats */}
-              <div className="mt-6 pt-6 border-t border-border">
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Download className="w-4 h-4" />
-                  <span>{t('iosDownload.downloadsCount', { count: downloadStats.android })}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        )}
-
-        {/* Features Section */}
-        {!isMobileOS && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-info/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-8 h-8 text-info" />
+              )}
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">{t('iosDownload.features.fast.title')}</h3>
-            <p className="text-muted-foreground">{t('iosDownload.features.fast.description')}</p>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-success/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-success" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">{t('iosDownload.features.secure.title')}</h3>
-            <p className="text-muted-foreground">{t('iosDownload.features.secure.description')}</p>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">{t('iosDownload.features.reliable.title')}</h3>
-            <p className="text-muted-foreground">{t('iosDownload.features.reliable.description')}</p>
-          </div>
-        </div>
-
-        )}
-
-        {/* Instructions Section */}
-        <div className="bg-card rounded-2xl shadow-lg p-8 border border-border">
-          <h3 className="text-2xl font-bold text-foreground mb-6 text-center">{t('iosDownload.instructions.title')}</h3>
-
-          <div className={isMobileOS ? "grid grid-cols-1 gap-8" : "grid grid-cols-1 md:grid-cols-2 gap-8"}>
-            {detectedOS !== 'android' && (
-            <div>
-              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Apple className="w-5 h-5" />
-                {t('iosDownload.instructions.iosTitle')}
-              </h4>
-              <ol className="space-y-3 text-muted-foreground">
-                {(t('iosDownload.instructions.iosSteps', { returnObjects: true }) as string[]).map((step, i) => (
-                  <li key={i}>{i + 1}. {step}</li>
-                ))}
-              </ol>
-            </div>
-            )}
-
-            {detectedOS !== 'ios' && (
-            <div>
-              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Smartphone className="w-5 h-5" />
-                Android
-              </h4>
-              <ol className="space-y-3 text-muted-foreground">
-                {(t('iosDownload.instructions.androidSteps', { returnObjects: true }) as string[]).map((step, i) => (
-                  <li key={i}>{i + 1}. {step}</li>
-                ))}
-              </ol>
-            </div>
-            )}
-          </div>
+          </details>
         </div>
       </div>
     </section>
