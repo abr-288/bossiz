@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Apple, ChevronDown, Smartphone } from "lucide-react";
+import { ChevronDown, Download, Smartphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { usePWA } from "@/hooks/usePWA";
 
 type OS = "ios" | "android" | "desktop";
-
-const APP_STORE_URL = "https://apps.apple.com/app/bossiz-plus/id123456789";
-const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.bossizplus.app";
 
 const detectOS = (): OS => {
   const ua = navigator.userAgent;
@@ -16,22 +14,33 @@ const detectOS = (): OS => {
 };
 
 /**
- * Bandeau compact « Téléchargez Bossiz+ » : un titre, les boutons des stores
- * (seulement celui du téléphone sur mobile) et les étapes d'installation
- * repliées. Remplace l'ancienne section pleine page (cartes, statistiques
- * locales, alertes).
+ * Bandeau compact « Installez Bossiz+ ». L'application n'est pas sur les
+ * stores : elle s'installe depuis le navigateur (PWA). Sur Chrome / Edge /
+ * Android, le bouton ouvre directement la fenêtre d'installation ; ailleurs
+ * (Safari iPhone notamment), il déplie les étapes à suivre.
  */
 const iOSDownloadSection = () => {
   const { t } = useTranslation();
+  const { isInstallable, install } = usePWA();
   const [os, setOS] = useState<OS>("desktop");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setOS(detectOS());
   }, []);
 
-  const showIOS = os !== "android";
-  const showAndroid = os !== "ios";
-  const steps = (key: string) => t(key, { returnObjects: true }) as string[];
+  const handleInstall = async () => {
+    if (isInstallable && (await install())) return;
+    setOpen(true);
+  };
+
+  const groups: { key: OS; title: string; steps: string[] }[] = [
+    { key: "ios", title: t("ux.app.iosTitle"), steps: [t("ux.app.iosStep1"), t("ux.app.iosStep2"), t("ux.app.iosStep3")] },
+    { key: "android", title: t("ux.app.androidTitle"), steps: [t("ux.app.androidStep1"), t("ux.app.androidStep2"), t("ux.app.androidStep3")] },
+    { key: "desktop", title: t("ux.app.desktopTitle"), steps: [t("ux.app.desktopStep1"), t("ux.app.desktopStep2")] },
+  ];
+  // Sur téléphone : seulement les étapes de l'appareil
+  const visible = os === "desktop" ? groups : groups.filter((g) => g.key === os);
 
   return (
     <section aria-labelledby="app-title" className="w-full py-10 md:py-14">
@@ -44,64 +53,37 @@ const iOSDownloadSection = () => {
               </div>
               <div>
                 <h2 id="app-title" className="text-xl font-bold text-foreground md:text-2xl">
-                  {t("iosDownload.title")} {t("iosDownload.titleHighlight").toLowerCase()}
+                  {t("ux.app.title")}
                 </h2>
-                <p className="mt-1 text-sm text-muted-foreground">{t("iosDownload.subtitle")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("ux.app.subtitle")}</p>
               </div>
             </div>
-
-            <div className="flex flex-col gap-2 sm:flex-row md:shrink-0">
-              {showIOS && (
-                <Button asChild variant={os === "ios" ? "default" : "outline"}>
-                  <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">
-                    <Apple />
-                    App Store
-                  </a>
-                </Button>
-              )}
-              {showAndroid && (
-                <Button asChild variant={os === "android" ? "default" : "outline"}>
-                  <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer">
-                    <Smartphone />
-                    Google Play
-                  </a>
-                </Button>
-              )}
-            </div>
+            <Button className="md:shrink-0" onClick={handleInstall}>
+              <Download />
+              {t("ux.app.install")}
+            </Button>
           </div>
 
-          <details className="group mt-4 border-t border-border pt-3">
+          <details
+            className="group mt-4 border-t border-border pt-3"
+            open={open}
+            onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}
+          >
             <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden">
-              {t("iosDownload.instructions.title")}
+              {t("ux.app.howTo")}
               <ChevronDown className="h-4 w-4 transition-transform duration-base ease-standard group-open:rotate-180" aria-hidden="true" />
             </summary>
-            <div className={os === "desktop" ? "mt-3 grid gap-4 md:grid-cols-2" : "mt-3"}>
-              {showIOS && (
-                <div>
-                  <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
-                    <Apple className="h-4 w-4" aria-hidden="true" />
-                    {t("iosDownload.instructions.iosTitle")}
-                  </p>
+            <div className={visible.length > 1 ? "mt-3 grid gap-4 md:grid-cols-3" : "mt-3"}>
+              {visible.map((group) => (
+                <div key={group.key}>
+                  <p className="mb-1.5 text-sm font-semibold text-foreground">{group.title}</p>
                   <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-                    {steps("iosDownload.instructions.iosSteps").map((step, i) => (
+                    {group.steps.map((step, i) => (
                       <li key={i}>{step}</li>
                     ))}
                   </ol>
                 </div>
-              )}
-              {showAndroid && (
-                <div>
-                  <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
-                    <Smartphone className="h-4 w-4" aria-hidden="true" />
-                    Android
-                  </p>
-                  <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-                    {steps("iosDownload.instructions.androidSteps").map((step, i) => (
-                      <li key={i}>{step}</li>
-                    ))}
-                  </ol>
-                </div>
-              )}
+              ))}
             </div>
           </details>
         </div>

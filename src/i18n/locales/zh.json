@@ -5060,6 +5060,23 @@
       "genericError": "密码未能更新。请重新获取链接后再试。",
       "mismatch": "两次输入的密码不一致",
       "sessionExpired": "会话已过期。请重新获取链接后再试。"
+    },
+    "app": {
+      "title": "在手机上安装 Bossiz+",
+      "subtitle": "免费，无需应用商店：几秒钟即可添加到主屏幕。",
+      "install": "安装应用",
+      "howTo": "如何安装？",
+      "iosTitle": "iPhone / iPad（Safari）",
+      "iosStep1": "在 Safari 中打开 app.bossiz.com。",
+      "iosStep2": "点击“分享”按钮（带箭头的方框）。",
+      "iosStep3": "选择“添加到主屏幕”，然后点击“添加”。",
+      "androidTitle": "Android（Chrome）",
+      "androidStep1": "在 Chrome 中打开 app.bossiz.com。",
+      "androidStep2": "点击“安装应用”，或点击 ⋮ 菜单后选择“安装应用”。",
+      "androidStep3": "确认后，Bossiz+ 图标会出现在主屏幕上。",
+      "desktopTitle": "电脑（Chrome、Edge）",
+      "desktopStep1": "点击地址栏右侧的安装图标。",
+      "desktopStep2": "点击“安装”确认。"
     }
   }
 }

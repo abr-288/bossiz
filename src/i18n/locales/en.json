@@ -5061,6 +5061,23 @@
       "genericError": "The password could not be updated. Request a new link and try again.",
       "mismatch": "The passwords do not match",
       "sessionExpired": "Your session has expired. Request a new link and try again."
+    },
+    "app": {
+      "title": "Install Bossiz+ on your phone",
+      "subtitle": "Free, no app store needed: the app is added to your home screen in seconds.",
+      "install": "Install the app",
+      "howTo": "How to install?",
+      "iosTitle": "iPhone / iPad (Safari)",
+      "iosStep1": "Open app.bossiz.com in Safari.",
+      "iosStep2": "Tap the Share button (square with an arrow).",
+      "iosStep3": "Choose \"Add to Home Screen\", then \"Add\".",
+      "androidTitle": "Android (Chrome)",
+      "androidStep1": "Open app.bossiz.com in Chrome.",
+      "androidStep2": "Tap \"Install the app\", or the ⋮ menu then \"Install app\".",
+      "androidStep3": "Confirm: the Bossiz+ icon appears on your home screen.",
+      "desktopTitle": "Computer (Chrome, Edge)",
+      "desktopStep1": "Click the install icon on the right of the address bar.",
+      "desktopStep2": "Confirm with \"Install\"."
     }
   }
 }

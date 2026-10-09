@@ -5061,6 +5061,23 @@
       "genericError": "Le mot de passe n'a pas pu être mis à jour. Redemandez un lien puis réessayez.",
       "mismatch": "Les mots de passe ne correspondent pas",
       "sessionExpired": "Votre session a expiré. Demandez un nouveau lien puis réessayez."
+    },
+    "app": {
+      "title": "Installez Bossiz+ sur votre téléphone",
+      "subtitle": "Gratuit, sans passer par un store : l'application s'ajoute à votre écran d'accueil en quelques secondes.",
+      "install": "Installer l'application",
+      "howTo": "Comment installer ?",
+      "iosTitle": "iPhone / iPad (Safari)",
+      "iosStep1": "Ouvrez app.bossiz.com dans Safari.",
+      "iosStep2": "Touchez le bouton Partager (carré avec une flèche).",
+      "iosStep3": "Choisissez « Sur l'écran d'accueil », puis « Ajouter ».",
+      "androidTitle": "Android (Chrome)",
+      "androidStep1": "Ouvrez app.bossiz.com dans Chrome.",
+      "androidStep2": "Touchez « Installer l'application », ou le menu ⋮ puis « Installer l'application ».",
+      "androidStep3": "Confirmez : l'icône Bossiz+ apparaît sur votre écran d'accueil.",
+      "desktopTitle": "Ordinateur (Chrome, Edge)",
+      "desktopStep1": "Cliquez sur l'icône d'installation à droite de la barre d'adresse.",
+      "desktopStep2": "Confirmez avec « Installer »."
     }
   }
 }

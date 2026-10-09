@@ -17,27 +17,10 @@ const Footer = () => {
   const [email, setEmail] = useState("");
   const { subscribe, loading } = useNewsletterSubscribe();
 
-  // Fonction pour installer l'app depuis le footer (compatible tous appareils)
+  // L'application n'est pas sur les stores : la page /install explique
+  // l'installation depuis le navigateur pour chaque appareil.
   const handleAppInstall = () => {
-    const appStoreUrl = "https://apps.apple.com/app/bossiz-plus/id123456789";
-    const playStoreUrl = "https://play.google.com/store/apps/details?id=com.bossizplus.app";
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-    
-    if (isIOS) {
-      window.open(appStoreUrl, '_blank');
-      setTimeout(() => {
-        alert('Redirection vers l\'App Store en cours...');
-      }, 500);
-    } else if (isAndroid) {
-      window.open(playStoreUrl, '_blank');
-      setTimeout(() => {
-        alert(t("ux.footer.googlePlay"));
-      }, 500);
-    } else {
-      // Pour desktop, rediriger vers la page d'installation
-      window.location.href = '/install';
-    }
+    window.location.href = '/install';
   };
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
