@@ -1,10 +1,10 @@
 // Composant principal de l'application
 // Configure tous les providers et les composants globaux
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { SiteConfigProvider } from "@/contexts/SiteConfigContext";
 import { BossizConfigProvider } from "@/contexts/BossizConfigContext";
@@ -16,6 +16,7 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
 import RouteSeo from "@/components/RouteSeo";
 import ChatWidget from "@/components/ChatWidget";
+import BottomNav from "@/components/BottomNav";
 
 // Client React Query pour la gestion des requêtes API et du cache
 const queryClient = new QueryClient();
@@ -31,14 +32,18 @@ const App = () => (
               <CurrencyProvider>
                 <TooltipProvider>
                   <Toaster />
-                  <Sonner />
-                  <NotificationPrompt />
-                  <BrowserRouter>
-                    <RouteSeo />
-                    <AnimatedRoutes />
-                    <ChatWidget />
-                    <CookieConsentBanner />
-                  </BrowserRouter>
+                  <MotionConfig reducedMotion="user">
+                    <BrowserRouter>
+                      <RouteSeo />
+                      <AnimatedRoutes />
+                      <BottomNav />
+                      {/* Ordre d'apparition : cookies d'abord ; le chat et la demande de
+                          notification attendent la réponse au bandeau. */}
+                      <CookieConsentBanner />
+                      <ChatWidget />
+                      <NotificationPrompt />
+                    </BrowserRouter>
+                  </MotionConfig>
                 </TooltipProvider>
               </CurrencyProvider>
             </HomepageConfigProvider>

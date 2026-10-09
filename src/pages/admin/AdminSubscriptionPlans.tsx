@@ -12,8 +12,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Loader2, RefreshCw, Star, GripVertical } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, RefreshCw, Star, GripVertical, Layers } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { EmptyState } from "@/components/ui/empty-state";
+import { useTranslation } from "react-i18next";
 
 interface SubscriptionPlan {
   id: string;
@@ -61,6 +63,7 @@ const emptyPlan: Omit<SubscriptionPlan, "id"> = {
 };
 
 export default function AdminSubscriptionPlans() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,7 +84,7 @@ export default function AdminSubscriptionPlans() {
       if (error) throw error;
       setPlans((data as SubscriptionPlan[]) || []);
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +110,7 @@ export default function AdminSubscriptionPlans() {
 
   const handleSave = async () => {
     if (!formData.plan_id || !formData.name || !formData.price) {
-      toast({ title: "Erreur", description: "Veuillez remplir tous les champs obligatoires", variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: t("ux.bo.pleaseFillAllRequiredFields"), variant: "destructive" });
       return;
     }
 
@@ -124,34 +127,34 @@ export default function AdminSubscriptionPlans() {
           .update(dataToSave)
           .eq("id", editingPlan.id);
         if (error) throw error;
-        toast({ title: "Succès", description: "Plan mis à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.planUpdated2") });
       } else {
         const { error } = await supabase
           .from("subscription_plans")
           .insert(dataToSave);
         if (error) throw error;
-        toast({ title: "Succès", description: "Plan créé" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.planCreated2") });
       }
 
       setIsDialogOpen(false);
       fetchPlans();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce plan ?")) return;
+    if (!confirm(t("ux.bo.youSureYouWantDelete6"))) return;
 
     try {
       const { error } = await supabase.from("subscription_plans").delete().eq("id", id);
       if (error) throw error;
-      toast({ title: "Succès", description: "Plan supprimé" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.planDeleted") });
       fetchPlans();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -164,7 +167,7 @@ export default function AdminSubscriptionPlans() {
       if (error) throw error;
       fetchPlans();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -177,7 +180,7 @@ export default function AdminSubscriptionPlans() {
       if (error) throw error;
       fetchPlans();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -186,17 +189,17 @@ export default function AdminSubscriptionPlans() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Plans d'abonnement</h1>
-            <p className="text-muted-foreground">Gérez les offres d'abonnement affichées sur le site</p>
+            <h1 className="text-2xl font-bold">{t("ux.bo.subscriptionPlans")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.manageSubscriptionOffersShownSite")}</p>
           </div>
           <div className="flex gap-2">
             <Button onClick={fetchPlans} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
-              Actualiser
+              {t("ux.bo.refresh")}
             </Button>
             <Button onClick={handleCreate}>
               <Plus className="w-4 h-4 mr-2" />
-              Nouveau plan
+              {t("ux.bo.newPlan2")}
             </Button>
           </div>
         </div>
@@ -211,17 +214,17 @@ export default function AdminSubscriptionPlans() {
                 <Loader2 className="w-8 h-8 animate-spin" />
               </div>
             ) : plans.length === 0 ? (
-              <p className="text-center py-12 text-muted-foreground">Aucun plan trouvé</p>
+              <EmptyState icon={Layers} title={t("ux.bo.noSubscriptionPlan")} description={t("ux.bo.createPlanOfferCustomers")} />
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Ordre</TableHead>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Prix</TableHead>
-                    <TableHead>Populaire</TableHead>
-                    <TableHead>Actif</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t("ux.bo.order")}</TableHead>
+                    <TableHead>{t("ux.bo.name")}</TableHead>
+                    <TableHead>{t("ux.bo.price")}</TableHead>
+                    <TableHead>{t("ux.bo.popular")}</TableHead>
+                    <TableHead>{t("ux.bo.active2")}</TableHead>
+                    <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -243,7 +246,7 @@ export default function AdminSubscriptionPlans() {
                       </TableCell>
                       <TableCell>
                         <Switch checked={plan.popular} onCheckedChange={() => togglePopular(plan)} />
-                        {plan.popular && <Star className="w-4 h-4 text-amber-500 inline ml-1" />}
+                        {plan.popular && <Star className="w-4 h-4 text-gold inline ml-1" />}
                       </TableCell>
                       <TableCell>
                         <Switch checked={plan.is_active} onCheckedChange={() => toggleActive(plan)} />
@@ -267,12 +270,12 @@ export default function AdminSubscriptionPlans() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingPlan ? "Modifier le plan" : "Créer un plan"}</DialogTitle>
+              <DialogTitle>{editingPlan ? t("ux.bo.editPlan2") : t("ux.bo.createPlan2")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>ID du plan *</Label>
+                  <Label>{t("ux.bo.planId")}</Label>
                   <Input
                     value={formData.plan_id}
                     onChange={(e) => setFormData({ ...formData, plan_id: e.target.value })}
@@ -280,7 +283,7 @@ export default function AdminSubscriptionPlans() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Nom *</Label>
+                  <Label>{t("ux.bo.name2")}</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -290,17 +293,17 @@ export default function AdminSubscriptionPlans() {
               </div>
 
               <div className="space-y-2">
-                <Label>Sous-titre</Label>
+                <Label>{t("ux.bo.subtitle")}</Label>
                 <Input
                   value={formData.subtitle || ""}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                  placeholder="Pour les entreprises"
+                  placeholder={t("ux.bo.businesses")}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Prix *</Label>
+                  <Label>{t("ux.bo.price2")}</Label>
                   <Input
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -308,18 +311,18 @@ export default function AdminSubscriptionPlans() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Note prix</Label>
+                  <Label>{t("ux.bo.priceNote")}</Label>
                   <Input
                     value={formData.price_note || ""}
                     onChange={(e) => setFormData({ ...formData, price_note: e.target.value })}
-                    placeholder="par mois"
+                    placeholder={t("ux.bo.perMonth")}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Icône</Label>
+                  <Label>{t("ux.bo.icon")}</Label>
                   <Select value={formData.icon} onValueChange={(v) => setFormData({ ...formData, icon: v })}>
                     <SelectTrigger>
                       <SelectValue />
@@ -332,7 +335,7 @@ export default function AdminSubscriptionPlans() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Couleur</Label>
+                  <Label>{t("ux.bo.color")}</Label>
                   <Select value={formData.color} onValueChange={(v) => setFormData({ ...formData, color: v })}>
                     <SelectTrigger>
                       <SelectValue />
@@ -347,7 +350,7 @@ export default function AdminSubscriptionPlans() {
               </div>
 
               <div className="space-y-2">
-                <Label>Fonctionnalités (une par ligne)</Label>
+                <Label>{t("ux.bo.featuresOnePerLine")}</Label>
                 <Textarea
                   value={featuresText}
                   onChange={(e) => setFeaturesText(e.target.value)}
@@ -360,12 +363,12 @@ export default function AdminSubscriptionPlans() {
                 value={formData.image_url || ""}
                 onChange={(url) => setFormData({ ...formData, image_url: url })}
                 folder="subscriptions"
-                label="Image du plan (optionnel)"
+                label={t("ux.bo.planImageOptional")}
               />
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Ordre d'affichage</Label>
+                  <Label>{t("ux.bo.displayOrder")}</Label>
                   <Input
                     type="number"
                     value={formData.sort_order}
@@ -378,23 +381,23 @@ export default function AdminSubscriptionPlans() {
                       checked={formData.popular}
                       onCheckedChange={(v) => setFormData({ ...formData, popular: v })}
                     />
-                    <Label>Populaire</Label>
+                    <Label>{t("ux.bo.popular")}</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={formData.is_active}
                       onCheckedChange={(v) => setFormData({ ...formData, is_active: v })}
                     />
-                    <Label>Actif</Label>
+                    <Label>{t("ux.bo.active2")}</Label>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
                 <Button onClick={handleSave} disabled={isSaving}>
                   {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {editingPlan ? "Mettre à jour" : "Créer"}
+                  {editingPlan ? t("ux.bo.update") : "Créer"}
                 </Button>
               </div>
             </div>

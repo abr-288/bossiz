@@ -59,6 +59,7 @@ export function HotelComparisonDialog({
                       }}
                     />
                     <Button
+                      aria-label="Retirer de la comparaison"
                       variant="destructive"
                       size="icon"
                       className="absolute top-2 right-2 h-8 w-8"

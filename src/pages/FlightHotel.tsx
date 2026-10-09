@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface FlightOffer {
   id: string;
@@ -95,7 +96,7 @@ const FlightHotel = () => {
       setSelectedHotel(null);
       toast.success(`${results.flights.length} vol(s) et ${results.hotels.length} hôtel(s) trouvé(s)`);
     } else {
-      toast.error("Erreur lors de la recherche");
+      toast.error(t("ux.flightHotel.searchError"));
     }
   };
 
@@ -152,14 +153,14 @@ const FlightHotel = () => {
       
       navigate(`/flight-hotel/booking?flight=${flightParam}&hotel=${hotelParam}&search=${searchParam}`);
     } else {
-      toast.error("Veuillez sélectionner un vol et un hôtel");
+      toast.error(t("ux.flightHotel.pickBoth"));
     }
   };
 
   const getScoreLabel = (score: number) => {
     if (score >= 9) return 'Exceptionnel';
     if (score >= 8) return 'Excellent';
-    if (score >= 7) return 'Très bien';
+    if (score >= 7) return t("ux.flightHotel.veryGood");
     return 'Bien';
   };
 
@@ -175,7 +176,7 @@ const FlightHotel = () => {
             alt={t('pages.flightHotel.title')}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
           <div className="relative z-10 container mx-auto px-4 py-12">
             <div className="text-center mb-8 animate-fade-in">
@@ -184,7 +185,7 @@ const FlightHotel = () => {
                 {t('pages.flightHotel.title')}
               </h1>
               <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
-                Réservez votre vol et votre hébergement en un seul forfait et économisez jusqu'à 30%
+                {t("ux.flightHotel.subtitle")}
               </p>
             </div>
             <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -197,17 +198,16 @@ const FlightHotel = () => {
           {loading && (
             <div className="flex flex-col justify-center items-center py-20 gap-4">
               <Loader2 className="w-12 h-12 animate-spin text-primary" />
-              <p className="text-muted-foreground">Recherche des meilleures offres...</p>
+              <p className="text-muted-foreground">{t("ux.flightHotel.searching")}</p>
             </div>
           )}
 
           {!loading && flights.length === 0 && hotels.length === 0 && (
-            <div className="text-center py-20">
-              <Package className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-              <p className="text-xl text-muted-foreground">
-                {t('pages.flightHotel.noResults')}
-              </p>
-            </div>
+            <EmptyState
+              icon={Package}
+              title={t('pages.flightHotel.noResults')}
+              description={t("ux.empty.flightHotelDesc")}
+            />
           )}
 
           {!loading && (flights.length > 0 || hotels.length > 0) && (
@@ -224,11 +224,11 @@ const FlightHotel = () => {
                       <SortAsc className="h-4 w-4 text-muted-foreground" />
                       <Select value={flightSort} onValueChange={setFlightSort}>
                         <SelectTrigger className="w-[160px]">
-                          <SelectValue placeholder="Trier par" />
+                          <SelectValue placeholder={t("ux.flightHotel.sortBy")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="price">Prix croissant</SelectItem>
-                          <SelectItem value="duration">Durée</SelectItem>
+                          <SelectItem value="price">{t("ux.flightHotel.priceAsc")}</SelectItem>
+                          <SelectItem value="duration">{t("ux.flightHotel.duration")}</SelectItem>
                           <SelectItem value="stops">Escales</SelectItem>
                         </SelectContent>
                       </Select>
@@ -307,7 +307,7 @@ const FlightHotel = () => {
                                       <span>{flight.baggage?.cabin?.quantity || 1}x {flight.baggage?.cabin?.weight || '10kg'}</span>
                                     </div>
                                   </TooltipTrigger>
-                                  <TooltipContent>Bagage cabine inclus</TooltipContent>
+                                  <TooltipContent>{t("ux.flightHotel.cabinIncluded")}</TooltipContent>
                                 </Tooltip>
                                 
                                 <Tooltip>
@@ -317,13 +317,13 @@ const FlightHotel = () => {
                                       <span>
                                         {(flight.baggage?.checked?.quantity || 0) > 0 
                                           ? `${flight.baggage.checked.quantity}x ${flight.baggage.checked.weight}`
-                                          : 'Non inclus'}
+                                          : t("ux.flightHotel.notIncluded")}
                                       </span>
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     {(flight.baggage?.checked?.quantity || 0) > 0 
-                                      ? 'Bagage en soute inclus' 
+                                      ? t("ux.flightHotel.checkedIncluded") 
                                       : `Bagage en soute: +${flight.baggage?.extraBagPrice || 45}€`}
                                   </TooltipContent>
                                 </Tooltip>
@@ -349,7 +349,7 @@ const FlightHotel = () => {
                           {/* Fare Type Badge */}
                           <div className="flex gap-2 mt-3 pt-3 border-t">
                             <Badge variant="outline" className="text-xs">{flight.fareType || 'Standard'}</Badge>
-                            <Badge variant="outline" className="text-xs">{flight.travelClass || 'Économique'}</Badge>
+                            <Badge variant="outline" className="text-xs">{flight.travelClass || t("ux.flightHotel.economy")}</Badge>
                             {flight.returnFlight && (
                               <Badge variant="secondary" className="text-xs">Aller-retour</Badge>
                             )}
@@ -373,12 +373,12 @@ const FlightHotel = () => {
                       <SortAsc className="h-4 w-4 text-muted-foreground" />
                       <Select value={hotelSort} onValueChange={setHotelSort}>
                         <SelectTrigger className="w-[160px]">
-                          <SelectValue placeholder="Trier par" />
+                          <SelectValue placeholder={t("ux.flightHotel.sortBy")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="price">Prix croissant</SelectItem>
+                          <SelectItem value="price">{t("ux.flightHotel.priceAsc")}</SelectItem>
                           <SelectItem value="rating">Note</SelectItem>
-                          <SelectItem value="stars">Étoiles</SelectItem>
+                          <SelectItem value="stars">{t("ux.flightHotel.stars")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -400,7 +400,7 @@ const FlightHotel = () => {
                           <img
                             src={hotel.image}
                             alt={hotel.name}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-105"
                             loading="lazy"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945';
@@ -415,13 +415,13 @@ const FlightHotel = () => {
                           {/* Badges */}
                           <div className="absolute top-3 left-3 flex flex-col gap-2">
                             {(hotel.reviewScore || 0) >= 8.5 && (
-                              <Badge className="bg-amber-500 text-white gap-1">
+                              <Badge className="bg-gold text-gold-foreground gap-1">
                                 <Award className="h-3 w-3" /> Top Noté
                               </Badge>
                             )}
                             {hotel.freeCancellation && (
-                              <Badge variant="secondary" className="bg-green-600 text-white text-xs">
-                                Annulation gratuite
+                              <Badge variant="secondary" className="bg-success text-success-foreground text-xs">
+                                {t("ux.flightHotel.freeCancel")}
                               </Badge>
                             )}
                           </div>
@@ -434,7 +434,7 @@ const FlightHotel = () => {
                             <div className="flex items-center gap-2 mt-1">
                               <div className="flex items-center">
                                 {[...Array(hotel.rating || 4)].map((_, i) => (
-                                  <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                  <Star key={i} className="h-3 w-3 fill-gold text-gold" />
                                 ))}
                               </div>
                               <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -474,14 +474,14 @@ const FlightHotel = () => {
                               );
                             })}
                             {hotel.breakfast && (
-                              <Badge variant="outline" className="text-xs gap-1 text-green-600 border-green-600">
+                              <Badge variant="outline" className="text-xs gap-1 text-success border-success">
                                 <Coffee className="h-3 w-3" /> Petit-déj inclus
                               </Badge>
                             )}
                           </div>
 
                           {/* Room Type */}
-                          <p className="text-sm text-muted-foreground">{hotel.roomType || 'Chambre Double'}</p>
+                          <p className="text-sm text-muted-foreground">{hotel.roomType || t("ux.flightHotel.doubleRoom")}</p>
 
                           {/* Price */}
                           <div className="pt-3 border-t flex justify-between items-end">
@@ -489,7 +489,7 @@ const FlightHotel = () => {
                               <p className="text-2xl font-bold text-primary">
                                 <Price amount={hotel.price} fromCurrency="EUR" />
                               </p>
-                              <p className="text-xs text-muted-foreground">par nuit</p>
+                              <p className="text-xs text-muted-foreground">{t("ux.flightHotel.perNight")}</p>
                             </div>
                             <Button variant="outline" size="sm" className="gap-1">
                               Voir plus <ArrowRight className="h-3 w-3" />
@@ -536,7 +536,7 @@ const FlightHotel = () => {
                             </p>
                           </div>
                         ) : (
-                          <p className="text-sm text-muted-foreground">Aucun vol sélectionné</p>
+                          <p className="text-sm text-muted-foreground">{t("ux.flightHotel.noFlight")}</p>
                         )}
                       </div>
                       
@@ -556,12 +556,12 @@ const FlightHotel = () => {
                             </p>
                           </div>
                         ) : (
-                          <p className="text-sm text-muted-foreground">Aucun hôtel sélectionné</p>
+                          <p className="text-sm text-muted-foreground">{t("ux.flightHotel.noHotel")}</p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">Total forfait</h3>
+                        <h3 className="font-semibold text-sm">{t("ux.flightHotel.packageTotal")}</h3>
                         {selectedFlight && selectedHotel ? (
                           <div className="bg-primary/10 p-3 rounded-lg">
                             <p className="text-3xl font-bold text-primary">
@@ -572,15 +572,15 @@ const FlightHotel = () => {
                             </p>
                           </div>
                         ) : (
-                          <p className="text-sm text-muted-foreground">Sélectionnez un vol et un hôtel</p>
+                          <p className="text-sm text-muted-foreground">{t("ux.flightHotel.selectBoth")}</p>
                         )}
                       </div>
                     </div>
 
                     {selectedFlight && selectedHotel && (
-                      <Alert className="mt-4 border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-                        <AlertTriangle className="h-4 w-4 text-amber-600" />
-                        <AlertDescription className="text-amber-800 dark:text-amber-300 text-sm">
+                      <Alert className="mt-4 border-warning-foreground/20 bg-warning">
+                        <AlertTriangle className="h-4 w-4 text-warning-foreground" />
+                        <AlertDescription className="text-warning-foreground text-sm">
                           {t('pages.flightHotel.availabilityNote')}
                         </AlertDescription>
                       </Alert>

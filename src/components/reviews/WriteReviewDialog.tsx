@@ -88,7 +88,7 @@ export const WriteReviewDialog = ({ open, onOpenChange, bookingId, serviceId, se
               >
                 <Star
                   className={`w-8 h-8 transition-colors ${
-                    star <= (hoverRating || rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"
+                    star <= (hoverRating || rating) ? "fill-gold text-gold" : "text-muted-foreground"
                   }`}
                 />
               </button>

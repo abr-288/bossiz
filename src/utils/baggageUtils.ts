@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 // Baggage policies by airline and fare type
 export interface BaggageAllowance {
   cabin: {
@@ -224,22 +225,32 @@ export function getBaggageAllowance(
   return farePolicy[normalizedClass] || farePolicy.ECONOMY || defaultPolicies.basic.ECONOMY;
 }
 
-export function formatBaggageInfo(allowance: BaggageAllowance): {
+// Les descriptions de franchise sont stockées en français dans les politiques ci-dessus ;
+// on les traduit à l'affichage.
+const CABIN_DESCRIPTION_KEYS: Record<string, string> = {
+  "Sac cabine": "cabinBag",
+  "Sacs cabine": "cabinBags",
+  "Petit sac": "smallBag",
+};
+
+export function formatBaggageInfo(allowance: BaggageAllowance, t: TFunction): {
   cabinText: string;
   checkedText: string;
   personalItemText: string | null;
 } {
+  const descKey = CABIN_DESCRIPTION_KEYS[allowance.cabin.description];
+  const cabinLabel = descKey ? t(`ux.baggage.${descKey}`) : allowance.cabin.description;
   const cabinText = allowance.cabin.pieces > 0
-    ? `${allowance.cabin.pieces} ${allowance.cabin.description} (${allowance.cabin.weightKg} kg)`
-    : "Non inclus";
-    
+    ? t("ux.baggage.cabin", { count: allowance.cabin.pieces, label: cabinLabel, kg: allowance.cabin.weightKg })
+    : t("ux.baggage.notIncluded");
+
   const checkedText = allowance.checked.included && allowance.checked.pieces > 0
-    ? `${allowance.checked.pieces} valise${allowance.checked.pieces > 1 ? "s" : ""} de ${allowance.checked.weightKg} kg`
-    : "Non inclus";
-    
+    ? t("ux.baggage.checked", { count: allowance.checked.pieces, kg: allowance.checked.weightKg })
+    : t("ux.baggage.notIncluded");
+
   const personalItemText = allowance.personalItem
-    ? "1 accessoire personnel (sac à main, ordinateur)"
+    ? t("ux.baggage.personalItem")
     : null;
-    
+
   return { cabinText, checkedText, personalItemText };
 }

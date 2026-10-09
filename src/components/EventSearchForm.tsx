@@ -133,7 +133,7 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Veuillez corriger les erreurs dans le formulaire
+                {t("ux.eventSearch.fixErrors")}
               </AlertDescription>
             </Alert>
           )}
@@ -192,9 +192,9 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
                   <SelectItem value="all">{t("search.allCategories")}</SelectItem>
                   <SelectItem value="concert">Concert</SelectItem>
                   <SelectItem value="sport">Sport</SelectItem>
-                  <SelectItem value="theater">Théâtre</SelectItem>
+                  <SelectItem value="theater">{t("ux.eventSearch.theatre")}</SelectItem>
                   <SelectItem value="festival">Festival</SelectItem>
-                  <SelectItem value="conference">Conférence</SelectItem>
+                  <SelectItem value="conference">{t("ux.eventSearch.conference")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.category && touched.category && (

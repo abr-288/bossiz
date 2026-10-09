@@ -42,10 +42,10 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
 
   const getCategoryColor = (category: string) => {
     const cat = category.toLowerCase();
-    if (cat.includes('luxe') || cat.includes('luxury') || cat.includes('premium')) return 'bg-amber-500/10 text-amber-600';
-    if (cat.includes('suv') || cat.includes('4x4')) return 'bg-emerald-500/10 text-emerald-600';
-    if (cat.includes('économique') || cat.includes('economy') || cat.includes('mini')) return 'bg-blue-500/10 text-blue-600';
-    if (cat.includes('berline') || cat.includes('sedan')) return 'bg-purple-500/10 text-purple-600';
+    if (cat.includes('luxe') || cat.includes('luxury') || cat.includes('premium')) return 'bg-warning text-warning-foreground';
+    if (cat.includes('suv') || cat.includes('4x4')) return 'bg-success/10 text-success';
+    if (cat.includes('économique') || cat.includes('economy') || cat.includes('mini')) return 'bg-info/10 text-info';
+    if (cat.includes('berline') || cat.includes('sedan')) return 'bg-primary/10 text-primary';
     return 'bg-muted text-muted-foreground';
   };
 
@@ -76,7 +76,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
               {car.category}
             </Badge>
             {car.freeCancellation && (
-              <Badge className="bg-green-500 text-white">
+              <Badge className="bg-success text-success-foreground">
                 <Check className="w-3 h-3 mr-1" />
                 {t('pages.hotels.badges.freeCancellation')}
               </Badge>
@@ -176,9 +176,9 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                   <span className="text-muted-foreground">{t('carDetails.airConditioning')}</span>
                   <span className="font-medium">
                     {car.airConditioning ? (
-                      <Check className="w-5 h-5 text-green-500" />
+                      <Check className="w-5 h-5 text-success" />
                     ) : (
-                      <X className="w-5 h-5 text-red-500" />
+                      <X className="w-5 h-5 text-destructive" />
                     )}
                   </span>
                 </div>
@@ -199,14 +199,14 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                  <Gauge className={`w-5 h-5 ${car.unlimitedMileage ? 'text-green-500' : 'text-amber-500'}`} />
+                  <Gauge className={`w-5 h-5 ${car.unlimitedMileage ? 'text-success' : 'text-gold'}`} />
                   <div className="flex-1">
                     <span className="font-medium">{t('carDetails.mileage')}</span>
                     <p className="text-sm text-muted-foreground">
                       {car.unlimitedMileage ? t('carDetails.unlimited') : t('carDetails.limited')}
                     </p>
                   </div>
-                  {car.unlimitedMileage && <Check className="w-5 h-5 text-green-500" />}
+                  {car.unlimitedMileage && <Check className="w-5 h-5 text-success" />}
                 </div>
 
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
@@ -220,19 +220,19 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                 </div>
 
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                  <Clock className={`w-5 h-5 ${car.freeCancellation ? 'text-green-500' : 'text-amber-500'}`} />
+                  <Clock className={`w-5 h-5 ${car.freeCancellation ? 'text-success' : 'text-gold'}`} />
                   <div className="flex-1">
                     <span className="font-medium">{t('carDetails.cancellation')}</span>
                     <p className="text-sm text-muted-foreground">
                       {car.freeCancellation ? t('carDetails.freeCancellationUntil48h') : t('carDetails.cancellationTermsApply')}
                     </p>
                   </div>
-                  {car.freeCancellation && <Check className="w-5 h-5 text-green-500" />}
+                  {car.freeCancellation && <Check className="w-5 h-5 text-success" />}
                 </div>
 
                 {car.deposit && (
                   <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                    <CreditCard className="w-5 h-5 text-amber-500" />
+                    <CreditCard className="w-5 h-5 text-gold" />
                     <div className="flex-1">
                       <span className="font-medium">{t('carDetails.depositRequired')}</span>
                       <p className="text-sm text-muted-foreground">
@@ -256,7 +256,7 @@ export const CarDetailsDialog = ({ open, onOpenChange, car, onBook }: CarDetails
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {car.features.map((feature, index) => (
                       <div key={index} className="flex items-center gap-2 p-2">
-                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <Check className="w-4 h-4 text-success flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </div>
                     ))}

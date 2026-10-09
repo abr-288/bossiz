@@ -11,7 +11,9 @@ import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 
 const Footer = () => {
   const { config } = useSiteConfigContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // Textes de l'admin (en français) affichés en français uniquement
+  const isFrench = i18n.language.startsWith("fr");
   const [email, setEmail] = useState("");
   const { subscribe, loading } = useNewsletterSubscribe();
 
@@ -30,7 +32,7 @@ const Footer = () => {
     } else if (isAndroid) {
       window.open(playStoreUrl, '_blank');
       setTimeout(() => {
-        alert('Redirection vers Google Play en cours...');
+        alert(t("ux.footer.googlePlay"));
       }, 500);
     } else {
       // Pour desktop, rediriger vers la page d'installation
@@ -80,40 +82,40 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-white/80 text-sm">
-              {config.branding.tagline || t("footer.description")}
+              {(isFrench && config.branding.tagline) || t("footer.description")}
             </p>
             <div className="flex gap-2 md:gap-3 justify-center sm:justify-start">
               {config.social.facebook && (
                 <a href={config.social.facebook} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
+                  <Button aria-label="Facebook" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Facebook className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.twitter && (
                 <a href={config.social.twitter} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
+                  <Button aria-label="Twitter" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Twitter className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.instagram && (
                 <a href={config.social.instagram} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
+                  <Button aria-label="Instagram" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Instagram className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.youtube && (
                 <a href={config.social.youtube} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
+                  <Button aria-label="YouTube" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Youtube className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.linkedin && (
                 <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-primary transition-colors">
+                  <Button aria-label="LinkedIn" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Linkedin className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
@@ -184,12 +186,12 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/partenariat" className="text-white/80 hover:text-secondary transition-smooth">
-                  Devenir partenaire
+                  {t("ux.footer.becomePartner")}
                 </Link>
               </li>
               <li>
                 <Link to="/entreprises" className="text-white/80 hover:text-secondary transition-smooth">
-                  Espace Entreprises
+                  {t("ux.footer.business")}
                 </Link>
               </li>
             </ul>
@@ -199,7 +201,7 @@ const Footer = () => {
           {config.footer.showNewsletter && (
             <div className="text-center sm:text-left">
               <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">
-                {config.footer.newsletterTitle || t("footer.newsletter.title")}
+                {(isFrench && config.footer.newsletterTitle) || t("footer.newsletter.title")}
               </h3>
               <p className="text-white/80 text-xs md:text-sm mb-3 md:mb-4">
                 {t("footer.newsletter.description")}
@@ -214,7 +216,7 @@ const Footer = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
                   />
-                  <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground h-9 md:h-10" disabled={loading}>
+                  <Button type="submit" size="icon" aria-label={t("ux.footer.subscribe")} disabled={loading}>
                     <Mail className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
@@ -229,7 +231,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-primary-light flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <p className="text-white/80 text-sm">
-            {config.footer.copyright || `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
+            {(isFrench && config.footer.copyright) || `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
             <Link to="/terms" className="text-white/80 hover:text-secondary transition-smooth">
@@ -239,10 +241,10 @@ const Footer = () => {
               {t("footer.privacy")}
             </Link>
             <Link to="/politique-cookies" className="text-white/80 hover:text-secondary transition-smooth">
-              Cookies
+              {t("ux.footer.cookies")}
             </Link>
             <Link to="/mentions-legales" className="text-white/80 hover:text-secondary transition-smooth">
-              Mentions légales
+              {t("ux.footer.legal")}
             </Link>
             <button
               type="button"

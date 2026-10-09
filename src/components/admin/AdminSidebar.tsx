@@ -1,5 +1,6 @@
 import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound, FileText, Car } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
+import { SidebarBrandHeader, sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 import {
   Sidebar,
   SidebarContent,
@@ -11,33 +12,36 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Réservations", url: "/admin/bookings", icon: Calendar },
+  { get title() { return i18n.t("ux.bo.bookings"); }, url: "/admin/bookings", icon: Calendar },
   { title: "Services", url: "/admin/services", icon: Package },
-  { title: "Activités", url: "/admin/activities", icon: Activity },
-  { title: "Séjours", url: "/admin/stays", icon: Home },
-  { title: "Sous-Agences", url: "/admin/agencies", icon: Building2 },
-  { title: "Candidatures Partenaires", url: "/admin/partner-applications", icon: FileText },
+  { get title() { return i18n.t("ux.bo.activities"); }, url: "/admin/activities", icon: Activity },
+  { get title() { return i18n.t("ux.bo.stays"); }, url: "/admin/stays", icon: Home },
+  { get title() { return i18n.t("ux.bo.subAgencies"); }, url: "/admin/agencies", icon: Building2 },
+  { get title() { return i18n.t("ux.bo.partnerApplications"); }, url: "/admin/partner-applications", icon: FileText },
   { title: "Commissions", url: "/admin/commissions", icon: DollarSign },
-  { title: "Forfaits voiture", url: "/admin/car-partner-plans", icon: Car },
-  { title: "Demandes Abonnements", url: "/admin/subscriptions", icon: Crown },
-  { title: "Plans d'abonnement", url: "/admin/subscription-plans", icon: Tags },
+  { get title() { return i18n.t("ux.bo.carPlans"); }, url: "/admin/car-partner-plans", icon: Car },
+  { get title() { return i18n.t("ux.bo.subscriptionRequests"); }, url: "/admin/subscriptions", icon: Crown },
+  { get title() { return i18n.t("ux.bo.subscriptionPlans"); }, url: "/admin/subscription-plans", icon: Tags },
   { title: "Promotions", url: "/admin/promotions", icon: Percent },
-  { title: "Publicités", url: "/admin/advertisements", icon: Megaphone },
-  { title: "Paiements", url: "/admin/payments", icon: CreditCard },
-  { title: "Avis Clients", url: "/admin/reviews", icon: Star },
+  { get title() { return i18n.t("ux.bo.advertisements"); }, url: "/admin/advertisements", icon: Megaphone },
+  { get title() { return i18n.t("ux.bo.payments"); }, url: "/admin/payments", icon: CreditCard },
+  { get title() { return i18n.t("ux.bo.customerReviews"); }, url: "/admin/reviews", icon: Star },
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
-  { title: "Contenu Bossiz", url: "/admin/bossiz-microsites", icon: Globe },
-  { title: "Intégrations (Email/SMS/Paiement)", url: "/admin/integrations", icon: KeyRound },
-  { title: "Utilisateurs", url: "/admin/users", icon: Users },
-  { title: "Templates Email", url: "/admin/email-templates", icon: Mail },
+  { get title() { return i18n.t("ux.bo.bossizContent"); }, url: "/admin/bossiz-microsites", icon: Globe },
+  { get title() { return i18n.t("ux.bo.integrationsEmailSmsPayment"); }, url: "/admin/integrations", icon: KeyRound },
+  { get title() { return i18n.t("ux.bo.users"); }, url: "/admin/users", icon: Users },
+  { get title() { return i18n.t("ux.bo.emailTemplates"); }, url: "/admin/email-templates", icon: Mail },
   { title: "Configuration", url: "/admin/configuration", icon: Cog },
 ];
 
 export function AdminSidebar() {
+  const { t } = useTranslation();
   const { state, setOpenMobile } = useSidebar();
   const location = useLocation();
   const collapsed = state === "collapsed";
@@ -50,16 +54,12 @@ export function AdminSidebar() {
   };
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-56 md:w-64"} collapsible="icon">
+    <Sidebar className={sidebarWidthClass(collapsed)} collapsible="icon">
       <SidebarContent className="flex flex-col h-full">
-        <div className="p-3 md:p-4 flex-shrink-0" style={{ backgroundColor: "#334155" }}>
-          <h2 className={`font-bold text-base md:text-xl text-white ${collapsed ? "text-center" : ""}`}>
-            {collapsed ? "HQ" : "BossizHQ"}
-          </h2>
-        </div>
+        <SidebarBrandHeader title="BossizHQ" shortTitle="HQ" collapsed={collapsed} />
 
         <SidebarGroup className="flex-1 overflow-y-auto">
-          <SidebarGroupLabel className="text-xs px-3">Menu Principal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs px-3">{t("ux.bo.mainMenu")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -69,12 +69,10 @@ export function AdminSidebar() {
                       to={item.url}
                       aria-label={item.title}
                       onClick={() => setOpenMobile(false)}
-                      className={`min-h-11 flex items-center gap-2 md:gap-3 py-2 md:py-2.5 ${
-                        isActive(item.url) ? "bg-[#334155]/10 text-[#334155] dark:text-slate-300 font-medium" : ""
-                      }`}
+                      className={sidebarLinkClass(isActive(item.url))}
                     >
-                      <item.icon className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
-                      {!collapsed && <span className="text-xs md:text-sm truncate">{item.title}</span>}
+                      <item.icon className={sidebarIconClass} />
+                      {!collapsed && <span className="truncate">{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

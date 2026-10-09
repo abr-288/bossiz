@@ -4,6 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface HomepageFeature {
   id: string;
+  /** Identifiant stable (colonne feature_id), sert aux traductions */
+  key?: string;
   icon: string;
   title: string;
   description: string;
@@ -51,25 +53,28 @@ export interface HomepageConfig {
 const DEFAULT_HOMEPAGE_CONFIG: HomepageConfig = {
   features: [
     {
-      id: 'secure-booking',
-      icon: 'Shield',
-      title: 'Réservation Sécurisée',
-      description: 'Réservez en toute confiance avec notre système de paiement sécurisé et notre protection des données.',
+      id: 'mobile-money',
+      key: 'mobile-money',
+      icon: 'Smartphone',
+      title: 'Paiement Mobile Money',
+      description: 'Payez avec Wave, MTN ou Moov, ou par carte bancaire, en toute sécurité.',
       color: 'from-blue-500 to-blue-600'
     },
     {
-      id: 'best-prices',
-      icon: 'Award',
-      title: 'Meilleurs Prix Garantis',
-      description: 'Trouvez les meilleures offres sur les vols, hôtels et locations de voitures.',
-      color: 'from-green-500 to-green-600'
-    },
-    {
       id: 'support-247',
+      key: 'support-247',
       icon: 'Headphones',
       title: 'Support 24/7',
-      description: 'Notre équipe d\'assistance est disponible à tout moment pour vous aider.',
+      description: 'Notre équipe vous répond à toute heure, par chat, téléphone ou e-mail.',
       color: 'from-orange-500 to-orange-600'
+    },
+    {
+      id: 'easy-cancellation',
+      key: 'easy-cancellation',
+      icon: 'RotateCcw',
+      title: 'Annulation simple',
+      description: 'Annulez ou modifiez votre réservation depuis votre compte, selon les conditions de l\'offre.',
+      color: 'from-green-500 to-green-600'
     }
   ],
   destinations: [],
@@ -162,10 +167,11 @@ export const useHomepageConfig = () => {
       if (featuresData && featuresData.length > 0) {
         newConfig.features = featuresData.map(feature => ({
           id: feature.id,
+          key: feature.feature_id,
           icon: feature.icon,
           title: feature.title,
           description: feature.description,
-          color: feature.color
+          color: feature.color ?? undefined
         }));
       }
 

@@ -36,7 +36,7 @@ const BossizSNAPropos = () => {
         <div className="relative py-24 min-h-[70vh] flex items-center">
           <div className="max-w-6xl mx-auto px-6 lg:px-10 w-full">
             <div className="text-center mb-20 max-w-3xl mx-auto">
-              <h1 className="font-black text-3xl md:text-5xl text-white mb-6 drop-shadow-lg">
+              <h1 className="font-extrabold text-3xl md:text-5xl text-white mb-6 drop-shadow-lg">
                 {content.about.title}
               </h1>
               <p className="text-white/85 leading-relaxed">
@@ -50,7 +50,7 @@ const BossizSNAPropos = () => {
                   <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mx-auto mb-6">
                     <Icon className="w-7 h-7 text-bossiz-gold-light" strokeWidth={1.25} />
                   </div>
-                  <h3 className="font-black text-xl text-white mb-3">{title}</h3>
+                  <h3 className="font-extrabold text-xl text-white mb-3">{title}</h3>
                   <p className="text-white/70 text-sm leading-relaxed">{text}</p>
                 </div>
               ))}

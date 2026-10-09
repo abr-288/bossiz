@@ -2,10 +2,11 @@ import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, TrendingDown, TrendingUp, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, isWeekend, getDay } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 interface PriceCalendarProps {
   departureDate: string;
@@ -81,6 +82,7 @@ export const PriceCalendar = ({
   viewMode: initialViewMode = "week",
   onPriceFilterChange
 }: PriceCalendarProps) => {
+  const { t } = useTranslation();
   const baseDate = parseISO(departureDate);
   const [currentMonth, setCurrentMonth] = useState(baseDate);
   const [viewMode, setViewMode] = useState<"week" | "month">(initialViewMode);
@@ -186,9 +188,9 @@ export const PriceCalendar = ({
     const range = max - min;
     const position = (price - min) / range;
     
-    if (position < 0.33) return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800";
-    if (position < 0.66) return "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800";
-    return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800";
+    if (position < 0.33) return "text-success bg-success/10 border-success/30";
+    if (position < 0.66) return "text-warning-foreground bg-warning border-warning-foreground/20";
+    return "text-destructive bg-destructive/10 border-destructive/30";
   };
 
   const handlePrevMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
@@ -201,12 +203,12 @@ export const PriceCalendar = ({
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-background to-muted/20 border-b border-border"
+        className="bg-background border-b border-border"
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-green-600" />
+              <TrendingDown className="h-4 w-4 text-success" />
               <span className="text-sm font-medium">
                 Meilleur prix: <Price amount={priceStats.min} fromCurrency={currency} />
               </span>
@@ -218,7 +220,7 @@ export const PriceCalendar = ({
               className="text-xs"
             >
               <CalendarIcon className="h-3 w-3 mr-1" />
-              Vue mois
+              {t("ux.priceCalendar.month")}
             </Button>
           </div>
           
@@ -232,7 +234,7 @@ export const PriceCalendar = ({
                 // Si le prix est filtré, ne pas afficher cette date
                 if (!price && pricesWithDefaults[dateStr]) {
                   return (
-                    <div key={dateStr} className="flex-shrink-0 flex flex-col items-center px-4 py-2.5 rounded-xl border-2 border-dashed border-gray-300 min-w-[100px] opacity-50" />
+                    <div key={dateStr} className="flex-shrink-0 flex flex-col items-center px-4 py-2.5 rounded-xl border-2 border-dashed border-border min-w-[100px] opacity-50" />
                   );
                 }
                 
@@ -252,17 +254,17 @@ export const PriceCalendar = ({
                     )}
                   >
                     <span className="text-xs font-medium capitalize opacity-80">
-                      {format(date, "EEE", { locale: fr })}
+                      {format(date, "EEE", { locale: currentDateFnsLocale() })}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {format(date, "d MMM", { locale: fr })}
+                      {format(date, "d MMM", { locale: currentDateFnsLocale() })}
                     </span>
                     <span className="text-lg font-bold mt-1">
                       <Price amount={price} fromCurrency={currency} />
                     </span>
                     {price === priceStats.min && (
-                      <span className="text-[10px] font-semibold text-green-600 dark:text-green-400 mt-0.5">
-                        Meilleur prix
+                      <span className="text-[11px] font-semibold text-success mt-0.5">
+                        {t("ux.priceCalendar.best")}
                       </span>
                     )}
                   </motion.button>
@@ -284,31 +286,31 @@ export const PriceCalendar = ({
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gradient-to-br from-background to-muted/20 border-b border-border"
+      className="bg-background border-b border-border"
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={handlePrevMonth}>
+            <Button aria-label={t("ux.priceCalendar.prev")} variant="ghost" size="icon" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <h3 className="text-lg font-semibold capitalize min-w-[140px] text-center">
-              {format(currentMonth, "MMMM yyyy", { locale: fr })}
+              {format(currentMonth, "MMMM yyyy", { locale: currentDateFnsLocale() })}
             </h3>
-            <Button variant="ghost" size="icon" onClick={handleNextMonth}>
+            <Button aria-label={t("ux.priceCalendar.next")} variant="ghost" size="icon" onClick={handleNextMonth}>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm">
-              <TrendingDown className="h-4 w-4 text-green-600" />
+              <TrendingDown className="h-4 w-4 text-success" />
               <span className="font-medium">
                 Min: <Price amount={filteredPriceStats.min} fromCurrency={currency} />
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <TrendingUp className="h-4 w-4 text-red-600" />
+              <TrendingUp className="h-4 w-4 text-destructive" />
               <span className="font-medium">
                 Max: <Price amount={filteredPriceStats.max} fromCurrency={currency} />
               </span>
@@ -319,7 +321,7 @@ export const PriceCalendar = ({
               onClick={() => setViewMode("week")}
               className="text-xs"
             >
-              Vue semaine
+              {t("ux.priceCalendar.week")}
             </Button>
           </div>
         </div>
@@ -366,10 +368,10 @@ export const PriceCalendar = ({
                     {format(date, "d")}
                   </span>
                   <span className="text-xs font-bold">
-                    <Price amount={price} fromCurrency={currency} className="text-[10px]" />
+                    <Price amount={price} fromCurrency={currency} className="text-[11px]" />
                   </span>
                   {price === priceStats.min && !isPast && (
-                    <TrendingDown className="h-3 w-3 text-green-600 mt-0.5" />
+                    <TrendingDown className="h-3 w-3 text-success mt-0.5" />
                   )}
                 </motion.button>
               );
@@ -385,9 +387,9 @@ export const PriceCalendar = ({
               id="price-low"
               checked={priceFilters.low}
               onChange={() => handlePriceFilterChange('low')}
-              className="w-4 h-4 text-green-600 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 rounded focus:ring-green-500"
+              className="w-4 h-4 text-success bg-success/10 border-success/30 rounded focus:ring-success"
             />
-            <label htmlFor="price-low" className="text-xs text-muted-foreground cursor-pointer">Prix bas</label>
+            <label htmlFor="price-low" className="text-xs text-muted-foreground cursor-pointer">{t("ux.priceCalendar.low")}</label>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -395,9 +397,9 @@ export const PriceCalendar = ({
               id="price-medium"
               checked={priceFilters.medium}
               onChange={() => handlePriceFilterChange('medium')}
-              className="w-4 h-4 text-orange-600 bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-warning-foreground bg-warning border-warning-foreground/20 rounded focus:ring-gold"
             />
-            <label htmlFor="price-medium" className="text-xs text-muted-foreground cursor-pointer">Prix moyen</label>
+            <label htmlFor="price-medium" className="text-xs text-muted-foreground cursor-pointer">{t("ux.priceCalendar.mid")}</label>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -405,9 +407,9 @@ export const PriceCalendar = ({
               id="price-high"
               checked={priceFilters.high}
               onChange={() => handlePriceFilterChange('high')}
-              className="w-4 h-4 text-red-600 bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 rounded focus:ring-red-500"
+              className="w-4 h-4 text-destructive bg-destructive/10 border-destructive/30 rounded focus:ring-destructive"
             />
-            <label htmlFor="price-high" className="text-xs text-muted-foreground cursor-pointer">Prix élevé</label>
+            <label htmlFor="price-high" className="text-xs text-muted-foreground cursor-pointer">{t("ux.priceCalendar.high")}</label>
           </div>
         </div>
       </div>

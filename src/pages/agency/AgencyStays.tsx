@@ -34,6 +34,8 @@ import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Home, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface Stay {
   id: string;
@@ -54,15 +56,16 @@ interface Stay {
 }
 
 const stayTypes = [
-  { value: "apartment", label: "Appartement" },
-  { value: "villa", label: "Villa" },
-  { value: "house", label: "Maison" },
-  { value: "bungalow", label: "Bungalow" },
-  { value: "chalet", label: "Chalet" },
-  { value: "studio", label: "Studio" },
+  { value: "apartment", get label() { return i18n.t("ux.bo.apartment"); } },
+  { value: "villa", get label() { return i18n.t("ux.bo.villa"); } },
+  { value: "house", get label() { return i18n.t("ux.bo.house"); } },
+  { value: "bungalow", get label() { return i18n.t("ux.bo.bungalow"); } },
+  { value: "chalet", get label() { return i18n.t("ux.bo.chalet"); } },
+  { value: "studio", get label() { return i18n.t("ux.bo.studio"); } },
 ];
 
 export default function AgencyStays() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [stays, setStays] = useState<Stay[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
@@ -146,14 +149,14 @@ export default function AgencyStays() {
           .eq("id", editingStay.id);
 
         if (error) throw error;
-        toast({ title: "Succès", description: "Séjour mis à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.stayUpdated") });
       } else {
         const { error } = await supabase
           .from("stays")
           .insert(stayData);
 
         if (error) throw error;
-        toast({ title: "Succès", description: "Séjour créé" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.stayCreated") });
       }
 
       setIsDialogOpen(false);
@@ -161,7 +164,7 @@ export default function AgencyStays() {
       fetchAgencyAndStays();
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: t("ux.bo.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -189,13 +192,13 @@ export default function AgencyStays() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer ce séjour ?")) return;
+    if (!confirm(t("ux.bo.deleteStay"))) return;
 
     const { error } = await supabase.from("stays").delete().eq("id", id);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Succès", description: "Séjour supprimé" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.stayDeleted") });
       fetchAgencyAndStays();
     }
   };
@@ -228,26 +231,26 @@ export default function AgencyStays() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Mes Séjours</h1>
-            <p className="text-muted-foreground">Gérez vos hébergements de séjour</p>
+            <h1 className="text-2xl font-bold">{t("ux.bo.myStays")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.manageStayAccommodations")}</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nouveau Séjour</Button>
+              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newStay")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>
-                  {editingStay ? "Modifier le séjour" : "Nouveau séjour"}
+                  {editingStay ? t("ux.bo.editStay") : t("ux.bo.newStay2")}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Nom *</Label>
+                    <Label>{t("ux.bo.name2")}</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -255,7 +258,7 @@ export default function AgencyStays() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Type *</Label>
+                    <Label>{t("ux.bo.type2")}</Label>
                     <Select
                       value={formData.type}
                       onValueChange={(v) => setFormData({ ...formData, type: v })}
@@ -276,18 +279,18 @@ export default function AgencyStays() {
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Durée min *</Label>
+                    <Label>{t("ux.bo.minDuration")}</Label>
                     <Input
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                      placeholder="Ex: 1 nuit"
+                      placeholder={t("ux.bo.eG1Night")}
                       required
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Prix / nuit *</Label>
+                    <Label>{t("ux.bo.priceNight")}</Label>
                     <Input
                       type="number"
                       value={formData.price_per_unit}
@@ -295,11 +298,11 @@ export default function AgencyStays() {
                       required
                     />
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">Prix affiché et facturé en XOF (FCFA)</div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
                 </div>
-                <AvailableDatesInput dates={formData.available_dates} onChange={(available_dates) => setFormData({ ...formData, available_dates })} label="Dates spéciales de disponibilité" />
+                <AvailableDatesInput dates={formData.available_dates} onChange={(available_dates) => setFormData({ ...formData, available_dates })} label={t("ux.bo.specialAvailabilityDates")} />
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -307,7 +310,7 @@ export default function AgencyStays() {
                   />
                 </div>
                 <ImageUpload
-                  label="Photo du séjour"
+                  label={t("ux.bo.stayPhoto")}
                   folder="agency-stays"
                   value={formData.image_url}
                   onChange={(image_url) => setFormData({ ...formData, image_url })}
@@ -317,13 +320,13 @@ export default function AgencyStays() {
                     checked={formData.available}
                     onCheckedChange={(c) => setFormData({ ...formData, available: c })}
                   />
-                  <Label>Disponible</Label>
+                  <Label>{t("ux.bo.available")}</Label>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Annuler
+                    {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">{editingStay ? "Mettre à jour" : "Créer"}</Button>
+                  <Button type="submit">{editingStay ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -333,7 +336,7 @@ export default function AgencyStays() {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher..."
+            placeholder={t("ux.bo.search")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -344,25 +347,25 @@ export default function AgencyStays() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Séjour</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Durée min</TableHead>
-                <TableHead>Prix/nuit</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("ux.bo.stay")}</TableHead>
+                <TableHead>{t("ux.bo.type")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.minDuration2")}</TableHead>
+                <TableHead>{t("ux.bo.priceNight2")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">Chargement...</TableCell>
+                  <TableCell colSpan={7} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
                 </TableRow>
               ) : filteredStays.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     <Home className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    Aucun séjour
+                    {t("ux.bo.noStay")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -379,14 +382,14 @@ export default function AgencyStays() {
                     <TableCell>{stay.price_per_unit} {stay.currency}</TableCell>
                     <TableCell>
                       <Badge variant={stay.available ? "default" : "secondary"}>
-                        {stay.available ? "Disponible" : "Indisponible"}
+                        {stay.available ? t("ux.bo.available") : "Indisponible"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(stay)}>
+                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(stay)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(stay.id)}>
+                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(stay.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

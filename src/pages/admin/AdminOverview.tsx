@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RefreshCw, Layers } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const AdminOverview = () => {
+  const { t } = useTranslation();
   const { stats, loading, refetch } = useAdminStats();
   const { activeLayout, loading: layoutLoading } = useDashboardPreferences();
 
@@ -36,14 +38,14 @@ const AdminOverview = () => {
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground">
               {activeLayout?.layoutName === "default" 
-                ? "Vue d'ensemble de votre plateforme - Temps réel" 
+                ? t("ux.bo.overviewPlatformRealTime") 
                 : `Vue: ${activeLayout?.layoutName} - Temps réel`}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant="secondary" className="gap-2">
               <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-              Temps réel
+              {t("ux.bo.realTime")}
             </Badge>
             <DashboardCustomizer />
             <Button 
@@ -53,7 +55,7 @@ const AdminOverview = () => {
               disabled={loading}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Actualiser
+              {t("ux.bo.refresh")}
             </Button>
           </div>
         </div>

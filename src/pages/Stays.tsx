@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Star, Loader2, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clock, Heart, Users, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Star, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clock, Heart, Users, CheckCircle } from "lucide-react";
 import { WeatherWidget } from "@/components/WeatherWidget";
 
 import { StaySearchForm } from "@/components/StaySearchForm";
@@ -17,13 +17,16 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import bannerStays from "@/assets/banner-stays.jpg";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 // Types de séjours
 const STAY_TYPE_ICONS = [
-  { id: "villa", icon: Palmtree, color: "bg-green-500" },
-  { id: "apartment", icon: Coffee, color: "bg-blue-500" },
+  { id: "villa", icon: Palmtree, color: "bg-success" },
+  { id: "apartment", icon: Coffee, color: "bg-info" },
   { id: "beach", icon: Waves, color: "bg-cyan-500" },
-  { id: "luxury", icon: Star, color: "bg-amber-500" },
+  { id: "luxury", icon: Star, color: "bg-gold" },
 ];
 
 const Stays = () => {
@@ -75,12 +78,12 @@ const Stays = () => {
           alt={t("stays.title", "Séjours et Escapades")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background/20"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
 
-            <h1 className="text-4xl md:text-7xl font-black mb-6 text-white drop-shadow-lg tracking-tighter">
+            <h1 className="text-4xl md:text-7xl font-extrabold mb-6 text-white drop-shadow-lg tracking-tighter">
               {t("stays.title", "Séjours et Escapades")}
             </h1>
             <p className="text-lg md:text-2xl text-white/95 drop-shadow-md max-w-2xl mx-auto font-medium">
@@ -97,13 +100,13 @@ const Stays = () => {
       <section className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-border py-4 shadow-sm lg:hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-sm font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap mr-2">{t('pages.stays.filterBy')}</span>
+            <span className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground whitespace-nowrap mr-2">{t('pages.stays.filterBy')}</span>
             <Button
               variant={selectedType === null ? "default" : "outline"}
               className="rounded-full h-10 px-6 font-bold"
               onClick={() => setSelectedType(null)}
             >
-              Tous les séjours
+              {t("ux.stays.all")}
             </Button>
             {stayTypes.map((type) => (
               <Button
@@ -130,7 +133,7 @@ const Stays = () => {
           <aside className="hidden lg:block space-y-8 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <div className="sticky top-28 space-y-8">
               <div className="space-y-4">
-                <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <span className="w-8 h-[2px] bg-primary"></span>
                   {t("stays.filters", "Filtrer")}
                 </h3>
@@ -143,7 +146,7 @@ const Stays = () => {
                     )}
                     onClick={() => setSelectedType(null)}
                   >
-                    Tous les séjours
+                    {t("ux.stays.all")}
                   </Button>
                   {stayTypes.map((type) => (
                     <Button
@@ -175,12 +178,12 @@ const Stays = () => {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/50 pb-8">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
+                  <h2 className="text-3xl md:text-4xl font-extrabold tracking-tighter text-foreground">
                     {selectedType 
                       ? `${stayTypes.find(t => t.id === selectedType)?.name || 'Séjours'}`
                       : t("stays.available", "Séjours disponibles")}
                   </h2>
-                  <Badge variant="secondary" className="h-7 px-3 rounded-full font-black uppercase tracking-widest text-[10px]">
+                  <Badge variant="secondary" className="h-7 px-3 rounded-full font-extrabold uppercase tracking-widest text-xs">
                     {filteredStays.length} {t("stays.results", "Hébergements")}
                   </Badge>
                 </div>
@@ -196,19 +199,14 @@ const Stays = () => {
             </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : filteredStays.length === 0 ? (
-          <div className="text-center py-20">
-            <Palmtree className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-xl text-muted-foreground">
-              {t("stays.noResults", "Aucun séjour disponible")}
-            </p>
-            <Button className="mt-4" onClick={() => setSelectedType(null)}>
-              Voir tous les séjours
-            </Button>
-          </div>
+          <EmptyState
+            icon={Palmtree}
+            title={t("ux.empty.staysTitle")}
+            description={t("ux.empty.staysDesc")}
+            action={<Button onClick={() => setSelectedType(null)}>{t("ux.stays.seeAll")}</Button>}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredStays.map((stay, index) => (
@@ -223,15 +221,16 @@ const Stays = () => {
                     <LazyImage
                       src={stay.image_url || 'https://images.unsplash.com/photo-1516426122078-c23e76319801'}
                       alt={stay.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-slow ease-standard"
                     />
                     <div className="absolute top-4 left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
                       {stay.type}
                     </div>
                     <Button
+                      aria-label="Ajouter aux favoris"
                       size="icon"
                       variant="ghost"
-                      className={`absolute top-4 right-4 bg-white/80 hover:bg-white ${favorites.includes(stay.id) ? 'text-red-500' : ''
+                      className={`absolute top-4 right-4 bg-white/80 hover:bg-white ${favorites.includes(stay.id) ? 'text-destructive' : ''
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -249,15 +248,15 @@ const Stays = () => {
                         <MapPin className="w-4 h-4 flex-shrink-0" />
                         <span className="truncate">{stay.location}</span>
                       </div>
-                      {stay.maps_url && <a href={stay.maps_url} target="_blank" rel="noreferrer" className="mb-2 inline-block text-sm text-primary underline underline-offset-2">Voir le lieu sur la carte</a>}
-                      {!!stay.available_dates?.length && <div className="mb-2 flex flex-wrap gap-2">{stay.available_dates.slice(0, 4).map((date: string) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</span>)}</div>}
+                      {stay.maps_url && <a href={stay.maps_url} target="_blank" rel="noreferrer" className="mb-2 inline-block text-sm text-primary underline underline-offset-2">{t("ux.stays.map")}</a>}
+                      {!!stay.available_dates?.length && <div className="mb-2 flex flex-wrap gap-2">{stay.available_dates.slice(0, 4).map((date: string) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</span>)}</div>}
                       <div className="flex items-center gap-4 text-sm">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4 text-primary" />
                           {stay.duration}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <Star className="w-4 h-4 fill-gold text-gold" />
                           {stay.rating} ({stay.reviews})
                         </span>
                       </div>

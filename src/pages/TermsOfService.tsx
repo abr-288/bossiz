@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { FileText, Scale, CreditCard, AlertTriangle, Ban, RefreshCcw, Gavel, ShieldCheck, Plane, Users, Handshake } from "lucide-react";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 const TermsOfService = () => {
   const { config } = useSiteConfigContext();
@@ -211,7 +212,7 @@ const TermsOfService = () => {
         "**10.3 Médiation**",
         "• Conformément aux dispositions en vigueur, vous pouvez recourir à un médiateur avant toute action judiciaire.",
         "",
-        `Dernière mise à jour : ${new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}`,
+        `Dernière mise à jour : ${new Date().toLocaleDateString(currentLocaleTag(), { year: "numeric", month: "long", day: "numeric" })}`,
       ],
     },
   ];

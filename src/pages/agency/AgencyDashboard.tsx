@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface Stats {
   services: number;
@@ -46,6 +47,7 @@ interface AgencyInfo {
 }
 
 export default function AgencyDashboard() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Stats>({
     services: 0,
     activities: 0,
@@ -137,33 +139,33 @@ export default function AgencyDashboard() {
       title: "Services",
       value: stats.services,
       icon: Package,
-      description: "Services actifs",
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
+      description: t("ux.bo.activeServices"),
+      color: "text-info",
+      bgColor: "bg-info/10",
     },
     {
-      title: "Activités",
+      title: t("ux.bo.activities"),
       value: stats.activities,
       icon: Activity,
-      description: "Activités proposées",
-      color: "text-green-500",
-      bgColor: "bg-green-500/10",
+      description: t("ux.bo.activitiesOffered"),
+      color: "text-success",
+      bgColor: "bg-success/10",
     },
     {
-      title: "Séjours",
+      title: t("ux.bo.stays"),
       value: stats.stays,
       icon: Home,
-      description: "Séjours disponibles",
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10",
+      description: t("ux.bo.availableStays"),
+      color: "text-warning-foreground",
+      bgColor: "bg-warning",
     },
     {
       title: "Promotions",
       value: stats.promotions,
       icon: Percent,
-      description: "Offres actives",
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
+      description: t("ux.bo.activeOffers"),
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
   ];
 
@@ -176,50 +178,50 @@ export default function AgencyDashboard() {
   }[] = [
     {
       key: "services",
-      title: "Services et circuits",
-      description: "Ajoutez vos offres avec des tarifs, des photos et des informations de réservation claires.",
+      title: t("ux.bo.servicesTours"),
+      description: t("ux.bo.addOffersPricesPhotosClear"),
       url: "/agency/services",
       icon: Package,
     },
     {
       key: "activities",
-      title: "Activités et excursions",
-      description: "Présentez vos expériences, leurs lieux, leurs disponibilités et leurs conditions.",
+      title: t("ux.bo.activitiesExcursions"),
+      description: t("ux.bo.presentExperiencesTheirLocationsAvailability"),
       url: "/agency/activities",
       icon: Activity,
     },
     {
       key: "stays",
-      title: "Séjours",
-      description: "Composez des séjours complets avec contenu, prix et dates disponibles.",
+      title: t("ux.bo.stays"),
+      description: t("ux.bo.buildCompleteStaysContentPrices"),
       url: "/agency/stays",
       icon: Home,
     },
     {
       key: "restaurants",
-      title: "Restaurant",
-      description: "Publiez votre établissement et complétez les informations utiles aux réservations.",
+      title: t("ux.bo.restaurant"),
+      description: t("ux.bo.publishVenueFillInformationUseful"),
       url: "/agency/restaurants",
       icon: UtensilsCrossed,
     },
     {
       key: "artisans",
-      title: "Artisanat et produits",
-      description: "Mettez en avant votre savoir-faire et les produits que les clients peuvent commander.",
+      title: t("ux.bo.craftsProducts"),
+      description: t("ux.bo.showcaseKnowHowProductsCustomers"),
       url: "/agency/artisans",
       icon: Hammer,
     },
     {
       key: "wellness",
-      title: "Bien-être et beauté",
-      description: "Ajoutez vos prestations, tarifs et créneaux de rendez-vous.",
+      title: t("ux.bo.wellnessBeauty2"),
+      description: t("ux.bo.addServicesPricesAppointmentSlots"),
       url: "/agency/wellness",
       icon: Sparkles,
     },
     {
       key: "promotions",
       title: "Promotions",
-      description: "Créez une offre spéciale pour donner envie aux clients de réserver.",
+      description: t("ux.bo.createSpecialOfferMakeCustomers"),
       url: "/agency/promotions",
       icon: Percent,
     },
@@ -232,14 +234,14 @@ export default function AgencyDashboard() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Tableau de bord</h1>
+            <h1 className="text-2xl font-bold">{t("ux.bo.dashboard")}</h1>
             <p className="text-muted-foreground">
-              Bienvenue dans votre espace agence
+              {t("ux.bo.welcomeAgencySpace")}
             </p>
           </div>
           {agency && (
             <Badge variant="outline" className="text-sm">
-              Votre part sur les ventes en ligne : 90%
+              {t("ux.bo.shareOnlineSales90")}
             </Badge>
           )}
         </div>
@@ -267,7 +269,7 @@ export default function AgencyDashboard() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total dû à votre agence</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("ux.bo.totalOwedAgency")}</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -276,20 +278,20 @@ export default function AgencyDashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">En attente de reversement</CardTitle>
-              <Clock className="h-4 w-4 text-orange-500" />
+              <CardTitle className="text-sm font-medium">{t("ux.bo.awaitingPayout")}</CardTitle>
+              <Clock className="h-4 w-4 text-warning-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-500">{formatCurrency(commissionStats.pending)}</div>
+              <div className="text-2xl font-bold text-warning-foreground">{formatCurrency(commissionStats.pending)}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Déjà reversé</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-500" />
+              <CardTitle className="text-sm font-medium">{t("ux.bo.alreadyPaidOut")}</CardTitle>
+              <CheckCircle className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-500">{formatCurrency(commissionStats.paid)}</div>
+              <div className="text-2xl font-bold text-success">{formatCurrency(commissionStats.paid)}</div>
             </CardContent>
           </Card>
         </div>
@@ -298,18 +300,18 @@ export default function AgencyDashboard() {
         {commissions.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Commissions récentes</CardTitle>
-              <CardDescription>Votre part (90%) sur les ventes réalisées via la plateforme</CardDescription>
+              <CardTitle>{t("ux.bo.recentCommissions")}</CardTitle>
+              <CardDescription>{t("ux.bo.share90SalesMadeThrough")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Montant Vente</TableHead>
-                    <TableHead>Votre part</TableHead>
-                    <TableHead>Montant dû</TableHead>
-                    <TableHead>Statut</TableHead>
+                    <TableHead>{t("ux.bo.date")}</TableHead>
+                    <TableHead>{t("ux.bo.saleAmount")}</TableHead>
+                    <TableHead>{t("ux.bo.share")}</TableHead>
+                    <TableHead>{t("ux.bo.amountOwed")}</TableHead>
+                    <TableHead>{t("ux.bo.status")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -327,19 +329,19 @@ export default function AgencyDashboard() {
                       </TableCell>
                       <TableCell>
                         {commission.payout_status === "processing" ? (
-                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> Transfert Jèko en cours</Badge>
+                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.jKoTransferProgress")}</Badge>
                         ) : commission.payout_status === "awaiting_details" ? (
-                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> Coordonnées à compléter</Badge>
+                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.detailsComplete")}</Badge>
                         ) : commission.payout_status === "needs_review" || commission.payout_status === "failed" ? (
-                          <Badge variant="destructive">Contacter Bossiz</Badge>
+                          <Badge variant="destructive">{t("ux.bo.contactBossiz")}</Badge>
                         ) : commission.payout_status === "not_scheduled" && commission.status === "pending" ? (
-                          <Badge variant="secondary">À régler hors reversement Jèko</Badge>
+                          <Badge variant="secondary">{t("ux.bo.settleOutsideJKoPayout")}</Badge>
                         ) : commission.status === "pending" ? (
-                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> En attente</Badge>
+                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.pending2")}</Badge>
                         ) : commission.status === "paid" ? (
-                          <Badge variant="default" className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" /> Payée</Badge>
+                          <Badge variant="default" className="bg-success text-success-foreground"><CheckCircle className="h-3 w-3 mr-1" /> {t("ux.bo.paid2")}</Badge>
                         ) : (
-                          <Badge variant="destructive">Annulée</Badge>
+                          <Badge variant="destructive">{t("ux.bo.cancelled2")}</Badge>
                         )}
                         {commission.payout_due_at && commission.payout_status !== "paid" && (
                           <p className="mt-1 text-xs text-muted-foreground">
@@ -359,7 +361,7 @@ export default function AgencyDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              Votre checklist partenaire
+              {t("ux.bo.partnerChecklist")}
             </CardTitle>
             <CardDescription>
               Avancement : {startedItemsCount} rubrique{startedItemsCount > 1 ? "s" : ""} commencée{startedItemsCount > 1 ? "s" : ""} sur {availableOnboardingItems.length} accessible{availableOnboardingItems.length > 1 ? "s" : ""}. Ajoutez une offre puis complétez ses informations avant sa mise en ligne.
@@ -383,7 +385,7 @@ export default function AgencyDashboard() {
                     <p className="flex-1 text-sm text-muted-foreground">{item.description}</p>
                     <Button asChild variant={hasStarted ? "outline" : "default"} size="sm" className="w-full">
                       <Link to={item.url}>
-                        {hasStarted ? "Gérer mes offres" : "Ajouter une offre"}
+                        {hasStarted ? t("ux.bo.manageMyOffers") : t("ux.bo.addOffer")}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -392,20 +394,20 @@ export default function AgencyDashboard() {
               })}
               {availableOnboardingItems.length === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Aucune rubrique n’est activée pour votre agence. Contactez l’équipe Bossiz pour configurer votre espace.
+                  {t("ux.bo.noSectionEnabledAgencyContact")}
                 </p>
               )}
             </div>
             <div className="flex flex-col items-start justify-between gap-3 rounded-lg bg-muted/50 p-4 sm:flex-row sm:items-center">
               <div>
-                <p className="font-medium">Préparez vos reversements</p>
+                <p className="font-medium">{t("ux.bo.getPayoutsReady")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Vérifiez votre moyen de réception et vos coordonnées dans les paramètres de l’agence.
+                  {t("ux.bo.checkPayoutMethodDetailsAgency")}
                 </p>
               </div>
               <Button asChild variant="outline" size="sm">
                 <Link to="/agency/settings">
-                  Configurer mes reversements
+                  {t("ux.bo.setUpMyPayouts")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

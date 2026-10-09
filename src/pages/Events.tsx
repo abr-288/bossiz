@@ -12,9 +12,9 @@ import bannerEvents from "@/assets/banner-events.jpg";
 
 const CATEGORY_ICONS = [
   { id: "concert", icon: Music, color: "bg-pink-500" },
-  { id: "sport", icon: Trophy, color: "bg-green-500" },
-  { id: "theater", icon: Theater, color: "bg-purple-500" },
-  { id: "festival", icon: PartyPopper, color: "bg-orange-500" },
+  { id: "sport", icon: Trophy, color: "bg-success" },
+  { id: "theater", icon: Theater, color: "bg-primary" },
+  { id: "festival", icon: PartyPopper, color: "bg-gold" },
 ];
 
 const Events = () => {
@@ -50,7 +50,7 @@ const Events = () => {
             alt={t("events.title", "Découvrez les événements")}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
 
           <div className="relative z-10 container mx-auto px-4 py-12">
@@ -107,7 +107,7 @@ const Events = () => {
             <div className="container mx-auto px-4">
               <Card className="p-12 text-center text-muted-foreground">
                 <Calendar className="w-10 h-10 mx-auto mb-4 opacity-50" />
-                {t("events.searchPrompt", "Utilisez le formulaire ci-dessus pour rechercher des événements")}
+                {t("ux.events.searchPrompt")}
               </Card>
             </div>
           </section>

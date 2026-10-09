@@ -76,7 +76,7 @@ export default function FooterCustomization() {
     },
     legal_links: {
       privacy: 'Politique de confidentialité',
-      terms: 'Conditions d\'utilisation',
+      terms: "Conditions d'utilisation",
       cookies: 'Politique de cookies'
     },
     newsletter_text: 'Abonnez-vous à notre newsletter pour recevoir les dernières actualités',
@@ -99,8 +99,8 @@ export default function FooterCustomization() {
     } catch (error) {
       console.error('Error fetching footer settings:', error);
       toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les paramètres du footer',
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableLoadFooterSettings"),
         variant: 'destructive'
       });
     } finally {
@@ -122,14 +122,14 @@ export default function FooterCustomization() {
       if (!response.ok) throw new Error('Failed to save footer settings');
       
       toast({
-        title: 'Succès',
-        description: 'Les paramètres du footer ont été sauvegardés',
+        title: t("ux.bo.success"),
+        description: t("ux.bo.footerSettingsHaveBeenSaved"),
       });
     } catch (error) {
       console.error('Error saving footer settings:', error);
       toast({
-        title: 'Erreur',
-        description: 'Impossible de sauvegarder les paramètres du footer',
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableSaveFooterSettings"),
         variant: 'destructive'
       });
     } finally {
@@ -197,7 +197,7 @@ export default function FooterCustomization() {
       },
       legal_links: {
         privacy: 'Politique de confidentialité',
-        terms: 'Conditions d\'utilisation',
+        terms: "Conditions d'utilisation",
         cookies: 'Politique de cookies'
       },
       newsletter_text: 'Abonnez-vous à notre newsletter pour recevoir les dernières actualités',
@@ -218,9 +218,9 @@ export default function FooterCustomization() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Personnalisation du Footer</h1>
+          <h1 className="text-3xl font-bold">{t("ux.bo.footerCustomization")}</h1>
           <p className="text-muted-foreground">
-            Personnalisez l'apparence et le contenu du footer de manière indépendante
+            {t("ux.bo.customizeLookContentFooterIndependently")}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -230,7 +230,7 @@ export default function FooterCustomization() {
             className="flex items-center space-x-2"
           >
             <Eye className="w-4 h-4" />
-            <span>{previewMode ? 'Mode Édition' : 'Aperçu'}</span>
+            <span>{previewMode ? t("ux.bo.editMode") : 'Aperçu'}</span>
           </Button>
           <Button
             variant="outline"
@@ -238,7 +238,7 @@ export default function FooterCustomization() {
             className="flex items-center space-x-2"
           >
             <RefreshCw className="w-4 h-4" />
-            <span>Réinitialiser</span>
+            <span>{t("ux.bo.reset")}</span>
           </Button>
           <Button
             onClick={saveFooterSettings}
@@ -257,13 +257,13 @@ export default function FooterCustomization() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Palette className="w-5 h-5" />
-              <span>Couleurs du Footer</span>
+              <span>{t("ux.bo.footerColors")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="background_color">Couleur de fond</Label>
+                <Label htmlFor="background_color">{t("ux.bo.backgroundColor")}</Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="background_color"
@@ -280,7 +280,7 @@ export default function FooterCustomization() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="text_color">Couleur du texte</Label>
+                <Label htmlFor="text_color">{t("ux.bo.textColor")}</Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="text_color"
@@ -297,7 +297,7 @@ export default function FooterCustomization() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="link_color">Couleur des liens</Label>
+                <Label htmlFor="link_color">{t("ux.bo.linkColor")}</Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="link_color"
@@ -314,7 +314,7 @@ export default function FooterCustomization() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="link_hover_color">Couleur au survol</Label>
+                <Label htmlFor="link_hover_color">{t("ux.bo.hoverColor")}</Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="link_hover_color"
@@ -331,7 +331,7 @@ export default function FooterCustomization() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="border_color">Couleur des bordures</Label>
+                <Label htmlFor="border_color">{t("ux.bo.borderColor2")}</Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="border_color"
@@ -354,11 +354,11 @@ export default function FooterCustomization() {
         {/* Informations de l'Entreprise */}
         <Card>
           <CardHeader>
-            <CardTitle>Informations de l'Entreprise</CardTitle>
+            <CardTitle>{t("ux.bo.companyInformation")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="company_name">Nom de l'entreprise</Label>
+              <Label htmlFor="company_name">{t("ux.bo.companyName")}</Label>
               <Input
                 id="company_name"
                 value={settings.company_name}
@@ -367,7 +367,7 @@ export default function FooterCustomization() {
               />
             </div>
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t("ux.bo.description")}</Label>
               <Textarea
                 id="description"
                 value={settings.description}
@@ -377,7 +377,7 @@ export default function FooterCustomization() {
               />
             </div>
             <div>
-              <Label htmlFor="copyright_text">Texte de copyright</Label>
+              <Label htmlFor="copyright_text">{t("ux.bo.copyrightText")}</Label>
               <Input
                 id="copyright_text"
                 value={settings.copyright_text}
@@ -386,7 +386,7 @@ export default function FooterCustomization() {
               />
             </div>
             <div>
-              <Label htmlFor="newsletter_text">Texte newsletter</Label>
+              <Label htmlFor="newsletter_text">{t("ux.bo.newsletterText")}</Label>
               <Textarea
                 id="newsletter_text"
                 value={settings.newsletter_text}
@@ -401,7 +401,7 @@ export default function FooterCustomization() {
                 checked={settings.is_active}
                 onCheckedChange={(checked) => handleColorChange('is_active', checked)}
               />
-              <Label htmlFor="is_active">Footer actif</Label>
+              <Label htmlFor="is_active">{t("ux.bo.footerActive")}</Label>
             </div>
           </CardContent>
         </Card>
@@ -411,7 +411,7 @@ export default function FooterCustomization() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Globe className="w-5 h-5" />
-              <span>Réseaux Sociaux</span>
+              <span>{t("ux.bo.socialNetworks2")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -461,13 +461,13 @@ export default function FooterCustomization() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Phone className="w-5 h-5" />
-              <span>Informations de Contact</span>
+              <span>{t("ux.bo.contactInformation2")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4" />
-              <Label>Téléphone</Label>
+              <Label>{t("ux.bo.phone")}</Label>
               <Input
                 value={settings.contact_info.phone}
                 onChange={(e) => handleContactInfoChange('phone', e.target.value)}
@@ -485,7 +485,7 @@ export default function FooterCustomization() {
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
-              <Label>Adresse</Label>
+              <Label>{t("ux.bo.address")}</Label>
               <Input
                 value={settings.contact_info.address}
                 onChange={(e) => handleContactInfoChange('address', e.target.value)}
@@ -498,7 +498,7 @@ export default function FooterCustomization() {
         {/* Liens Rapides */}
         <Card>
           <CardHeader>
-            <CardTitle>Liens Rapides</CardTitle>
+            <CardTitle>{t("ux.bo.quickLinks")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -511,27 +511,27 @@ export default function FooterCustomization() {
                 />
               </div>
               <div>
-                <Label>À propos</Label>
+                <Label>{t("ux.bo.about")}</Label>
                 <Input
                   value={settings.quick_links.about}
                   onChange={(e) => handleQuickLinkChange('about', e.target.value)}
-                  placeholder="À propos"
+                  placeholder={t("ux.bo.about")}
                 />
               </div>
               <div>
-                <Label>Blog</Label>
+                <Label>{t("ux.bo.blog")}</Label>
                 <Input
                   value={settings.quick_links.blog}
                   onChange={(e) => handleQuickLinkChange('blog', e.target.value)}
-                  placeholder="Blog"
+                  placeholder={t("ux.bo.blog")}
                 />
               </div>
               <div>
-                <Label>Carrières</Label>
+                <Label>{t("ux.bo.careers")}</Label>
                 <Input
                   value={settings.quick_links.careers}
                   onChange={(e) => handleQuickLinkChange('careers', e.target.value)}
-                  placeholder="Carrières"
+                  placeholder={t("ux.bo.careers")}
                 />
               </div>
             </div>
@@ -541,32 +541,32 @@ export default function FooterCustomization() {
         {/* Liens Légaux */}
         <Card>
           <CardHeader>
-            <CardTitle>Liens Légaux</CardTitle>
+            <CardTitle>{t("ux.bo.legalLinks")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <Label>Politique de confidentialité</Label>
+                <Label>{t("ux.bo.privacyPolicy")}</Label>
                 <Input
                   value={settings.legal_links.privacy}
                   onChange={(e) => handleLegalLinkChange('privacy', e.target.value)}
-                  placeholder="Politique de confidentialité"
+                  placeholder={t("ux.bo.privacyPolicy")}
                 />
               </div>
               <div>
-                <Label>Conditions d'utilisation</Label>
+                <Label>{t("ux.bo.termsUse")}</Label>
                 <Input
                   value={settings.legal_links.terms}
                   onChange={(e) => handleLegalLinkChange('terms', e.target.value)}
-                  placeholder="Conditions d'utilisation"
+                  placeholder={t("ux.bo.termsUse")}
                 />
               </div>
               <div>
-                <Label>Politique de cookies</Label>
+                <Label>{t("ux.bo.cookiePolicy")}</Label>
                 <Input
                   value={settings.legal_links.cookies}
                   onChange={(e) => handleLegalLinkChange('cookies', e.target.value)}
-                  placeholder="Politique de cookies"
+                  placeholder={t("ux.bo.cookiePolicy")}
                 />
               </div>
             </div>
@@ -578,7 +578,7 @@ export default function FooterCustomization() {
       {previewMode && (
         <Card>
           <CardHeader>
-            <CardTitle>Aperçu du Footer</CardTitle>
+            <CardTitle>{t("ux.bo.footerPreview")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div 
@@ -612,7 +612,7 @@ export default function FooterCustomization() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-4">Contact</h4>
+                  <h4 className="font-semibold mb-4">{t("ux.bo.contact")}</h4>
                   <div className="space-y-2 text-sm">
                     <p>{settings.contact_info.phone}</p>
                     <p>{settings.contact_info.email}</p>
@@ -620,7 +620,7 @@ export default function FooterCustomization() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-4">Liens Rapides</h4>
+                  <h4 className="font-semibold mb-4">{t("ux.bo.quickLinks")}</h4>
                   <ul className="space-y-2 text-sm">
                     {Object.entries(settings.quick_links).map(([key, label]) => (
                       <li key={key}>
@@ -630,7 +630,7 @@ export default function FooterCustomization() {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-4">Légal</h4>
+                  <h4 className="font-semibold mb-4">{t("ux.bo.legal")}</h4>
                   <ul className="space-y-2 text-sm">
                     {Object.entries(settings.legal_links).map(([key, label]) => (
                       <li key={key}>

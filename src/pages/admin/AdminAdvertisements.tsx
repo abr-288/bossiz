@@ -26,6 +26,8 @@ import { Plus, Pencil, Trash2, Eye, EyeOff, MoveUp, MoveDown } from "lucide-reac
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface Advertisement {
   id: string;
@@ -49,7 +51,7 @@ const defaultAd = {
   description: "",
   image_url: "",
   link_url: "",
-  link_text: "En savoir plus",
+  get link_text() { return i18n.t("ux.bo.learnMore"); },
   background_color: "#1e3a5f",
   text_color: "#ffffff",
   is_active: true,
@@ -60,6 +62,7 @@ const defaultAd = {
 };
 
 export default function AdminAdvertisements() {
+  const { t } = useTranslation();
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -91,7 +94,7 @@ export default function AdminAdvertisements() {
         description: ad.description || "",
         image_url: ad.image_url || "",
         link_url: ad.link_url || "",
-        link_text: ad.link_text || "En savoir plus",
+        link_text: ad.link_text || t("ux.bo.learnMore"),
         background_color: ad.background_color || "#1e3a5f",
         text_color: ad.text_color || "#ffffff",
         is_active: ad.is_active,
@@ -109,7 +112,7 @@ export default function AdminAdvertisements() {
 
   const handleSave = async () => {
     if (!formData.title) {
-      toast.error("Le titre est requis");
+      toast.error(t("ux.bo.titleRequired"));
       return;
     }
 
@@ -120,9 +123,9 @@ export default function AdminAdvertisements() {
         .eq("id", editingAd.id);
 
       if (error) {
-        toast.error("Erreur lors de la mise à jour");
+        toast.error(t("ux.bo.errorWhileUpdating"));
       } else {
-        toast.success("Publicité mise à jour");
+        toast.success(t("ux.bo.advertisementUpdated"));
         setDialogOpen(false);
         fetchAds();
       }
@@ -132,9 +135,9 @@ export default function AdminAdvertisements() {
         .insert([formData]);
 
       if (error) {
-        toast.error("Erreur lors de la création");
+        toast.error(t("ux.bo.errorWhileCreating"));
       } else {
-        toast.success("Publicité créée");
+        toast.success(t("ux.bo.advertisementCreated"));
         setDialogOpen(false);
         fetchAds();
       }
@@ -142,7 +145,7 @@ export default function AdminAdvertisements() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer cette publicité ?")) return;
+    if (!confirm(t("ux.bo.deleteAdvertisement"))) return;
 
     const { error } = await supabase
       .from("advertisements")
@@ -150,9 +153,9 @@ export default function AdminAdvertisements() {
       .eq("id", id);
 
     if (error) {
-      toast.error("Erreur lors de la suppression");
+      toast.error(t("ux.bo.errorWhileDeleting"));
     } else {
-      toast.success("Publicité supprimée");
+      toast.success(t("ux.bo.advertisementDeleted"));
       fetchAds();
     }
   };
@@ -165,7 +168,7 @@ export default function AdminAdvertisements() {
 
     if (!error) {
       fetchAds();
-      toast.success(ad.is_active ? "Publicité désactivée" : "Publicité activée");
+      toast.success(ad.is_active ? t("ux.bo.advertisementDisabled") : t("ux.bo.advertisementEnabled"));
     }
   };
 
@@ -190,50 +193,50 @@ export default function AdminAdvertisements() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Gestion des Publicités</h1>
+            <h1 className="text-3xl font-bold">{t("ux.bo.advertisementManagement")}</h1>
             <p className="text-muted-foreground">
-              Gérez les bannières publicitaires affichées sur le site
+              {t("ux.bo.manageAdvertisingBannersShownSite")}
             </p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => handleOpenDialog()}>
                 <Plus className="h-4 w-4 mr-2" />
-                Nouvelle publicité
+                {t("ux.bo.newAdvertisement")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {editingAd ? "Modifier la publicité" : "Nouvelle publicité"}
+                  {editingAd ? t("ux.bo.editAdvertisement") : t("ux.bo.newAdvertisement")}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label>Titre *</Label>
+                  <Label>{t("ux.bo.title")}</Label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Titre de la publicité"
+                    placeholder={t("ux.bo.advertisementTitle")}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Description courte"
+                    placeholder={t("ux.bo.shortDescription")}
                   />
                 </div>
                 <ImageUpload
                   value={formData.image_url}
                   onChange={(url) => setFormData({ ...formData, image_url: url })}
                   folder="advertisements"
-                  label="Image de la publicité"
+                  label={t("ux.bo.advertisementImage")}
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Lien (URL)</Label>
+                    <Label>{t("ux.bo.linkUrl")}</Label>
                     <Input
                       value={formData.link_url}
                       onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
@@ -241,17 +244,17 @@ export default function AdminAdvertisements() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Texte du bouton</Label>
+                    <Label>{t("ux.bo.buttonText")}</Label>
                     <Input
                       value={formData.link_text}
                       onChange={(e) => setFormData({ ...formData, link_text: e.target.value })}
-                      placeholder="En savoir plus"
+                      placeholder={t("ux.bo.learnMore")}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Couleur de fond</Label>
+                    <Label>{t("ux.bo.backgroundColor")}</Label>
                     <div className="flex gap-2">
                       <Input
                         type="color"
@@ -267,7 +270,7 @@ export default function AdminAdvertisements() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Couleur du texte</Label>
+                    <Label>{t("ux.bo.textColor")}</Label>
                     <div className="flex gap-2">
                       <Input
                         type="color"
@@ -285,7 +288,7 @@ export default function AdminAdvertisements() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Date de début</Label>
+                    <Label>{t("ux.bo.startDate")}</Label>
                     <Input
                       type="datetime-local"
                       value={formData.starts_at ? formData.starts_at.slice(0, 16) : ""}
@@ -293,7 +296,7 @@ export default function AdminAdvertisements() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Date d'expiration</Label>
+                    <Label>{t("ux.bo.expiryDate")}</Label>
                     <Input
                       type="datetime-local"
                       value={formData.expires_at ? formData.expires_at.slice(0, 16) : ""}
@@ -306,14 +309,14 @@ export default function AdminAdvertisements() {
                     checked={formData.is_active}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                   />
-                  <Label>Publicité active</Label>
+                  <Label>{t("ux.bo.activeAdvertisement")}</Label>
                 </div>
 
                 {/* Preview */}
                 {formData.title && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-sm">Aperçu</CardTitle>
+                      <CardTitle className="text-sm">{t("ux.bo.preview")}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div 
@@ -342,10 +345,10 @@ export default function AdminAdvertisements() {
 
                 <div className="flex justify-end gap-2 pt-4">
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                    Annuler
+                    {t("ux.bo.cancel")}
                   </Button>
                   <Button onClick={handleSave}>
-                    {editingAd ? "Mettre à jour" : "Créer"}
+                    {editingAd ? t("ux.bo.update") : "Créer"}
                   </Button>
                 </div>
               </div>
@@ -358,24 +361,24 @@ export default function AdminAdvertisements() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">Ordre</TableHead>
-                  <TableHead>Titre</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Période</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-12">{t("ux.bo.order")}</TableHead>
+                  <TableHead>{t("ux.bo.title2")}</TableHead>
+                  <TableHead>{t("ux.bo.status")}</TableHead>
+                  <TableHead>{t("ux.bo.period")}</TableHead>
+                  <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8">
-                      Chargement...
+                      {t("ux.bo.loading")}
                     </TableCell>
                   </TableRow>
                 ) : ads.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      Aucune publicité. Créez-en une !
+                      {t("ux.bo.noAdvertisementsCreateOne")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -384,6 +387,7 @@ export default function AdminAdvertisements() {
                       <TableCell>
                         <div className="flex flex-col gap-1">
                           <Button
+                            aria-label={t("ux.bo.moveUp")}
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6"
@@ -393,6 +397,7 @@ export default function AdminAdvertisements() {
                             <MoveUp className="h-3 w-3" />
                           </Button>
                           <Button
+                            aria-label={t("ux.bo.moveDown")}
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6"
@@ -447,13 +452,14 @@ export default function AdminAdvertisements() {
                             <p>Fin: {format(new Date(ad.expires_at), "dd/MM/yyyy")}</p>
                           )}
                           {!ad.starts_at && !ad.expires_at && (
-                            <span className="text-muted-foreground">Permanente</span>
+                            <span className="text-muted-foreground">{t("ux.bo.permanent")}</span>
                           )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
+                            aria-label={t("ux.bo.edit")}
                             variant="ghost"
                             size="icon"
                             onClick={() => handleOpenDialog(ad)}
@@ -461,6 +467,7 @@ export default function AdminAdvertisements() {
                             <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
+                            aria-label={t("ux.bo.delete")}
                             variant="ghost"
                             size="icon"
                             className="text-destructive"

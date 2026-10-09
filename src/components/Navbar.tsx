@@ -123,12 +123,12 @@ const Navbar = () => {
 
   return (
     <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+      "fixed top-0 left-0 right-0 z-header transition-all duration-slow ease-standard",
       isScrolled ? "shadow-md" : "shadow-sm"
     )}>
       {/* Main Bar - Upjunoo style: clean white with centered search */}
       <div className="bg-background border-b border-border">
-        <div className="max-w-[1200px] mx-auto px-4">
+        <div className="site-container">
           <div className="flex items-center justify-between h-14 gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
@@ -194,7 +194,7 @@ const Navbar = () => {
                     className="gap-1.5 rounded-full text-sm font-medium"
                   >
                     {isBusinessMode ? <ArrowLeftRight className="w-4 h-4" /> : <Briefcase className="w-4 h-4" />}
-                    <span className="hidden xl:inline">{isBusinessMode ? "Mode Personnel" : "Mode Entreprise"}</span>
+                    <span className="hidden xl:inline">{isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}</span>
                   </Button>
                 </Link>
               )}
@@ -271,7 +271,7 @@ const Navbar = () => {
               <DarkModeToggle variant="compact" className="text-muted-foreground" />
               <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <SheetTrigger asChild>
-                  <button className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors" aria-label="Menu">
+                  <button className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors" aria-label={t("ux.nav.menu")}>
                     <Menu className="w-5 h-5" />
                   </button>
                 </SheetTrigger>
@@ -310,13 +310,13 @@ const Navbar = () => {
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
                           >
                             {isBusinessMode ? <ArrowLeftRight className="w-5 h-5 text-secondary" /> : <Briefcase className="w-5 h-5 text-secondary" />}
-                            <span className="font-medium text-secondary">{isBusinessMode ? "Mode Personnel" : "Mode Entreprise"}</span>
+                            <span className="font-medium text-secondary">{isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}</span>
                           </Link>
                         )}
                       </div>
                     ) : (
                       <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                        <Button className="w-full gap-2 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                        <Button className="w-full">
                           <User className="w-4 h-4" />
                           {t("nav.login")} / {t("nav.register")}
                         </Button>
@@ -325,7 +325,7 @@ const Navbar = () => {
 
                     <div className="space-y-0.5">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Nos Services
+                        {t("ux.nav.ourServices")}
                       </p>
                       {serviceLinks.map(({ to, icon: Icon, label }) => (
                         <ServiceLink
@@ -376,14 +376,14 @@ const Navbar = () => {
 
       {/* Second Level: Service Tabs - Upjunoo category style */}
       <div className="hidden lg:block bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-[1200px] mx-auto px-4">
+        <div className="site-container">
           <div className="flex items-center gap-0.5 h-10 overflow-x-auto">
             {primaryServiceLinks.map(({ to, icon: Icon, label }) => (
               <ServiceLink
                 key={to}
                 to={to}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200",
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-base ease-standard",
                   isActive(to)
                     ? "bg-secondary/15 text-secondary border border-secondary/20"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -398,7 +398,7 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-base ease-standard",
                     moreServiceLinks.some(({ to }) => isActive(to))
                       ? "bg-secondary/15 text-secondary border border-secondary/20"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"

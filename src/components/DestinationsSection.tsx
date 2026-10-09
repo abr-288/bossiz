@@ -2,11 +2,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LazyImage } from "@/components/ui/lazy-image";
-import { MapPin, Star, Loader2, Users, Calendar, Wifi, Coffee, Utensils, Waves, Mountain, Building2 } from "lucide-react";
+import { MapPin, Star, Users, Calendar, Wifi, Coffee, Utensils, Waves, Mountain, Building2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDestinations } from "@/hooks/useDestinations";
 import { Price } from "@/components/ui/price";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 
 const DestinationsSection = () => {
@@ -30,6 +31,10 @@ const DestinationsSection = () => {
     return Star;
   };
 
+  // La source de destinations (API TripAdvisor) peut ne rien renvoyer : plutôt
+  // qu'un titre au-dessus d'une grille vide, la section ne s'affiche pas.
+  if (!isLoading && !destinations?.length) return null;
+
   return (
     <section className="py-10 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-b from-muted/20 via-background to-muted/30 relative overflow-hidden w-full">
       {/* Decorative background */}
@@ -39,11 +44,6 @@ const DestinationsSection = () => {
       
       <div className="site-container relative z-10">
         <div className="text-center mb-12 md:mb-16 animate-slide-up-fade">
-          <div className="inline-block mb-4">
-            <span className="px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold">
-              🌍 Découvrez le Monde
-            </span>
-          </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gradient mb-4 md:mb-6 px-4">
             {t('destinations.title')}
           </h2>
@@ -59,9 +59,7 @@ const DestinationsSection = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
             {destinations?.slice(0, 9).map((destination, index) => {
@@ -70,11 +68,11 @@ const DestinationsSection = () => {
               return (
               <Card
                 key={destination.id}
-                className="group overflow-hidden border-2 border-border/50 hover:border-primary/50 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer animate-slide-up-fade hover-lift rounded-2xl relative bg-gradient-card"
+                className="group overflow-hidden border-2 border-border/50 hover:border-primary/50 shadow-xl hover:shadow-2xl transition-all duration-slow ease-standard cursor-pointer animate-slide-up-fade hover-lift rounded-2xl relative bg-gradient-card"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Shimmer effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-slow ease-standard pointer-events-none z-10">
                   <div className="absolute inset-0 animate-shimmer" />
                 </div>
                 

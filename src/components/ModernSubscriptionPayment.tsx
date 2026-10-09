@@ -37,6 +37,9 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { autoConvertAndFormat } from "@/utils/currencyConverter";
+import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { MOTION } from "@/lib/motion";
 
 // Fonctions utilitaires pour les prix par défaut (en XOF/FCFA pour le marché africain)
 const getDefaultPrice = (planId: string): number => {
@@ -90,6 +93,7 @@ interface PaymentData {
 }
 
 const ModernSubscriptionPayment = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -129,7 +133,7 @@ const ModernSubscriptionPayment = () => {
 
         if (planError || !plan) {
           console.log("Plan non trouvé, erreur:", planError);
-          throw new Error('Plan non trouvé');
+          throw new Error(t("ux.subPayment.notFound"));
         }
 
         // Fetch pricing options
@@ -204,7 +208,7 @@ const ModernSubscriptionPayment = () => {
         console.error('Error fetching plan data:', error);
         toast({
           title: 'Erreur',
-          description: error.message || 'Impossible de charger les données du plan',
+          description: error.message || t("ux.subPayment.loadError"),
           variant: 'destructive',
         });
         navigate('/');
@@ -276,7 +280,7 @@ const ModernSubscriptionPayment = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error('Utilisateur non connecté');
+        throw new Error(t("ux.subPayment.notSignedIn"));
       }
 
       // Créer l'abonnement en attente de paiement. Le montant et la devise
@@ -327,8 +331,8 @@ const ModernSubscriptionPayment = () => {
       }
 
       toast({
-        title: 'Redirection vers Jèko',
-        description: 'Vous allez être redirigé vers la page de paiement sécurisée.',
+        title: t("ux.subPayment.redirecting"),
+        description: t("ux.subPayment.redirectingDesc"),
       });
 
       setTimeout(() => {
@@ -338,8 +342,8 @@ const ModernSubscriptionPayment = () => {
     } catch (error: any) {
       console.error('Payment error:', error);
       toast({
-        title: 'Erreur de paiement',
-        description: error.message || 'Une erreur est survenue lors du traitement du paiement',
+        title: t("ux.subPayment.error"),
+        description: error.message || t("ux.subPayment.errorDesc"),
         variant: 'destructive',
       });
     } finally {
@@ -349,10 +353,10 @@ const ModernSubscriptionPayment = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/40 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-xl text-gray-700 font-medium">Chargement de votre abonnement...</p>
+          <div className="w-16 h-16 border-4 border-primary/40 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-xl text-foreground font-medium">{t("ux.subPayment.loading")}</p>
         </div>
       </div>
     );
@@ -360,14 +364,14 @@ const ModernSubscriptionPayment = () => {
 
   if (!planData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/40 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Plan non trouvé</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-4">{t("ux.subPayment.notFound")}</h2>
           <Button 
             onClick={() => navigate('/')}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            Retour aux abonnements
+            {t("ux.subPayment.back")}
           </Button>
         </div>
       </div>
@@ -384,7 +388,7 @@ const ModernSubscriptionPayment = () => {
   const displayYearlyPrice = autoConvertAndFormat(yearlyPrice, planData.pricing.currency);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden relative">
+    <div className="min-h-screen bg-muted/40 overflow-hidden relative">
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{ 
@@ -400,14 +404,14 @@ const ModernSubscriptionPayment = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
             <Crown className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Finaliser Votre Abonnement
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            {t("ux.subPayment.title")}
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Rejoignez l'excellence avec Bossiz Conciergerie et accédez à des services premium
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            {t("ux.subPayment.subtitle")}
           </p>
         </motion.div>
 
@@ -416,20 +420,20 @@ const ModernSubscriptionPayment = () => {
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: MOTION.slow }}
           >
-            <Card className="shadow-xl border-0 bg-white">
+            <Card className="shadow-xl border-0 bg-card">
               <CardHeader className="pb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-primary to-primary/80 shadow-lg">
                     <Crown className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
+                    <CardTitle className="text-3xl font-bold text-foreground mb-2">
                       {planData.plan.name}
                     </CardTitle>
                     {planData.plan.subtitle && (
-                      <CardDescription className="text-gray-600 text-lg">
+                      <CardDescription className="text-muted-foreground text-lg">
                         {planData.plan.subtitle}
                       </CardDescription>
                     )}
@@ -442,11 +446,11 @@ const ModernSubscriptionPayment = () => {
                 {/* Features */}
                 <div className="space-y-4 mb-6">
                   {planData.plan.features?.slice(0, 6).map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-3 h-3 text-green-600" />
+                    <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                      <div className="w-6 h-6 bg-success/10 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-3 h-3 text-success" />
                       </div>
-                      <span className="text-gray-700 font-medium">{feature}</span>
+                      <span className="text-foreground font-medium">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -455,21 +459,21 @@ const ModernSubscriptionPayment = () => {
 
                 {/* Premium Features */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-indigo-600">
+                  <div className="flex items-center gap-2 text-primary">
                     <Shield className="w-5 h-5" />
-                    <span className="text-sm font-medium">Sécurité Maximale</span>
+                    <span className="text-sm font-medium">{t("ux.subPayment.security")}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-purple-600">
+                  <div className="flex items-center gap-2 text-primary">
                     <TrendingUp className="w-5 h-5" />
                     <span className="text-sm font-medium">Performance</span>
                   </div>
-                  <div className="flex items-center gap-2 text-green-600">
+                  <div className="flex items-center gap-2 text-success">
                     <Clock className="w-5 h-5" />
                     <span className="text-sm font-medium">Support 24/7</span>
                   </div>
-                  <div className="flex items-center gap-2 text-orange-600">
+                  <div className="flex items-center gap-2 text-warning-foreground">
                     <Globe className="w-5 h-5" />
-                    <span className="text-sm font-medium">Accès Global</span>
+                    <span className="text-sm font-medium">{t("ux.subPayment.global")}</span>
                   </div>
                 </div>
               </CardContent>
@@ -480,16 +484,16 @@ const ModernSubscriptionPayment = () => {
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: MOTION.slow }}
           >
-            <Card className="shadow-xl border-0 bg-white">
+            <Card className="shadow-xl border-0 bg-card">
               <CardHeader className="pb-6">
-                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <Calendar className="w-6 h-6 text-indigo-600" />
-                  Cycle de Facturation
+                <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-primary" />
+                  {t("ux.subPayment.cycle")}
                 </CardTitle>
-                <CardDescription className="text-gray-600">
-                  Choisissez la périodicité qui vous convient
+                <CardDescription className="text-muted-foreground">
+                  {t("ux.subPayment.cycleDesc")}
                 </CardDescription>
               </CardHeader>
 
@@ -499,32 +503,32 @@ const ModernSubscriptionPayment = () => {
                   onValueChange={(value: 'monthly' | 'yearly') => setBillingCycle(value)}
                   className="space-y-4"
                 >
-                  <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
-                    <RadioGroupItem value="monthly" id="monthly" className="border-indigo-500 text-indigo-500" />
+                  <div className="flex items-center space-x-3 p-4 rounded-lg border border-border border-primary/20 transition-colors">
+                    <RadioGroupItem value="monthly" id="monthly" className="border-primary/40 text-primary" />
                     <Label htmlFor="monthly" className="cursor-pointer flex-1">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-semibold text-gray-900">Mensuel</div>
-                          <div className="text-sm text-gray-500">Facturation mensuelle</div>
+                          <div className="font-semibold text-foreground">Mensuel</div>
+                          <div className="text-sm text-muted-foreground">{t("ux.subPayment.monthly")}</div>
                         </div>
-                        <span className="text-xl font-bold text-indigo-600">{displayMonthlyPrice}</span>
+                        <span className="text-xl font-bold text-primary">{displayMonthlyPrice}</span>
                       </div>
                     </Label>
                   </div>
                   
                   {yearlyPricing && (
-                    <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
-                      <RadioGroupItem value="yearly" id="yearly" className="border-indigo-500 text-indigo-500" />
+                    <div className="flex items-center space-x-3 p-4 rounded-lg border border-border border-primary/20 transition-colors">
+                      <RadioGroupItem value="yearly" id="yearly" className="border-primary/40 text-primary" />
                       <Label htmlFor="yearly" className="cursor-pointer flex-1">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-semibold text-gray-900">Annuel</div>
-                            <div className="text-sm text-gray-500">Économisez {savings}%</div>
+                            <div className="font-semibold text-foreground">Annuel</div>
+                            <div className="text-sm text-muted-foreground">Économisez {savings}%</div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-indigo-600">{displayYearlyPrice}</span>
+                            <span className="text-xl font-bold text-primary">{displayYearlyPrice}</span>
                             {savings > 0 && (
-                              <Badge className="bg-green-100 text-green-800 text-sm font-medium">
+                              <Badge className="bg-success/10 text-success text-sm font-medium">
                                 <Percent className="w-3 h-3 mr-1" />
                                 -{savings}%
                               </Badge>
@@ -538,8 +542,8 @@ const ModernSubscriptionPayment = () => {
 
                 {/* Trial Information */}
                 {planData.pricing.trial_days > 0 && (
-                  <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center gap-3 text-green-800">
+                  <div className="mt-6 p-4 bg-success/10 border border-success/30 rounded-lg">
+                    <div className="flex items-center gap-3 text-success">
                       <Gift className="w-5 h-5" />
                       <span className="font-medium">
                         {planData.pricing.trial_days} jours d'essai gratuits
@@ -550,61 +554,61 @@ const ModernSubscriptionPayment = () => {
 
                 {/* Invoice Summary Section */}
                 <div className="mt-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText className="w-6 h-6 text-indigo-600" />
-                    Récapitulatif de Commande
+                  <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-primary" />
+                    {t("ux.subPayment.orderSummary")}
                   </h3>
                   
-                  <Card className="border-2 border-indigo-200 shadow-lg">
-                    <CardHeader className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white">
+                  <Card className="border-2 border-primary/20 shadow-lg">
+                    <CardHeader className="bg-primary text-primary-foreground">
                       <CardTitle className="text-lg font-bold flex items-center gap-2">
                         <Receipt className="w-5 h-5" />
-                        Facture
+                        {t("ux.subPayment.invoice")}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
                       {/* Order Information */}
                       <div className="grid md:grid-cols-2 gap-6 mb-6">
                         <div>
-                          <h4 className="font-semibold text-gray-900 mb-2">Informations de la commande</h4>
+                          <h4 className="font-semibold text-foreground mb-2">{t("ux.subPayment.orderInfo")}</h4>
                           <div className="space-y-2 text-sm">
-                            <p><span className="font-medium">Numéro:</span> BOSSIZ_{Math.floor(Date.now() / 1000)}</p>
-                            <p><span className="font-medium">Date:</span> {new Date(Date.now()).toLocaleDateString('fr-FR')}</p>
+                            <p><span className="font-medium">{t("ux.subPayment.number")}</span> BOSSIZ_{Math.floor(Date.now() / 1000)}</p>
+                            <p><span className="font-medium">Date:</span> {new Date(Date.now()).toLocaleDateString(currentLocaleTag())}</p>
                             <p><span className="font-medium">Statut:</span> 
-                              <Badge className="ml-2 bg-yellow-100 text-yellow-800">En attente de paiement</Badge>
+                              <Badge className="ml-2 bg-warning text-warning-foreground">{t("ux.subPayment.awaiting")}</Badge>
                             </p>
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-gray-900 mb-2">Méthode de paiement</h4>
+                          <h4 className="font-semibold text-foreground mb-2">{t("ux.subPayment.method")}</h4>
                           <div className="space-y-2 text-sm">
                             <p><span className="font-medium">Prestataire:</span> Jèko</p>
                             <p><span className="font-medium">Devise:</span> {planData.pricing.currency}</p>
-                            <p><span className="font-medium">Sécurité:</span> Paiement sécurisé SSL</p>
+                            <p><span className="font-medium">{t("ux.subPayment.securityLabel")}</span> {t("ux.subPayment.ssl")}</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Plan Details */}
-                      <div className="border rounded-lg p-6 bg-gray-50 mb-6">
+                      <div className="border rounded-lg p-6 bg-muted mb-6">
                         <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h4 className="text-xl font-bold text-gray-900">{planData.plan.name}</h4>
-                            <p className="text-gray-600 mt-1">{planData.plan.subtitle || 'Services premium Bossiz'}</p>
+                            <h4 className="text-xl font-bold text-foreground">{planData.plan.name}</h4>
+                            <p className="text-muted-foreground mt-1">{planData.plan.subtitle || t("ux.subPayment.premium")}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-2xl font-bold text-indigo-600">
+                            <p className="text-2xl font-bold text-primary">
                               {autoConvertAndFormat(planData.pricing.price, planData.pricing.currency)}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               {billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}
                             </p>
                           </div>
                         </div>
                         
                         {planData.pricing.trial_days > 0 && (
-                          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <div className="flex items-center gap-2 text-green-800">
+                          <div className="mb-4 p-3 bg-success/10 border border-success/30 rounded-lg">
+                            <div className="flex items-center gap-2 text-success">
                               <Clock className="w-4 h-4" />
                               <span className="font-medium">
                                 {planData.pricing.trial_days} jours d'essai gratuits
@@ -614,11 +618,11 @@ const ModernSubscriptionPayment = () => {
                         )}
 
                         <div>
-                          <h5 className="font-semibold text-gray-900 mb-3">Fonctionnalités incluses:</h5>
+                          <h5 className="font-semibold text-foreground mb-3">{t("ux.subPayment.features")}</h5>
                           <div className="grid md:grid-cols-2 gap-3">
                             {planData.plan.features && planData.plan.features.slice(0, 6).map((feature, index) => (
                               <div key={index} className="flex items-center gap-2 text-sm">
-                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
                                 <span>{feature}</span>
                               </div>
                             ))}
@@ -626,8 +630,8 @@ const ModernSubscriptionPayment = () => {
                         </div>
 
                         {planData.pricing.discount_percentage > 0 && (
-                          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p className="text-yellow-800 font-medium">
+                          <div className="mt-4 p-3 bg-warning border border-warning-foreground/20 rounded-lg">
+                            <p className="text-warning-foreground font-medium">
                               Réduction spéciale de {planData.pricing.discount_percentage}% pour l'abonnement annuel
                             </p>
                           </div>
@@ -635,11 +639,11 @@ const ModernSubscriptionPayment = () => {
                       </div>
 
                       {/* Financial Summary */}
-                      <div className="border-2 border-green-200 rounded-lg">
-                        <div className="p-4 bg-gradient-to-r from-green-600 to-green-700 text-white">
+                      <div className="border-2 border-success/30 rounded-lg">
+                        <div className="p-4 bg-success text-success-foreground">
                           <h4 className="font-bold flex items-center gap-2">
                             <Calculator className="w-5 h-5" />
-                            Récapitulatif financier
+                            {t("ux.subPayment.financial")}
                           </h4>
                         </div>
                         <div className="p-4">
@@ -652,8 +656,8 @@ const ModernSubscriptionPayment = () => {
                             </div>
                             
                             {planData.pricing.discount_percentage > 0 && (
-                              <div className="flex justify-between text-lg text-green-600">
-                                <span>Réduction:</span>
+                              <div className="flex justify-between text-lg text-success">
+                                <span>{t("ux.subPayment.discount")}</span>
                                 <span className="font-medium">
                                   -{autoConvertAndFormat(
                                     (planData.pricing.price / (1 - planData.pricing.discount_percentage/100)) - planData.pricing.price, 
@@ -665,9 +669,9 @@ const ModernSubscriptionPayment = () => {
                             
                             <Separator />
                             
-                            <div className="flex justify-between text-2xl font-bold text-gray-900">
-                              <span>Total à payer:</span>
-                              <span className="text-indigo-600">
+                            <div className="flex justify-between text-2xl font-bold text-foreground">
+                              <span>{t("ux.subPayment.total")}</span>
+                              <span className="text-primary">
                                 {autoConvertAndFormat(planData.pricing.price, planData.pricing.currency)}
                               </span>
                             </div>
@@ -676,19 +680,19 @@ const ModernSubscriptionPayment = () => {
                       </div>
 
                       {/* Customer Information */}
-                      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h5 className="font-semibold text-gray-900 mb-3">Informations du client</h5>
+                      <div className="mt-6 p-4 bg-info/10 border border-info/30 rounded-lg">
+                        <h5 className="font-semibold text-foreground mb-3">{t("ux.subPayment.customer")}</h5>
                         <div className="grid md:grid-cols-3 gap-4 text-sm">
                           <div>
-                            <label className="text-xs font-medium text-gray-700">Nom complet</label>
+                            <label className="text-xs font-medium text-foreground">{t("ux.subPayment.fullName")}</label>
                             <p className="mt-1 font-semibold">Client Bossiz</p>
                           </div>
                           <div>
-                            <label className="text-xs font-medium text-gray-700">Email</label>
+                            <label className="text-xs font-medium text-foreground">Email</label>
                             <p className="mt-1">client@bossiz.com</p>
                           </div>
                           <div>
-                            <label className="text-xs font-medium text-gray-700">Téléphone</label>
+                            <label className="text-xs font-medium text-foreground">{t("ux.subPayment.phone")}</label>
                             <p className="mt-1">+225000000000</p>
                           </div>
                         </div>
@@ -699,50 +703,50 @@ const ModernSubscriptionPayment = () => {
 
                 {/* Payment Method */}
                 <div className="mt-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Wallet className="w-6 h-6 text-indigo-600" />
-                    Méthode de paiement
+                  <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Wallet className="w-6 h-6 text-primary" />
+                    {t("ux.subPayment.method")}
                   </h3>
-                  <div className="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-lg">
+                  <div className="p-6 bg-info/10 border border-primary/20 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                      <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-md">
                         <Wallet className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="font-bold text-gray-900">Paiement sécurisé avec Jèko</div>
-                        <div className="text-sm text-gray-600">Choisissez votre moyen de paiement sur la page sécurisée Jèko.</div>
+                        <div className="font-bold text-foreground">{t("ux.subPayment.jeko")}</div>
+                        <div className="text-sm text-muted-foreground">{t("ux.subPayment.jekoDesc")}</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Order Summary */}
-                <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Database className="w-5 h-5 text-gray-600" />
-                    Récapitulatif de Commande
+                <div className="mt-8 p-6 bg-muted rounded-lg">
+                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Database className="w-5 h-5 text-muted-foreground" />
+                    {t("ux.subPayment.orderSummary")}
                   </h3>
                   
                   <div className="space-y-3">
-                    <div className="flex justify-between text-gray-700">
+                    <div className="flex justify-between text-foreground">
                       <span>{planData.plan.name} - {billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-foreground">
                         {billingCycle === 'monthly' ? monthlyPrice : yearlyPrice} EUR
                       </span>
                     </div>
                     
                     {planData.pricing.setup_fee > 0 && (
-                      <div className="flex justify-between text-gray-700">
-                        <span>Frais d'installation</span>
-                        <span className="font-semibold text-gray-900">
+                      <div className="flex justify-between text-foreground">
+                        <span>{t("ux.subPayment.setupFee")}</span>
+                        <span className="font-semibold text-foreground">
                           {planData.pricing.setup_fee} EUR
                         </span>
                       </div>
                     )}
                     
                     {yearlyPricing && savings > 0 && (
-                      <div className="flex justify-between text-green-700">
-                        <span>Économies annuelles</span>
+                      <div className="flex justify-between text-success">
+                        <span>{t("ux.subPayment.yearlySavings")}</span>
                         <span className="font-medium">
                           -{Math.round(monthlyPrice * 12 * savings / 100)} EUR
                         </span>
@@ -752,9 +756,9 @@ const ModernSubscriptionPayment = () => {
                 
                   <Separator className="my-4" />
                   
-                  <div className="flex justify-between text-xl font-bold text-gray-900">
+                  <div className="flex justify-between text-xl font-bold text-foreground">
                     <span>Total</span>
-                    <span className="text-indigo-600">
+                    <span className="text-primary">
                       {(billingCycle === 'monthly' ? monthlyPrice : yearlyPrice) + planData.pricing.setup_fee} EUR
                     </span>
                   </div>
@@ -765,17 +769,17 @@ const ModernSubscriptionPayment = () => {
                   <Button 
                     onClick={handlePayment}
                     disabled={processing}
-                    className="w-full h-14 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-lg rounded-xl transition-all duration-300 shadow-lg"
+                    className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-xl transition-all duration-slow ease-standard shadow-lg"
                   >
                     {processing ? (
                       <div className="flex items-center gap-3">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Traitement en cours...</span>
+                        <span>{t("ux.subPayment.processing")}</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-3">
                         <CreditCard className="w-5 h-5" />
-                        <span>Payer Maintenant</span>
+                        <span>{t("ux.subPayment.payNow")}</span>
                         <ArrowRight className="w-5 h-5" />
                       </div>
                     )}
@@ -784,13 +788,13 @@ const ModernSubscriptionPayment = () => {
 
                 {/* Security Info */}
                 <div className="mt-6 text-center">
-                  <div className="flex items-center justify-center gap-2 text-gray-600 text-sm mb-2">
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm mb-2">
                     <Shield className="w-4 h-4" />
-                    <span>Paiement sécurisé via Jèko</span>
+                    <span>{t("ux.subPayment.viaJeko")}</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
                     <Globe className="w-3 h-3" />
-                    <span>SSL 256 bits | Partenaire officiel Afrique</span>
+                    <span>{t("ux.subPayment.sslBadge")}</span>
                   </div>
                 </div>
               </CardContent>
@@ -800,17 +804,17 @@ const ModernSubscriptionPayment = () => {
 
         {/* Trust Indicators */}
         <div className="mt-12 text-center">
-          <div className="flex items-center justify-center gap-8 text-gray-600">
+          <div className="flex items-center justify-center gap-8 text-muted-foreground">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-green-600" />
-              <span className="text-sm font-medium">Croissance garantie</span>
+              <TrendingUp className="w-5 h-5 text-success" />
+              <span className="text-sm font-medium">{t("ux.subPayment.growth")}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-medium">Activation instantanée</span>
+              <Clock className="w-5 h-5 text-info" />
+              <span className="text-sm font-medium">{t("ux.subPayment.instant")}</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-purple-600" />
+              <CheckCircle2 className="w-5 h-5 text-primary" />
               <span className="text-sm font-medium">Satisfaction 100%</span>
             </div>
           </div>

@@ -9,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 export interface Notification {
   id: string;
@@ -35,11 +36,11 @@ export const NotificationCenter = ({
   const getIcon = (type: string) => {
     switch (type) {
       case "success":
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-success" />;
       case "warning":
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+        return <AlertTriangle className="h-5 w-5 text-gold" />;
       case "info":
-        return <Info className="h-5 w-5 text-blue-500" />;
+        return <Info className="h-5 w-5 text-info" />;
       default:
         return <Info className="h-5 w-5" />;
     }
@@ -107,7 +108,7 @@ export const NotificationCenter = ({
                         {notification.message}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {notification.timestamp.toLocaleString("fr-FR", {
+                        {notification.timestamp.toLocaleString(currentLocaleTag(), {
                           day: "numeric",
                           month: "short",
                           hour: "2-digit",

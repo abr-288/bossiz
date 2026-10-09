@@ -105,7 +105,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     }
 
     if (!licenseFrontPath || !licenseBackPath || !applicantPhotoPath) {
-      toast.error("La photo du permis (recto et verso) et votre photo sont obligatoires.");
+      toast.error(t("ux.carDialog.photosRequired"));
       return;
     }
 
@@ -187,34 +187,34 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
           <div className="space-y-6">
             {depositAvailable && (
               <div className="space-y-2 rounded-lg border p-4">
-                <h3 className="font-semibold">Choisissez le paiement</h3>
+                <h3 className="font-semibold">{t("ux.carDialog.choosePayment")}</h3>
                 <button type="button" onClick={() => setPaymentPlan("full")} className={`w-full rounded-md border p-3 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : ""}`}>
-                  Payer la totalité en ligne
+                  {t("ux.carDialog.payFullOnline")}
                 </button>
                 <button type="button" onClick={() => setPaymentPlan("deposit")} className={`w-full rounded-md border p-3 text-left ${paymentPlan === "deposit" ? "border-primary bg-primary/5" : ""}`}>
                   Verser {depositPercent} % d’acompte en ligne, puis régler le solde sur place
                 </button>
-                {paymentPlan === "deposit" && <p className="text-xs text-muted-foreground">Le montant exact de l’acompte et le solde seront affichés après le calcul de la durée.</p>}
+                {paymentPlan === "deposit" && <p className="text-xs text-muted-foreground">{t("ux.carDialog.depositNote")}</p>}
               </div>
             )}
             {/* Informations de prise en charge */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Lieu et horaire de prise en charge</h3>
+              <h3 className="font-semibold text-lg">{t("ux.carDialog.pickupSection")}</h3>
               <UnifiedFormField
-                label="Lieu de prise en charge"
+                label={t("ux.carDialog.pickupPlace")}
                 name="pickupLocation"
                 placeholder={t('booking.dialog.car.locationPlaceholder')}
                 required
               />
               <div className="grid grid-cols-2 gap-4">
                 <UnifiedFormField
-                  label="Date de prise en charge"
+                  label={t("ux.carDialog.pickupDate")}
                   name="pickupDate"
                   type="date"
                   required
                 />
                 <UnifiedFormField
-                  label="Heure de prise en charge"
+                  label={t("ux.carDialog.pickupTime")}
                   name="pickupTime"
                   type="time"
                   defaultValue="10:00"
@@ -225,22 +225,22 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
 
             {/* Dropoff Info */}
             <div className="space-y-4 pt-4 border-t">
-              <h3 className="font-semibold text-lg">Lieu et horaire de retour</h3>
+              <h3 className="font-semibold text-lg">{t("ux.carDialog.returnSection")}</h3>
               <UnifiedFormField
-                label="Lieu de retour"
+                label={t("ux.carDialog.returnPlace")}
                 name="dropoffLocation"
                 placeholder={t('booking.dialog.car.locationPlaceholder')}
                 required
               />
               <div className="grid grid-cols-2 gap-4">
                 <UnifiedFormField
-                  label="Date de retour"
+                  label={t("ux.carDialog.returnDate")}
                   name="dropoffDate"
                   type="date"
                   required
                 />
                 <UnifiedFormField
-                  label="Heure de retour"
+                  label={t("ux.carDialog.returnTime")}
                   name="dropoffTime"
                   type="time"
                   defaultValue="10:00"
@@ -251,17 +251,17 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
 
             {/* Driver Info */}
             <div className="space-y-4 pt-4 border-t">
-              <h3 className="font-semibold text-lg">Informations du conducteur</h3>
+              <h3 className="font-semibold text-lg">{t("ux.carDialog.driverSection")}</h3>
               
               <UnifiedFormField
-                label="Nom complet"
+                label={t("ux.carDialog.fullName")}
                 name="customerName"
-                placeholder="Nom du conducteur principal"
+                placeholder={t("ux.carDialog.fullNamePlaceholder")}
                 required
               />
 
               <UnifiedFormField
-                label="Numéro de permis de conduire"
+                label={t("ux.carDialog.licenceNumber")}
                 name="driverLicense"
                 placeholder="ABC123456"
                 required
@@ -269,20 +269,20 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <DriverDocumentUpload
-                  label="Permis de conduire - Recto"
+                  label={t("ux.carDialog.licenceFront")}
                   docType="license_front"
                   path={licenseFrontPath}
                   onChange={setLicenseFrontPath}
                 />
                 <DriverDocumentUpload
-                  label="Permis de conduire - Verso"
+                  label={t("ux.carDialog.licenceBack")}
                   docType="license_back"
                   path={licenseBackPath}
                   onChange={setLicenseBackPath}
                 />
               </div>
               <DriverDocumentUpload
-                label="Photo du demandeur"
+                label={t("ux.carDialog.applicantPhoto")}
                 docType="applicant_photo"
                 path={applicantPhotoPath}
                 onChange={setApplicantPhotoPath}
@@ -290,14 +290,14 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <UnifiedFormField
-                  label="Email"
+                  label={t("ux.carDialog.email")}
                   name="customerEmail"
                   type="email"
                   placeholder="email@example.com"
                   required
                 />
                 <UnifiedFormField
-                  label="Téléphone"
+                  label={t("ux.carDialog.phone")}
                   name="customerPhone"
                   type="tel"
                   placeholder="+225 XX XX XX XX XX"
@@ -306,7 +306,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
               </div>
 
               <UnifiedFormField
-                label="Informations supplémentaires"
+                label={t("ux.carDialog.extraInfo")}
                 name="notes"
                 type="textarea"
                 placeholder={t('booking.dialog.car.specialRequestsPlaceholder')}

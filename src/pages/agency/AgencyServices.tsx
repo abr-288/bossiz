@@ -36,6 +36,8 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
 import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface Service {
   id: string;
@@ -57,10 +59,10 @@ interface Service {
 }
 
 const serviceTypes = [
-  { value: "flight", label: "Vol" },
-  { value: "hotel", label: "Hôtel" },
-  { value: "car", label: "Voiture" },
-  { value: "tour", label: "Circuit touristique" },
+  { value: "flight", get label() { return i18n.t("ux.bo.flight"); } },
+  { value: "hotel", get label() { return i18n.t("ux.bo.hotel"); } },
+  { value: "car", get label() { return i18n.t("ux.bo.car"); } },
+  { value: "tour", get label() { return i18n.t("ux.bo.guidedTour"); } },
 ];
 
 const carCategories = ["Mini", "Économique", "Compacte", "Berline", "SUV", "Luxe", "Monospace"];
@@ -104,6 +106,7 @@ interface CarPlanLimit {
 }
 
 export default function AgencyServices() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const typeFilter = searchParams.get("type");
   const { toast } = useToast();
@@ -194,8 +197,8 @@ export default function AgencyServices() {
     if (isCarType) {
       if (!carPlan && (!editingService || editingService.type !== "car" || !editingService.available && formData.available)) {
         toast({
-          title: "Forfait payant requis",
-          description: "Souscrivez à un forfait voiture payant et attendez la confirmation du paiement avant d'ajouter ou publier un véhicule.",
+          title: t("ux.bo.paidPlanRequired"),
+          description: t("ux.bo.subscribePaidCarPlanWait"),
           variant: "destructive",
         });
         return;
@@ -204,8 +207,8 @@ export default function AgencyServices() {
       const { front, back, left, right, interior1, interior2 } = formData.carPhotos;
       if (!front || !back || !left || !right || !interior1 || !interior2) {
         toast({
-          title: "Photos manquantes",
-          description: "Les 4 photos extérieures et les 2 photos intérieures sont obligatoires.",
+          title: t("ux.bo.missingPhotos"),
+          description: t("ux.bo.n4ExteriorPhotos2Interior"),
           variant: "destructive",
         });
         return;
@@ -215,7 +218,7 @@ export default function AgencyServices() {
         const currentCarCount = services.filter((s) => s.type === "car").length;
         if (currentCarCount >= carPlan.max_vehicles) {
           toast({
-            title: "Limite du forfait atteinte",
+            title: t("ux.bo.planLimitReached"),
             description: `Votre forfait ${carPlan.name} autorise jusqu'à ${carPlan.max_vehicles} véhicules. Passez à un forfait supérieur pour en ajouter davantage.`,
             variant: "destructive",
           });
@@ -289,14 +292,14 @@ export default function AgencyServices() {
           .eq("id", editingService.id);
 
         if (error) throw error;
-        toast({ title: "Succès", description: "Service mis à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.serviceUpdated") });
       } else {
         const { error } = await supabase
           .from("services")
           .insert(serviceData);
 
         if (error) throw error;
-        toast({ title: "Succès", description: "Service créé" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.serviceCreated") });
       }
 
       setIsDialogOpen(false);
@@ -304,8 +307,8 @@ export default function AgencyServices() {
       fetchAgencyAndServices();
     } catch (error: unknown) {
       toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Impossible d'enregistrer le service",
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableSaveService2"),
         variant: "destructive",
       });
     }
@@ -379,13 +382,13 @@ export default function AgencyServices() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer ce service ?")) return;
+    if (!confirm(t("ux.bo.deleteService"))) return;
 
     const { error } = await supabase.from("services").delete().eq("id", id);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Succès", description: "Service supprimé" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.serviceDeleted") });
       fetchAgencyAndServices();
     }
   };
@@ -420,12 +423,12 @@ export default function AgencyServices() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">{typeFilter === "tour" ? "Mes Circuits" : "Mes Services"}</h1>
-            <p className="text-muted-foreground">{typeFilter === "tour" ? "Gérez vos circuits touristiques" : "Gérez vos services de voyage"}</p>
+            <h1 className="text-2xl font-bold">{typeFilter === "tour" ? t("ux.bo.myTours") : "Mes Services"}</h1>
+            <p className="text-muted-foreground">{typeFilter === "tour" ? t("ux.bo.manageTours") : t("ux.bo.manageTravelServices")}</p>
             {!carPlan && (
-              <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+              <p className="mt-2 text-sm text-warning-foreground">
                 Aucun forfait voiture payant actif. Les nouvelles annonces de véhicules sont bloquées jusqu'à confirmation du paiement.{" "}
-                <a href="/partenaires/voitures" className="font-medium underline">Voir les forfaits</a>
+                <a href="/partenaires/voitures" className="font-medium underline">{t("ux.bo.seePlans")}</a>
               </p>
             )}
             {carPlan && (
@@ -433,7 +436,7 @@ export default function AgencyServices() {
                 Forfait {carPlan.name} ·{" "}
                 {carPlan.max_vehicles
                   ? `${services.filter((s) => s.type === "car").length} / ${carPlan.max_vehicles} véhicules`
-                  : "véhicules illimités"}
+                  : t("ux.bo.unlimitedVehicles")}
               </Badge>
             )}
           </div>
@@ -442,18 +445,18 @@ export default function AgencyServices() {
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nouveau Service</Button>
+              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newService")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {editingService ? "Modifier le service" : "Nouveau service"}
+                  {editingService ? t("ux.bo.editService") : t("ux.bo.newService2")}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Nom *</Label>
+                    <Label>{t("ux.bo.name2")}</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -461,7 +464,7 @@ export default function AgencyServices() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Type *</Label>
+                    <Label>{t("ux.bo.type2")}</Label>
                     <Select
                       value={formData.type}
                       onValueChange={(v) => setFormData({ ...formData, type: v })}
@@ -482,7 +485,7 @@ export default function AgencyServices() {
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Prix *</Label>
+                    <Label>{t("ux.bo.price2")}</Label>
                     <Input
                       type="number"
                       value={formData.price_per_unit}
@@ -490,10 +493,10 @@ export default function AgencyServices() {
                       required
                     />
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">Prix affiché et facturé en XOF (FCFA)</div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -502,21 +505,21 @@ export default function AgencyServices() {
                 </div>
                 {formData.type === "car" ? (
                   <div className="space-y-4 border-t pt-4">
-                    <p className="text-sm font-medium">Caractéristiques du véhicule</p>
+                    <p className="text-sm font-medium">{t("ux.bo.vehicleSpecifications")}</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Marque *</Label>
+                        <Label>{t("ux.bo.make")}</Label>
                         <Input
-                          placeholder="Ex: Toyota"
+                          placeholder={t("ux.bo.eGToyota")}
                           value={formData.carSpecs.brand}
                           onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, brand: e.target.value } })}
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Modèle *</Label>
+                        <Label>{t("ux.bo.model")}</Label>
                         <Input
-                          placeholder="Ex: Corolla"
+                          placeholder={t("ux.bo.eGCorolla")}
                           value={formData.carSpecs.model}
                           onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, model: e.target.value } })}
                           required
@@ -525,7 +528,7 @@ export default function AgencyServices() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Catégorie *</Label>
+                        <Label>{t("ux.bo.category2")}</Label>
                         <Select
                           value={formData.carSpecs.category}
                           onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, category: v } })}
@@ -539,7 +542,7 @@ export default function AgencyServices() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Année</Label>
+                        <Label>{t("ux.bo.year")}</Label>
                         <Input
                           type="number"
                           min="1990"
@@ -551,7 +554,7 @@ export default function AgencyServices() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Transmission *</Label>
+                        <Label>{t("ux.bo.transmission")}</Label>
                         <Select
                           value={formData.carSpecs.transmission}
                           onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, transmission: v } })}
@@ -565,7 +568,7 @@ export default function AgencyServices() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Carburant *</Label>
+                        <Label>{t("ux.bo.fuel")}</Label>
                         <Select
                           value={formData.carSpecs.fuel}
                           onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, fuel: v } })}
@@ -581,7 +584,7 @@ export default function AgencyServices() {
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label>Places *</Label>
+                        <Label>{t("ux.bo.seats")}</Label>
                         <Input
                           type="number"
                           min="1"
@@ -591,7 +594,7 @@ export default function AgencyServices() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Portes</Label>
+                        <Label>{t("ux.bo.doors")}</Label>
                         <Input
                           type="number"
                           min="2"
@@ -600,7 +603,7 @@ export default function AgencyServices() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Bagages</Label>
+                        <Label>{t("ux.bo.luggage")}</Label>
                         <Input
                           type="number"
                           min="0"
@@ -615,40 +618,40 @@ export default function AgencyServices() {
                           checked={formData.carSpecs.unlimitedMileage}
                           onCheckedChange={(c) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, unlimitedMileage: c } })}
                         />
-                        <Label>Kilométrage illimité</Label>
+                        <Label>{t("ux.bo.unlimitedMileage")}</Label>
                       </div>
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={formData.carSpecs.freeCancellation}
                           onCheckedChange={(c) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, freeCancellation: c } })}
                         />
-                        <Label>Annulation gratuite</Label>
+                        <Label>{t("ux.bo.freeCancellation")}</Label>
                       </div>
                     </div>
 
                     <div className="space-y-3 pt-2">
-                      <p className="text-sm font-medium">Photos extérieures (4 côtés) *</p>
+                      <p className="text-sm font-medium">{t("ux.bo.exteriorPhotos4Sides")}</p>
                       <div className="grid grid-cols-2 gap-4">
                         <ImageUpload
-                          label="Avant"
+                          label={t("ux.bo.front")}
                           folder="agency-cars"
                           value={formData.carPhotos.front}
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, front: url } })}
                         />
                         <ImageUpload
-                          label="Arrière"
+                          label={t("ux.bo.rear")}
                           folder="agency-cars"
                           value={formData.carPhotos.back}
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, back: url } })}
                         />
                         <ImageUpload
-                          label="Côté gauche"
+                          label={t("ux.bo.leftSide")}
                           folder="agency-cars"
                           value={formData.carPhotos.left}
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, left: url } })}
                         />
                         <ImageUpload
-                          label="Côté droit"
+                          label={t("ux.bo.rightSide")}
                           folder="agency-cars"
                           value={formData.carPhotos.right}
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, right: url } })}
@@ -657,16 +660,16 @@ export default function AgencyServices() {
                     </div>
 
                     <div className="space-y-3 pt-2">
-                      <p className="text-sm font-medium">Photos intérieures (2 photos) *</p>
+                      <p className="text-sm font-medium">{t("ux.bo.interiorPhotos2Photos")}</p>
                       <div className="grid grid-cols-2 gap-4">
                         <ImageUpload
-                          label="Intérieur 1"
+                          label={t("ux.bo.interior1")}
                           folder="agency-cars"
                           value={formData.carPhotos.interior1}
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior1: url } })}
                         />
                         <ImageUpload
-                          label="Intérieur 2"
+                          label={t("ux.bo.interior2")}
                           folder="agency-cars"
                           value={formData.carPhotos.interior2}
                           onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior2: url } })}
@@ -676,19 +679,19 @@ export default function AgencyServices() {
                   </div>
                 ) : formData.type === "tour" ? (
                   <div className="space-y-4 border-t pt-4">
-                    <p className="text-sm font-medium">Détails du circuit</p>
+                    <p className="text-sm font-medium">{t("ux.bo.tourDetails")}</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Durée *</Label>
+                        <Label>{t("ux.bo.duration2")}</Label>
                         <Input
-                          placeholder="Ex: 1 jour, 3 jours / 2 nuits"
+                          placeholder={t("ux.bo.eG1Day3")}
                           value={formData.tourSpecs.duration}
                           onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, duration: e.target.value } })}
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Taille du groupe (max) *</Label>
+                        <Label>{t("ux.bo.groupSizeMax")}</Label>
                         <Input
                           type="number"
                           min="1"
@@ -700,7 +703,7 @@ export default function AgencyServices() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Catégorie *</Label>
+                        <Label>{t("ux.bo.category2")}</Label>
                         <Select
                           value={formData.tourSpecs.category}
                           onValueChange={(v) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, category: v } })}
@@ -714,7 +717,7 @@ export default function AgencyServices() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Difficulté</Label>
+                        <Label>{t("ux.bo.difficulty")}</Label>
                         <Select
                           value={formData.tourSpecs.difficulty}
                           onValueChange={(v) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, difficulty: v } })}
@@ -728,46 +731,46 @@ export default function AgencyServices() {
                         </Select>
                       </div>
                     </div>
-                    <AvailableDatesInput dates={formData.tourSpecs.availableDates} onChange={(availableDates) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, availableDates } })} label="Dates de départ du circuit" />
+                    <AvailableDatesInput dates={formData.tourSpecs.availableDates} onChange={(availableDates) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, availableDates } })} label={t("ux.bo.tourDepartureDates")} />
                     <div className="space-y-2">
-                      <Label>Point de rendez-vous *</Label>
+                      <Label>{t("ux.bo.meetingPoint")}</Label>
                       <Input
-                        placeholder="Ex: Devant l'hôtel Ivoire, Abidjan"
+                        placeholder={t("ux.bo.eGFrontHotelIvoire")}
                         value={formData.tourSpecs.meetingPoint}
                         onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, meetingPoint: e.target.value } })}
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Langues parlées</Label>
+                      <Label>{t("ux.bo.languagesSpoken")}</Label>
                       <Input
-                        placeholder="Ex: Français, Anglais"
+                        placeholder={t("ux.bo.eGFrenchEnglish")}
                         value={formData.tourSpecs.languages}
                         onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, languages: e.target.value } })}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Inclus dans le prix</Label>
+                      <Label>{t("ux.bo.includedPrice")}</Label>
                       <Textarea
-                        placeholder="Ex: Transport, guide, déjeuner"
+                        placeholder={t("ux.bo.eGTransportGuideLunch")}
                         value={formData.tourSpecs.included}
                         onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, included: e.target.value } })}
                         rows={2}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Non inclus</Label>
+                      <Label>{t("ux.bo.notIncluded")}</Label>
                       <Textarea
-                        placeholder="Ex: Boissons, pourboires"
+                        placeholder={t("ux.bo.eGDrinksTips")}
                         value={formData.tourSpecs.excluded}
                         onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, excluded: e.target.value } })}
                         rows={2}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Photo de couverture</Label>
+                      <Label>{t("ux.bo.coverPhoto")}</Label>
                       <ImageUpload
-                        label="Photo du circuit"
+                        label={t("ux.bo.tourPhoto")}
                         folder="agency-tours"
                         value={formData.image_url}
                         onChange={(url) => setFormData({ ...formData, image_url: url })}
@@ -775,20 +778,20 @@ export default function AgencyServices() {
                     </div>
                   </div>
                 ) : (
-                  <ImageUpload label="Photo du service" folder="agency-services" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
+                  <ImageUpload label={t("ux.bo.servicePhoto")} folder="agency-services" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
                 )}
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.available}
                     onCheckedChange={(c) => setFormData({ ...formData, available: c })}
                   />
-                  <Label>Disponible</Label>
+                  <Label>{t("ux.bo.available")}</Label>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Annuler
+                    {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">{editingService ? "Mettre à jour" : "Créer"}</Button>
+                  <Button type="submit">{editingService ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -798,7 +801,7 @@ export default function AgencyServices() {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher..."
+            placeholder={t("ux.bo.search")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -809,24 +812,24 @@ export default function AgencyServices() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Service</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Prix</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("ux.bo.service")}</TableHead>
+                <TableHead>{t("ux.bo.type")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.price")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">Chargement...</TableCell>
+                  <TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
                 </TableRow>
               ) : filteredServices.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     <Package className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    Aucun service
+                    {t("ux.bo.noService")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -842,14 +845,14 @@ export default function AgencyServices() {
                     <TableCell>{service.price_per_unit} {service.currency}</TableCell>
                     <TableCell>
                       <Badge variant={service.available ? "default" : "secondary"}>
-                        {service.available ? "Disponible" : "Indisponible"}
+                        {service.available ? t("ux.bo.available") : "Indisponible"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(service)}>
+                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(service)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(service.id)}>
+                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(service.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

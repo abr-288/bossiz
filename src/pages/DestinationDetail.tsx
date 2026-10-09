@@ -56,8 +56,8 @@ const DestinationDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Destination non trouvée</h2>
-          <Button onClick={() => navigate("/")}>Retour à l'accueil</Button>
+          <h2 className="text-2xl font-bold mb-4">{t("ux.destination.notFound")}</h2>
+          <Button onClick={() => navigate("/")}>{t("ux.destination.backHome")}</Button>
         </div>
       </div>
     );
@@ -83,7 +83,7 @@ const DestinationDetail = () => {
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour
+            {t("ux.destination.back")}
           </Button>
         </div>
       </div>
@@ -137,13 +137,13 @@ const DestinationDetail = () => {
 
               {/* Weather Widget */}
               {weather && (
-                <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10">
+                <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Météo actuelle</h3>
+                        <h3 className="text-lg font-semibold mb-2">{t("ux.destination.weather")}</h3>
                         <div className="flex items-center gap-4">
-                          <ThermometerSun className="w-8 h-8 text-orange-500" />
+                          <ThermometerSun className="w-8 h-8 text-warning-foreground" />
                           <div>
                             <p className="text-3xl font-bold">{weather.temperature}°C</p>
                             <p className="text-muted-foreground capitalize">{weather.condition}</p>
@@ -185,7 +185,7 @@ const DestinationDetail = () => {
                       navigate(`/booking/stay?${params.toString()}`);
                     }}
                   >
-                    Réserver maintenant
+                    {t("ux.destination.bookNow")}
                   </Button>
                 </CardContent>
               </Card>
@@ -199,7 +199,7 @@ const DestinationDetail = () => {
               {/* About */}
               <Card>
                 <CardContent className="p-6 space-y-4">
-                  <h3 className="text-2xl font-bold">À propos de cette destination</h3>
+                  <h3 className="text-2xl font-bold">{t("ux.destination.about")}</h3>
                   <p className="text-muted-foreground leading-relaxed">
                     {destination.description}
                   </p>
@@ -208,7 +208,7 @@ const DestinationDetail = () => {
                   {destination.category && (
                     <div className="pt-4 border-t">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-muted-foreground">Catégorie:</span>
+                        <span className="text-sm font-semibold text-muted-foreground">{t("ux.destination.category")}</span>
                         <Badge variant="secondary" className="text-sm">
                           {destination.category}
                         </Badge>
@@ -219,7 +219,7 @@ const DestinationDetail = () => {
                   {/* Amenities */}
                   {destination.amenities && destination.amenities.length > 0 && (
                     <div className="pt-4 border-t space-y-3">
-                      <h4 className="font-semibold text-lg">Équipements et services</h4>
+                      <h4 className="font-semibold text-lg">{t("ux.destination.amenities")}</h4>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {destination.amenities.map((amenity, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm">
@@ -234,7 +234,7 @@ const DestinationDetail = () => {
                   {/* Highlights */}
                   {destination.highlights && destination.highlights.length > 0 && (
                     <div className="pt-4 border-t space-y-3">
-                      <h4 className="font-semibold text-lg">Points forts</h4>
+                      <h4 className="font-semibold text-lg">{t("ux.destination.highlights")}</h4>
                       <div className="space-y-2">
                         {destination.highlights.map((highlight, idx) => (
                           <div key={idx} className="flex items-start gap-3">
@@ -254,7 +254,7 @@ const DestinationDetail = () => {
               {/* Quick Info */}
               <Card className="bg-gradient-to-br from-primary/5 to-secondary/5">
                 <CardContent className="p-6 space-y-3">
-                  <h3 className="text-lg font-bold">Informations pratiques</h3>
+                  <h3 className="text-lg font-bold">{t("ux.destination.practical")}</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-primary" />
@@ -266,7 +266,7 @@ const DestinationDetail = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 text-primary" />
-                      <span>Annulation gratuite jusqu'à 24h avant</span>
+                      <span>{t("ux.destination.freeCancel")}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -277,20 +277,20 @@ const DestinationDetail = () => {
           {/* Tabs Section */}
           <Tabs defaultValue="activities" className="mt-12">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="activities">Activités & Excursions</TabsTrigger>
-              <TabsTrigger value="reviews">Avis Clients</TabsTrigger>
+              <TabsTrigger value="activities">{t("ux.destination.activitiesTab")}</TabsTrigger>
+              <TabsTrigger value="reviews">{t("ux.destination.reviewsTab")}</TabsTrigger>
             </TabsList>
 
             {/* Activities Tab */}
             <TabsContent value="activities" className="mt-6">
               <Card className="p-8 text-center">
                 <Mountain className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-50" />
-                <h3 className="text-xl font-bold mb-2">Activités et excursions</h3>
+                <h3 className="text-xl font-bold mb-2">{t("ux.destination.activities")}</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Découvrez les activités réellement proposées par nos partenaires près de {destination.location}.
                 </p>
                 <Button asChild>
-                  <a href="/activities">Voir les activités disponibles</a>
+                  <a href="/activities">{t("ux.destination.seeActivities")}</a>
                 </Button>
               </Card>
             </TabsContent>
@@ -299,7 +299,7 @@ const DestinationDetail = () => {
             <TabsContent value="reviews" className="mt-6">
               <Card className="p-8 text-center">
                 <Star className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-50" />
-                <h3 className="text-xl font-bold mb-2">Avis clients</h3>
+                <h3 className="text-xl font-bold mb-2">{t("ux.destination.reviews")}</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   Aucun avis vérifié pour le moment sur cette destination. Les avis affichés sur Bossiz+
                   proviennent uniquement de clients ayant réellement effectué une réservation.

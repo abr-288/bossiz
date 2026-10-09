@@ -7,37 +7,37 @@ import { useTranslation } from "react-i18next";
 // same status ("confirmée") showed up in a different color depending on
 // which page you were on.
 
-type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+type BadgeVariant = "success" | "warning" | "info" | "destructive" | "outline";
 
 export const BOOKING_STATUS_DOT_COLOR: Record<string, string> = {
-  pending: "bg-amber-500",
-  confirmed: "bg-emerald-500",
-  completed: "bg-blue-500",
-  cancelled: "bg-red-500",
+  pending: "bg-gold",
+  confirmed: "bg-success",
+  completed: "bg-info",
+  cancelled: "bg-destructive",
 };
 
 export const PAYMENT_STATUS_DOT_COLOR: Record<string, string> = {
-  pending: "bg-amber-500",
-  processing: "bg-amber-500",
-  paid: "bg-emerald-500",
-  partially_paid: "bg-blue-500",
-  refunded: "bg-slate-400",
-  failed: "bg-red-500",
+  pending: "bg-gold",
+  processing: "bg-gold",
+  paid: "bg-success",
+  partially_paid: "bg-info",
+  refunded: "bg-muted-foreground",
+  failed: "bg-destructive",
 };
 
 const BOOKING_STATUS_VARIANT: Record<string, BadgeVariant> = {
-  pending: "secondary",
-  confirmed: "default",
-  completed: "outline",
+  pending: "warning",
+  confirmed: "success",
+  completed: "info",
   cancelled: "destructive",
 };
 
 const PAYMENT_STATUS_VARIANT: Record<string, BadgeVariant> = {
-  pending: "secondary",
-  processing: "secondary",
-  paid: "default",
-  partially_paid: "secondary",
-  completed: "default", // `payments.status` uses "completed", `bookings.payment_status` uses "paid" - same meaning
+  pending: "warning",
+  processing: "warning",
+  paid: "success",
+  partially_paid: "info",
+  completed: "success", // `payments.status` uses "completed", `bookings.payment_status` uses "paid" - same meaning
   refunded: "outline",
   failed: "destructive",
 };
@@ -56,14 +56,14 @@ interface StatusBadgeProps {
 
 export function BookingStatusBadge({ status, className }: StatusBadgeProps) {
   const { t } = useTranslation();
-  const variant = BOOKING_STATUS_VARIANT[status] || "secondary";
+  const variant = BOOKING_STATUS_VARIANT[status] || "outline";
   const label = t(`booking.status.${status}`, status);
   return <Badge variant={variant} className={className}>{label}</Badge>;
 }
 
 export function PaymentStatusBadge({ status, className }: StatusBadgeProps) {
   const { t } = useTranslation();
-  const variant = PAYMENT_STATUS_VARIANT[status] || "secondary";
+  const variant = PAYMENT_STATUS_VARIANT[status] || "outline";
   const labelKey = PAYMENT_STATUS_LABEL_KEY[status] || status;
   const label = t(`booking.payment.${labelKey}`, status);
   return <Badge variant={variant} className={className}>{label}</Badge>;

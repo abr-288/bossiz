@@ -13,6 +13,8 @@ import { Loader2, Save, Plus, Trash2, Globe, Mail, Palette, Settings, FileText, 
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeConfig } from "@/components/admin/ThemeConfig";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface ConfigItem {
   id: string;
@@ -25,6 +27,7 @@ interface ConfigItem {
 }
 
 export default function AdminConfiguration() {
+  const { t } = useTranslation();
   const [configs, setConfigs] = useState<ConfigItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -46,8 +49,8 @@ export default function AdminConfiguration() {
     } catch (error) {
       console.error("Error fetching configs:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger la configuration",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableLoadConfiguration"),
         variant: "destructive",
       });
     } finally {
@@ -70,12 +73,12 @@ export default function AdminConfiguration() {
       );
 
       toast({
-        title: "Succès",
+        title: t("ux.bo.success"),
         description: `${configKey} mis à jour`,
       });
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: t("ux.bo.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -105,9 +108,9 @@ export default function AdminConfiguration() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Configuration du site</h1>
+          <h1 className="text-3xl font-bold">{t("ux.bo.siteConfiguration")}</h1>
           <p className="text-muted-foreground">
-            Gérez tous les paramètres du site depuis cette interface
+            {t("ux.bo.manageAllSiteSettingsFrom")}
           </p>
         </div>
 
@@ -115,19 +118,19 @@ export default function AdminConfiguration() {
           <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
             <TabsTrigger value="theme" className="flex items-center gap-2">
               <Paintbrush className="h-4 w-4" />
-              <span className="hidden sm:inline">Thème</span>
+              <span className="hidden sm:inline">{t("ux.bo.theme")}</span>
             </TabsTrigger>
             <TabsTrigger value="branding" className="flex items-center gap-2">
               <Palette className="h-4 w-4" />
-              <span className="hidden sm:inline">Marque</span>
+              <span className="hidden sm:inline">{t("ux.bo.brand")}</span>
             </TabsTrigger>
             <TabsTrigger value="contact" className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Contact</span>
+              <span className="hidden sm:inline">{t("ux.bo.contact")}</span>
             </TabsTrigger>
             <TabsTrigger value="homepage" className="flex items-center gap-2">
               <Globe className="h-4 w-4" />
-              <span className="hidden sm:inline">Accueil</span>
+              <span className="hidden sm:inline">{t("ux.bo.home")}</span>
             </TabsTrigger>
             <TabsTrigger value="seo" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -135,11 +138,11 @@ export default function AdminConfiguration() {
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Paramètres</span>
+              <span className="hidden sm:inline">{t("ux.bo.settings")}</span>
             </TabsTrigger>
             <TabsTrigger value="footer" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
-              <span className="hidden sm:inline">Footer</span>
+              <span className="hidden sm:inline">{t("ux.bo.footer")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -267,6 +270,7 @@ export default function AdminConfiguration() {
 
 // Sub-components for each config section
 function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -276,20 +280,20 @@ function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Identité de marque</CardTitle>
-        <CardDescription>Nom du site, logos et slogan</CardDescription>
+        <CardTitle>{t("ux.bo.brandIdentity")}</CardTitle>
+        <CardDescription>{t("ux.bo.siteNameLogosSlogan")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>Nom du site</Label>
+            <Label>{t("ux.bo.siteName")}</Label>
             <Input
               value={value.siteName || ""}
               onChange={(e) => setValue({ ...value, siteName: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Slogan</Label>
+            <Label>{t("ux.bo.slogan")}</Label>
             <Input
               value={value.tagline || ""}
               onChange={(e) => setValue({ ...value, tagline: e.target.value })}
@@ -302,13 +306,13 @@ function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
             value={value.logoLight || ""}
             onChange={(url) => setValue({ ...value, logoLight: url })}
             folder="logos"
-            label="Logo clair (thème sombre)"
+            label={t("ux.bo.lightLogoDarkTheme")}
           />
           <ImageUpload
             value={value.logoDark || ""}
             onChange={(url) => setValue({ ...value, logoDark: url })}
             folder="logos"
-            label="Logo sombre (thème clair)"
+            label={t("ux.bo.darkLogoLightTheme")}
           />
         </div>
         
@@ -316,12 +320,12 @@ function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
           value={value.favicon || ""}
           onChange={(url) => setValue({ ...value, favicon: url })}
           folder="logos"
-          label="Favicon"
+          label={t("ux.bo.favicon")}
         />
         
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -329,6 +333,7 @@ function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
 }
 
 function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -338,8 +343,8 @@ function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Informations de contact</CardTitle>
-        <CardDescription>Email, téléphone et adresse</CardDescription>
+        <CardTitle>{t("ux.bo.contactInformation")}</CardTitle>
+        <CardDescription>{t("ux.bo.emailPhoneAddress")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
@@ -352,7 +357,7 @@ function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
             />
           </div>
           <div className="space-y-2">
-            <Label>Téléphone</Label>
+            <Label>{t("ux.bo.phone")}</Label>
             <Input
               value={value.phone || ""}
               onChange={(e) => setValue({ ...value, phone: e.target.value })}
@@ -366,7 +371,7 @@ function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
             />
           </div>
           <div className="space-y-2">
-            <Label>Adresse</Label>
+            <Label>{t("ux.bo.address")}</Label>
             <Input
               value={value.address || ""}
               onChange={(e) => setValue({ ...value, address: e.target.value })}
@@ -375,7 +380,7 @@ function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -383,6 +388,7 @@ function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
 }
 
 function SocialConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -392,8 +398,8 @@ function SocialConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Réseaux sociaux</CardTitle>
-        <CardDescription>Liens vers vos réseaux sociaux</CardDescription>
+        <CardTitle>{t("ux.bo.socialNetworks")}</CardTitle>
+        <CardDescription>{t("ux.bo.linksSocialNetworks")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
@@ -410,7 +416,7 @@ function SocialConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -418,6 +424,7 @@ function SocialConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
 }
 
 function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || { slides: [] });
 
   useEffect(() => {
@@ -447,27 +454,27 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Section Hero</CardTitle>
-        <CardDescription>Bannière principale de la page d'accueil</CardDescription>
+        <CardTitle>{t("ux.bo.heroSection")}</CardTitle>
+        <CardDescription>{t("ux.bo.homepageMainBanner")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>Titre principal</Label>
+            <Label>{t("ux.bo.mainTitle")}</Label>
             <Input
               value={value.title || ""}
               onChange={(e) => setValue({ ...value, title: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Sous-titre</Label>
+            <Label>{t("ux.bo.subtitle")}</Label>
             <Input
               value={value.subtitle || ""}
               onChange={(e) => setValue({ ...value, subtitle: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Texte du bouton CTA</Label>
+            <Label>{t("ux.bo.ctaButtonText")}</Label>
             <Input
               value={value.ctaText || ""}
               onChange={(e) => setValue({ ...value, ctaText: e.target.value })}
@@ -477,7 +484,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label className="text-base font-semibold">Slides du carousel</Label>
+            <Label className="text-base font-semibold">{t("ux.bo.carouselSlides")}</Label>
             <Button type="button" variant="outline" size="sm" onClick={addSlide}>
               <Plus className="mr-2 h-4 w-4" /> Ajouter un slide
             </Button>
@@ -496,7 +503,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
                     className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4 mr-1" />
-                    Supprimer
+                    {t("ux.bo.delete")}
                   </Button>
                 </div>
                 
@@ -504,13 +511,13 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
                   value={slide.image || ""}
                   onChange={(url) => updateSlide(index, "image", url)}
                   folder="hero"
-                  label="Image du slide"
+                  label={t("ux.bo.slideImage")}
                 />
                 
                 <div className="space-y-2">
-                  <Label>Titre du slide (optionnel)</Label>
+                  <Label>{t("ux.bo.slideTitleOptional")}</Label>
                   <Input
-                    placeholder="Ex: Découvrez Paris"
+                    placeholder={t("ux.bo.eGDiscoverParis")}
                     value={slide.title || ""}
                     onChange={(e) => updateSlide(index, "title", e.target.value)}
                   />
@@ -520,7 +527,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
             
             {(!value.slides || value.slides.length === 0) && (
               <p className="text-sm text-muted-foreground text-center py-4">
-                Aucun slide configuré. Les images par défaut seront utilisées.
+                {t("ux.bo.noSlideConfiguredDefaultImages")}
               </p>
             )}
           </div>
@@ -528,7 +535,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
 
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -536,6 +543,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
 }
 
 function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || { items: [] });
 
   useEffect(() => {
@@ -565,12 +573,12 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Section Caractéristiques</CardTitle>
-        <CardDescription>Points forts affichés sur la page d'accueil</CardDescription>
+        <CardTitle>{t("ux.bo.featuresSection")}</CardTitle>
+        <CardDescription>{t("ux.bo.highlightsShownHomepage")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Titre de la section</Label>
+          <Label>{t("ux.bo.sectionTitle")}</Label>
           <Input
             value={value.title || ""}
             onChange={(e) => setValue({ ...value, title: e.target.value })}
@@ -579,7 +587,7 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label>Caractéristiques</Label>
+            <Label>{t("ux.bo.features2")}</Label>
             <Button type="button" variant="outline" size="sm" onClick={addItem}>
               <Plus className="mr-2 h-4 w-4" /> Ajouter
             </Button>
@@ -588,24 +596,25 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
             {value.items?.map((item: any, index: number) => (
               <div key={index} className="flex gap-2 items-center">
                 <Input
-                  placeholder="Icône (Shield, Clock, Star...)"
+                  placeholder={t("ux.bo.iconShieldClockStar")}
                   value={item.icon || ""}
                   onChange={(e) => updateItem(index, "icon", e.target.value)}
                   className="w-32"
                 />
                 <Input
-                  placeholder="Titre"
+                  placeholder={t("ux.bo.title2")}
                   value={item.title || ""}
                   onChange={(e) => updateItem(index, "title", e.target.value)}
                   className="flex-1"
                 />
                 <Input
-                  placeholder="Description"
+                  placeholder={t("ux.bo.description")}
                   value={item.description || ""}
                   onChange={(e) => updateItem(index, "description", e.target.value)}
                   className="flex-1"
                 />
                 <Button
+                  aria-label={t("ux.bo.delete")}
                   type="button"
                   variant="ghost"
                   size="icon"
@@ -620,7 +629,7 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
 
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -637,19 +646,19 @@ function SEOConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (v
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Paramètres SEO</CardTitle>
-        <CardDescription>Métadonnées pour les moteurs de recherche</CardDescription>
+        <CardTitle>{i18n.t("ux.bo.seoSettings")}</CardTitle>
+        <CardDescription>{i18n.t("ux.bo.metadataSearchEngines")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Titre par défaut</Label>
+          <Label>{i18n.t("ux.bo.defaultTitle")}</Label>
           <Input
             value={value.defaultTitle || ""}
             onChange={(e) => setValue({ ...value, defaultTitle: e.target.value })}
           />
         </div>
         <div className="space-y-2">
-          <Label>Description par défaut</Label>
+          <Label>{i18n.t("ux.bo.defaultDescription")}</Label>
           <Textarea
             value={value.defaultDescription || ""}
             onChange={(e) => setValue({ ...value, defaultDescription: e.target.value })}
@@ -657,7 +666,7 @@ function SEOConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (v
           />
         </div>
         <div className="space-y-2">
-          <Label>Mots-clés (séparés par des virgules)</Label>
+          <Label>{i18n.t("ux.bo.keywordsCommaSeparated")}</Label>
           <Input
             value={value.keywords || ""}
             onChange={(e) => setValue({ ...value, keywords: e.target.value })}
@@ -665,7 +674,7 @@ function SEOConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (v
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {i18n.t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -673,6 +682,7 @@ function SEOConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (v
 }
 
 function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -682,26 +692,26 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Langue et devise</CardTitle>
-        <CardDescription>Paramètres régionaux par défaut</CardDescription>
+        <CardTitle>{t("ux.bo.languageCurrency")}</CardTitle>
+        <CardDescription>{t("ux.bo.defaultRegionalSettings")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-          <strong>Devise :</strong> le site facture uniquement en XOF (Franc CFA)
-          via Jèko — ces champs sont indicatifs et n'affectent pas le
+        <div className="rounded-lg border border-warning-foreground/20 bg-warning p-3 text-sm text-warning-foreground">
+          <strong>{t("ux.bo.currency2")}</strong> le site facture uniquement en XOF (Franc CFA)
+          {t("ux.bo.viaJKoTheseFields")}
           site. Passer à un vrai multi-devises (affichage et paiement)
-          demanderait un développement dédié.
+          {t("ux.bo.wouldRequireDedicatedDevelopment")}
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>Devise par défaut (indicatif, non appliqué)</Label>
+            <Label>{t("ux.bo.defaultCurrencyIndicativeNotApplied")}</Label>
             <Input
               value={value.defaultCurrency || ""}
               onChange={(e) => setValue({ ...value, defaultCurrency: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Devises disponibles (indicatif, non appliqué)</Label>
+            <Label>{t("ux.bo.availableCurrenciesIndicativeNotApplied")}</Label>
             <Input
               value={value.availableCurrencies?.join(", ") || ""}
               onChange={(e) =>
@@ -713,14 +723,14 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
             />
           </div>
           <div className="space-y-2">
-            <Label>Langue par défaut (appliquée aux nouveaux visiteurs)</Label>
+            <Label>{t("ux.bo.defaultLanguageAppliedNewVisitors")}</Label>
             <Input
               value={value.defaultLanguage || ""}
               onChange={(e) => setValue({ ...value, defaultLanguage: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Langues disponibles (codes fr/en/zh, séparées par des virgules)</Label>
+            <Label>{t("ux.bo.availableLanguagesFrEnZh")}</Label>
             <Input
               value={value.availableLanguages?.join(", ") || ""}
               onChange={(e) =>
@@ -731,13 +741,13 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
               }
             />
             <p className="text-xs text-muted-foreground">
-              Contrôle les langues proposées dans le sélecteur de langue du site.
+              {t("ux.bo.controlsLanguagesOfferedSiteS")}
             </p>
           </div>
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -745,6 +755,7 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
 }
 
 function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -754,13 +765,13 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Paramètres de réservation</CardTitle>
-        <CardDescription>Configuration des réservations</CardDescription>
+        <CardTitle>{t("ux.bo.bookingSettings")}</CardTitle>
+        <CardDescription>{t("ux.bo.bookingConfiguration")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>Délai minimum (heures)</Label>
+            <Label>{t("ux.bo.minimumLeadTimeHours")}</Label>
             <Input
               type="number"
               value={value.minAdvanceHours || 24}
@@ -768,7 +779,7 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
             />
           </div>
           <div className="space-y-2">
-            <Label>Max voyageurs par réservation</Label>
+            <Label>{t("ux.bo.maxTravelersPerBooking")}</Label>
             <Input
               type="number"
               value={value.maxGuestsPerBooking || 10}
@@ -778,8 +789,8 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
         </div>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Vérification téléphone requise</Label>
-            <p className="text-sm text-muted-foreground">Exiger la vérification du numéro</p>
+            <Label>{t("ux.bo.phoneVerificationRequired")}</Label>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.requireNumberVerification")}</p>
           </div>
           <Switch
             checked={value.requirePhoneVerification || false}
@@ -788,8 +799,8 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
         </div>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Confirmation automatique</Label>
-            <p className="text-sm text-muted-foreground">Confirmer automatiquement les réservations</p>
+            <Label>{t("ux.bo.automaticConfirmation")}</Label>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.automaticallyConfirmBookings")}</p>
           </div>
           <Switch
             checked={value.autoConfirmBookings || false}
@@ -798,7 +809,7 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -806,14 +817,15 @@ function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
 }
 
 const DEPOSIT_SERVICE_TYPES = [
-  { value: "car", label: "Location de voiture" },
-  { value: "tour", label: "Circuits" },
-  { value: "event", label: "Événements" },
-  { value: "stay", label: "Séjours" },
-  { value: "activity", label: "Activités" },
+  { value: "car", get label() { return i18n.t("ux.bo.carRental"); } },
+  { value: "tour", get label() { return i18n.t("ux.bo.tours"); } },
+  { value: "event", get label() { return i18n.t("ux.bo.events"); } },
+  { value: "stay", get label() { return i18n.t("ux.bo.stays"); } },
+  { value: "activity", get label() { return i18n.t("ux.bo.activities"); } },
 ];
 
 function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {
     depositEnabled: true,
     depositPercent: 30,
@@ -838,23 +850,23 @@ function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Paiement à la réservation</CardTitle>
-        <CardDescription>Choisissez les services qui acceptent un acompte ; l’hôtel, les vols et les trains restent exclus. Le solde est indiqué comme payable sur place.</CardDescription>
+        <CardTitle>{t("ux.bo.paymentAtBooking")}</CardTitle>
+        <CardDescription>{t("ux.bo.chooseServicesThatAcceptDeposit")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Autoriser le paiement d’un acompte</Label>
-            <p className="text-sm text-muted-foreground">Le client peut choisir acompte ou paiement intégral.</p>
+            <Label>{t("ux.bo.allowDepositPayments")}</Label>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.customerCanChooseDepositFull")}</p>
           </div>
           <Switch checked={value.depositEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, depositEnabled: checked })} />
         </div>
         <div className="max-w-xs space-y-2">
-          <Label>Pourcentage de l’acompte</Label>
+          <Label>{t("ux.bo.depositPercentage")}</Label>
           <Input type="number" min="1" max="99" value={value.depositPercent ?? 30} onChange={(e) => setValue({ ...value, depositPercent: Number(e.target.value) })} />
         </div>
         <div className="space-y-3">
-          <Label>Services éligibles</Label>
+          <Label>{t("ux.bo.eligibleServices")}</Label>
           {DEPOSIT_SERVICE_TYPES.map((item) => (
             <div key={item.value} className="flex items-center justify-between">
               <Label htmlFor={`deposit-${item.value}`}>{item.label}</Label>
@@ -864,14 +876,14 @@ function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; 
         </div>
         <div className="flex items-center justify-between border-t pt-4">
           <div className="space-y-0.5">
-            <Label>Proposer la notation après paiement</Label>
-            <p className="text-sm text-muted-foreground">Seuls les clients ayant payé peuvent noter ; les avis restent soumis à modération.</p>
+            <Label>{t("ux.bo.offerRatingAfterPayment")}</Label>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.onlyCustomersWhoHavePaid")}</p>
           </div>
           <Switch checked={value.reviewPromptEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, reviewPromptEnabled: checked })} />
         </div>
         <Button onClick={() => onSave(value)} disabled={saving || !Number.isFinite(Number(value.depositPercent)) || value.depositPercent < 1 || value.depositPercent > 99}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -879,6 +891,7 @@ function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; 
 }
 
 function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -888,14 +901,14 @@ function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Affichage des prix</CardTitle>
-        <CardDescription>Configuration de l'affichage des tarifs</CardDescription>
+        <CardTitle>{t("ux.bo.priceDisplay")}</CardTitle>
+        <CardDescription>{t("ux.bo.priceDisplaySettings")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Afficher le prix original</Label>
-            <p className="text-sm text-muted-foreground">Montrer le prix barré en cas de réduction</p>
+            <Label>{t("ux.bo.showOriginalPrice")}</Label>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.showStruckThroughPriceWhen")}</p>
           </div>
           <Switch
             checked={value.showOriginalPrice !== false}
@@ -904,14 +917,14 @@ function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label>Couleur badge promotion</Label>
+            <Label>{t("ux.bo.promotionBadgeColor")}</Label>
             <Input
               value={value.discountBadgeColor || "red"}
               onChange={(e) => setValue({ ...value, discountBadgeColor: e.target.value })}
             />
           </div>
           <div className="space-y-2">
-            <Label>Position devise (before/after)</Label>
+            <Label>{t("ux.bo.currencyPositionBeforeAfter")}</Label>
             <Input
               value={value.currencyPosition || "after"}
               onChange={(e) => setValue({ ...value, currencyPosition: e.target.value })}
@@ -920,7 +933,7 @@ function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>
@@ -928,6 +941,7 @@ function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
 }
 
 function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(config?.config_value || {});
 
   useEffect(() => {
@@ -937,12 +951,12 @@ function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Footer</CardTitle>
-        <CardDescription>Contenu du pied de page</CardDescription>
+        <CardTitle>{t("ux.bo.footer")}</CardTitle>
+        <CardDescription>{t("ux.bo.footerContent")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Copyright</Label>
+          <Label>{t("ux.bo.copyright")}</Label>
           <Input
             value={value.copyright || ""}
             onChange={(e) => setValue({ ...value, copyright: e.target.value })}
@@ -950,8 +964,8 @@ function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
         </div>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Afficher newsletter</Label>
-            <p className="text-sm text-muted-foreground">Afficher le formulaire d'inscription</p>
+            <Label>{t("ux.bo.showNewsletter")}</Label>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.showSignUpForm")}</p>
           </div>
           <Switch
             checked={value.showNewsletter !== false}
@@ -959,7 +973,7 @@ function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
           />
         </div>
         <div className="space-y-2">
-          <Label>Titre newsletter</Label>
+          <Label>{t("ux.bo.newsletterTitle")}</Label>
           <Input
             value={value.newsletterTitle || ""}
             onChange={(e) => setValue({ ...value, newsletterTitle: e.target.value })}
@@ -967,7 +981,7 @@ function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder
+          {t("ux.bo.save")}
         </Button>
       </CardContent>
     </Card>

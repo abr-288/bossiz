@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LucideIcon, Search, ArrowRight, Lock, CreditCard, Send } from "lucide-react";
@@ -17,7 +17,7 @@ interface UnifiedSubmitButtonProps {
 
 /**
  * UnifiedSubmitButton - Bouton de soumission premium
- * Design type OTA (Opodo/Booking) avec animations fluides
+ * Design type OTA (Opodo/Booking)
  */
 export const UnifiedSubmitButton = ({
   children,
@@ -39,31 +39,29 @@ export const UnifiedSubmitButton = ({
     }
   };
 
+  const { t } = useTranslation();
   const Icon = icon || getDefaultIcon();
 
+  // Le bouton de soumission est l'action principale de l'écran : couleur
+  // `action` (jade). Le paiement garde `success` pour signaler l'étape finale.
+  // Le texte suit *-foreground, lisible dans les deux thèmes.
   const variantStyles = {
-    search: "bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl",
-    booking: "bg-gradient-to-r from-primary to-primary-light hover:from-primary/90 hover:to-primary text-white shadow-xl hover:shadow-2xl",
-    payment: "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-xl",
-    auth: "bg-primary hover:bg-primary/90 text-white shadow-lg",
-    default: "bg-primary hover:bg-primary/90 text-white shadow-lg"
+    search: "",
+    booking: "",
+    payment: "bg-success hover:bg-success/90 text-success-foreground",
+    auth: "",
+    default: "",
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: 0.1 }}
-      className={cn(!fullWidth && "inline-block")}
-    >
+    <div className={cn(!fullWidth && "inline-block")}>
       <Button
+        size="lg"
         type={onClick ? "button" : "submit"}
         disabled={disabled || loading}
         onClick={onClick}
         className={cn(
-          "h-12 font-semibold text-base",
-          "transition-all duration-300",
-          "hover:scale-[1.02] active:scale-[0.98]",
+          "font-semibold",
           fullWidth && "w-full",
           variantStyles[variant],
           className
@@ -71,16 +69,16 @@ export const UnifiedSubmitButton = ({
       >
         {loading ? (
           <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Chargement...
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
+            {t("common.loading")}
           </>
         ) : (
           <>
-            <Icon className="mr-2 h-5 w-5" />
+            <Icon className="mr-2 h-5 w-5" aria-hidden="true" />
             {children}
           </>
         )}
       </Button>
-    </motion.div>
+    </div>
   );
 };

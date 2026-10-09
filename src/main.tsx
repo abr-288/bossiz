@@ -1,4 +1,6 @@
 // Point d'entrée principal de l'application React
+// En premier : stockage de secours si le navigateur bloque localStorage.
+import "./lib/storagePolyfill";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";

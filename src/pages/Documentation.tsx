@@ -185,8 +185,10 @@ import {
   Pentagon
 } from "lucide-react";
 import heroImage from "@/assets/destination-safari.jpg";
+import { useTranslation } from "react-i18next";
 
 const Documentation = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
@@ -241,53 +243,53 @@ const Documentation = () => {
   const getDemoSteps = (feature: string) => {
     const steps: Record<string, string[]> = {
       'dashboard': [
-        'Connexion et authentification',
-        'Navigation dans le tableau de bord',
-        'Consultation des statistiques',
-        'Gestion des réservations',
-        'Personnalisation du profil'
+        t("ux.bo.loginAuthentication"),
+        t("ux.bo.navigatingDashboard"),
+        t("ux.bo.viewingStatistics"),
+        t("ux.bo.managingBookings"),
+        t("ux.bo.profileCustomization")
       ],
       'subscription': [
-        'Découverte des plans',
-        'Comparaison des tarifs',
-        'Processus de souscription',
-        'Paiement sécurisé',
-        'Confirmation et activation'
+        t("ux.bo.discoveringPlans"),
+        t("ux.bo.comparingPrices"),
+        t("ux.bo.subscriptionProcess"),
+        t("ux.bo.securePayment"),
+        t("ux.bo.confirmationActivation")
       ],
       'admin': [
-        'Accès panneau admin',
-        'Gestion des utilisateurs',
-        'Configuration système',
-        'Rapports et analytics',
-        'Maintenance et support'
+        t("ux.bo.accessingAdminPanel"),
+        t("ux.bo.userManagement"),
+        t("ux.bo.systemConfiguration"),
+        t("ux.bo.reportsAnalytics"),
+        t("ux.bo.maintenanceSupport")
       ],
       'booking': [
-        'Recherche de destinations',
-        'Sélection des dates et options',
-        'Configuration des détails du voyage',
-        'Validation avec Jèko',
-        'Confirmation de réservation'
+        t("ux.bo.searchingDestinations"),
+        t("ux.bo.choosingDatesOptions"),
+        t("ux.bo.settingUpTripDetails"),
+        t("ux.bo.confirmingJKo"),
+        t("ux.bo.bookingConfirmation")
       ],
       'profile': [
-        'Accès au profil utilisateur',
-        'Mise à jour des informations',
-        'Configuration des préférences',
-        'Gestion des méthodes de paiement',
-        'Historique des activités'
+        t("ux.bo.accessingUserProfile"),
+        t("ux.bo.updatingInformation"),
+        t("ux.bo.settingPreferences"),
+        t("ux.bo.managingPaymentMethods"),
+        t("ux.bo.activityHistory")
       ],
       'support': [
-        'Accès au centre d\'aide',
-        'Navigation dans la FAQ',
-        'Contact avec le support',
-        'Suivi des tickets',
-        'Accès aux ressources'
+        t("ux.bo.accessHelpCenter"),
+        t("ux.bo.browsingFaq"),
+        t("ux.bo.contactingSupport"),
+        t("ux.bo.trackingTickets"),
+        t("ux.bo.accessingResources")
       ],
       'mobile': [
-        'Interface responsive mobile',
-        'Navigation tactile optimisée',
-        'Fonctionnalités mobiles',
-        'Notifications push',
-        'Expérience utilisateur mobile'
+        t("ux.bo.responsiveMobile"),
+        t("ux.bo.optimizedTouchNavigation"),
+        t("ux.bo.mobileFeatures"),
+        t("ux.bo.pushNotifications"),
+        t("ux.bo.mobileUserExperience")
       ]
     };
     return steps[feature] || [];
@@ -308,13 +310,13 @@ const Documentation = () => {
 
   const getFeatureTitle = (feature: string) => {
     const titles: Record<string, string> = {
-      'dashboard': 'Tableau de Bord',
-      'subscription': 'Abonnements',
-      'admin': 'Administration',
-      'booking': 'Réservations',
-      'profile': 'Profil',
-      'support': 'Support',
-      'mobile': 'Mobile'
+      'dashboard': t("ux.bo.dashboard"),
+      'subscription': t("ux.bo.subscriptions"),
+      'admin': t("ux.bo.administration"),
+      'booking': t("ux.bo.bookings"),
+      'profile': t("ux.bo.profile"),
+      'support': t("ux.bo.support"),
+      'mobile': t("ux.bo.mobile")
     };
     return titles[feature] || feature;
   };
@@ -335,157 +337,157 @@ const Documentation = () => {
   const getLivePreview = (feature: string, step: number) => {
     const previews: Record<string, React.ReactNode[]> = {
       'dashboard': [
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-info/10 rounded-full flex items-center justify-center">
+              <User className="w-6 h-6 text-info" />
             </div>
             <div>
-              <h4 className="font-semibold">Connexion réussie</h4>
-              <p className="text-sm text-gray-600">Bienvenue sur votre espace</p>
+              <h4 className="font-semibold">{t("ux.bo.logged")}</h4>
+              <p className="text-sm text-muted-foreground">{t("ux.bo.welcomeSpace")}</p>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="flex gap-2 mb-4">
             <Button variant="ghost" size="sm"><BarChart3 className="w-4 h-4" /></Button>
             <Button variant="ghost" size="sm"><Users className="w-4 h-4" /></Button>
             <Button variant="ghost" size="sm"><Calendar className="w-4 h-4" /></Button>
           </div>
-          <p className="text-sm text-gray-600">Navigation intuitive entre les sections</p>
+          <p className="text-sm text-muted-foreground">{t("ux.bo.intuitiveNavigationBetweenSections")}</p>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">156</div>
-              <div className="text-sm text-gray-600">Réservations</div>
+              <div className="text-2xl font-bold text-info">156</div>
+              <div className="text-sm text-muted-foreground">{t("ux.bo.bookings")}</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">€12,450</div>
-              <div className="text-sm text-gray-600">Revenus</div>
+              <div className="text-2xl font-bold text-success">€12,450</div>
+              <div className="text-sm text-muted-foreground">{t("ux.bo.revenue")}</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">4.8</div>
-              <div className="text-sm text-gray-600">Note</div>
+              <div className="text-2xl font-bold text-primary">4.8</div>
+              <div className="text-sm text-muted-foreground">Note</div>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-              <span className="text-sm">Réservation #1234</span>
-              <Badge variant="secondary">En cours</Badge>
+            <div className="flex justify-between items-center p-2 bg-muted rounded">
+              <span className="text-sm">{t("ux.bo.booking1234")}</span>
+              <Badge variant="secondary">{t("ux.bo.progress")}</Badge>
             </div>
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-              <span className="text-sm">Réservation #1235</span>
-              <Badge variant="outline">Confirmée</Badge>
+            <div className="flex justify-between items-center p-2 bg-muted rounded">
+              <span className="text-sm">{t("ux.bo.booking1235")}</span>
+              <Badge variant="outline">{t("ux.bo.confirmed")}</Badge>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <User className="w-8 h-8 text-gray-600" />
+              <User className="w-8 h-8 text-muted-foreground" />
               <div>
                 <h4 className="font-semibold">Jean Dupont</h4>
-                <p className="text-sm text-gray-600">jean.dupont@email.com</p>
+                <p className="text-sm text-muted-foreground">jean.dupont@email.com</p>
               </div>
             </div>
           </div>
         </div>
       ],
       'booking': [
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <input 
                 type="text" 
-                placeholder="Rechercher une destination..." 
+                placeholder={t("ux.bo.searchDestination")} 
                 className="w-full pl-10 pr-4 py-2 border rounded-lg"
               />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="p-3 border rounded-lg text-center">
-                <Plane className="w-6 h-6 mx-auto mb-1 text-blue-600" />
+                <Plane className="w-6 h-6 mx-auto mb-1 text-info" />
                 <div className="text-sm font-medium">Paris</div>
               </div>
               <div className="p-3 border rounded-lg text-center">
-                <Plane className="w-6 h-6 mx-auto mb-1 text-blue-600" />
+                <Plane className="w-6 h-6 mx-auto mb-1 text-info" />
                 <div className="text-sm font-medium">Londres</div>
               </div>
               <div className="p-3 border rounded-lg text-center">
-                <Plane className="w-6 h-6 mx-auto mb-1 text-blue-600" />
+                <Plane className="w-6 h-6 mx-auto mb-1 text-info" />
                 <div className="text-sm font-medium">New York</div>
               </div>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Date de départ</label>
+              <label className="block text-sm font-medium mb-1">{t("ux.bo.departureDate")}</label>
               <input type="date" className="w-full p-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Date de retour</label>
+              <label className="block text-sm font-medium mb-1">{t("ux.bo.returnDate")}</label>
               <input type="date" className="w-full p-2 border rounded" />
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-gray-600" />
+              <Users className="w-5 h-5 text-muted-foreground" />
               <span className="text-sm">2 voyageurs</span>
             </div>
             <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-gray-600" />
+              <Calendar className="w-5 h-5 text-muted-foreground" />
               <span className="text-sm">7 nuits</span>
             </div>
             <div className="flex items-center gap-3">
-              <Star className="w-5 h-5 text-gray-600" />
+              <Star className="w-5 h-5 text-muted-foreground" />
               <span className="text-sm">Premium</span>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center mb-4">
-            <CreditCard className="w-12 h-12 mx-auto mb-2 text-blue-600" />
-            <h4 className="font-semibold">Paiement Jèko</h4>
+            <CreditCard className="w-12 h-12 mx-auto mb-2 text-info" />
+            <h4 className="font-semibold">{t("ux.bo.jKoPayment")}</h4>
           </div>
           <div className="space-y-2">
-            <input type="text" placeholder="Numéro de carte" className="w-full p-2 border rounded" />
+            <input type="text" placeholder={t("ux.bo.cardNumber")} className="w-full p-2 border rounded" />
             <div className="grid grid-cols-2 gap-2">
-              <input type="text" placeholder="MM/AA" className="p-2 border rounded" />
+              <input type="text" placeholder={t("ux.bo.mmYy")} className="p-2 border rounded" />
               <input type="text" placeholder="CVV" className="p-2 border rounded" />
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center">
-            <CheckCircle className="w-16 h-16 mx-auto mb-4 text-green-600" />
-            <h4 className="font-semibold text-green-600">Réservation confirmée!</h4>
-            <p className="text-sm text-gray-600">Votre voyage a été réservé avec succès</p>
+            <CheckCircle className="w-16 h-16 mx-auto mb-4 text-success" />
+            <h4 className="font-semibold text-success">{t("ux.bo.bookingConfirmed")}</h4>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.tripHasBeenBookedSuccessfully")}</p>
           </div>
         </div>
       ],
       'profile': [
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="w-8 h-8 text-gray-600" />
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+              <User className="w-8 h-8 text-muted-foreground" />
             </div>
             <div>
-              <h4 className="font-semibold">Mon Profil</h4>
-              <p className="text-sm text-gray-600">Gérez vos informations personnelles</p>
+              <h4 className="font-semibold">{t("ux.bo.myProfile")}</h4>
+              <p className="text-sm text-muted-foreground">{t("ux.bo.managePersonalInformation")}</p>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Nom complet</label>
+              <label className="block text-sm font-medium mb-1">{t("ux.bo.fullName")}</label>
               <input type="text" defaultValue="Jean Dupont" className="w-full p-2 border rounded" />
             </div>
             <div>
@@ -494,148 +496,148 @@ const Documentation = () => {
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Notifications email</span>
-              <Button variant="outline" size="sm">Activer</Button>
+              <span className="text-sm">{t("ux.bo.emailNotifications")}</span>
+              <Button variant="outline" size="sm">{t("ux.bo.enable")}</Button>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Newsletter</span>
-              <Button variant="outline" size="sm">Désactiver</Button>
+              <Button variant="outline" size="sm">{t("ux.bo.disable")}</Button>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-2">
             <div className="flex items-center gap-3 p-2 border rounded">
-              <CreditCard className="w-5 h-5 text-blue-600" />
+              <CreditCard className="w-5 h-5 text-info" />
               <span className="text-sm">••••• 4242</span>
             </div>
-            <Button variant="outline" className="w-full">Ajouter une méthode</Button>
+            <Button variant="outline" className="w-full">{t("ux.bo.addMethod")}</Button>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-              <span className="text-sm">Connexion le 15/04/2026</span>
-              <Badge variant="secondary">Récent</Badge>
+            <div className="flex justify-between items-center p-2 bg-muted rounded">
+              <span className="text-sm">{t("ux.bo.logged15042026")}</span>
+              <Badge variant="secondary">{t("ux.bo.recent")}</Badge>
             </div>
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-              <span className="text-sm">Réservation #1234</span>
-              <Badge variant="outline">Confirmée</Badge>
+            <div className="flex justify-between items-center p-2 bg-muted rounded">
+              <span className="text-sm">{t("ux.bo.booking1234")}</span>
+              <Badge variant="outline">{t("ux.bo.confirmed")}</Badge>
             </div>
           </div>
         </div>
       ],
       'support': [
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center">
-            <HelpCircle className="w-12 h-12 mx-auto mb-4 text-blue-600" />
-            <h4 className="font-semibold">Centre d'Aide</h4>
-            <p className="text-sm text-gray-600">Trouvez des réponses à vos questions</p>
+            <HelpCircle className="w-12 h-12 mx-auto mb-4 text-info" />
+            <h4 className="font-semibold">{t("ux.bo.helpCenter")}</h4>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.findAnswersQuestions")}</p>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-3">
             <div className="p-3 border rounded-lg">
-              <h5 className="font-medium mb-1">Comment réserver?</h5>
-              <p className="text-sm text-gray-600">Guide complet de réservation...</p>
+              <h5 className="font-medium mb-1">{t("ux.bo.howDoIBook")}</h5>
+              <p className="text-sm text-muted-foreground">{t("ux.bo.completeBookingGuide")}</p>
             </div>
             <div className="p-3 border rounded-lg">
-              <h5 className="font-medium mb-1">Modes de paiement</h5>
-              <p className="text-sm text-gray-600">Jèko, carte bancaire...</p>
+              <h5 className="font-medium mb-1">{t("ux.bo.paymentMethods")}</h5>
+              <p className="text-sm text-muted-foreground">{t("ux.bo.jKoBankCard")}</p>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
             <textarea 
-              placeholder="Décrivez votre problème..." 
+              placeholder={t("ux.bo.describeProblem")} 
               className="w-full p-3 border rounded-lg h-24"
             />
-            <Button className="w-full">Envoyer la demande</Button>
+            <Button className="w-full">{t("ux.bo.sendRequest")}</Button>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div className="flex justify-between items-center p-2 bg-muted rounded">
               <span className="text-sm">Ticket #001</span>
-              <Badge variant="secondary">En cours</Badge>
+              <Badge variant="secondary">{t("ux.bo.progress")}</Badge>
             </div>
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div className="flex justify-between items-center p-2 bg-muted rounded">
               <span className="text-sm">Ticket #002</span>
-              <Badge variant="outline">Résolu</Badge>
+              <Badge variant="outline">{t("ux.bo.resolved")}</Badge>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 border rounded-lg text-center">
-              <Book className="w-6 h-6 mx-auto mb-1 text-blue-600" />
+              <Book className="w-6 h-6 mx-auto mb-1 text-info" />
               <div className="text-sm">Documentation</div>
             </div>
             <div className="p-3 border rounded-lg text-center">
-              <Video className="w-6 h-6 mx-auto mb-1 text-blue-600" />
-              <div className="text-sm">Tutoriels</div>
+              <Video className="w-6 h-6 mx-auto mb-1 text-info" />
+              <div className="text-sm">{t("ux.bo.tutorials")}</div>
             </div>
           </div>
         </div>
       ],
       'mobile': [
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center">
-            <Smartphone className="w-12 h-12 mx-auto mb-4 text-blue-600" />
-            <h4 className="font-semibold">Application Mobile</h4>
-            <p className="text-sm text-gray-600">Interface optimisée mobile</p>
+            <Smartphone className="w-12 h-12 mx-auto mb-4 text-info" />
+            <h4 className="font-semibold">{t("ux.bo.mobileApp")}</h4>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.mobileOptimizedInterface")}</p>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="grid grid-cols-4 gap-2">
             <Button variant="ghost" size="sm"><Home className="w-4 h-4" /></Button>
             <Button variant="ghost" size="sm"><Search className="w-4 h-4" /></Button>
             <Button variant="ghost" size="sm"><Calendar className="w-4 h-4" /></Button>
             <Button variant="ghost" size="sm"><User className="w-4 h-4" /></Button>
           </div>
-          <p className="text-sm text-gray-600 mt-2">Navigation tactile intuitive</p>
+          <p className="text-sm text-muted-foreground mt-2">{t("ux.bo.intuitiveTouchNavigation")}</p>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-3">
-            <div className="p-3 bg-blue-50 rounded-lg">
+            <div className="p-3 bg-info/10 rounded-lg">
               <div className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-blue-600" />
-                <span className="text-sm">Nouvelle réservation confirmée</span>
+                <Bell className="w-5 h-5 text-info" />
+                <span className="text-sm">{t("ux.bo.newBookingConfirmed")}</span>
               </div>
             </div>
-            <div className="p-3 bg-green-50 rounded-lg">
+            <div className="p-3 bg-success/10 rounded-lg">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-sm">Paiement réussi</span>
+                <CheckCircle className="w-5 h-5 text-success" />
+                <span className="text-sm">{t("ux.bo.paymentSuccessful")}</span>
               </div>
             </div>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center">
-            <div className="w-16 h-16 bg-gray-200 rounded-lg mx-auto mb-4 flex items-center justify-center">
-              <Fingerprint className="w-8 h-8 text-gray-600" />
+            <div className="w-16 h-16 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
+              <Fingerprint className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h4 className="font-semibold">Authentification biométrique</h4>
-            <p className="text-sm text-gray-600">Connexion sécurisée rapide</p>
+            <h4 className="font-semibold">{t("ux.bo.biometricAuthentication")}</h4>
+            <p className="text-sm text-muted-foreground">{t("ux.bo.fastSecureLogin")}</p>
           </div>
         </div>,
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-2">
-                <Wifi className="w-5 h-5 text-green-600" />
-                <span className="text-sm">Connecté</span>
+                <Wifi className="w-5 h-5 text-success" />
+                <span className="text-sm">{t("ux.bo.logged2")}</span>
               </div>
               <Badge variant="secondary">4G</Badge>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-2">
-                <Battery className="w-5 h-5 text-green-600" />
+                <Battery className="w-5 h-5 text-success" />
                 <span className="text-sm">85%</span>
               </div>
             </div>
@@ -649,13 +651,13 @@ const Documentation = () => {
     }
     
     return (
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-card p-6 rounded-lg shadow-lg">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <Play className="w-8 h-8 text-gray-600" />
+          <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4 flex items-center justify-center">
+            <Play className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h4 className="font-semibold">Aperçu en direct</h4>
-          <p className="text-sm text-gray-600">Découvrez cette fonctionnalité</p>
+          <h4 className="font-semibold">{t("ux.bo.livePreview")}</h4>
+          <p className="text-sm text-muted-foreground">{t("ux.bo.discoverFeature")}</p>
         </div>
       </div>
     );
@@ -664,43 +666,43 @@ const Documentation = () => {
   const getStepDescription = (feature: string, step: number) => {
     const descriptions: Record<string, string[]> = {
       'dashboard': [
-        "Connectez-vous avec votre email et mot de passe pour accéder à votre espace personnel sécurisé.",
-        "Utilisez le menu latéral intuitif pour naviguer entre les différentes sections de votre tableau de bord.",
-        "Consultez vos statistiques de réservations, vos revenus et vos activités récentes en temps réel.",
-        "Gérez facilement vos réservations en cours et passez de nouvelles commandes en quelques clics.",
-        "Personnalisez votre profil, configurez vos préférences et gérez vos paramètres de compte."
+        t("ux.bo.logEmailPasswordAccessSecure"),
+        t("ux.bo.useIntuitiveSideMenuMove"),
+        t("ux.bo.viewBookingStatisticsRevenueRecent"),
+        t("ux.bo.easilyManageCurrentBookingsPlace"),
+        t("ux.bo.customizeProfileSetPreferencesManage")
       ],
       'booking': [
-        "Recherchez parmi des centaines de destinations disponibles avec notre moteur de recherche avancé.",
-        "Sélectionnez vos dates de voyage, le nombre de voyageurs et vos préférences de vol.",
-        "Personnalisez votre voyage avec des options supplémentaires et des services premium.",
-        "Payez en toute sécurité avec Jèko ou votre carte bancaire préférée.",
-        "Recevez une confirmation instantanée avec tous les détails de votre réservation."
+        t("ux.bo.searchHundredsAvailableDestinationsOur"),
+        t("ux.bo.selectTravelDatesNumberTravelers"),
+        t("ux.bo.customizeTripExtraOptionsPremium"),
+        t("ux.bo.paySecurelyJKoPreferred"),
+        t("ux.bo.getInstantConfirmationAllDetails")
       ],
       'profile': [
-        "Accédez à votre profil personnel pour gérer toutes vos informations en un seul endroit.",
-        "Mettez à jour vos coordonnées, informations de paiement et préférences de voyage.",
-        "Configurez vos notifications, alertes et paramètres de confidentialité selon vos besoins.",
-        "Ajoutez, modifiez ou supprimez vos méthodes de paiement en toute sécurité.",
-        "Consultez l'historique complet de vos activités, réservations et transactions."
+        t("ux.bo.accessPersonalProfileManageAll"),
+        t("ux.bo.updateContactDetailsPaymentInformation"),
+        t("ux.bo.setNotificationsAlertsPrivacySettings"),
+        t("ux.bo.addEditRemovePaymentMethods"),
+        t("ux.bo.viewFullHistoryActivitiesBookings")
       ],
       'support': [
-        "Accédez à notre centre d'aide complet avec des guides et tutoriels détaillés.",
-        "Parcourez notre FAQ organisée par catégories pour trouver rapidement des réponses.",
-        "Contactez notre support technique 24/7 par chat, email ou téléphone.",
-        "Suivez l'état de vos demandes d'assistance en temps réel.",
-        "Accédez à une riche bibliothèque de ressources vidéo et documentation."
+        t("ux.bo.accessOurCompleteHelpCenter"),
+        t("ux.bo.browseOurFaqOrganizedCategory"),
+        t("ux.bo.contactOurTechnicalSupport24"),
+        t("ux.bo.trackStatusSupportRequestsReal"),
+        t("ux.bo.accessRichLibraryVideoResources")
       ],
       'mobile': [
-        "Profitez d'une interface parfaitement adaptée aux écrans mobiles et tablettes.",
-        "Naviguez facilement avec des gestes intuitifs et une optimisation tactile.",
-        "Accédez à toutes les fonctionnalités de la plateforme où que vous soyez.",
-        "Recevez des notifications push pour rester informé des importantes mises à jour.",
-        "Vivez une expérience utilisateur fluide et rapide sur tous vos appareils mobiles."
+        t("ux.bo.enjoyInterfacePerfectlySuitedMobile"),
+        t("ux.bo.navigateEasilyIntuitiveGesturesTouch"),
+        t("ux.bo.accessEveryFeaturePlatformWherever"),
+        t("ux.bo.getPushNotificationsStayInformed"),
+        t("ux.bo.enjoySmoothFastUserExperience")
       ]
     };
     
-    return descriptions[feature]?.[step] || "Découvrez cette fonctionnalité passionnante.";
+    return descriptions[feature]?.[step] || t("ux.bo.discoverExcitingFeature");
   };
 
   useEffect(() => {
@@ -711,11 +713,11 @@ const Documentation = () => {
   }, [currentDemoStep, selectedFeature]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
+      <div className="relative bg-gradient-to-br from-primary via-primary/80 to-primary/80 text-primary-foreground overflow-hidden">
         <img src={heroImage} alt="Master Traversee Connect" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/85 via-purple-600/85 to-indigo-700/85" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand/85 via-brand/70 to-brand/85" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="flex justify-center mb-6">
@@ -723,11 +725,11 @@ const Documentation = () => {
                 <Rocket className="w-16 h-16 text-white" />
               </div>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-card">
               Master Traversee Connect
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Explorez notre plateforme à travers une démo interactive immersive
+              {t("ux.bo.exploreOurPlatformThroughImmersive")}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
@@ -736,7 +738,7 @@ const Documentation = () => {
               </div>
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                 <Target className="w-5 h-5" />
-                <span>40+ étapes</span>
+                <span>{t("ux.bo.n40Steps")}</span>
               </div>
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                 <Award className="w-5 h-5" />
@@ -748,24 +750,24 @@ const Documentation = () => {
       </div>
 
       {/* Navigation Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+      <div className="bg-card border-b border-border sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Book className="w-6 h-6 text-blue-600" />
+              <div className="p-2 bg-info/10 rounded-lg">
+                <Book className="w-6 h-6 text-info" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Centre de Formation</h2>
-                <p className="text-sm text-gray-500">Apprentissage interactif</p>
+                <h2 className="text-xl font-bold text-foreground">{t("ux.bo.trainingCenter")}</h2>
+                <p className="text-sm text-muted-foreground">{t("ux.bo.interactiveLearning")}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={() => navigate('/')} className="flex items-center gap-2 hover:bg-gray-50">
+              <Button variant="outline" onClick={() => navigate('/')} className="flex items-center gap-2 hover:bg-muted">
                 <Home className="w-4 h-4" />
-                Accueil
+                {t("ux.bo.home")}
               </Button>
-              <Button onClick={() => navigate('/admin')} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+              <Button onClick={() => navigate('/admin')} className="flex items-center gap-2 bg-info hover:bg-info/90">
                 <Settings className="w-4 h-4" />
                 Admin
               </Button>
@@ -778,94 +780,94 @@ const Documentation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Start Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Rocket className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Tour Rapide</h3>
-              <p className="text-blue-100 mb-4">Découvrez les fonctionnalités essentielles en 5 minutes</p>
+              <h3 className="text-xl font-bold mb-2">{t("ux.bo.quickTour")}</h3>
+              <p className="text-blue-100 mb-4">{t("ux.bo.discoverEssentialFeatures5Minutes")}</p>
               <Button 
                 size="sm" 
                 variant="secondary" 
-                className="bg-white text-blue-600 hover:bg-blue-50"
+                className="bg-card text-info hover:bg-info/10"
                 onClick={() => startDemo('dashboard')}
               >
-                Commencer
+                {t("ux.bo.start")}
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Tour Complet</h3>
-              <p className="text-purple-100 mb-4">Explorez toutes les fonctionnalités en détail</p>
+              <h3 className="text-xl font-bold mb-2">{t("ux.bo.fullTour")}</h3>
+              <p className="text-purple-100 mb-4">{t("ux.bo.exploreEveryFeatureDetail")}</p>
               <Button 
                 size="sm" 
                 variant="secondary" 
-                className="bg-white text-purple-600 hover:bg-purple-50"
+                className="bg-card text-primary hover:bg-primary/10"
                 onClick={() => startDemo('complete-tour')}
               >
-                Lancer le Tour
+                {t("ux.bo.startTour")}
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-green-500 to-green-600 text-white">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-success to-success/80 text-success-foreground">
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Module Libre</h3>
-              <p className="text-green-100 mb-4">Choisissez votre module d'apprentissage</p>
+              <h3 className="text-xl font-bold mb-2">{t("ux.bo.freeModule")}</h3>
+              <p className="text-green-100 mb-4">{t("ux.bo.chooseLearningModule")}</p>
               <Button 
                 size="sm" 
                 variant="secondary" 
-                className="bg-white text-green-600 hover:bg-green-50"
+                className="bg-card text-success hover:bg-success/10"
                 onClick={() => document.getElementById('module-selection')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                Explorer
+                {t("ux.bo.explore")}
               </Button>
             </CardContent>
           </Card>
         </div>
 
         {/* Module Selection Section */}
-        <div id="module-selection" className="bg-white rounded-2xl shadow-xl p-8 mb-12">
+        <div id="module-selection" className="bg-card rounded-2xl shadow-xl p-8 mb-12">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Modules d'Apprentissage</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Choisissez un module spécifique pour explorer en détail ou lancez le tour complet pour une expérience complète
+            <h2 className="text-3xl font-bold text-foreground mb-4">{t("ux.bo.learningModules")}</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              {t("ux.bo.chooseSpecificModuleExploreDetail")}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { id: 'dashboard', title: 'Tableau de Bord', icon: BarChart3, color: 'blue', description: 'Gestion principale' },
-              { id: 'booking', title: 'Réservations', icon: Calendar, color: 'purple', description: 'Voyages et séjours' },
-              { id: 'subscription', title: 'Abonnements', icon: CreditCard, color: 'green', description: 'Plans tarifaires' },
-              { id: 'profile', title: 'Profil', icon: User, color: 'indigo', description: 'Gestion personnelle' },
-              { id: 'support', title: 'Support', icon: HelpCircle, color: 'orange', description: 'Aide et assistance' },
-              { id: 'admin', title: 'Administration', icon: Settings, color: 'red', description: 'Configuration' },
-              { id: 'mobile', title: 'Mobile', icon: Smartphone, color: 'pink', description: 'Application mobile' }
+              { id: 'dashboard', title: t("ux.bo.dashboard2"), icon: BarChart3, color: 'blue', description: t("ux.bo.mainManagement") },
+              { id: 'booking', title: t("ux.bo.bookings"), icon: Calendar, color: 'purple', description: t("ux.bo.tripsStays") },
+              { id: 'subscription', title: t("ux.bo.subscriptions"), icon: CreditCard, color: 'green', description: t("ux.bo.pricingPlans") },
+              { id: 'profile', title: t("ux.bo.profile"), icon: User, color: 'indigo', description: t("ux.bo.personalManagement") },
+              { id: 'support', title: t("ux.bo.support"), icon: HelpCircle, color: 'orange', description: t("ux.bo.helpSupport") },
+              { id: 'admin', title: t("ux.bo.administration"), icon: Settings, color: 'red', description: 'Configuration' },
+              { id: 'mobile', title: t("ux.bo.mobile"), icon: Smartphone, color: 'pink', description: t("ux.bo.mobileApp2") }
             ].map((module) => (
               <Dialog key={module.id}>
                 <DialogTrigger asChild>
                   <Button 
                     variant="outline" 
-                    className="h-32 flex flex-col gap-3 hover:scale-105 transition-all duration-300 border-2 hover:border-blue-400 bg-white hover:bg-blue-50 group"
+                    className="h-32 flex flex-col gap-3 hover:scale-105 transition-all duration-slow ease-standard border-2 hover:border-info/50 bg-card hover:bg-info/10 group"
                     onClick={() => setSelectedFeature(module.id)}
                   >
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-300 transition-colors">
-                      <module.icon className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-muted/40 to-muted/20 rounded-xl flex items-center justify-center group-hover:from-info/20 group-hover:to-info/30 transition-colors">
+                      <module.icon className="w-6 h-6 text-info" />
                     </div>
                     <div className="text-center">
-                      <span className="text-sm font-semibold text-gray-900">{module.title}</span>
-                      <p className="text-xs text-gray-500 mt-1">{module.description}</p>
+                      <span className="text-sm font-semibold text-foreground">{module.title}</span>
+                      <p className="text-xs text-muted-foreground mt-1">{module.description}</p>
                     </div>
-                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                    <Badge variant="secondary" className="text-xs bg-info/10 text-info">
                       {getDemoSteps(module.id).length} étapes
                     </Badge>
                   </Button>
@@ -881,7 +883,7 @@ const Documentation = () => {
                   <div className="space-y-6">
                     {/* Progress Bar */}
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm text-gray-600">
+                      <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Étape {currentDemoStep + 1} sur {getDemoSteps(module.id).length}</span>
                         <span>{Math.round(demoProgress)}%</span>
                       </div>
@@ -889,15 +891,15 @@ const Documentation = () => {
                     </div>
 
                     {/* Demo Content */}
-                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 min-h-[400px]">
+                    <div className="bg-gradient-to-br from-muted/40 to-muted/20 rounded-xl p-8 min-h-[400px]">
                       <div className="text-center">
                         <div className="mb-6">
                           {getFeatureIcon(module.id)}
                         </div>
-                        <h3 className="text-2xl font-bold mb-4 text-gray-800">
-                          {getDemoSteps(module.id)[currentDemoStep] || 'Démo terminée'}
+                        <h3 className="text-2xl font-bold mb-4 text-foreground">
+                          {getDemoSteps(module.id)[currentDemoStep] || t("ux.bo.demoComplete")}
                         </h3>
-                        <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                        <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                           {getStepDescription(module.id, currentDemoStep)}
                         </p>
                         
@@ -918,7 +920,7 @@ const Documentation = () => {
                           disabled={currentDemoStep === 0}
                         >
                           <SkipBack className="w-4 h-4 mr-1" />
-                          Précédent
+                          {t("ux.bo.previous")}
                         </Button>
                         <Button 
                           variant="outline" 
@@ -934,7 +936,7 @@ const Documentation = () => {
                           onClick={nextDemoStep}
                           disabled={currentDemoStep >= getDemoSteps(module.id).length - 1}
                         >
-                          Suivant
+                          {t("ux.bo.next")}
                           <SkipForward className="w-4 h-4 ml-1" />
                         </Button>
                       </div>
@@ -953,7 +955,7 @@ const Documentation = () => {
                           onClick={() => navigate(getFeatureRoute(module.id))}
                         >
                           <ExternalLink className="w-4 h-4 mr-1" />
-                          Accéder
+                          {t("ux.bo.open")}
                         </Button>
                       </div>
                     </div>
@@ -962,11 +964,11 @@ const Documentation = () => {
                     {module.id !== 'complete-tour' && (
                       <div className="text-center mt-6">
                         <Button 
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                          className="bg-action hover:bg-action-hover"
                           onClick={() => startDemo('complete-tour')}
                         >
                           <Rocket className="w-4 h-4 mr-2" />
-                          Lancer le Tour Complet
+                          {t("ux.bo.startFullTour")}
                         </Button>
                       </div>
                     )}
@@ -978,82 +980,82 @@ const Documentation = () => {
         </div>
 
         {/* Complete Site Tour Section */}
-        <Card className="border-0 shadow-xl bg-gradient-to-br from-indigo-50 to-purple-50">
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-muted/40 to-muted/20">
           <CardContent className="p-8">
             <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <Globe className="w-10 h-10 text-indigo-600" />
+              <div className="w-20 h-20 bg-card rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Globe className="w-10 h-10 text-primary" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Tour Complet du Site</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-                Maîtrisez l'ensemble de la plateforme Traversee Connect à travers une expérience d'apprentissage complète et structurée
+              <h2 className="text-3xl font-bold text-foreground mb-4">{t("ux.bo.fullSiteTour")}</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+                {t("ux.bo.masterWholeTraverseeConnectPlatform")}
               </p>
               
               <div className="flex flex-wrap justify-center gap-6 mb-8">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-indigo-600 mb-1">8</div>
-                  <div className="text-sm text-gray-600">Modules</div>
+                  <div className="text-3xl font-bold text-primary mb-1">8</div>
+                  <div className="text-sm text-muted-foreground">Modules</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600 mb-1">40+</div>
-                  <div className="text-sm text-gray-600">Étapes</div>
+                  <div className="text-3xl font-bold text-primary mb-1">40+</div>
+                  <div className="text-sm text-muted-foreground">{t("ux.bo.steps")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-pink-600 mb-1">15-20</div>
-                  <div className="text-sm text-gray-600">Minutes</div>
+                  <div className="text-sm text-muted-foreground">{t("ux.bo.minutes")}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-1">100%</div>
-                  <div className="text-sm text-gray-600">Pratique</div>
+                  <div className="text-3xl font-bold text-success mb-1">100%</div>
+                  <div className="text-sm text-muted-foreground">{t("ux.bo.practice")}</div>
                 </div>
               </div>
 
               <Button 
                 size="lg"
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
                 onClick={() => startDemo('complete-tour')}
               >
                 <Rocket className="w-5 h-5 mr-2" />
-                Commencer le Tour Complet
+                {t("ux.bo.startFullTour2")}
               </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {[
-                { icon: BarChart3, title: 'Tableau de Bord', description: 'Gestion principale et statistiques' },
-                { icon: Calendar, title: 'Réservations', description: 'Booking et voyages' },
-                { icon: CreditCard, title: 'Abonnements', description: 'Plans et paiement' },
-                { icon: User, title: 'Profil', description: 'Gestion personnelle' },
-                { icon: HelpCircle, title: 'Support', description: 'Aide et assistance' },
-                { icon: Settings, title: 'Administration', description: 'Configuration système' },
-                { icon: Smartphone, title: 'Mobile', description: 'Application mobile' }
+                { icon: BarChart3, title: t("ux.bo.dashboard2"), description: t("ux.bo.mainManagementStatistics") },
+                { icon: Calendar, title: t("ux.bo.bookings"), description: t("ux.bo.bookingTrips") },
+                { icon: CreditCard, title: t("ux.bo.subscriptions"), description: t("ux.bo.plansPayment") },
+                { icon: User, title: t("ux.bo.profile"), description: t("ux.bo.personalManagement") },
+                { icon: HelpCircle, title: t("ux.bo.support"), description: t("ux.bo.helpSupport") },
+                { icon: Settings, title: t("ux.bo.administration"), description: t("ux.bo.systemConfiguration") },
+                { icon: Smartphone, title: t("ux.bo.mobile"), description: t("ux.bo.mobileApp2") }
               ].map((item, index) => (
-                <div key={index} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div key={index} className="bg-card p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                      <item.icon className="w-5 h-5 text-indigo-600" />
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <item.icon className="w-5 h-5 text-primary" />
                     </div>
-                    <h4 className="font-semibold text-gray-900">{item.title}</h4>
+                    <h4 className="font-semibold text-foreground">{item.title}</h4>
                   </div>
-                  <p className="text-sm text-gray-600">{item.description}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
                 </div>
               ))}
             </div>
 
-            <div className="bg-white rounded-xl p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Bénéfices du Tour Complet</h3>
+            <div className="bg-card rounded-xl p-6">
+              <h3 className="text-xl font-bold text-foreground mb-4">{t("ux.bo.benefitsFullTour")}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { icon: CheckCircle, title: 'Maîtrise Complète', description: 'Découvrez toutes les fonctionnalités en profondeur' },
-                  { icon: Award, title: 'Certification', description: 'Obtenez une certification de maîtrise' },
-                  { icon: TrendingUp, title: 'Productivité', description: 'Optimisez votre utilisation de la plateforme' },
-                  { icon: Users, title: 'Confiance', description: 'Gagnez en autonomie et confiance' }
+                  { icon: CheckCircle, title: t("ux.bo.fullMastery"), description: t("ux.bo.discoverEveryFeatureDepth") },
+                  { icon: Award, title: 'Certification', description: t("ux.bo.earnMasteryCertificate") },
+                  { icon: TrendingUp, title: t("ux.bo.productivity"), description: t("ux.bo.getMostOutPlatform") },
+                  { icon: Users, title: t("ux.bo.confidence"), description: t("ux.bo.gainAutonomyConfidence") }
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <benefit.icon className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <benefit.icon className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">{benefit.title}</h4>
-                      <p className="text-sm text-gray-600">{benefit.description}</p>
+                      <h4 className="font-semibold text-foreground mb-1">{benefit.title}</h4>
+                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
                     </div>
                   </div>
                 ))}
@@ -1067,28 +1069,28 @@ const Documentation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-            <TabsTrigger value="features">Fonctionnalités</TabsTrigger>
+            <TabsTrigger value="overview">{t("ux.bo.overview")}</TabsTrigger>
+            <TabsTrigger value="features">{t("ux.bo.features")}</TabsTrigger>
             <TabsTrigger value="guides">Guides</TabsTrigger>
             <TabsTrigger value="faq">FAQ</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
             <div className="prose max-w-none">
-              <h2>Vue d'ensemble de Traversee Connect</h2>
+              <h2>{t("ux.bo.traverseeConnectOverview")}</h2>
               <p>
                 Traversee Connect est une plateforme complète de gestion de voyages et de réservations,
-                conçue pour offrir une expérience utilisateur exceptionnelle à la fois aux voyageurs
-                et aux professionnels du tourisme.
+                {t("ux.bo.designedOfferOutstandingUserExperience")}
+                {t("ux.bo.tourismProfessionals")}
               </p>
               
-              <h3>Points clés</h3>
+              <h3>{t("ux.bo.keyPoints")}</h3>
               <ul>
-                <li>Interface moderne et intuitive</li>
-                <li>Gestion complète des réservations</li>
-                <li>Système d'abonnements flexible</li>
-                <li>Support client 24/7</li>
-                <li>Application mobile native</li>
+                <li>{t("ux.bo.modernIntuitiveInterface")}</li>
+                <li>{t("ux.bo.completeBookingManagement")}</li>
+                <li>{t("ux.bo.flexibleSubscriptionSystem")}</li>
+                <li>{t("ux.bo.n247CustomerSupport")}</li>
+                <li>{t("ux.bo.nativeMobileApp")}</li>
               </ul>
             </div>
           </TabsContent>
@@ -1097,36 +1099,36 @@ const Documentation = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
-                  icon: <Calendar className="w-8 h-8 text-blue-600" />,
-                  title: "Réservations Intelligentes",
-                  description: "Système de réservation avancé avec gestion des disponibilités en temps réel"
+                  icon: <Calendar className="w-8 h-8 text-info" />,
+                  title: t("ux.bo.smartBookings"),
+                  description: t("ux.bo.advancedBookingSystemRealTime")
                 },
                 {
-                  icon: <CreditCard className="w-8 h-8 text-green-600" />,
-                  title: "Paiements Sécurisés",
-                  description: "Intégration Jèko et multiples méthodes de paiement sécurisées"
+                  icon: <CreditCard className="w-8 h-8 text-success" />,
+                  title: t("ux.bo.securePayments"),
+                  description: t("ux.bo.jKoIntegrationMultipleSecure")
                 },
                 {
-                  icon: <BarChart3 className="w-8 h-8 text-purple-600" />,
-                  title: "Tableau de Bord",
-                  description: "Analytics détaillées et statistiques en temps réel pour votre activité"
+                  icon: <BarChart3 className="w-8 h-8 text-primary" />,
+                  title: t("ux.bo.dashboard2"),
+                  description: t("ux.bo.detailedAnalyticsRealTimeStatistics")
                 },
                 {
                   icon: <Smartphone className="w-8 h-8 text-pink-600" />,
-                  title: "Application Mobile",
-                  description: "Expérience mobile native avec notifications et hors-ligne"
+                  title: t("ux.bo.mobileApp"),
+                  description: t("ux.bo.nativeMobileExperienceNotificationsOffline")
                 },
                 {
-                  icon: <HelpCircle className="w-8 h-8 text-orange-600" />,
-                  title: "Support 24/7",
-                  description: "Assistance client disponible en permanence via multiples canaux"
+                  icon: <HelpCircle className="w-8 h-8 text-warning-foreground" />,
+                  title: t("ux.bo.n247Support"),
+                  description: t("ux.bo.customerSupportAvailableAroundClock")
                 }
               ].map((feature, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 text-center">
                     <div className="mb-4">{feature.icon}</div>
                     <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm">{feature.description}</p>
+                    <p className="text-muted-foreground text-sm">{feature.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -1137,33 +1139,33 @@ const Documentation = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 {
-                  title: "Guide de démarrage rapide",
-                  description: "Configurez votre compte en 5 étapes simples",
+                  title: t("ux.bo.quickStartGuide"),
+                  description: t("ux.bo.setUpAccount5Simple"),
                   icon: <Rocket className="w-6 h-6" />,
-                  level: "Débutant"
+                  level: t("ux.bo.beginner")
                 },
                 {
-                  title: "Guide des paiements",
-                  description: "Tout sur Jèko et les méthodes de paiement",
+                  title: t("ux.bo.paymentGuide"),
+                  description: t("ux.bo.allAboutJKoPayment"),
                   icon: <CreditCard className="w-6 h-6" />,
-                  level: "Intermédiaire"
+                  level: t("ux.bo.intermediate")
                 },
                 {
-                  title: "Guide mobile",
-                  description: "Exploitez tout le potentiel de l'application mobile",
+                  title: t("ux.bo.mobileGuide"),
+                  description: t("ux.bo.getFullPotentialMobileApp"),
                   icon: <Smartphone className="w-6 h-6" />,
-                  level: "Intermédiaire"
+                  level: t("ux.bo.intermediate")
                 }
               ].map((guide, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-12 bg-info/10 rounded-lg flex items-center justify-center flex-shrink-0">
                         {guide.icon}
                       </div>
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold mb-1">{guide.title}</h3>
-                        <p className="text-gray-600 text-sm mb-2">{guide.description}</p>
+                        <p className="text-muted-foreground text-sm mb-2">{guide.description}</p>
                         <Badge variant="secondary">{guide.level}</Badge>
                       </div>
                     </div>
@@ -1177,29 +1179,29 @@ const Documentation = () => {
             <div className="space-y-4">
               {[
                 {
-                  question: "Comment fonctionne le système de réservation ?",
-                  answer: "Notre système de réservation utilise un algorithme avancé pour vérifier les disponibilités en temps réel et proposer les meilleures options selon vos critères."
+                  question: t("ux.bo.howDoesBookingSystemWork"),
+                  answer: t("ux.bo.ourBookingSystemUsesAdvanced")
                 },
                 {
-                  question: "Quelles méthodes de paiement sont acceptées ?",
-                  answer: "Nous acceptons Jèko, les cartes bancaires Visa/Mastercard, les portefeuilles mobiles et les virements bancaires selon votre pays."
+                  question: t("ux.bo.whichPaymentMethodsAccepted"),
+                  answer: t("ux.bo.weAcceptJKoVisa")
                 },
                 {
-                  question: "Comment puis-je annuler ma réservation ?",
-                  answer: "Vous pouvez annuler votre réservation depuis votre tableau de bord jusqu'à 24h avant la date de départ. Les conditions d'annulation varient selon le type de tarif."
+                  question: t("ux.bo.howCanICancelMy"),
+                  answer: t("ux.bo.youCanCancelBookingFrom")
                 },
                 {
-                  question: "L'application mobile est-elle disponible ?",
-                  answer: "Oui, notre application mobile est disponible sur iOS et Android, offrant toutes les fonctionnalités de la plateforme avec une expérience optimisée mobile."
+                  question: t("ux.bo.mobileAppAvailable"),
+                  answer: t("ux.bo.yesOurMobileAppAvailable")
                 }
               ].map((faq, index) => (
                 <Card key={index}>
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <HelpCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <HelpCircle className="w-5 h-5 text-info mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                        <p className="text-gray-600">{faq.answer}</p>
+                        <p className="text-muted-foreground">{faq.answer}</p>
                       </div>
                     </div>
                   </CardContent>

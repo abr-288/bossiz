@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Percent, Search } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface Promotion {
   id: string;
@@ -43,6 +44,7 @@ interface Promotion {
 }
 
 export default function AgencyPromotions() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
@@ -118,14 +120,14 @@ export default function AgencyPromotions() {
           .eq("id", editingPromotion.id);
 
         if (error) throw error;
-        toast({ title: "Succès", description: "Promotion mise à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionUpdated") });
       } else {
         const { error } = await supabase
           .from("promotions")
           .insert(promotionData);
 
         if (error) throw error;
-        toast({ title: "Succès", description: "Promotion créée" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionCreated") });
       }
 
       setIsDialogOpen(false);
@@ -133,7 +135,7 @@ export default function AgencyPromotions() {
       fetchAgencyAndPromotions();
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: t("ux.bo.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -157,13 +159,13 @@ export default function AgencyPromotions() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer cette promotion ?")) return;
+    if (!confirm(t("ux.bo.deletePromotion"))) return;
 
     const { error } = await supabase.from("promotions").delete().eq("id", id);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Succès", description: "Promotion supprimée" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionDeleted") });
       fetchAgencyAndPromotions();
     }
   };
@@ -196,25 +198,25 @@ export default function AgencyPromotions() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Mes Promotions</h1>
-            <p className="text-muted-foreground">Gérez vos offres promotionnelles</p>
+            <h1 className="text-2xl font-bold">{t("ux.bo.myPromotions")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.managePromotionalOffers")}</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nouvelle Promotion</Button>
+              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newPromotion2")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>
-                  {editingPromotion ? "Modifier la promotion" : "Nouvelle promotion"}
+                  {editingPromotion ? t("ux.bo.editPromotion") : t("ux.bo.newPromotion")}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Nom de l'offre *</Label>
+                  <Label>{t("ux.bo.offerName")}</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -222,7 +224,7 @@ export default function AgencyPromotions() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Localisation *</Label>
+                  <Label>{t("ux.bo.location4")}</Label>
                   <Input
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -231,7 +233,7 @@ export default function AgencyPromotions() {
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Prix original *</Label>
+                    <Label>{t("ux.bo.originalPrice")}</Label>
                     <Input
                       type="number"
                       value={formData.original_price}
@@ -240,7 +242,7 @@ export default function AgencyPromotions() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Réduction (%) *</Label>
+                    <Label>{t("ux.bo.discount")}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -250,10 +252,10 @@ export default function AgencyPromotions() {
                       required
                     />
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">Prix affiché et facturé en XOF (FCFA)</div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Date d'expiration</Label>
+                  <Label>{t("ux.bo.expiryDate")}</Label>
                   <Input
                     type="date"
                     value={formData.expires_at}
@@ -261,26 +263,26 @@ export default function AgencyPromotions() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={2}
                   />
                 </div>
-                <ImageUpload label="Visuel de la promotion" folder="agency-promotions" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
+                <ImageUpload label={t("ux.bo.promotionVisual")} folder="agency-promotions" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.is_active}
                     onCheckedChange={(c) => setFormData({ ...formData, is_active: c })}
                   />
-                  <Label>Active</Label>
+                  <Label>{t("ux.bo.active")}</Label>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Annuler
+                    {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">{editingPromotion ? "Mettre à jour" : "Créer"}</Button>
+                  <Button type="submit">{editingPromotion ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -290,7 +292,7 @@ export default function AgencyPromotions() {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher..."
+            placeholder={t("ux.bo.search")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -301,26 +303,26 @@ export default function AgencyPromotions() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Promotion</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Prix original</TableHead>
-                <TableHead>Réduction</TableHead>
-                <TableHead>Prix final</TableHead>
-                <TableHead>Expire le</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("ux.bo.promotion")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.originalPrice2")}</TableHead>
+                <TableHead>{t("ux.bo.discount2")}</TableHead>
+                <TableHead>{t("ux.bo.finalPrice")}</TableHead>
+                <TableHead>{t("ux.bo.expires")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">Chargement...</TableCell>
+                  <TableCell colSpan={8} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
                 </TableRow>
               ) : filteredPromotions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     <Percent className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    Aucune promotion
+                    {t("ux.bo.noPromotion")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -334,7 +336,7 @@ export default function AgencyPromotions() {
                     <TableCell>
                       <Badge variant="destructive">-{promotion.discount}%</Badge>
                     </TableCell>
-                    <TableCell className="font-semibold text-green-600">
+                    <TableCell className="font-semibold text-success">
                       {calculateDiscountedPrice(promotion.original_price, promotion.discount).toFixed(0)} {promotion.currency}
                     </TableCell>
                     <TableCell>
@@ -345,14 +347,14 @@ export default function AgencyPromotions() {
                     </TableCell>
                     <TableCell>
                       <Badge variant={promotion.is_active ? "default" : "secondary"}>
-                        {promotion.is_active ? "Active" : "Inactive"}
+                        {promotion.is_active ? t("ux.bo.active") : "Inactive"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(promotion)}>
+                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(promotion)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(promotion.id)}>
+                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(promotion.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

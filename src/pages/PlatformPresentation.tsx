@@ -40,6 +40,7 @@ import shotActivities from "@/assets/presentation/shot-activities.png";
 import shotEvents from "@/assets/presentation/shot-events.png";
 import shotTrains from "@/assets/presentation/shot-trains.png";
 import bannerPresentation from "@/assets/hero-slide-2.jpg";
+import { useTranslation } from "react-i18next";
 
 const modules = [
   {
@@ -231,9 +232,9 @@ const steps = [
 const BrowserFrame = ({ src, alt, label }: { src: string; alt: string; label: string }) => (
   <div className="rounded-xl overflow-hidden border border-border shadow-lg bg-card">
     <div className="flex items-center gap-1.5 px-3 py-2 bg-muted/60 border-b border-border">
-      <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-      <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-      <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+      <span className="w-2.5 h-2.5 rounded-full bg-destructive" />
+      <span className="w-2.5 h-2.5 rounded-full bg-gold" />
+      <span className="w-2.5 h-2.5 rounded-full bg-success" />
       <span className="ml-3 text-xs text-muted-foreground font-medium">{label}</span>
     </div>
     <img src={src} alt={alt} className="w-full h-auto block" loading="lazy" />
@@ -241,6 +242,7 @@ const BrowserFrame = ({ src, alt, label }: { src: string; alt: string; label: st
 );
 
 const PlatformPresentation = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
@@ -260,8 +262,8 @@ const PlatformPresentation = () => {
           />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight drop-shadow-lg">
-            Bossiz+, la plateforme de réservation qui connecte voyageurs et partenaires
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight drop-shadow-lg">
+            {t("ux.presentation.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto font-medium mb-8">
             Vols, hôtels, location de voiture, séjours, circuits, activités, événements et trains — tout ce dont vos
@@ -269,10 +271,10 @@ const PlatformPresentation = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" className="bg-[#C98A2B] text-[#192443] hover:bg-[#C98A2B]/90 font-semibold">
-              <Link to="/devenir-partenaire">Devenir partenaire</Link>
+              <Link to="/devenir-partenaire">{t("ux.presentation.become")}</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
-              <Link to="/">Visiter le site</Link>
+              <Link to="/">{t("ux.presentation.visit")}</Link>
             </Button>
           </div>
         </div>
@@ -297,7 +299,7 @@ const PlatformPresentation = () => {
         {/* Intro */}
         <section className="container mx-auto px-4 py-14 md:py-16 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-            Documentation complète de la plateforme
+            {t("ux.presentation.docs")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Chaque module ci-dessous est illustré par une capture d'écran réelle de la plateforme en production —
@@ -351,9 +353,9 @@ const PlatformPresentation = () => {
         {/* Partner benefits */}
         <section className="container mx-auto px-4 py-14 md:py-20">
           <div className="text-center mb-10 md:mb-14">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Pourquoi devenir partenaire</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t("ux.presentation.why")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Rejoignez un réseau d'hôtels visibles auprès de voyageurs qui recherchent activement un hébergement.
+              {t("ux.presentation.whyDesc")}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-4xl mx-auto">
@@ -373,7 +375,7 @@ const PlatformPresentation = () => {
         <section className="bg-muted/30 py-14 md:py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10 md:mb-14">
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Comment ça marche</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t("ux.presentation.how")}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               {steps.map(({ icon: Icon, title, description }) => (
@@ -395,14 +397,14 @@ const PlatformPresentation = () => {
         <section className="container mx-auto px-4 py-14 md:py-20">
           <div className="rounded-2xl bg-[#192443] px-6 py-10 md:px-12 md:py-14 text-center max-w-4xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Prêt à faire connaître votre hôtel à de nouveaux voyageurs ?
+              {t("ux.presentation.cta")}
             </h2>
             <p className="text-white/80 mb-8 max-w-xl mx-auto">
               Soumettez votre candidature en quelques minutes, notre équipe vous recontacte après étude de votre
               dossier.
             </p>
             <Button asChild size="lg" className="bg-[#C98A2B] text-[#192443] hover:bg-[#C98A2B]/90 font-semibold mb-8">
-              <Link to="/devenir-partenaire">Devenir partenaire</Link>
+              <Link to="/devenir-partenaire">{t("ux.presentation.become")}</Link>
             </Button>
             <div className="flex flex-wrap justify-center gap-6 text-white/80 text-sm">
               <a href="tel:+22527200000000" className="flex items-center gap-2 hover:text-white">

@@ -5,13 +5,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, UtensilsCrossed, Loader2, Phone } from "lucide-react";
+import { MapPin, Star, UtensilsCrossed, Phone } from "lucide-react";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { RestaurantReservationDialog } from "@/components/restaurants/RestaurantReservationDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerRestaurants from "@/assets/banner-restaurants.jpg";
+import { useTranslation } from "react-i18next";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Link } from "react-router-dom";
 
 const Restaurants = () => {
+  const { t } = useTranslation();
   const { restaurants, loading, error } = useRestaurants();
   const [locationFilter, setLocationFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("all");
@@ -38,20 +43,20 @@ const Restaurants = () => {
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
 
-      <div className="relative py-16 md:py-24 overflow-hidden bg-primary">
+      <div className="relative py-16 md:py-24 overflow-hidden bg-brand">
         <LazyImage
           src={bannerRestaurants}
-          alt="Restaurants"
+          alt={t("ux.restaurants.title")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/60 to-primary/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <UtensilsCrossed className="w-12 h-12 text-white mx-auto mb-4" />
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            Restaurants
+            {t("ux.restaurants.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            Réservez votre table en ligne, sans appel, sans attente
+            {t("ux.restaurants.subtitle")}
           </p>
         </div>
       </div>
@@ -60,41 +65,39 @@ const Restaurants = () => {
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="flex-1">
             <Input
-              placeholder="Rechercher un restaurant, une ville, une cuisine..."
+              placeholder={t("ux.restaurants.search")}
               value={locationFilter}
               onChange={(e) => setLocationFilter(e.target.value)}
             />
           </div>
           <Select value={priceFilter} onValueChange={setPriceFilter}>
             <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue placeholder="Gamme de prix" />
+              <SelectValue placeholder={t("ux.restaurants.priceRange")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Toutes les gammes</SelectItem>
+              <SelectItem value="all">{t("ux.restaurants.allRanges")}</SelectItem>
               <SelectItem value="€">€ - Abordable</SelectItem>
-              <SelectItem value="€€">€€ - Modéré</SelectItem>
-              <SelectItem value="€€€">€€€ - Élevé</SelectItem>
+              <SelectItem value="€€">{t("ux.restaurants.moderate")}</SelectItem>
+              <SelectItem value="€€€">{t("ux.restaurants.high")}</SelectItem>
               <SelectItem value="€€€€">€€€€ - Luxe</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : error ? (
           <Card className="p-12 text-center text-muted-foreground">
-            Impossible de charger les restaurants pour le moment.
+            {t("ux.restaurants.loadError")}
           </Card>
         ) : filteredRestaurants.length === 0 ? (
-          <Card className="p-12 text-center">
-            <UtensilsCrossed className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <p className="text-lg font-medium mb-2">Aucun restaurant disponible pour le moment</p>
-            <p className="text-muted-foreground mb-6">Nos partenaires ajoutent bientôt leurs établissements. Revenez vite !</p>
-            <Button variant="outline" asChild>
-              <a href="/devenir-partenaire">Vous gérez un restaurant ? Rejoignez-nous</a>
-            </Button>
+          <Card>
+            <EmptyState
+              icon={UtensilsCrossed}
+              title={t("ux.restaurants.emptyTitle")}
+              description={t("ux.restaurants.emptyDesc")}
+              action={<Button variant="outline" asChild><Link to="/devenir-partenaire">{t("ux.restaurants.join")}</Link></Button>}
+            />
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -148,7 +151,7 @@ const Restaurants = () => {
                         setDialogOpen(true);
                       }}
                     >
-                      Réserver une table
+                      {t("ux.restaurants.bookTable")}
                     </Button>
                   </div>
                 </CardContent>

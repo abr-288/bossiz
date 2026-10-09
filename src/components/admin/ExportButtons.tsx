@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Download, FileText } from "lucide-react";
 import { useExport } from "@/hooks/useExport";
+import { useTranslation } from "react-i18next";
 
 interface ExportButtonsProps {
   data: any[];
@@ -8,6 +9,7 @@ interface ExportButtonsProps {
 }
 
 export function ExportButtons({ data, filename }: ExportButtonsProps) {
+  const { t } = useTranslation();
   const { exportToCSV, exportToPDF } = useExport();
 
   return (
@@ -19,7 +21,7 @@ export function ExportButtons({ data, filename }: ExportButtonsProps) {
         className="gap-2"
       >
         <Download className="h-4 w-4" />
-        Export CSV
+        {t("ux.bo.exportCsv2")}
       </Button>
       <Button
         variant="outline"
@@ -28,7 +30,7 @@ export function ExportButtons({ data, filename }: ExportButtonsProps) {
         className="gap-2"
       >
         <FileText className="h-4 w-4" />
-        Export PDF
+        {t("ux.bo.exportPdf")}
       </Button>
     </div>
   );

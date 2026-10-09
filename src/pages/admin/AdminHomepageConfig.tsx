@@ -21,14 +21,18 @@ import {
   Shield,
   Award,
   Headphones,
+  Smartphone,
+  RotateCcw,
   Star,
   ArrowUp,
   ArrowDown
 } from "lucide-react";
 import { useHomepageConfigContext } from "@/contexts/HomepageConfigContext";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const AdminHomepageConfig = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { config, loading, updateFeature, updateSection, refetch } = useHomepageConfigContext();
   const [activeTab, setActiveTab] = useState("sections");
@@ -82,24 +86,24 @@ const AdminHomepageConfig = () => {
 
   const addNewFeature = async () => {
     const newFeature = {
-      title: 'Nouvelle Fonctionnalité',
-      description: 'Description de la nouvelle fonctionnalité',
+      title: t("ux.bo.newFeature"),
+      description: t("ux.bo.descriptionNewFeature"),
       icon: 'Star',
       color: 'from-blue-500 to-blue-600'
     };
     
     // Ajouter via l'API (simulation)
     toast({
-      title: "Fonctionnalité ajoutée",
-      description: "Nouvelle fonctionnalité créée avec succès",
+      title: t("ux.bo.featureAdded"),
+      description: t("ux.bo.newFeatureCreatedSuccessfully"),
     });
   };
 
   const deleteFeature = async (featureId: string) => {
     // Supprimer via l'API (simulation)
     toast({
-      title: "Fonctionnalité supprimée",
-      description: "La fonctionnalité a été supprimée avec succès",
+      title: t("ux.bo.featureDeleted"),
+      description: t("ux.bo.featureWasDeletedSuccessfully"),
     });
   };
 
@@ -118,14 +122,14 @@ const AdminHomepageConfig = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Configuration Page d'Accueil</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t("ux.bo.homepageConfiguration")}</h1>
             <p className="text-muted-foreground">
-              Gérez le contenu et l'apparence de la page d'accueil
+              {t("ux.bo.manageContentLookHomepage")}
             </p>
           </div>
           <Button onClick={refetch} className="gap-2">
             <Settings className="w-4 h-4" />
-            Recharger
+            {t("ux.bo.reload")}
           </Button>
         </div>
 
@@ -133,11 +137,11 @@ const AdminHomepageConfig = () => {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="sections" className="gap-2">
               <Settings className="w-4 h-4" />
-              Sections
+              {t("ux.bo.sections")}
             </TabsTrigger>
             <TabsTrigger value="features" className="gap-2">
               <Star className="w-4 h-4" />
-              Fonctionnalités
+              {t("ux.bo.features")}
             </TabsTrigger>
           </TabsList>
 
@@ -146,7 +150,7 @@ const AdminHomepageConfig = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="w-5 h-5" />
-                  Gestion des Sections
+                  {t("ux.bo.sectionManagement")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -186,7 +190,7 @@ const AdminHomepageConfig = () => {
                           
                           <div className="space-y-3">
                             <div>
-                              <Label htmlFor={`title-${sectionId}`}>Titre</Label>
+                              <Label htmlFor={`title-${sectionId}`}>{t("ux.bo.title2")}</Label>
                               <Input
                                 id={`title-${sectionId}`}
                                 value={section.title}
@@ -196,7 +200,7 @@ const AdminHomepageConfig = () => {
                             </div>
                             
                             <div>
-                              <Label htmlFor={`subtitle-${sectionId}`}>Sous-titre</Label>
+                              <Label htmlFor={`subtitle-${sectionId}`}>{t("ux.bo.subtitle")}</Label>
                               <Input
                                 id={`subtitle-${sectionId}`}
                                 value={section.subtitle}
@@ -211,7 +215,7 @@ const AdminHomepageConfig = () => {
                                 checked={section.visible}
                                 onCheckedChange={(checked) => handleSectionUpdate(sectionId, 'visible', checked)}
                               />
-                              <Label htmlFor={`visible-${sectionId}`}>Visible sur la page</Label>
+                              <Label htmlFor={`visible-${sectionId}`}>{t("ux.bo.visiblePage")}</Label>
                             </div>
                           </div>
                         </CardContent>
@@ -228,11 +232,11 @@ const AdminHomepageConfig = () => {
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5" />
-                    Fonctionnalités Principales
+                    {t("ux.bo.mainFeatures")}
                   </div>
                   <Button onClick={addNewFeature} className="gap-2">
                     <Plus className="w-4 h-4" />
-                    Ajouter
+                    {t("ux.bo.add")}
                   </Button>
                 </CardTitle>
               </CardHeader>
@@ -248,6 +252,8 @@ const AdminHomepageConfig = () => {
                               {feature.icon === 'Award' && <Award className="w-5 h-5" />}
                               {feature.icon === 'Headphones' && <Headphones className="w-5 h-5" />}
                               {feature.icon === 'Star' && <Star className="w-5 h-5" />}
+                              {feature.icon === 'Smartphone' && <Smartphone className="w-5 h-5" />}
+                              {feature.icon === 'RotateCcw' && <RotateCcw className="w-5 h-5" />}
                             </div>
                             <span className="font-medium">{feature.title}</span>
                           </div>
@@ -280,7 +286,7 @@ const AdminHomepageConfig = () => {
                         
                         <div className="space-y-3">
                           <div>
-                            <Label htmlFor={`feature-title-${feature.id}`}>Titre</Label>
+                            <Label htmlFor={`feature-title-${feature.id}`}>{t("ux.bo.title2")}</Label>
                             <Input
                               id={`feature-title-${feature.id}`}
                               value={feature.title}
@@ -290,7 +296,7 @@ const AdminHomepageConfig = () => {
                           </div>
                           
                           <div>
-                            <Label htmlFor={`feature-description-${feature.id}`}>Description</Label>
+                            <Label htmlFor={`feature-description-${feature.id}`}>{t("ux.bo.description")}</Label>
                             <Textarea
                               id={`feature-description-${feature.id}`}
                               value={feature.description}
@@ -301,7 +307,7 @@ const AdminHomepageConfig = () => {
                           </div>
                           
                           <div>
-                            <Label htmlFor={`feature-color-${feature.id}`}>Couleur</Label>
+                            <Label htmlFor={`feature-color-${feature.id}`}>{t("ux.bo.color")}</Label>
                             <Input
                               id={`feature-color-${feature.id}`}
                               value={feature.color}

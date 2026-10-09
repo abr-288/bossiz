@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export interface PartnerLocation {
   location: string;
@@ -41,6 +42,7 @@ function getCoordinates(source: string): [number, number] | null {
 }
 
 export function LocationPicker({ value, onChange, required = false, showLocation = true }: LocationPickerProps) {
+  const { t } = useTranslation();
   const hasCoordinates = Number.isFinite(value.latitude) && Number.isFinite(value.longitude);
   const mapEmbedUrl = useMemo(() => {
     if (!hasCoordinates) return "";
@@ -58,18 +60,18 @@ export function LocationPicker({ value, onChange, required = false, showLocation
   const update = (changes: Partial<PartnerLocation>) => onChange({ ...value, ...changes });
 
   return (
-    <section className="space-y-3 rounded-lg border p-4" aria-label="Localisation précise">
+    <section className="space-y-3 rounded-lg border p-4" aria-label={t("ux.bo.preciseLocation")}>
       <div>
-        <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" />Lieu du service</Label>
-        <p className="mt-1 text-xs text-muted-foreground">Saisissez une adresse, puis collez un lien Google Maps ou des coordonnées pour placer le point précisément.</p>
+        <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" />{t("ux.bo.serviceLocation")}</Label>
+        <p className="mt-1 text-xs text-muted-foreground">{t("ux.bo.enterAddressThenPasteGoogle")}</p>
       </div>
       {showLocation && (
         <Input
           value={value.location}
           onChange={(event) => update({ location: event.target.value })}
-          placeholder="Ville, quartier, adresse complète"
+          placeholder={t("ux.bo.cityDistrictFullAddress")}
           required={required}
-          aria-label="Ville et adresse"
+          aria-label={t("ux.bo.cityAddress")}
         />
       )}
       <Input
@@ -80,8 +82,8 @@ export function LocationPicker({ value, onChange, required = false, showLocation
           const coords = getCoordinates(maps_url);
           update({ maps_url, ...(coords ? { latitude: coords[0], longitude: coords[1] } : {}) });
         }}
-        placeholder="Lien Google Maps ou OpenStreetMap"
-        aria-label="Lien de localisation Maps"
+        placeholder={t("ux.bo.googleMapsOpenstreetmapLink")}
+        aria-label={t("ux.bo.mapsLocationLink")}
       />
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1"><Label className="text-xs" htmlFor="partner-latitude">Latitude</Label><Input id="partner-latitude" type="number" step="any" min="-90" max="90" value={value.latitude ?? ""} onChange={(event) => update({ latitude: event.target.value === "" ? null : Number(event.target.value) })} placeholder="5.3364" /></div>
@@ -89,14 +91,14 @@ export function LocationPicker({ value, onChange, required = false, showLocation
       </div>
       {hasCoordinates && (
         <div className="space-y-2">
-          <iframe title="Aperçu de la localisation" src={mapEmbedUrl} className="h-40 w-full rounded-md border" loading="lazy" />
+          <iframe title={t("ux.bo.locationPreview")} src={mapEmbedUrl} className="h-40 w-full rounded-md border" loading="lazy" />
           <a className="inline-flex items-center gap-1 text-sm text-primary underline" href={`https://www.google.com/maps/search/?api=1&query=${value.latitude},${value.longitude}`} target="_blank" rel="noreferrer">
             Ouvrir ce point dans Google Maps <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
       )}
       {!!value.maps_url && !hasCoordinates && (
-        <p className="text-xs text-amber-700">Ce lien ne contient pas de coordonnées lisibles. Renseignez latitude et longitude pour afficher le repère exact sur la carte.</p>
+        <p className="text-xs text-warning-foreground">{t("ux.bo.linkDoesNotContainReadable")}</p>
       )}
     </section>
   );

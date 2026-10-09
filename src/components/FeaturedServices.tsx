@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Star, Loader2, Plane, Hotel, Car, Calendar } from "lucide-react";
+import { MapPin, Star, Plane, Hotel, Car, Calendar } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Price } from "@/components/ui/price";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 type ServiceType = "car" | "event" | "flight" | "flight_hotel" | "hotel" | "tour";
 
@@ -38,17 +39,12 @@ const FeaturedServices = () => {
   const displayServices = services.slice(0, 8);
 
   return (
-    <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
+    <section className="py-16 md:py-20 lg:py-24 bg-background relative overflow-hidden">
       {/* Background mesh gradient */}
       <div className="absolute inset-0 gradient-mesh opacity-40" />
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-10 md:mb-16 animate-slide-up-fade">
-          <div className="inline-block mb-4">
-            <span className="px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold">
-              ✨ Nos Meilleures Offres
-            </span>
-          </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient mb-4 md:mb-6">
             Services en Vedette
           </h2>
@@ -81,9 +77,7 @@ const FeaturedServices = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : displayServices.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Aucun service disponible pour le moment</p>
@@ -95,7 +89,7 @@ const FeaturedServices = () => {
               return (
                 <Card
                   key={service.id}
-                  className="group overflow-hidden border-2 border-border/50 hover:border-secondary/50 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer animate-slide-up-fade hover-lift rounded-2xl bg-gradient-card relative"
+                  className="group overflow-hidden border-2 border-border/50 hover:border-secondary/50 shadow-lg hover:shadow-2xl transition-all duration-slow ease-standard cursor-pointer animate-slide-up-fade hover-lift rounded-2xl bg-gradient-card relative"
                   style={{ animationDelay: `${index * 0.08}s` }}
                   onClick={() => {
                     const routes: Record<string, string> = {
@@ -114,7 +108,7 @@ const FeaturedServices = () => {
                   }}
                 >
                   {/* Shine effect overlay */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10">
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-slow ease-standard pointer-events-none z-10">
                     <div className="absolute inset-0 animate-shimmer" />
                   </div>
                   

@@ -32,7 +32,7 @@ const BossizSNAccueil = () => {
           <p className="text-bossiz-gold-light text-sm font-semibold uppercase tracking-[0.25em] mb-6">
             {content.hero.eyebrow}
           </p>
-          <h1 className="font-black text-4xl sm:text-5xl md:text-6xl text-white leading-tight mb-6 drop-shadow-lg">
+          <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl text-white leading-tight mb-6 drop-shadow-lg">
             {content.hero.titleLine1}
             <span className="block text-bossiz-gold-light">{content.hero.titleLine2}</span>
           </h1>
@@ -43,7 +43,7 @@ const BossizSNAccueil = () => {
           <div className="grid grid-cols-3 gap-6 max-w-xl mx-auto mb-14">
             {[content.hero.stats.clients, content.hero.stats.partners, content.hero.stats.availability].map((stat) => (
               <div key={stat.label}>
-                <div className="font-black text-3xl md:text-4xl text-bossiz-gold-light mb-1">{stat.value}</div>
+                <div className="font-extrabold text-3xl md:text-4xl text-bossiz-gold-light mb-1">{stat.value}</div>
                 <div className="text-white/70 text-[11px] uppercase tracking-wider">{stat.label}</div>
               </div>
             ))}
@@ -83,7 +83,7 @@ const BossizSNAccueil = () => {
       <section className="py-24 bg-bossiz-cream-mint">
         <div className="max-w-6xl mx-auto px-6 lg:px-10">
           <div className="text-center mb-16">
-            <h2 className="font-black text-3xl md:text-4xl text-bossiz-navy-dark mb-4">
+            <h2 className="font-extrabold text-3xl md:text-4xl text-bossiz-navy-dark mb-4">
               {content.testimonialsTitle}
             </h2>
           </div>
@@ -112,7 +112,7 @@ const BossizSNAccueil = () => {
       {/* Contact CTA */}
       <section className="py-24 bg-bossiz-navy-dark">
         <div className="max-w-5xl mx-auto px-6 lg:px-10 text-center">
-          <h2 className="font-black text-3xl md:text-5xl text-white mb-16">
+          <h2 className="font-extrabold text-3xl md:text-5xl text-white mb-16">
             {content.contactCta.title}
           </h2>
 

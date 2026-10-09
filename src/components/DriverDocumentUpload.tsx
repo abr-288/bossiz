@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload, X, FileImage, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface DriverDocumentUploadProps {
   label: string;
@@ -23,6 +24,7 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -93,6 +95,7 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
               <img src={previewUrl} alt={label} className="w-full h-full object-cover" onError={() => setPreviewUrl(null)} />
               <button
                 type="button"
+                aria-label={t("ux.common.removeImage")}
                 onClick={handleRemove}
                 className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"
               >
@@ -107,7 +110,7 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
         <div className="flex-1 space-y-1.5">
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
           <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-            {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : path ? <Check className="w-4 h-4 mr-2 text-green-600" /> : <Upload className="w-4 h-4 mr-2" />}
+            {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : path ? <Check className="w-4 h-4 mr-2 text-success" /> : <Upload className="w-4 h-4 mr-2" />}
             {uploading ? "Envoi..." : path ? "Remplacer" : "Choisir une photo"}
           </Button>
           <p className="text-xs text-muted-foreground">JPG/PNG, 5 Mo max. Visible uniquement par vous et Bossiz+.</p>

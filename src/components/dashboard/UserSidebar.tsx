@@ -31,6 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getProfilePhotoUrl } from "@/lib/profilePhoto";
+import { sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 
 interface UserSidebarProps {
   userProfile?: {
@@ -147,15 +148,15 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
   };
 
   return (
-    <Sidebar 
-      className={collapsed ? "w-16" : "w-64"} 
+    <Sidebar
+      className={sidebarWidthClass(collapsed)}
       collapsible="icon"
     >
-      <SidebarHeader className="border-b p-4">
+      <SidebarHeader className="bg-brand p-4 text-brand-foreground">
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
-          <Avatar className="h-10 w-10 border-2 border-primary/20">
+          <Avatar className="h-10 w-10 border border-white/40">
             <AvatarImage src={getProfilePhotoUrl(userProfile?.avatar_url)} />
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+            <AvatarFallback className="bg-white/20 text-white font-semibold">
               {userProfile?.full_name ? getInitials(userProfile.full_name) : "U"}
             </AvatarFallback>
           </Avatar>
@@ -164,7 +165,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               <span className="font-semibold text-sm truncate">
                 {userProfile?.full_name || t('dashboardPage.welcome')}
               </span>
-              <span className="text-xs text-muted-foreground truncate">
+              <span className="text-xs text-white/75 truncate">
                 {userProfile?.email}
               </span>
             </div>
@@ -185,13 +186,9 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
                     <Link
                       to={item.url}
                       aria-label={item.title}
-                      className={`flex items-center gap-3 ${
-                        isActive(item.url)
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "hover:bg-muted"
-                      }`}
+                      className={sidebarLinkClass(isActive(item.url))}
                     >
-                      <item.icon className="h-5 w-5 shrink-0" />
+                      <item.icon className={sidebarIconClass} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
@@ -213,13 +210,9 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
                     <Link
                       to={agencyItem.url}
                       aria-label={agencyItem.title}
-                      className={`flex items-center gap-3 ${
-                        isActive(agencyItem.url)
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "hover:bg-muted"
-                      }`}
+                      className={sidebarLinkClass(isActive(agencyItem.url))}
                     >
-                      <agencyItem.icon className="h-5 w-5 shrink-0" />
+                      <agencyItem.icon className={sidebarIconClass} />
                       {!collapsed && <span>{agencyItem.title}</span>}
                     </Link>
                   </SidebarMenuButton>
@@ -244,22 +237,18 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={item.title}
-                        className="flex items-center gap-3 hover:bg-muted"
+                        className={sidebarLinkClass(false)}
                       >
-                        <item.icon className="h-5 w-5 shrink-0" />
+                        <item.icon className={sidebarIconClass} />
                         {!collapsed && <span>{item.title}</span>}
                       </a>
                     ) : (
                       <Link
                         to={item.url}
                         aria-label={item.title}
-                        className={`flex items-center gap-3 ${
-                          isActive(item.url)
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "hover:bg-muted"
-                        }`}
+                        className={sidebarLinkClass(isActive(item.url))}
                       >
-                        <item.icon className="h-5 w-5 shrink-0" />
+                        <item.icon className={sidebarIconClass} />
                         {!collapsed && <span>{item.title}</span>}
                       </Link>
                     )}
@@ -282,9 +271,9 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
                     <Link
                       to={item.url}
                       aria-label={item.title}
-                      className={`flex items-center gap-3 hover:bg-muted`}
+                      className={sidebarLinkClass(false)}
                     >
-                      <item.icon className="h-5 w-5 shrink-0" />
+                      <item.icon className={sidebarIconClass} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>

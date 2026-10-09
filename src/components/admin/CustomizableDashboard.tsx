@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { WidgetConfig } from "@/hooks/useDashboardPreferences";
 import { Price } from "@/components/ui/price";
+import { useTranslation } from "react-i18next";
 
 const COLORS = {
   pending: "#f59e0b",
@@ -23,6 +24,7 @@ interface CustomizableDashboardProps {
 }
 
 export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDashboardProps) {
+  const { t } = useTranslation();
   const renderWidget = (widget: WidgetConfig) => {
     if (!widget.visible) return null;
 
@@ -74,8 +76,8 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
           <div key={widget.id} className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle>Répartition par Statut</CardTitle>
-                <CardDescription>Distribution des réservations</CardDescription>
+                <CardTitle>{t("ux.bo.breakdownStatus")}</CardTitle>
+                <CardDescription>{t("ux.bo.bookingDistribution")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -108,8 +110,8 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
           <div key={widget.id} className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle>Réservations Récentes</CardTitle>
-                <CardDescription>Les 10 dernières réservations</CardDescription>
+                <CardTitle>{t("ux.bo.recentBookings")}</CardTitle>
+                <CardDescription>{t("ux.bo.n10LatestBookings")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

@@ -4,12 +4,24 @@ export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
+  // Les variantes hover: ne s'appliquent qu'aux appareils avec survol réel
+  // (souris, trackpad) : sur écran tactile, hover:scale-105 et consorts
+  // restaient « collés » après un appui.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
+    // Un seul conteneur : 1200 px et les mêmes marges que .site-container
+    // (avant : 1400 px et 2rem, les bords des sections ne s'alignaient pas).
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: "1rem",
+        md: "1.5rem",
+        lg: "2rem",
+      },
       screens: {
-        "2xl": "1400px",
+        xl: "1200px",
       },
     },
     extend: {
@@ -25,6 +37,10 @@ export default {
           light: "hsl(var(--primary-light))",
           dark: "hsl(var(--primary-dark))",
         },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -34,6 +50,24 @@ export default {
           foreground: "hsl(var(--gold-foreground))",
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
+          text: "hsl(var(--gold-text))",
+        },
+        action: {
+          DEFAULT: "hsl(var(--action))",
+          hover: "hsl(var(--action-hover))",
+          foreground: "hsl(var(--action-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -94,9 +128,21 @@ export default {
           },
         },
       },
+      // Échelle de superposition nommée (avant : de z-10 à z-[10000]).
+      // Les composants Radix (modales, menus) restent à z-50.
+      zIndex: {
+        raised: "10",
+        sticky: "20",
+        "bottom-nav": "40",
+        header: "50",
+        chat: "60",
+        banner: "70",
+        popover: "80",
+      },
       fontFamily: {
-        sans: ['Archivo', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', 'Archivo', 'system-ui', 'sans-serif'],
+        // --font-body / --font-heading : posées par ThemeContext depuis la config admin.
+        sans: ['var(--font-body)', 'Archivo', 'system-ui', 'sans-serif'],
+        display: ['var(--font-heading)', '"Bricolage Grotesque"', 'Archivo', 'system-ui', 'sans-serif'],
         serif: ['Playfair Display', 'serif'],
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
@@ -107,9 +153,14 @@ export default {
         'primary': 'var(--shadow-primary)',
       },
       borderRadius: {
+        // Échelle : badge 8 / champ 12 / carte 16 / modale 24 / bouton plein
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 8px)",
+        badge: "calc(var(--radius) - 8px)",
+        field: "calc(var(--radius) - 4px)",
+        card: "var(--radius)",
+        modal: "calc(var(--radius) + 8px)",
       },
       keyframes: {
         "accordion-down": {
@@ -156,7 +207,13 @@ export default {
         'shadow': 'box-shadow',
         'transform': 'transform'
       },
+      transitionTimingFunction: {
+        standard: "var(--ease-standard)",
+      },
       transitionDuration: {
+        fast: "var(--dur-fast)",
+        base: "var(--dur-base)",
+        slow: "var(--dur-slow)",
         '75': '75ms',
         '100': '100ms',
         '150': '150ms',

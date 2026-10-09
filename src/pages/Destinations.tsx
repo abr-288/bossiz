@@ -64,7 +64,7 @@ const Destinations = () => {
           alt={t("destinations.title", "Explorez le Monde")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
@@ -98,11 +98,11 @@ const Destinations = () => {
             <TabsList className="grid w-full max-w-sm mx-auto grid-cols-2">
               <TabsTrigger value="popular">
                 <Star className="mr-2 h-4 w-4" />
-                {t("destinations.tabs.popular", "Populaires")}
+                {t("ux.destinations.tabPopular")}
               </TabsTrigger>
               <TabsTrigger value="africa">
                 <MapPin className="mr-2 h-4 w-4" />
-                {t("destinations.tabs.africa", "Afrique")}
+                {t("ux.destinations.tabAfrica")}
               </TabsTrigger>
             </TabsList>
 
@@ -114,8 +114,8 @@ const Destinations = () => {
                 onRefresh={() => activeResults.refetch()}
                 emptyMessage={
                   searchQuery.trim().length >= 2
-                    ? t("destinations.noResultsFor", `Aucune destination ne correspond à "${searchQuery}"`)
-                    : t("destinations.noResults", "Aucune destination disponible pour le moment")
+                    ? t("ux.destinations.noResultsFor", { query: searchQuery })
+                    : t("ux.destinations.noResults")
                 }
               />
             </TabsContent>
@@ -126,7 +126,7 @@ const Destinations = () => {
                 isLoading={activeResults.isLoading}
                 isError={activeResults.isError}
                 onRefresh={() => activeResults.refetch()}
-                emptyMessage={t("destinations.noAfricaResults", "Aucune destination africaine trouvée pour cette recherche")}
+                emptyMessage={t("ux.destinations.noAfricaResults")}
               />
             </TabsContent>
           </Tabs>
@@ -150,7 +150,7 @@ const Destinations = () => {
               onChange={(e) => setNewsletterEmail(e.target.value)}
               className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
             />
-            <Button variant="secondary" onClick={handleNewsletterSubmit} disabled={subscribingNewsletter}>
+            <Button onClick={handleNewsletterSubmit} disabled={subscribingNewsletter}>
               {t("pages.support.subscribe")}
             </Button>
           </div>

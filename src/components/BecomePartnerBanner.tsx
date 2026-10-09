@@ -17,30 +17,27 @@ const BecomePartnerBanner = () => {
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/90 to-primary/70" />
+          <div className="absolute inset-0 bg-brand/90" />
           <div className="relative flex flex-col md:flex-row items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gold/20 flex items-center justify-center flex-shrink-0">
               <Handshake className="w-7 h-7 text-gold-light" strokeWidth={2.2} />
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-white">
-                {t("pages.index.becomePartnerTitle", "Vous gérez un hôtel ?")}
+                {t("ux.home.becomePartnerTitle")}
               </h2>
               <p className="text-sm md:text-base text-white/80 mt-1">
-                {t(
-                  "pages.index.becomePartnerSubtitle",
-                  "Listez-le sur Bossiz+ et touchez de nouveaux clients, sans commission cachée."
-                )}
+                {t("ux.home.becomePartnerSubtitle")}
               </p>
             </div>
           </div>
           <Button
             asChild
             size="lg"
-            className="relative bg-gold text-gold-foreground hover:bg-gold/90 font-semibold flex-shrink-0"
+            className="relative font-semibold flex-shrink-0"
           >
             <Link to="/partenariat">
-              {t("pages.index.becomePartnerCta", "Devenir partenaire")}
+              {t("ux.home.becomePartnerCta")}
             </Link>
           </Button>
         </div>

@@ -60,7 +60,7 @@ const StatsSection = () => {
   ];
 
   return (
-    <section className="py-16 md:py-20 bg-gradient-to-br from-primary/5 via-background to-secondary/5 relative overflow-hidden">
+    <section className="py-16 md:py-20 bg-primary/5 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full opacity-30">
         <div className="absolute top-10 left-10 w-64 h-64 bg-secondary/10 rounded-full blur-3xl" />
@@ -72,17 +72,17 @@ const StatsSection = () => {
           {statsData.map((stat, index) => (
             <div
               key={index}
-              className="group text-center p-6 md:p-8 rounded-2xl glass hover:glass-dark hover:shadow-glow transition-all duration-500 hover:scale-110 animate-slide-up-fade hover-lift relative overflow-hidden"
+              className="group text-center p-6 md:p-8 rounded-2xl glass hover:glass-dark hover:shadow-glow transition-all duration-slow ease-standard hover:scale-110 animate-slide-up-fade hover-lift relative overflow-hidden"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Shine effect on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-slow ease-standard">
                 <div className="absolute inset-0 animate-shimmer" />
               </div>
               
               {/* Icon with glow effect */}
               <div className="relative mb-4">
-                <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center group-hover:animate-pulse-glow transition-all`}>
+                <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-2xl bg-primary/5 flex items-center justify-center group-hover:animate-pulse-glow transition-all`}>
                   <stat.icon className={`w-8 h-8 md:w-10 md:h-10 ${stat.color} group-hover:scale-110 transition-transform`} />
                 </div>
               </div>
@@ -98,7 +98,7 @@ const StatsSection = () => {
               </div>
               
               {/* Bottom accent line */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-slow ease-standard" />
             </div>
           ))}
         </div>

@@ -5,13 +5,15 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
-import { Check, Car, Loader2 } from "lucide-react";
+import { Check, Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerCars from "@/assets/banner-cars.jpg";
 import { cn } from "@/lib/utils";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 interface CarPartnerPlan {
   plan_id: string;
@@ -27,6 +29,7 @@ interface CarPartnerPlan {
 }
 
 const CarPartnerPlans = () => {
+  const { t } = useTranslation();
   const [plans, setPlans] = useState<CarPartnerPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [yearly, setYearly] = useState(false);
@@ -73,7 +76,7 @@ const CarPartnerPlans = () => {
     setProcessingPlanId(plan.plan_id);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Connectez-vous avec le compte de votre agence pour souscrire.");
+      if (!user) throw new Error(t("ux.carPlans.signIn"));
 
       const { data: subscription, error: subscriptionError } = await supabase
         .from("car_partner_subscriptions")
@@ -85,7 +88,7 @@ const CarPartnerPlans = () => {
         .select("id")
         .single();
       if (subscriptionError || !subscription) {
-        throw subscriptionError || new Error("Impossible de créer la demande de souscription.");
+        throw subscriptionError || new Error(t("ux.carPlans.createError"));
       }
 
       const { data: profile } = await supabase
@@ -106,17 +109,17 @@ const CarPartnerPlans = () => {
       });
 
       if (error) {
-        throw new Error(await getEdgeFunctionErrorMessage(error, "Le paiement n'a pas pu être initialisé."));
+        throw new Error(await getEdgeFunctionErrorMessage(error, t("ux.carPlans.initError")));
       }
       if (!data?.success || typeof data.payment_url !== "string") {
-        throw new Error(data?.error || "Aucun lien de paiement n'a été créé. Aucun forfait n'a été activé.");
+        throw new Error(data?.error || t("ux.carPlans.noLink"));
       }
 
       window.location.assign(data.payment_url);
     } catch (error) {
       toast.error(error instanceof Error
         ? error.message
-        : "Le paiement n'a pas pu être initialisé. Aucun forfait n'a été activé.");
+        : t("ux.carPlans.initErrorNoPlan"));
     } finally {
       setProcessingPlanId(null);
     }
@@ -130,7 +133,7 @@ const CarPartnerPlans = () => {
       <div className="relative min-h-[42vh] md:min-h-[48vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerCars}
-          alt="Forfaits partenaires voiture"
+          alt={t("ux.carPlans.bannerAlt")}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/55 to-background" />
@@ -138,16 +141,16 @@ const CarPartnerPlans = () => {
         <div className="relative z-10 container mx-auto px-4 py-12 text-center">
           <div className="inline-flex items-center gap-2 text-white/90 text-sm font-medium mb-3">
             <Car className="w-4 h-4" />
-            Partenaires location de voiture
+            {t("ux.carPlans.eyebrow")}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-            Un forfait pour chaque taille de flotte
+            {t("ux.carPlans.title")}
           </h1>
           <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">
-            Listez vos véhicules sur Bossiz+ et gardez le contrôle de vos tarifs. Bossiz conserve 10% et vous reverse 90% des locations encaissées en ligne via Jèko.
+            {t("ux.carPlans.intro")}
           </p>
           <p className="text-sm text-white/85 mt-3">
-            Un abonnement payant confirmé est requis avant toute nouvelle annonce de véhicule. La publication n'est activée qu'après confirmation du paiement.
+            {t("ux.carPlans.requiredNote")}
           </p>
         </div>
       </div>
@@ -172,14 +175,12 @@ const CarPartnerPlans = () => {
             />
           </button>
           <span className={cn("text-sm font-medium", yearly ? "text-foreground" : "text-muted-foreground")}>
-            Annuel
+            {t("ux.carPlans.yearly")}
           </span>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton count={3} imageClassName="h-24" />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
             {plans.map((plan) => {
@@ -195,7 +196,7 @@ const CarPartnerPlans = () => {
                 >
                   {featured && (
                     <div className="absolute top-0 inset-x-0 bg-primary text-primary-foreground text-center text-xs font-semibold py-1.5">
-                      Le plus choisi
+                      {t("ux.carPlans.popular")}
                     </div>
                   )}
                   <CardHeader className={cn("pb-2", featured && "pt-9")}>
@@ -213,12 +214,12 @@ const CarPartnerPlans = () => {
                     </div>
 
                     <div className="flex items-center justify-between text-sm mb-4 px-3 py-2 rounded-lg bg-muted/50">
-                      <span className="text-muted-foreground">Part reversée</span>
+                      <span className="text-muted-foreground">{t("ux.carPlans.payoutShare")}</span>
                       <span className="font-semibold text-primary">90%</span>
                     </div>
                     <div className="flex items-center justify-between text-sm mb-5 px-3 py-2 rounded-lg bg-muted/50">
-                      <span className="text-muted-foreground">Véhicules en ligne</span>
-                      <span className="font-semibold">{plan.max_vehicles ? `Jusqu'à ${plan.max_vehicles}` : "Illimité"}</span>
+                      <span className="text-muted-foreground">{t("ux.carPlans.vehicles")}</span>
+                      <span className="font-semibold">{plan.max_vehicles ? t("ux.misc.upTo", { count: plan.max_vehicles }) : t("ux.misc.unlimited")}</span>
                     </div>
 
                     <ul className="space-y-2.5 mb-6 flex-1">
@@ -239,10 +240,10 @@ const CarPartnerPlans = () => {
                       onClick={() => void selectPlan(plan)}
                     >
                       {processingPlanId === plan.plan_id
-                        ? "Préparation du paiement..."
+                        ? t("ux.carPlans.preparing")
                         : agencyId
                           ? `Souscrire à ${plan.name}`
-                          : `Demander le forfait ${plan.name}`}
+                          : t("ux.misc.requestPlan", { name: plan.name })}
                     </Button>
                   </CardContent>
                 </Card>
@@ -252,11 +253,11 @@ const CarPartnerPlans = () => {
         )}
 
         <p className="text-center text-sm text-muted-foreground mt-10">
-          Déjà partenaire ?{" "}
+          {t("ux.partnershipData.alreadyPartner")}{" "}
           <Link to="/agency" className="text-primary font-medium hover:underline">
-            Accédez à votre espace agence
+            {t("ux.carPlans.agencySpace")}
           </Link>{" "}
-          pour gérer vos services et abonnements.
+          {t("ux.carPlans.agencySpaceDesc")}
         </p>
       </main>
 

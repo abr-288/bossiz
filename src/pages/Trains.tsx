@@ -18,6 +18,9 @@ import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
 import bannerTrains from "@/assets/banner-trains.jpg";
+import { EmptyState } from "@/components/ui/empty-state";
+import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 interface MappedTrain {
   id: string;
@@ -36,6 +39,7 @@ interface MappedTrain {
 }
 
 const Trains = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { searchTrains, loading, error } = useTrainSearch();
   const [trains, setTrains] = useState<MappedTrain[]>([]);
@@ -194,7 +198,7 @@ const Trains = () => {
 
   const formatTime = (time: string) => {
     if (time.includes("T")) {
-      return new Date(time).toLocaleTimeString("fr-FR", {
+      return new Date(time).toLocaleTimeString(currentLocaleTag(), {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -210,19 +214,19 @@ const Trains = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerTrains}
-          alt="Voyagez en Train"
+          alt={t("ux.trains.title")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
 
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-              Voyagez en Train
+              {t("ux.trains.title")}
             </h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
-              Trouvez les meilleurs trajets en train pour vos voyages
+              {t("ux.trains.subtitle")}
             </p>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -237,7 +241,7 @@ const Trains = () => {
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-              <p className="text-lg text-muted-foreground">Recherche des trains disponibles...</p>
+              <p className="text-lg text-muted-foreground">{t("ux.trains.searching")}</p>
             </div>
           )}
 
@@ -251,9 +255,12 @@ const Trains = () => {
 
           {!loading && !error && hasSearched && trains.length === 0 && (
             <Card>
-              <CardContent className="pt-6 text-center">
-                <Train className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-lg">Aucun train trouvé pour ces critères</p>
+              <CardContent className="p-0">
+                <EmptyState
+                  icon={Train}
+                  title={t("ux.trains.emptyTitle")}
+                  description={t("ux.trains.emptyDesc")}
+                />
               </CardContent>
             </Card>
           )}
@@ -273,10 +280,10 @@ const Trains = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="cheapest">Prix le plus bas</SelectItem>
-                        <SelectItem value="fastest">Plus rapide</SelectItem>
-                        <SelectItem value="earliest">Départ le plus tôt</SelectItem>
-                        <SelectItem value="latest">Départ le plus tard</SelectItem>
+                        <SelectItem value="cheapest">{t("ux.trains.cheapest")}</SelectItem>
+                        <SelectItem value="fastest">{t("ux.trains.fastest")}</SelectItem>
+                        <SelectItem value="earliest">{t("ux.trains.earliest")}</SelectItem>
+                        <SelectItem value="latest">{t("ux.trains.latest")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -285,25 +292,25 @@ const Trains = () => {
                     <SheetTrigger asChild>
                       <Button variant="outline" className="md:hidden">
                         <SlidersHorizontal className="mr-2 h-4 w-4" />
-                        Filtres
+                        {t("ux.trains.filters")}
                       </Button>
                     </SheetTrigger>
                     <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
                       <SheetHeader>
-                        <SheetTitle>Filtres</SheetTitle>
+                        <SheetTitle>{t("ux.trains.filters")}</SheetTitle>
                       </SheetHeader>
                       <div className="space-y-6 mt-6">
                         <div>
-                          <Label>Trier par</Label>
+                          <Label>{t("ux.trains.sortBy")}</Label>
                           <Select value={sortBy} onValueChange={setSortBy}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="cheapest">Prix le plus bas</SelectItem>
-                              <SelectItem value="fastest">Plus rapide</SelectItem>
-                              <SelectItem value="earliest">Départ le plus tôt</SelectItem>
-                              <SelectItem value="latest">Départ le plus tard</SelectItem>
+                              <SelectItem value="cheapest">{t("ux.trains.cheapest")}</SelectItem>
+                              <SelectItem value="fastest">{t("ux.trains.fastest")}</SelectItem>
+                              <SelectItem value="earliest">{t("ux.trains.earliest")}</SelectItem>
+                              <SelectItem value="latest">{t("ux.trains.latest")}</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -337,7 +344,7 @@ const Trains = () => {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Durée max</CardTitle>
+                      <CardTitle className="text-lg">{t("ux.trains.maxDuration")}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <Slider
@@ -376,7 +383,7 @@ const Trains = () => {
                   {availableTrainTypes.length > 0 && (
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-lg">Type de train</CardTitle>
+                        <CardTitle className="text-lg">{t("ux.trains.trainType")}</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         {availableTrainTypes.map((type) => (
@@ -468,9 +475,9 @@ const Trains = () => {
                             <p className="text-3xl font-bold text-primary mb-1">
                               <Price amount={train.price} fromCurrency="EUR" />
                             </p>
-                            <p className="text-sm text-muted-foreground mb-4">par personne</p>
+                            <p className="text-sm text-muted-foreground mb-4">{t("ux.trains.perPerson")}</p>
                             <Button onClick={() => handleBook(train)} className="w-full">
-                              Réserver
+                              {t("ux.trains.book")}
                             </Button>
                           </div>
                         </div>
@@ -486,9 +493,9 @@ const Trains = () => {
             <Card>
               <CardContent className="pt-6 text-center">
                 <Train className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-semibold mb-2">Recherchez votre trajet</h3>
+                <h3 className="text-xl font-semibold mb-2">{t("ux.trains.searchTitle")}</h3>
                 <p className="text-muted-foreground">
-                  Utilisez le formulaire ci-dessus pour trouver les meilleurs trains
+                  {t("ux.trains.searchDesc")}
                 </p>
               </CardContent>
             </Card>

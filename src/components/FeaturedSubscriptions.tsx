@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,12 +10,12 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { PhoneNumberInput } from "@/components/PhoneNumberInput";
-import { 
-  Building2, 
-  Crown, 
-  FileCheck, 
-  Plane, 
-  Check, 
+import {
+  Building2,
+  Crown,
+  FileCheck,
+  Plane,
+  Check,
   MessageCircle,
   ArrowRight,
   Star,
@@ -28,8 +26,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Heart,
-  Loader2
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 // Plans qui nécessitent une demande de contact au lieu d'un paiement direct
 const REQUEST_ONLY_PLANS = ["visa", "billets", "events"];
@@ -62,7 +61,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Heart: <Heart className="h-6 w-6" />,
 };
 
-const ITEMS_PER_PAGE = 4;
+// Même gabarit de carte que le carrousel « Offres du moment »
+const SLIDE_CLASS =
+  "flex w-[85%] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]";
 
 interface DisplayPlan {
   id: string;
@@ -86,7 +87,7 @@ const FeaturedSubscriptions = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(0);
+  const trackRef = useRef<HTMLUListElement>(null);
   const [plans, setPlans] = useState<DisplayPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequestPlan, setSelectedRequestPlan] = useState<DisplayPlan | null>(null);
@@ -133,20 +134,6 @@ const FeaturedSubscriptions = () => {
 
     fetchPlans();
   }, []);
-
-  const totalPages = Math.ceil(plans.length / ITEMS_PER_PAGE);
-  const currentPlans = plans.slice(
-    currentPage * ITEMS_PER_PAGE,
-    (currentPage + 1) * ITEMS_PER_PAGE
-  );
-
-  const nextPage = () => {
-    if (totalPages > 0) setCurrentPage((prev) => (prev + 1) % totalPages);
-  };
-
-  const prevPage = () => {
-    if (totalPages > 0) setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
-  };
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,175 +194,94 @@ const FeaturedSubscriptions = () => {
     window.open(`https://wa.me/2250700000000?text=${message}`, "_blank");
   };
 
-  if (isLoading) {
-    return (
-      <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden w-full">
-        <div className="flex justify-center items-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
-      </section>
-    );
-  }
+  const scrollBy = (direction: 1 | -1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollBy({ left: direction * track.clientWidth * 0.9, behavior: "smooth" });
+  };
 
-  if (plans.length === 0) return null;
+  if (!isLoading && plans.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden w-full">
-      {/* Background mesh gradient */}
-      <div className="absolute inset-0 gradient-mesh opacity-40" />
-      
-      <div className="site-container relative z-10">
-        <motion.div 
-          className="text-center mb-10 md:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <div className="inline-block mb-4">
-            <span className="px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold">
-              {t("subscriptions.badge", "Bossiz Conciergerie")}
-            </span>
+    <section aria-labelledby="subscriptions-title" className="w-full py-10 md:py-14">
+      <div className="site-container">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <h2 id="subscriptions-title" className="text-xl font-bold text-foreground md:text-2xl">
+              {t("subscriptions.featuredTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("subscriptions.featuredSubtitle")}</p>
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient mb-4 md:mb-6">
-            {t("subscriptions.featuredTitle", "Nos Abonnements")}
-          </h2>
-          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-            {t("subscriptions.featuredSubtitle", "Découvrez nos formules adaptées à vos besoins")}
-          </p>
-          
-          {/* Decorative underline */}
-          <div className="flex justify-center gap-2 mt-6">
-            <div className="w-16 h-1 bg-gradient-primary rounded-full" />
-            <div className="w-8 h-1 bg-secondary/50 rounded-full" />
-          </div>
-        </motion.div>
-
-        {/* Carousel Navigation */}
-        <div className="relative">
-          {/* Navigation Arrows */}
-          <button
-            onClick={prevPage}
-            className="absolute left-1 sm:left-0 top-1/2 -translate-y-1/2 sm:-translate-x-2 md:-translate-x-6 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-            aria-label={t('common.previous')}
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-          </button>
-          
-          <button
-            onClick={nextPage}
-            className="absolute right-1 sm:right-0 top-1/2 -translate-y-1/2 sm:translate-x-2 md:translate-x-6 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-            aria-label={t('common.next')}
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-          </button>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 px-8 sm:px-4 md:px-8"
-            >
-              {currentPlans.map((plan, index) => (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className={`group h-full overflow-hidden border-2 border-border/50 hover:border-secondary/50 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer hover-lift rounded-2xl bg-gradient-card relative ${plan.popular ? 'ring-2 ring-primary' : ''}`}>
-                    {/* Shine effect overlay */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10">
-                      <div className="absolute inset-0 animate-shimmer" />
-                    </div>
-                    
-                    {plan.popular && (
-                      <div className="absolute top-3 right-3 z-20">
-                        <Badge className="bg-primary text-primary-foreground">
-                          <Star className="w-3 h-3 mr-1" />
-                          {t("subscriptions.popular", "Populaire")}
-                        </Badge>
-                      </div>
-                    )}
-
-                    <CardHeader className="pb-2">
-                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center text-white mb-3`}>
-                        {plan.icon}
-                      </div>
-                      <CardTitle className="text-lg">{plan.name}</CardTitle>
-                      <CardDescription className="text-sm">{plan.subtitle}</CardDescription>
-                      <div className="mt-2">
-                        <span className="text-xl font-bold text-foreground">{plan.price}</span>
-                        {plan.priceNote && (
-                          <span className="text-xs text-muted-foreground ml-1">{plan.priceNote}</span>
-                        )}
-                      </div>
-                    </CardHeader>
-                    
-                    <CardContent className="pt-0 pb-4">
-                      <ul className="space-y-2">
-                        {plan.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
-                            <Check className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                    
-                    <CardFooter className="flex flex-col gap-2 pt-0">
-                      <Button 
-                        className="w-full" 
-                        size="sm"
-                        onClick={() => handleSubscribe(plan)}
-                      >
-                        {isRequestOnlyPlan(plan.plan_id) ? (
-                          <>
-                            {t("subscriptions.requestInfo", "Demander un devis")}
-                            <ArrowRight className="w-3 h-3 ml-1" />
-                          </>
-                        ) : (
-                          <>
-                            {t("subscriptions.subscribeDirect", "Souscrire")}
-                            <ArrowRight className="w-3 h-3 ml-1" />
-                          </>
-                        )}
-                      </Button>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="w-full"
-                        onClick={() => openWhatsApp(plan.name)}
-                      >
-                        <MessageCircle className="w-3 h-3 mr-1" />
-                        WhatsApp
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Pagination Dots */}
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  currentPage === index 
-                    ? 'bg-primary w-8' 
-                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                }`}
-                aria-label={`Page ${index + 1}`}
-              />
-            ))}
+          <div className="hidden gap-2 md:flex">
+            <Button variant="outline" size="icon" onClick={() => scrollBy(-1)} aria-label={t("common.previous")}>
+              <ChevronLeft />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => scrollBy(1)} aria-label={t("common.next")}>
+              <ChevronRight />
+            </Button>
           </div>
         </div>
+
+        <ul
+          ref={trackRef}
+          aria-roledescription={t("ux.offers.carousel")}
+          className="-mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-px-4 px-4 pb-2 hide-scrollbar"
+        >
+          {isLoading &&
+            Array.from({ length: 3 }, (_, i) => (
+              <li key={`s-${i}`} className={SLIDE_CLASS} aria-hidden="true">
+                <div className="space-y-3 p-5">
+                  <Skeleton className="h-12 w-12 rounded-xl" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-24 w-full" />
+                  <Skeleton className="h-10 w-full rounded-full" />
+                </div>
+              </li>
+            ))}
+
+          {plans.map((plan) => (
+            <li key={plan.id} className={cn(SLIDE_CLASS, plan.popular && "border-primary ring-1 ring-primary")}>
+              <div className="flex flex-1 flex-col p-5">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${plan.color} text-white`}>
+                    {plan.icon}
+                  </div>
+                  {plan.popular && (
+                    <Badge className="border-0 bg-primary text-primary-foreground">
+                      <Star className="mr-1 h-3 w-3" aria-hidden="true" />
+                      {t("subscriptions.popular")}
+                    </Badge>
+                  )}
+                </div>
+                <h3 className="text-lg font-bold text-foreground">{plan.name}</h3>
+                {plan.subtitle && <p className="mt-1 text-sm text-muted-foreground">{plan.subtitle}</p>}
+                <p className="mt-3">
+                  <span className="t-price text-xl text-foreground">{plan.price}</span>
+                  {plan.priceNote && <span className="ml-1 text-sm text-muted-foreground">{plan.priceNote}</span>}
+                </p>
+                <ul className="mt-4 space-y-2">
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-auto flex flex-col gap-2 pt-5">
+                  <Button className="w-full" onClick={() => handleSubscribe(plan)}>
+                    {isRequestOnlyPlan(plan.plan_id) ? t("subscriptions.requestInfo") : t("subscriptions.subscribeDirect")}
+                    <ArrowRight />
+                  </Button>
+                  <Button variant="outline" className="w-full" onClick={() => openWhatsApp(plan.name)}>
+                    <MessageCircle />
+                    WhatsApp
+                  </Button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Dialog pour les plans nécessitant une demande */}

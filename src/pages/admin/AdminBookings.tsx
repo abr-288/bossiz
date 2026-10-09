@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 import type { Database } from "@/integrations/supabase/types";
+import { useTranslation } from "react-i18next";
 
 type AdminBooking = Database["public"]["Tables"]["bookings"]["Row"] & {
   services: { name: string; type: string; agency_id?: string | null } | null;
@@ -29,6 +30,7 @@ const bookingStatusBadge = (status: string) => <BookingStatusBadge status={statu
 const paymentStatusBadge = (status: string) => <PaymentStatusBadge status={status} />;
 
 const AdminBookings = () => {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<AdminBooking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,9 +143,9 @@ const AdminBookings = () => {
         body: { booking_id: selectedBooking.id },
       });
       if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Échec du remboursement");
+      if (!data?.success) throw new Error(data?.error || t("ux.bo.refundFailed"));
 
-      toast.success(data.refunded ? "Remboursement effectué" : "Réservation annulée");
+      toast.success(data.refunded ? t("ux.bo.refundCompleted") : t("ux.bo.bookingCancelled"));
       await refreshAfterAction(selectedBooking.id);
     } catch (error: unknown) {
       toast.error(errorMessage(error, "Erreur lors du remboursement"));
@@ -158,7 +160,7 @@ const AdminBookings = () => {
     try {
       const { error } = await supabase.rpc("admin_mark_booking_balance_paid", { p_booking_id: selectedBooking.id });
       if (error) throw error;
-      toast.success("Solde réglé sur place enregistré");
+      toast.success(t("ux.bo.balancePaidSiteRecorded"));
       await refreshAfterAction(selectedBooking.id);
     } catch (error: unknown) {
       toast.error(errorMessage(error, "Impossible d’enregistrer le règlement du solde"));
@@ -176,7 +178,7 @@ const AdminBookings = () => {
       });
       if (error) throw error;
       if (!data?.success) {
-        toast.error(data?.error || "Émission du billet toujours impossible");
+        toast.error(data?.error || t("ux.bo.ticketIssuanceStillNotPossible"));
       } else {
         toast.success(`PNR émis: ${data.pnr}`);
       }
@@ -197,7 +199,7 @@ const AdminBookings = () => {
         .update({ status: pendingStatus, updated_at: new Date().toISOString() })
         .eq("id", selectedBooking.id);
       if (error) throw error;
-      toast.success("Statut mis à jour");
+      toast.success(t("ux.bo.statusUpdated"));
       await refreshAfterAction(selectedBooking.id);
     } catch (error: unknown) {
       toast.error(errorMessage(error, "Erreur lors de la mise à jour du statut"));
@@ -227,7 +229,7 @@ const AdminBookings = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Gestion des Réservations</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t("ux.bo.bookingManagement")}</h1>
             <p className="text-muted-foreground">
               {filteredBookings.length} réservation(s) trouvée(s)
             </p>
@@ -237,14 +239,14 @@ const AdminBookings = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Filtres</CardTitle>
+            <CardTitle>{t("ux.bo.filters")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher (nom, email, PNR...)"
+                  placeholder={t("ux.bo.searchNameEmailPnr")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -253,29 +255,29 @@ const AdminBookings = () => {
 
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Statut" />
+                  <SelectValue placeholder={t("ux.bo.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  <SelectItem value="pending">En attente</SelectItem>
-                  <SelectItem value="confirmed">Confirmées</SelectItem>
-                  <SelectItem value="completed">Terminées</SelectItem>
-                  <SelectItem value="cancelled">Annulées</SelectItem>
+                  <SelectItem value="all">{t("ux.bo.allStatuses")}</SelectItem>
+                  <SelectItem value="pending">{t("ux.bo.pending2")}</SelectItem>
+                  <SelectItem value="confirmed">{t("ux.bo.confirmed2")}</SelectItem>
+                  <SelectItem value="completed">{t("ux.bo.completed")}</SelectItem>
+                  <SelectItem value="cancelled">{t("ux.bo.cancelled")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={paymentFilter} onValueChange={setPaymentFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Paiement" />
+                  <SelectValue placeholder={t("ux.bo.payment")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les paiements</SelectItem>
-                  <SelectItem value="pending">En attente</SelectItem>
-                  <SelectItem value="processing">En traitement</SelectItem>
-                  <SelectItem value="partially_paid">Acompte payé</SelectItem>
-                  <SelectItem value="paid">Payé</SelectItem>
-                  <SelectItem value="refunded">Remboursé</SelectItem>
-                  <SelectItem value="failed">Échoué</SelectItem>
+                  <SelectItem value="all">{t("ux.bo.allPayments")}</SelectItem>
+                  <SelectItem value="pending">{t("ux.bo.pending2")}</SelectItem>
+                  <SelectItem value="processing">{t("ux.bo.processing")}</SelectItem>
+                  <SelectItem value="partially_paid">{t("ux.bo.depositPaid")}</SelectItem>
+                  <SelectItem value="paid">{t("ux.bo.paid")}</SelectItem>
+                  <SelectItem value="refunded">{t("ux.bo.refunded")}</SelectItem>
+                  <SelectItem value="failed">{t("ux.bo.failed")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -286,15 +288,15 @@ const AdminBookings = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Client</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Montant</TableHead>
-                <TableHead>Marge</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Paiement</TableHead>
+                <TableHead>{t("ux.bo.customer")}</TableHead>
+                <TableHead>{t("ux.bo.service")}</TableHead>
+                <TableHead>{t("ux.bo.date")}</TableHead>
+                <TableHead>{t("ux.bo.amount")}</TableHead>
+                <TableHead>{t("ux.bo.margin")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead>{t("ux.bo.payment")}</TableHead>
                 <TableHead>PNR</TableHead>
-                <TableHead className="text-right">Détail</TableHead>
+                <TableHead className="text-right">{t("ux.bo.details")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -317,7 +319,7 @@ const AdminBookings = () => {
                     <TableCell className="font-medium">
                       <Price amount={Number(booking.total_price)} fromCurrency={booking.currency} />
                     </TableCell>
-                    <TableCell className={m !== null ? "text-emerald-600 font-medium" : "text-muted-foreground"}>
+                    <TableCell className={m !== null ? "text-success font-medium" : "text-muted-foreground"}>
                       {m !== null ? <Price amount={m} fromCurrency={booking.currency} /> : "-"}
                     </TableCell>
                     <TableCell>{bookingStatusBadge(booking.status)}</TableCell>
@@ -326,7 +328,7 @@ const AdminBookings = () => {
                       {booking.external_ref || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); openDetail(booking); }}>
+                      <Button aria-label={t("ux.bo.viewDetails")} variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); openDetail(booking); }}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -345,7 +347,7 @@ const AdminBookings = () => {
               <SheetHeader>
                 <SheetTitle>{selectedBooking.customer_name}</SheetTitle>
                 <SheetDescription>
-                  {selectedBooking.services?.name || "Service"} · Réservation #{selectedBooking.id.slice(0, 8)}
+                  {selectedBooking.services?.name || t("ux.bo.service")} · Réservation #{selectedBooking.id.slice(0, 8)}
                 </SheetDescription>
               </SheetHeader>
 
@@ -361,34 +363,34 @@ const AdminBookings = () => {
                     <p className="font-medium break-all">{selectedBooking.customer_email}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Téléphone</p>
+                    <p className="text-muted-foreground">{t("ux.bo.phone")}</p>
                     <p className="font-medium">{selectedBooking.customer_phone || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Montant facturé</p>
+                    <p className="text-muted-foreground">{t("ux.bo.amountCharged")}</p>
                     <p className="font-medium"><Price amount={Number(selectedBooking.total_price)} fromCurrency={selectedBooking.currency} /></p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Marge</p>
-                    <p className="font-medium text-emerald-600">
+                    <p className="text-muted-foreground">{t("ux.bo.margin")}</p>
+                    <p className="font-medium text-success">
                       {margin(selectedBooking) !== null
                         ? <Price amount={margin(selectedBooking)!} fromCurrency={selectedBooking.currency} />
-                        : "Coût fournisseur inconnu"}
+                        : t("ux.bo.supplierCostUnknown")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">PNR / référence</p>
+                    <p className="text-muted-foreground">{t("ux.bo.pnrReference")}</p>
                     <p className="font-medium font-mono">{selectedBooking.external_ref || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Créée le</p>
+                    <p className="text-muted-foreground">{t("ux.bo.created")}</p>
                     <p className="font-medium">{format(new Date(selectedBooking.created_at), "dd MMM yyyy HH:mm", { locale: fr })}</p>
                   </div>
                 </div>
 
                 {selectedBooking.notes && (
                   <div className="text-sm">
-                    <p className="text-muted-foreground">Notes</p>
+                    <p className="text-muted-foreground">{t("ux.bo.notes")}</p>
                     <p>{selectedBooking.notes}</p>
                   </div>
                 )}
@@ -396,21 +398,21 @@ const AdminBookings = () => {
                 <Separator />
 
                 <div>
-                  <h4 className="font-semibold text-sm mb-2">Paiement</h4>
+                  <h4 className="font-semibold text-sm mb-2">{t("ux.bo.payment")}</h4>
                   {detailLoading ? (
                     <Skeleton className="h-16" />
                   ) : detailPayment ? (
                     <div className="text-sm space-y-1 bg-muted/50 rounded-lg p-3">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Transaction</span>
+                        <span className="text-muted-foreground">{t("ux.bo.transaction")}</span>
                         <span className="font-mono text-xs">{detailPayment.transaction_id}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Statut</span>
+                        <span className="text-muted-foreground">{t("ux.bo.status")}</span>
                         {paymentStatusBadge(detailPayment.status)}
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Méthode</span>
+                        <span className="text-muted-foreground">{t("ux.bo.method")}</span>
                         <span>{detailPayment.payment_method}</span>
                       </div>
                       <div className="flex justify-between">
@@ -419,14 +421,14 @@ const AdminBookings = () => {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Aucun paiement enregistré</p>
+                    <p className="text-sm text-muted-foreground">{t("ux.bo.noPaymentRecorded")}</p>
                   )}
                 </div>
 
                 <Separator />
 
                 <div>
-                  <h4 className="font-semibold text-sm mb-2">Passagers / voyageurs</h4>
+                  <h4 className="font-semibold text-sm mb-2">{t("ux.bo.passengersTravelers")}</h4>
                   {detailLoading ? (
                     <Skeleton className="h-16" />
                   ) : detailPassengers.length > 0 ? (
@@ -441,21 +443,21 @@ const AdminBookings = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Aucun passager enregistré</p>
+                    <p className="text-sm text-muted-foreground">{t("ux.bo.noPassengerRecorded")}</p>
                   )}
                 </div>
 
                 <Separator />
 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-sm">Actions administrateur</h4>
+                  <h4 className="font-semibold text-sm">{t("ux.bo.administratorActions")}</h4>
 
                   {selectedBooking.payment_status === "partially_paid" && (
                     <div className="rounded-md border p-3 space-y-2">
-                      <p className="text-sm">Solde restant : <Price amount={selectedBooking.balance_due || 0} fromCurrency={selectedBooking.currency} /></p>
+                      <p className="text-sm">{t("ux.bo.remainingBalance")} <Price amount={selectedBooking.balance_due || 0} fromCurrency={selectedBooking.currency} /></p>
                       <Button className="w-full" disabled={actionLoading !== null} onClick={handleSettleOnSite}>
                         {actionLoading === "settle" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                        Confirmer le règlement sur place
+                        {t("ux.bo.confirmSitePayment")}
                       </Button>
                     </div>
                   )}
@@ -466,10 +468,10 @@ const AdminBookings = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pending">En attente</SelectItem>
-                        <SelectItem value="confirmed">Confirmée</SelectItem>
-                        <SelectItem value="completed">Terminée</SelectItem>
-                        <SelectItem value="cancelled">Annulée</SelectItem>
+                        <SelectItem value="pending">{t("ux.bo.pending2")}</SelectItem>
+                        <SelectItem value="confirmed">{t("ux.bo.confirmed")}</SelectItem>
+                        <SelectItem value="completed">{t("ux.bo.completed2")}</SelectItem>
+                        <SelectItem value="cancelled">{t("ux.bo.cancelled2")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button
@@ -490,7 +492,7 @@ const AdminBookings = () => {
                       onClick={handleRelaunchPnr}
                     >
                       {actionLoading === "pnr" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
-                      Relancer l'émission du billet (PNR)
+                      {t("ux.bo.retryTicketIssuancePnr")}
                     </Button>
                   )}
 
@@ -502,7 +504,7 @@ const AdminBookings = () => {
                       onClick={handleRefund}
                     >
                       {actionLoading === "refund" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Undo2 className="h-4 w-4 mr-2" />}
-                      Rembourser et annuler
+                      {t("ux.bo.refundCancel")}
                     </Button>
                   )}
                 </div>

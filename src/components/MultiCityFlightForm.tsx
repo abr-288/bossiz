@@ -82,6 +82,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
             
             {legs.length > 2 && (
               <Button
+                aria-label="Supprimer ce trajet"
                 variant="ghost"
                 size="icon"
                 className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"

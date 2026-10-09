@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   Smartphone, 
   Download, 
@@ -23,6 +22,8 @@ const iOSDownloadSection = () => {
     android: 0
   });
   const [detectedOS, setDetectedOS] = useState<string>('');
+  // Sur téléphone, on ne montre que ce qui concerne le système de l'appareil
+  const isMobileOS = detectedOS === 'ios' || detectedOS === 'android';
 
   // Fonction pour détecter le système d'exploitation
   const detectOS = () => {
@@ -165,7 +166,7 @@ const iOSDownloadSection = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+    <section className="py-20 bg-muted/40 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="h-full w-full" style={{
@@ -175,54 +176,48 @@ const iOSDownloadSection = () => {
       </div>
       
       {/* Floating Elements */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
       
       <div className="site-container relative z-10">
         <div className="text-center mb-12">
-          <div className="inline-block mb-6">
-            <Badge className="bg-blue-100 text-blue-800 border-blue-200 px-6 py-3">
-              <Apple className="w-6 h-6 mr-3" />
-              <span className="text-lg font-semibold">{t('iosDownload.badge')}</span>
-            </Badge>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 leading-tight">
             {t('iosDownload.title')}
-            <span className="block text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent mt-2">
+            <span className="block text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-success/80 bg-clip-text text-transparent mt-2">
               {t('iosDownload.titleHighlight')}
             </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             {t('iosDownload.subtitle')}
           </p>
           
           {/* Système détecté */}
           {detectedOS && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-md border border-gray-200">
+            <div className="mt-4 inline-flex items-center gap-2 bg-card px-4 py-2 rounded-full shadow-md border border-border">
               {getDetectedOSIcon()}
-              <span className="text-sm font-medium text-gray-700">{getDetectedOSText()}</span>
+              <span className="text-sm font-medium text-foreground">{getDetectedOSText()}</span>
             </div>
           )}
         </div>
 
         {/* Bouton Universel de Téléchargement */}
         <div className="max-w-md mx-auto mb-12">
-          <Card className="border-2 border-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 hover:shadow-2xl hover:scale-105 group bg-white shadow-lg">
+          <Card className="border-2 border-gradient-to-r from-primary to-primary/80  transition-all duration-slow ease-standard hover:shadow-2xl hover:scale-105 group bg-card shadow-lg">
             <CardContent className="p-8 text-center">
               <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-slow ease-standard">
                   <Download className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('iosDownload.smart.title')}</h3>
-                <p className="text-gray-600">{t('iosDownload.smart.subtitle')}</p>
+                <h3 className="text-2xl font-bold text-foreground mb-2">{t('iosDownload.smart.title')}</h3>
+                <p className="text-muted-foreground">{t('iosDownload.smart.subtitle')}</p>
               </div>
 
               <Button
                 size="lg"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-2xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl relative overflow-hidden group"
+                className="w-full bg-action text-action-foreground hover:bg-action-hover transition-all duration-slow ease-standard shadow-2xl font-extrabold py-6 text-lg border-4 border-white hover:border-border rounded-xl relative overflow-hidden group"
                 onClick={handleUniversalInstall}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-slow ease-standard"></div>
                 <div className="relative z-10 flex items-center justify-center">
                   <Download className="w-6 h-6 mr-3" />
                   {detectedOS === 'ios' ? t('iosDownload.smart.ctaIOS') :
@@ -231,7 +226,7 @@ const iOSDownloadSection = () => {
                 </div>
               </Button>
 
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-muted-foreground mt-4">
                 {detectedOS === 'ios' ? t('iosDownload.smart.hintIOS') :
                  detectedOS === 'android' ? t('iosDownload.smart.hintAndroid') :
                  t('iosDownload.smart.hintGeneric')}
@@ -240,28 +235,29 @@ const iOSDownloadSection = () => {
           </Card>
         </div>
 
+        {!isMobileOS && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* iOS Download Card */}
-          <Card className="border-2 border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-2xl hover:scale-105 group bg-white shadow-lg">
+          <Card className="border-2 border-border hover:border-info/30 transition-all duration-slow ease-standard hover:shadow-2xl hover:scale-105 group bg-card shadow-lg">
             <CardContent className="p-8 text-center">
               <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-20 h-20 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-slow ease-standard">
                   <Apple className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">iOS</h3>
-                <p className="text-gray-600 mb-4">{t('iosDownload.ios.devices')}</p>
+                <h3 className="text-2xl font-bold text-foreground mb-2">iOS</h3>
+                <p className="text-muted-foreground mb-4">{t('iosDownload.ios.devices')}</p>
               </div>
 
               <div className="space-y-4">
                 <Button
                   size="lg"
-                  className="w-full bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-300 shadow-2xl font-black py-6 text-lg border-4 border-white hover:border-gray-200 rounded-xl relative overflow-hidden group"
+                  className="w-full bg-gradient-to-r from-black to-gray-900 text-white hover:from-gray-800 hover:to-gray-700 transition-all duration-slow ease-standard shadow-2xl font-extrabold py-6 text-lg border-4 border-white hover:border-border rounded-xl relative overflow-hidden group"
                   onClick={() => {
                     handleDownloadClick('ios');
                     handleAppInstall();
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-slow ease-standard"></div>
                   <div className="relative z-10 flex items-center justify-center">
                     <Download className="w-6 h-6 mr-3" />
                     {t('iosDownload.smart.ctaIOS')}
@@ -270,7 +266,7 @@ const iOSDownloadSection = () => {
 
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-gray-300 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 font-bold py-6 text-lg"
+                  className="w-full border-2 border-border hover:border-info/30 hover:text-info hover:bg-info/10 transition-all duration-slow ease-standard transform hover:scale-105 font-bold py-6 text-lg"
                   onClick={() => setShowQR(!showQR)}
                 >
                   <QrCode className="w-6 h-6 mr-3" />
@@ -280,8 +276,8 @@ const iOSDownloadSection = () => {
 
               {/* QR Code Modal */}
               {showQR && (
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-600 mb-3">{t('iosDownload.ios.qrHint')}</p>
+                <div className="mt-6 p-4 bg-muted rounded-lg border border-border">
+                  <p className="text-sm text-muted-foreground mb-3">{t('iosDownload.ios.qrHint')}</p>
                   <img
                     src={qrCodeUrl}
                     alt={t('iosDownload.ios.qrAlt')}
@@ -291,8 +287,8 @@ const iOSDownloadSection = () => {
               )}
 
               {/* Download Stats */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <div className="mt-6 pt-6 border-t border-border">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Download className="w-4 h-4" />
                   <span>{t('iosDownload.downloadsCount', { count: downloadStats.ios })}</span>
                 </div>
@@ -301,20 +297,20 @@ const iOSDownloadSection = () => {
           </Card>
 
           {/* Android Download Card */}
-          <Card className="border-2 border-gray-200 hover:border-green-300 transition-all duration-300 hover:shadow-2xl hover:scale-105 group bg-white shadow-lg">
+          <Card className="border-2 border-border hover:border-success/30 transition-all duration-slow ease-standard hover:shadow-2xl hover:scale-105 group bg-card shadow-lg">
             <CardContent className="p-8 text-center">
               <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-slow ease-standard">
                   <Smartphone className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Android</h3>
-                <p className="text-gray-600 mb-4">{t('iosDownload.android.devices')}</p>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Android</h3>
+                <p className="text-muted-foreground mb-4">{t('iosDownload.android.devices')}</p>
               </div>
 
               <div className="space-y-4">
                 <Button
                   size="lg"
-                  className="w-full bg-green-600 text-white hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-bold py-6 text-lg"
+                  className="w-full bg-success text-success-foreground hover:bg-success/90 shadow-md font-bold py-6 text-lg"
                   onClick={() => {
                     handleDownloadClick('android');
                     window.open(playStoreUrl, '_blank');
@@ -326,7 +322,7 @@ const iOSDownloadSection = () => {
 
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-gray-300 hover:border-green-300 hover:text-green-600 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 font-bold py-6 text-lg"
+                  className="w-full border-2 border-border hover:border-success/30 hover:text-success hover:bg-success/10 transition-all duration-slow ease-standard transform hover:scale-105 font-bold py-6 text-lg"
                   onClick={() => window.open(playStoreUrl, '_blank')}
                 >
                   <ExternalLink className="w-6 h-6 mr-3" />
@@ -335,8 +331,8 @@ const iOSDownloadSection = () => {
               </div>
 
               {/* Download Stats */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <div className="mt-6 pt-6 border-t border-border">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Download className="w-4 h-4" />
                   <span>{t('iosDownload.downloadsCount', { count: downloadStats.android })}</span>
                 </div>
@@ -345,61 +341,70 @@ const iOSDownloadSection = () => {
           </Card>
         </div>
 
+        )}
+
         {/* Features Section */}
+        {!isMobileOS && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-info/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Zap className="w-8 h-8 text-info" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('iosDownload.features.fast.title')}</h3>
-            <p className="text-gray-600">{t('iosDownload.features.fast.description')}</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{t('iosDownload.features.fast.title')}</h3>
+            <p className="text-muted-foreground">{t('iosDownload.features.fast.description')}</p>
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-success/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-8 h-8 text-success" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('iosDownload.features.secure.title')}</h3>
-            <p className="text-gray-600">{t('iosDownload.features.secure.description')}</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{t('iosDownload.features.secure.title')}</h3>
+            <p className="text-muted-foreground">{t('iosDownload.features.secure.description')}</p>
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-purple-600" />
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('iosDownload.features.reliable.title')}</h3>
-            <p className="text-gray-600">{t('iosDownload.features.reliable.description')}</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{t('iosDownload.features.reliable.title')}</h3>
+            <p className="text-muted-foreground">{t('iosDownload.features.reliable.description')}</p>
           </div>
         </div>
 
-        {/* Instructions Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('iosDownload.instructions.title')}</h3>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Instructions Section */}
+        <div className="bg-card rounded-2xl shadow-lg p-8 border border-border">
+          <h3 className="text-2xl font-bold text-foreground mb-6 text-center">{t('iosDownload.instructions.title')}</h3>
+
+          <div className={isMobileOS ? "grid grid-cols-1 gap-8" : "grid grid-cols-1 md:grid-cols-2 gap-8"}>
+            {detectedOS !== 'android' && (
             <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Apple className="w-5 h-5" />
                 {t('iosDownload.instructions.iosTitle')}
               </h4>
-              <ol className="space-y-3 text-gray-600">
+              <ol className="space-y-3 text-muted-foreground">
                 {(t('iosDownload.instructions.iosSteps', { returnObjects: true }) as string[]).map((step, i) => (
                   <li key={i}>{i + 1}. {step}</li>
                 ))}
               </ol>
             </div>
+            )}
 
+            {detectedOS !== 'ios' && (
             <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Smartphone className="w-5 h-5" />
                 Android
               </h4>
-              <ol className="space-y-3 text-gray-600">
+              <ol className="space-y-3 text-muted-foreground">
                 {(t('iosDownload.instructions.androidSteps', { returnObjects: true }) as string[]).map((step, i) => (
                   <li key={i}>{i + 1}. {step}</li>
                 ))}
               </ol>
             </div>
+            )}
           </div>
         </div>
       </div>

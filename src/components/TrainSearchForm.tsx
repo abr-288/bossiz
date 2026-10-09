@@ -143,7 +143,7 @@ export const TrainSearchForm = () => {
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Veuillez corriger les erreurs dans le formulaire
+              {t("ux.trainSearch.fixErrors")}
             </AlertDescription>
           </Alert>
         )}
@@ -172,6 +172,7 @@ export const TrainSearchForm = () => {
 
             <div className="md:col-span-1 flex justify-center items-center pt-6">
               <Button
+                aria-label="Inverser le départ et l'arrivée"
                 type="button"
                 variant="outline"
                 size="icon"
@@ -304,8 +305,8 @@ export const TrainSearchForm = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="economy">Économique</SelectItem>
-                  <SelectItem value="first">Première</SelectItem>
+                  <SelectItem value="economy">{t("ux.trainSearch.economy")}</SelectItem>
+                  <SelectItem value="first">{t("ux.trainSearch.first")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.travelClass && touched.travelClass && (
@@ -320,7 +321,7 @@ export const TrainSearchForm = () => {
             className={cn("mt-6", hasErrors && "opacity-50 cursor-not-allowed")}
             disabled={hasErrors || loading}
           >
-            Rechercher des trains
+            {t("ux.trainSearch.search")}
           </UnifiedSubmitButton>
         </div>
       </UnifiedForm>

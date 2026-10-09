@@ -100,18 +100,18 @@ const Contact = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative py-16 md:py-20 bg-primary overflow-hidden">
+      <section className="relative py-16 md:py-20 bg-brand overflow-hidden">
         <LazyImage
           src={bannerContact}
           alt={t("pages.contact.title", "Contactez-nous")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-primary/65" />
+        <div className="absolute inset-0 bg-brand/65" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter drop-shadow-lg">
             {t("pages.contact.title", "Contactez-nous")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
@@ -155,7 +155,7 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {/* Agencies */}
           <div>
-            <h2 className="text-2xl font-black text-foreground mb-6 flex items-center gap-2">
+            <h2 className="text-2xl font-extrabold text-foreground mb-6 flex items-center gap-2">
               <Building2 className="w-6 h-6 text-primary" />
               {t("pages.contact.agenciesTitle", "Nos agences")}
             </h2>
@@ -201,7 +201,7 @@ const Contact = () => {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary hover:text-white text-primary transition-colors"
+                      className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground text-primary transition-colors"
                     >
                       <Icon className="w-5 h-5" />
                     </a>

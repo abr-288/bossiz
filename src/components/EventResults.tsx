@@ -1,10 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, CalendarX2 } from "lucide-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Price } from "@/components/ui/price";
+import { EmptyState } from "@/components/ui/empty-state";
+import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 interface Event {
   id: string;
@@ -29,9 +30,11 @@ interface EventResultsProps {
 export const EventResults = ({ events, onBook }: EventResultsProps) => {
   if (!events || events.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">Aucun événement trouvé</p>
-      </div>
+      <EmptyState
+        icon={CalendarX2}
+        title="Aucun événement trouvé"
+        description="Essayez une autre ville ou d'autres dates."
+      />
     );
   }
 
@@ -72,7 +75,7 @@ export const EventResults = ({ events, onBook }: EventResultsProps) => {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span>
-                    {format(new Date(event.date), "PPP", { locale: fr })}
+                    {format(new Date(event.date), "PPP", { locale: currentDateFnsLocale() })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">

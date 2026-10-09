@@ -68,7 +68,22 @@ interface NationalitySelectProps {
 }
 
 export const NationalitySelect = ({ id, value, onValueChange }: NationalitySelectProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // En français on garde l'adjectif (« Ivoirienne ») ; dans les autres langues,
+  // le nom du pays est fourni par le navigateur à partir du code ISO.
+  const regionNames = i18n.language.startsWith("fr")
+    ? null
+    : new Intl.DisplayNames([i18n.language.startsWith("zh") ? "zh-CN" : "en"], { type: "region" });
+  const displayName = (nat: Nationality) => {
+    if (!regionNames) return nat.name;
+    if (nat.code === "OTHER") return t("ux.nationality.other");
+    try {
+      return regionNames.of(nat.code) ?? nat.name;
+    } catch {
+      // Code non reconnu par le navigateur : on garde le libellé d'origine
+      return nat.name;
+    }
+  };
   const selectedNationality = nationalities.find(
     (nationality) =>
       nationality.code === value ||
@@ -82,7 +97,7 @@ export const NationalitySelect = ({ id, value, onValueChange }: NationalitySelec
           {selectedNationality && (
             <span className="flex items-center gap-2">
               <NationalityFlag {...selectedNationality} />
-              <span>{selectedNationality.name}</span>
+              <span>{displayName(selectedNationality)}</span>
             </span>
           )}
         </SelectValue>
@@ -92,7 +107,7 @@ export const NationalitySelect = ({ id, value, onValueChange }: NationalitySelec
           <SelectItem key={nat.code} value={nat.code}>
             <span className="flex items-center gap-2">
               <NationalityFlag {...nat} />
-              <span>{nat.name}</span>
+              <span>{displayName(nat)}</span>
             </span>
           </SelectItem>
         ))}

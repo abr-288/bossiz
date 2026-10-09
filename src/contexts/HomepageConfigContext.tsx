@@ -1,5 +1,6 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { useContext, ReactNode } from "react";
 import { useHomepageConfig, HomepageConfig, HomepageFeature, HomepageSection } from "@/hooks/useHomepageConfig";
+import { singletonContext } from "@/lib/singletonContext";
 
 interface HomepageConfigContextType {
   config: HomepageConfig;
@@ -9,7 +10,7 @@ interface HomepageConfigContextType {
   refetch: () => Promise<void>;
 }
 
-const HomepageConfigContext = createContext<HomepageConfigContextType | undefined>(undefined);
+const HomepageConfigContext = singletonContext<HomepageConfigContextType | undefined>("HomepageConfig", undefined);
 
 export const HomepageConfigProvider = ({ children }: { children: ReactNode }) => {
   const { config, loading, updateFeature, updateSection, refetch } = useHomepageConfig();

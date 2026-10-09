@@ -65,6 +65,7 @@ export const FlightFilters = ({
                 </Label>
                 <div className="flex items-center gap-2">
                   <Button
+                    aria-label="Diminuer"
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
@@ -74,6 +75,7 @@ export const FlightFilters = ({
                   </Button>
                   <span className="w-8 text-center text-sm font-medium">{baggageHandCount}</span>
                   <Button
+                    aria-label="Augmenter"
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
@@ -92,6 +94,7 @@ export const FlightFilters = ({
                 </Label>
                 <div className="flex items-center gap-2">
                   <Button
+                    aria-label="Diminuer"
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
@@ -101,6 +104,7 @@ export const FlightFilters = ({
                   </Button>
                   <span className="w-8 text-center text-sm font-medium">{baggageCheckCount}</span>
                   <Button
+                    aria-label="Augmenter"
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"

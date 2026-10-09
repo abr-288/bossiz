@@ -3,10 +3,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Star, MapPin, Loader2 } from "lucide-react";
+import { ShieldCheck, Star, MapPin } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useHotelSearch } from "@/hooks/useHotelSearch";
 import bannerHotels from "@/assets/banner-hotels.jpg";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 interface PartnerHotel {
   id: string;
@@ -77,7 +78,7 @@ const HotelsPartners = () => {
           alt="Hôtels & Hébergements"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12 text-center animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Trouvez votre hôtel</h1>
@@ -94,7 +95,7 @@ const HotelsPartners = () => {
         </div>
 
         {/* Widget Stay22 */}
-        <Card className="w-full max-w-4xl mx-auto border border-gray-200 shadow-sm rounded-3xl overflow-hidden">
+        <Card className="w-full max-w-4xl mx-auto border border-border shadow-sm rounded-3xl overflow-hidden">
           <CardHeader className="pb-3">
             <CardTitle className="text-xl">Recherche d'hôtels</CardTitle>
           </CardHeader>
@@ -114,9 +115,7 @@ const HotelsPartners = () => {
 
         {/* Suggestions d'hôtels partenaires (table `services`, partnerOnly) */}
         {loadingPartners ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : partnerHotels.length > 0 ? (
           <div className="max-w-6xl mx-auto mt-12 md:mt-16">
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
@@ -126,7 +125,7 @@ const HotelsPartners = () => {
               {partnerHotels.map((hotel) => (
                 <Card
                   key={hotel.id}
-                  className="overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl hover-lift"
+                  className="overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-slow ease-standard rounded-2xl hover-lift"
                 >
                   <div className="relative h-48">
                     <LazyImage
@@ -135,7 +134,7 @@ const HotelsPartners = () => {
                       className="w-full h-full object-cover"
                     />
                     <Badge className="absolute top-3 right-3 bg-background/90 text-foreground border">
-                      <Star className="w-3 h-3 mr-1 fill-amber-400 text-amber-400" />
+                      <Star className="w-3 h-3 mr-1 fill-gold text-gold" />
                       {hotel.rating}
                     </Badge>
                   </div>

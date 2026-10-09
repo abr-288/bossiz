@@ -72,7 +72,7 @@ export function BossizSiteLayout({ country, activePage, tagline, children }: Bos
               </div>
               <div>
                 <span className={`font-bold text-xl tracking-tight ${accent.text}`}>{brandName}</span>
-                <span className="block text-[10px] tracking-[0.2em] uppercase text-bossiz-gold-dark">
+                <span className="block text-xs tracking-[0.2em] uppercase text-bossiz-gold-dark">
                   {tagline ?? t("bossizSite.tagline")}
                 </span>
               </div>

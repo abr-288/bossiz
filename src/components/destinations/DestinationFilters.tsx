@@ -35,6 +35,7 @@ export const DestinationFilters = ({
         />
         {searchQuery && (
           <Button
+            aria-label="Effacer la recherche"
             variant="ghost"
             size="icon"
             className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
@@ -55,7 +56,7 @@ export const DestinationFilters = ({
             onClick={() => onCategoryChange(category.id)}
             className={`
               inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
-              transition-all duration-200
+              transition-all duration-base ease-standard
               ${selectedCategory === category.id
                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                 : "bg-card/80 backdrop-blur-sm border border-border/50 text-foreground hover:bg-muted hover:border-primary/30"

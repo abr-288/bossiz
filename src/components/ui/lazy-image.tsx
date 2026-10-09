@@ -70,7 +70,7 @@ export const LazyImage = ({
       src={imageSrc}
       alt={alt}
       className={cn(
-        'transition-opacity duration-300',
+        'transition-opacity duration-slow ease-standard',
         isLoaded ? 'opacity-100' : 'opacity-0',
         className
       )}

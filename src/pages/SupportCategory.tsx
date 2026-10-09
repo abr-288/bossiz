@@ -86,7 +86,7 @@ const SupportCategory = () => {
             <Icon className="w-8 h-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-4xl font-black text-foreground mb-2">
+            <h1 className="text-2xl md:text-4xl font-extrabold text-foreground mb-2">
               {t(`pages.support.categories.${category.id}.title`)}
             </h1>
             <p className="text-muted-foreground font-medium">
@@ -201,7 +201,7 @@ const SupportCategory = () => {
                       </div>
                       <p className="font-bold text-sm">{t('pages.support.contact.chat')}</p>
                     </div>
-                    <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-white font-bold rounded-lg" onClick={handleChatClick}>
+                    <Button size="sm" className="w-full font-bold rounded-lg" onClick={handleChatClick}>
                       {t('pages.support.startChat')}
                     </Button>
                   </CardContent>

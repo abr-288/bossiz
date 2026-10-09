@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { Shield, Lock, Eye, Database, UserCheck, Globe, Bell, Trash2, Mail, Handshake } from "lucide-react";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 const PrivacyPolicy = () => {
   const { config } = useSiteConfigContext();
@@ -134,7 +135,7 @@ const PrivacyPolicy = () => {
         "• **En Côte d'Ivoire** : auprès de l'ARTCI (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire), autorité compétente en matière de protection des données personnelles.",
         "• **Dans l'Union européenne** : auprès de l'autorité de protection des données de votre pays de résidence.",
         "",
-        `Dernière mise à jour : ${new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}`,
+        `Dernière mise à jour : ${new Date().toLocaleDateString(currentLocaleTag(), { year: "numeric", month: "long", day: "numeric" })}`,
       ],
     },
   ];

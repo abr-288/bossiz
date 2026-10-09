@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { singletonContext } from "@/lib/singletonContext";
 
 interface ThemeConfig {
   primaryColor: string;
@@ -51,8 +52,8 @@ const DEFAULT_THEME: ThemeConfig = {
     // Une couleur primaire/secondaire/accent dédiée est indispensable ici :
     // sans elle, le fallback `darkMode.xColor || xColor` réutilise la teinte
     // du mode clair (très sombre) en mode sombre, la rendant invisible.
-    primaryColor: "38 68% 62%", // Or Golden Hour éclairci (#E3B25A)
-    secondaryColor: "222 40% 20%",
+    primaryColor: "220 60% 78%", // Horizon éclairci (#A5BCE9) : la marque garde sa teinte
+    secondaryColor: "162 50% 46%", // Jade éclairci (#3BB08D)
     accentColor: "222 40% 22%",
   },
 };
@@ -87,7 +88,7 @@ interface ThemeContextType {
   updateTheme: (newTheme: Partial<ThemeConfig>) => Promise<void>;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = singletonContext<ThemeContextType | undefined>("Theme", undefined);
 
 const getSystemPreference = (): boolean => {
   if (typeof window !== "undefined") {
@@ -127,7 +128,29 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setLoadedFonts((prev) => new Set(prev).add(fontName));
   };
 
-  // Apply theme to CSS variables
+  // Texte lisible sur un fond donné en "H S% L%" : encre sombre ou blanc selon la
+// luminance relative WCAG. Sans ce calcul, une couleur choisie dans l'admin
+// gardait le --*-foreground du CSS et pouvait devenir illisible.
+const readableForeground = (hsl: string): string => {
+  const m = hsl.match(/^\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%/);
+  if (!m) return "0 0% 100%";
+  const h = Number(m[1]);
+  const sat = Number(m[2]) / 100;
+  const l = Number(m[3]) / 100;
+  const a = sat * Math.min(l, 1 - l);
+  const channel = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  const luminance = 0.2126 * channel(0) + 0.7152 * channel(8) + 0.0722 * channel(4);
+  // Contraste avec le blanc (1.05 / (L + 0.05)) contre l'encre #0b111e (~0.006).
+  const withWhite = 1.05 / (luminance + 0.05);
+  const withInk = (luminance + 0.05) / 0.056;
+  return withWhite >= withInk ? "0 0% 100%" : "222 47% 8%";
+};
+
+// Apply theme to CSS variables
   const applyTheme = (themeConfig: ThemeConfig, dark: boolean) => {
     const root = document.documentElement;
     
@@ -146,8 +169,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       root.style.setProperty("--background", themeConfig.darkMode.backgroundColor);
       root.style.setProperty("--foreground", themeConfig.darkMode.foregroundColor);
       root.style.setProperty("--muted", themeConfig.darkMode.mutedColor);
-      root.style.setProperty("--primary", themeConfig.darkMode.primaryColor || themeConfig.primaryColor);
-      root.style.setProperty("--secondary", themeConfig.darkMode.secondaryColor || themeConfig.secondaryColor);
+      const darkPrimary = themeConfig.darkMode.primaryColor || themeConfig.primaryColor;
+      const darkSecondary = themeConfig.darkMode.secondaryColor || themeConfig.secondaryColor;
+      root.style.setProperty("--primary", darkPrimary);
+      root.style.setProperty("--primary-foreground", readableForeground(darkPrimary));
+      root.style.setProperty("--secondary", darkSecondary);
+      root.style.setProperty("--secondary-foreground", readableForeground(darkSecondary));
       root.style.setProperty("--accent", themeConfig.darkMode.accentColor || themeConfig.accentColor);
       // Card and popover backgrounds for dark mode - a dedicated cardColor
       // keeps cards visually distinct from the page background instead of
@@ -161,7 +188,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       root.style.setProperty("--foreground", themeConfig.foregroundColor);
       root.style.setProperty("--muted", themeConfig.mutedColor);
       root.style.setProperty("--primary", themeConfig.primaryColor);
+      root.style.setProperty("--primary-foreground", readableForeground(themeConfig.primaryColor));
       root.style.setProperty("--secondary", themeConfig.secondaryColor);
+      root.style.setProperty("--secondary-foreground", readableForeground(themeConfig.secondaryColor));
       root.style.setProperty("--accent", themeConfig.accentColor);
       // Card and popover backgrounds for light mode
       const lightCard = themeConfig.cardColor || themeConfig.backgroundColor;

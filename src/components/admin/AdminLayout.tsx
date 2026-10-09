@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -36,8 +38,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       if (!roles) {
         toast({
-          title: "Accès refusé",
-          description: "Vous n'avez pas les permissions nécessaires",
+          title: t("ux.bo.accessDenied"),
+          description: t("ux.bo.youDoNotHaveRequired"),
           variant: "destructive",
         });
         navigate("/");
@@ -66,7 +68,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/10">
-        <div className="fixed top-0 left-0 right-0 h-1 z-[60]" style={{ backgroundColor: "#334155" }} />
+        <div className="fixed top-0 left-0 right-0 h-1 z-banner bg-brand" />
         <AdminSidebar />
         
         <div className="flex-1 flex flex-col min-w-0">
@@ -74,22 +76,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex items-center gap-2">
               <SidebarTrigger className="touch-target" />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("ux.bo.backHome")} title={t("ux.bo.backHome")}>
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>
-              <span className="text-sm font-semibold sm:hidden">Administration</span>
+              <span className="text-sm font-semibold sm:hidden">{t("ux.bo.administration")}</span>
             </div>
             <Button
               variant="ghost"
               onClick={handleLogout}
-              aria-label="Déconnexion"
-              title="Déconnexion"
+              aria-label={t("ux.bo.logOut")}
+              title={t("ux.bo.logOut")}
               className="touch-target gap-2 text-sm md:text-base"
             >
               <LogOut className="h-4 w-4" />
-              <span className="sm:hidden">Quitter</span>
-              <span className="hidden sm:inline">Déconnexion</span>
+              <span className="sm:hidden">{t("ux.bo.exit")}</span>
+              <span className="hidden sm:inline">{t("ux.bo.logOut")}</span>
             </Button>
           </header>
 

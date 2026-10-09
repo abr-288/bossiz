@@ -21,6 +21,7 @@ import { useDestinations } from "@/hooks/useDestinations";
 import { getIataByCity, getCountryFlag } from "@/utils/airportNames";
 import bannerFlights from "@/assets/banner-flights.jpg";
 import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface MappedFlight {
   id: string;
@@ -265,7 +266,7 @@ const Flights = () => {
           alt={t('pages.flights.title')}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
@@ -278,7 +279,7 @@ const Flights = () => {
           {hasSearched && (
             <div className="flex justify-center mb-6">
               <Link to={`/flight-comparison?${searchParams.toString()}`}>
-                <Button variant="secondary" className="gap-2">
+                <Button className="gap-2">
                   <TrendingUp className="h-4 w-4" />
                   {t('pages.flights.comparePrices')}
                 </Button>
@@ -341,7 +342,7 @@ const Flights = () => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 bg-gradient-to-b from-muted/30 to-background">
+      <div className="flex-1 bg-muted/20">
         <div className="container mx-auto px-4 py-10 md:py-16">
           {loading && (
             <div className="space-y-4">
@@ -369,14 +370,16 @@ const Flights = () => {
           )}
 
           {(hasSearched || isDefaultResults) && !loading && filteredAndSortedFlights.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">{t('pages.flights.results.noResultsDesc')}</p>
-            </div>
+            <EmptyState
+              icon={Plane}
+              title={t('pages.flights.results.noResultsDesc')}
+              description={t("ux.empty.flightsDesc")}
+            />
           )}
 
           {/* Default results header */}
           {isDefaultResults && !loading && filteredAndSortedFlights.length > 0 && (
-            <div className="mb-10 p-6 md:p-8 bg-white border border-border/50 rounded-3xl shadow-xl shadow-primary/5 flex flex-col md:flex-row items-center gap-6 animate-slide-up-fade">
+            <div className="mb-10 p-6 md:p-8 bg-card border border-border rounded-3xl shadow-lg flex flex-col md:flex-row items-center gap-6 animate-slide-up-fade">
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
                 <Plane className="w-8 h-8 text-primary" />
               </div>
@@ -474,23 +477,23 @@ const Flights = () => {
 
               {/* Right Sidebar - Ads */}
               <aside className="hidden xl:block">
-                <div className="sticky top-24 bg-gradient-to-br from-primary via-primary-dark to-primary-darker rounded-2xl p-8 text-center shadow-xl border border-white/10 overflow-hidden group">
+                <div className="sticky top-24 bg-brand rounded-2xl p-8 text-center shadow-xl border border-white/10 overflow-hidden group">
                   {/* Decorative background element */}
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl group-hover:bg-secondary/30 transition-colors" />
                   
                   <div className="relative z-10">
-                    <div className="w-20 h-20 mx-auto mb-6 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/20 group-hover:scale-110 transition-transform duration-500">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/20 group-hover:scale-110 transition-transform duration-slow ease-standard">
                       <Shield className="w-10 h-10 text-secondary" />
                     </div>
                     <h3 className="font-bold text-xl mb-3 text-white leading-tight">
-                      Le forfait de voyage ultime
+                      {t("ux.flights.guaranteeTitle")}
                     </h3>
                     <p className="text-sm text-white/70 mb-8 leading-relaxed">
-                      La Garantie Bossiz+ offre des solutions instantanées aux perturbations, une assistance continue et des services de voyage automatisés.
+                      {t("ux.flights.guaranteeText")}
                     </p>
                     <Link to="/help">
-                      <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold rounded-xl shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all">
-                        En savoir plus
+                      <Button className="w-full">
+                        {t("ux.flights.learnMore")}
                       </Button>
                     </Link>
                   </div>

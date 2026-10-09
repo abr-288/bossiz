@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Price } from "@/components/ui/price";
+import { useTranslation } from "react-i18next";
 
 interface Treatment {
   name: string;
@@ -58,6 +59,7 @@ const buildSlots = (open: string, close: string, intervalMinutes: number): strin
 };
 
 export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: WellnessBookingDialogProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [date, setDate] = useState(todayIso());
   const [partySize, setPartySize] = useState("1");
@@ -127,27 +129,27 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
   const handleSubmit = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Connectez-vous pour réserver un rendez-vous");
+      toast.error(t("ux.wellnessBooking.signIn"));
       onOpenChange(false);
       navigate("/auth");
       return;
     }
 
     if (!selectedTreatment) {
-      toast.error("Choisissez une prestation");
+      toast.error(t("ux.wellnessBooking.pickService"));
       return;
     }
     if (!selectedTime) {
-      toast.error("Choisissez un horaire");
+      toast.error(t("ux.wellnessBooking.pickTime"));
       return;
     }
     const size = parseInt(partySize);
     if (!size || size < 1 || size > 50) {
-      toast.error("Indiquez un nombre de personnes valide");
+      toast.error(t("ux.wellnessBooking.invalidPeople"));
       return;
     }
     if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
-      toast.error("Renseignez vos coordonnées");
+      toast.error(t("ux.wellnessBooking.contact"));
       return;
     }
 
@@ -170,9 +172,9 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
 
     if (error) {
       if (error.message?.includes("complet")) {
-        toast.error("Ce créneau vient de se remplir, choisissez un autre horaire");
+        toast.error(t("ux.wellnessBooking.slotTaken"));
       } else {
-        toast.error("Impossible de confirmer le rendez-vous, réessayez");
+        toast.error(t("ux.wellnessBooking.confirmError"));
       }
       return;
     }
@@ -185,7 +187,7 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Réserver un rendez-vous</DialogTitle>
+          <DialogTitle>{t("ux.wellnessBooking.title")}</DialogTitle>
           <DialogDescription>{wellnessService.name}</DialogDescription>
         </DialogHeader>
 
@@ -195,7 +197,7 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
               <Label>Prestation *</Label>
               <Select value={treatmentIndex} onValueChange={setTreatmentIndex}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choisissez une prestation" />
+                  <SelectValue placeholder={t("ux.wellnessBooking.pickService")} />
                 </SelectTrigger>
                 <SelectContent>
                   {wellnessService.treatments.map((treatment, index) => (
@@ -238,7 +240,7 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
                 <Loader2 className="w-4 h-4 animate-spin" /> Vérification des disponibilités...
               </div>
             ) : slots.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-2">Fermé ce jour-là, choisissez une autre date.</p>
+              <p className="text-sm text-muted-foreground py-2">{t("ux.wellnessBooking.closed")}</p>
             ) : (
               <div className="grid grid-cols-4 gap-2">
                 {slots.map((slot) => {
@@ -267,7 +269,7 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
               <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
             </div>
             <div className="space-y-2">
-              <Label>Téléphone *</Label>
+              <Label>{t("ux.wellnessBooking.phone")}</Label>
               <Input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} required />
             </div>
           </div>
@@ -276,9 +278,9 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
             <Input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} required />
           </div>
           <div className="space-y-2">
-            <Label>Demandes particulières</Label>
+            <Label>{t("ux.wellnessBooking.requests")}</Label>
             <Textarea
-              placeholder="Allergies, préférences, occasion spéciale..."
+              placeholder={t("ux.wellnessBooking.requestsPlaceholder")}
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
               rows={2}
@@ -296,7 +298,7 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (
               <>
                 <Sparkles className="w-4 h-4 mr-2" />
-                Confirmer le rendez-vous
+                {t("ux.wellnessBooking.confirm")}
               </>
             )}
           </Button>

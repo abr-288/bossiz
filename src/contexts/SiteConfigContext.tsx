@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, ReactNode } from "react";
+import React, { useContext, useEffect, ReactNode } from "react";
 import { useSiteConfig, SiteConfig } from "@/hooks/useSiteConfig";
 import { applyDefaultLanguage } from "@/i18n/config";
+import { singletonContext } from "@/lib/singletonContext";
 
 interface SiteConfigContextType {
   config: SiteConfig;
@@ -9,7 +10,7 @@ interface SiteConfigContextType {
   refetch: () => Promise<void>;
 }
 
-const SiteConfigContext = createContext<SiteConfigContextType | undefined>(undefined);
+const SiteConfigContext = singletonContext<SiteConfigContextType | undefined>("SiteConfig", undefined);
 
 export const SiteConfigProvider = ({ children }: { children: ReactNode }) => {
   const { config, loading, updateConfig, refetch } = useSiteConfig();

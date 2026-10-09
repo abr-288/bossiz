@@ -81,7 +81,7 @@ export const SummaryStep = ({
   childrenCount,
   onBack,
 }: SummaryStepProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [paymentPlan, setPaymentPlan] = useState<"full" | "deposit">("full");
   const [depositPercent, setDepositPercent] = useState(30);
   const [depositAvailable, setDepositAvailable] = useState(false);
@@ -149,8 +149,8 @@ export const SummaryStep = ({
         
         if (remaining <= 0) {
           clearInterval(interval);
-          toast.error("Pré-réservation expirée", {
-            description: "Votre tarif a expiré. Veuillez recommencer la réservation.",
+          toast.error(t("ux.summary.expiredToast"), {
+            description: t("ux.summary.expiredToastDesc"),
           });
         }
       }, 1000);
@@ -167,7 +167,7 @@ export const SummaryStep = ({
         .from("company_members")
         .select("company_id, companies(name)")
         .eq("user_id", user.id);
-      setMyCompanies((data || []).map((m: any) => ({ id: m.company_id, name: m.companies?.name || "Entreprise" })));
+      setMyCompanies((data || []).map((m: any) => ({ id: m.company_id, name: m.companies?.name || t("ux.summary.company") })));
     }
   };
 
@@ -226,7 +226,7 @@ export const SummaryStep = ({
     if (serviceType === 'flight' && flightData) {
       const apiFlightData = convertFlightData();
       if (!apiFlightData) {
-        toast.error("Données de vol invalides");
+        toast.error(t("ux.summary.invalidFlight"));
         return;
       }
 
@@ -241,8 +241,8 @@ export const SummaryStep = ({
 
       if (result.success) {
         setIsPrebookingDone(true);
-        toast.success("Tarif verrouillé", {
-          description: `Référence: ${result.booking_reference}. Vous avez ${result.expires_in_seconds! / 60} minutes pour payer.`,
+        toast.success(t("ux.summary.fareLocked"), {
+          description: t("ux.summary.fareLockedDesc", { ref: result.booking_reference, minutes: result.expires_in_seconds! / 60 }),
         });
       }
     } else {
@@ -266,8 +266,8 @@ export const SummaryStep = ({
       // For flights, validate pre-booking first
       if (serviceType === 'flight' && prebookingData) {
         if (!isPrebookingValid()) {
-          toast.error("Pré-réservation expirée", {
-            description: "Votre tarif a expiré. Veuillez recommencer la réservation.",
+          toast.error(t("ux.summary.expiredToast"), {
+            description: t("ux.summary.expiredToastDesc"),
           });
           reset();
           setIsPrebookingDone(false);
@@ -315,7 +315,7 @@ export const SummaryStep = ({
 
         if (bookingId) {
           if (billToCompanyId) {
-            toast.success("Réservation soumise pour approbation à votre entreprise");
+            toast.success(t("ux.summary.submittedForApproval"));
             navigate("/booking-history");
           } else {
             // Navigate to payment with prebooking reference
@@ -356,7 +356,7 @@ export const SummaryStep = ({
 
         if (bookingId) {
           if (billToCompanyId) {
-            toast.success("Réservation soumise pour approbation à votre entreprise");
+            toast.success(t("ux.summary.submittedForApproval"));
             navigate("/booking-history");
           } else {
             navigate(`/payment?bookingId=${bookingId}`);
@@ -452,22 +452,22 @@ export const SummaryStep = ({
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border border-primary/20">
-        <h2 className="text-2xl font-bold text-primary mb-2">Récapitulatif et paiement</h2>
+      <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
+        <h2 className="text-2xl font-bold text-primary mb-2">{t("ux.summary.title")}</h2>
         <p className="text-muted-foreground">
-          Vérifiez vos informations avant de procéder au paiement
+          {t("ux.summary.subtitle")}
         </p>
       </div>
 
       {/* Pre-booking timer alert */}
       {isPrebookingDone && prebookingData && remainingTime > 0 && (
-        <Alert className={`border-2 ${remainingTime < 120 ? 'border-destructive bg-destructive/10' : 'border-amber-500 bg-amber-500/10'}`}>
+        <Alert className={`border-2 ${remainingTime < 120 ? 'border-destructive bg-destructive/10' : 'border-gold bg-gold/10'}`}>
           <Timer className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <div>
-              <span className="font-semibold">Tarif verrouillé</span>
+              <span className="font-semibold">{t("ux.summary.fareLocked")}</span>
               <span className="ml-2 text-muted-foreground">
-                Référence: {prebookingData.booking_reference}
+                {t("ux.summary.reference", { ref: prebookingData.booking_reference })}
               </span>
             </div>
             <Badge variant={remainingTime < 120 ? "destructive" : "secondary"} className="text-lg px-3 py-1">
@@ -482,8 +482,8 @@ export const SummaryStep = ({
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            <span className="font-semibold">Tarif expiré</span>
-            <span className="ml-2">Veuillez recommencer votre réservation.</span>
+            <span className="font-semibold">{t("ux.summary.fareExpired")}</span>
+            <span className="ml-2">{t("ux.summary.restartBooking")}</span>
             <Button 
               variant="outline" 
               size="sm" 
@@ -493,7 +493,7 @@ export const SummaryStep = ({
                 setIsPrebookingDone(false);
               }}
             >
-              Recommencer
+              {t("ux.summary.restart")}
             </Button>
           </AlertDescription>
         </Alert>
@@ -506,7 +506,7 @@ export const SummaryStep = ({
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Plane className="h-5 w-5 text-primary" />
-              {flightData ? "Détails du vol" : "Détails du service"}
+              {flightData ? t("ux.summary.flightDetails") : t("ux.summary.serviceDetails")}
             </h3>
             <div className="space-y-4">
               {flightData ? (
@@ -531,18 +531,18 @@ export const SummaryStep = ({
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {flightData.airline} • Vol {flightData.flightNumber}
+                        {flightData.airline} • {t("ux.summary.flightNumber", { number: flightData.flightNumber })}
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>{new Date(flightData.departureDate).toLocaleDateString("fr-FR")}</span>
+                      <span>{new Date(flightData.departureDate).toLocaleDateString(i18n.language)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{flightData.stops === 0 ? "Vol direct" : `${flightData.stops} escale(s)`}</span>
+                      <span>{flightData.stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: flightData.stops })}</span>
                     </div>
                   </div>
                 </>
@@ -550,24 +550,24 @@ export const SummaryStep = ({
                 <>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Service:</span>
+                      <span className="text-muted-foreground">{t("ux.summary.service")}</span>
                       <span className="font-medium">{serviceName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Localisation:</span>
+                      <span className="text-muted-foreground">{t("ux.summary.location")}</span>
                       <span className="font-medium">{serviceLocation}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Date de début:</span>
+                      <span className="text-muted-foreground">{t("ux.summary.startDate")}</span>
                       <span className="font-medium">
-                        {new Date(startDate).toLocaleDateString("fr-FR")}
+                        {new Date(startDate).toLocaleDateString(i18n.language)}
                       </span>
                     </div>
                     {endDate && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Date de fin:</span>
+                        <span className="text-muted-foreground">{t("ux.summary.endDate")}</span>
                         <span className="font-medium">
-                          {new Date(endDate).toLocaleDateString("fr-FR")}
+                          {new Date(endDate).toLocaleDateString(i18n.language)}
                         </span>
                       </div>
                     )}
@@ -581,7 +581,7 @@ export const SummaryStep = ({
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <User className="h-5 w-5 text-primary" />
-              Passagers
+              {t("ux.summary.passengers")}
             </h3>
             <div className="space-y-3">
               {passengers.map((passenger, index) => (
@@ -591,11 +591,11 @@ export const SummaryStep = ({
                       {passenger.firstName} {passenger.lastName}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {passenger.documentType === "passport" ? "Passeport" : "Carte d'identité"}: {passenger.documentNumber}
+                      {passenger.documentType === "passport" ? t("ux.passenger.passport") : t("ux.passenger.idCard")} : {passenger.documentNumber}
                     </p>
                   </div>
                   <Badge variant="secondary">
-                    {index < adultsCount ? "Adulte" : "Enfant"}
+                    {index < adultsCount ? t("ux.passenger.adult") : t("ux.passenger.child")}
                   </Badge>
                 </div>
               ))}
@@ -607,7 +607,7 @@ export const SummaryStep = ({
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Briefcase className="h-5 w-5 text-primary" />
-                Options sélectionnées
+                {t("ux.summary.selectedOptions")}
               </h3>
               <div className="space-y-2">
                 {Object.entries(selectedOptions).map(([id, quantity]) => {
@@ -627,7 +627,7 @@ export const SummaryStep = ({
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Armchair className="h-5 w-5 text-primary" />
-                Sièges sélectionnés
+                {t("ux.summary.selectedSeats")}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {((selectedPreferences.seats as string[]) || []).map((seat) => (
@@ -645,26 +645,26 @@ export const SummaryStep = ({
           <Card className="p-6 sticky top-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-primary" />
-              Détails du prix
+              {t("ux.summary.priceDetails")}
             </h3>
             <div className="space-y-3">
               {/* Show server-calculated breakdown if available */}
               {displayPriceBreakdown ? (
                 <>
                   <div className="flex justify-between text-sm">
-                    <span>Prix de base</span>
+                    <span>{t("ux.summary.basePrice")}</span>
                     <span className="font-medium">
                       <Price amount={displayPriceBreakdown.base_fare} />
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Taxes</span>
+                    <span>{t("ux.summary.taxes")}</span>
                     <span className="font-medium">
                       <Price amount={displayPriceBreakdown.taxes} />
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Frais de service</span>
+                    <span>{t("ux.summary.serviceFee")}</span>
                     <span className="font-medium">
                       <Price amount={displayPriceBreakdown.service_fee} />
                     </span>
@@ -673,14 +673,14 @@ export const SummaryStep = ({
               ) : (
                 <>
                   <div className="flex justify-between text-sm">
-                    <span>Service ({adultsCount + childrenCount} participants)</span>
+                    <span>{t("ux.summary.serviceLine", { count: adultsCount + childrenCount })}</span>
                     <span className="font-medium">
                       <Price amount={getBasePrice()} />
                     </span>
                   </div>
                   {getOptionsPrice() > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span>Options</span>
+                      <span>{t("ux.summary.options")}</span>
                       <span className="font-medium">
                         <Price amount={getOptionsPrice()} />
                       </span>
@@ -688,7 +688,7 @@ export const SummaryStep = ({
                   )}
                   {getPreferencesPrice() > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span>Sièges</span>
+                      <span>{t("ux.summary.seats")}</span>
                       <span className="font-medium">
                         <Price amount={getPreferencesPrice()} />
                       </span>
@@ -699,7 +699,7 @@ export const SummaryStep = ({
               
               <Separator />
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-lg">Total</span>
+                <span className="font-semibold text-lg">{t("ux.summary.total")}</span>
                 <span className="font-bold text-2xl text-primary">
                   <Price
                     amount={getTotalPrice()}
@@ -710,7 +710,7 @@ export const SummaryStep = ({
               
               {displayPriceBreakdown && (
                 <p className="text-xs text-muted-foreground text-center">
-                  Prix calculé par le serveur • Garanti jusqu'à expiration
+                  {t("ux.summary.serverPrice")}
                 </p>
               )}
             </div>
@@ -719,7 +719,7 @@ export const SummaryStep = ({
 
             {myCompanies.length > 0 && (
               <div className="space-y-2 mb-4">
-                <h4 className="font-semibold">Qui paie ce voyage ?</h4>
+                <h4 className="font-semibold">{t("ux.summary.whoPays")}</h4>
                 <select
                   className="w-full p-3 rounded-lg border-2 border-border bg-background text-sm"
                   value={billToCompanyId || ""}
@@ -728,30 +728,30 @@ export const SummaryStep = ({
                     if (e.target.value) setPaymentPlan("full");
                   }}
                 >
-                  <option value="">Moi-même</option>
+                  <option value="">{t("ux.summary.myself")}</option>
                   {myCompanies.map((c) => (
-                    <option key={c.id} value={c.id}>Facturer à {c.name}</option>
+                    <option key={c.id} value={c.id}>{t("ux.summary.billTo", { name: c.name })}</option>
                   ))}
                 </select>
                 {billToCompanyId && (
                   <>
                     {travelPolicy ? (
                       getTotalPrice() <= travelPolicy.max_amount ? (
-                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100 gap-1.5">
-                          ✓ Conforme à la politique de voyage
+                        <Badge className="bg-success/10 text-success hover:bg-success/10 gap-1.5">
+                          {t("ux.summary.policyOk")}
                         </Badge>
                       ) : (
                         <Badge variant="destructive" className="gap-1.5">
-                          <AlertTriangle className="w-3 h-3" /> Hors politique de voyage (plafond : <Price amount={travelPolicy.max_amount} fromCurrency={travelPolicy.currency} />)
+                          <AlertTriangle className="w-3 h-3" /> {t("ux.summary.policyOver")} <Price amount={travelPolicy.max_amount} fromCurrency={travelPolicy.currency} />)
                         </Badge>
                       )
                     ) : (
                       <Badge variant="outline" className="gap-1.5 text-muted-foreground">
-                        Aucune politique de voyage définie pour ce type de service
+                        {t("ux.summary.noPolicy")}
                       </Badge>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      La réservation sera soumise à un approbateur de l'entreprise avant paiement.
+                      {t("ux.summary.approvalNote")}
                     </p>
                   </>
                 )}
@@ -762,13 +762,13 @@ export const SummaryStep = ({
               <div className="space-y-4">
                 {depositAvailable && (
                   <div className="space-y-2">
-                    <h4 className="font-semibold">Montant à régler maintenant</h4>
+                    <h4 className="font-semibold">{t("ux.summary.amountNow")}</h4>
                     <button
                       type="button"
                       onClick={() => setPaymentPlan("full")}
                       className={`w-full p-3 rounded-lg border-2 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : "border-border"}`}
                     >
-                      <span className="font-medium">Payer la totalité</span>
+                      <span className="font-medium">{t("ux.summary.payFull")}</span>
                       <span className="block text-sm text-muted-foreground"><Price amount={getTotalPrice()} /></span>
                     </button>
                     <button
@@ -776,9 +776,9 @@ export const SummaryStep = ({
                       onClick={() => setPaymentPlan("deposit")}
                       className={`w-full p-3 rounded-lg border-2 text-left ${paymentPlan === "deposit" ? "border-primary bg-primary/5" : "border-border"}`}
                     >
-                      <span className="font-medium">Acompte de {depositPercent} % maintenant</span>
+                      <span className="font-medium">{t("ux.summary.deposit", { percent: depositPercent })}</span>
                       <span className="block text-sm text-muted-foreground">
-                        <Price amount={Math.ceil(getTotalPrice() * depositPercent / 100)} /> à payer maintenant · <Price amount={getTotalPrice() - Math.ceil(getTotalPrice() * depositPercent / 100)} /> sur place
+                        <Price amount={Math.ceil(getTotalPrice() * depositPercent / 100)} /> {t("ux.summary.payNow")} <Price amount={getTotalPrice() - Math.ceil(getTotalPrice() * depositPercent / 100)} /> {t("ux.summary.onSite")}
                       </span>
                     </button>
                   </div>
@@ -788,16 +788,16 @@ export const SummaryStep = ({
                     <CreditCard className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-medium">Paiement sécurisé</p>
+                    <p className="font-medium">{t("ux.summary.securePayment")}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Vous pourrez choisir votre moyen de paiement sur la page sécurisée Jèko.
+                      {t("ux.summary.securePaymentDesc")}
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="mt-6 space-y-3">
+            <div className="booking-actions space-y-3">
               {/* For flights: Two-step process */}
               {serviceType === 'flight' && !isPrebookingDone && (
                 <UnifiedSubmitButton
@@ -806,7 +806,7 @@ export const SummaryStep = ({
                   loading={loading}
                   onClick={handlePrebook}
                 >
-                  Verrouiller le tarif
+                  {t("ux.summary.lockFare")}
                 </UnifiedSubmitButton>
               )}
               
@@ -817,7 +817,7 @@ export const SummaryStep = ({
                   loading={loading}
                   onClick={handlePayment}
                 >
-                  {billToCompanyId ? "Soumettre pour approbation" : "Procéder au paiement"}
+                  {billToCompanyId ? t("ux.summary.submitApproval") : t("ux.summary.proceedPayment")}
                 </UnifiedSubmitButton>
               )}
 
@@ -829,14 +829,14 @@ export const SummaryStep = ({
                   loading={loading}
                   onClick={handlePayment}
                 >
-                  {billToCompanyId ? "Soumettre pour approbation" : "Procéder au paiement"}
+                  {billToCompanyId ? t("ux.summary.submitApproval") : t("ux.summary.proceedPayment")}
                 </UnifiedSubmitButton>
               )}
-
-              <Button type="button" variant="outline" onClick={onBack} className="w-full">
-                Retour
-              </Button>
             </div>
+
+            <Button type="button" variant="outline" onClick={onBack} className="mt-3 w-full">
+              {t("ux.booking.back")}
+            </Button>
           </Card>
         </div>
       </div>
@@ -847,33 +847,33 @@ export const SummaryStep = ({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <LogIn className="h-5 w-5 text-primary" />
-              Connexion requise
+              {t("ux.summary.loginRequired")}
             </DialogTitle>
             <DialogDescription>
-              Vous devez être connecté pour procéder au paiement de votre réservation.
+              {t("ux.summary.loginRequiredDesc")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground">
-              En vous connectant, vous pourrez :
+              {t("ux.summary.loginBenefits")}
             </p>
             <ul className="text-sm space-y-2 text-muted-foreground">
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span> Suivre vos réservations
+                <span className="text-primary">✓</span> {t("ux.summary.benefitTrack")}
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span> Recevoir vos confirmations par email
+                <span className="text-primary">✓</span> {t("ux.summary.benefitEmail")}
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span> Gérer vos voyages facilement
+                <span className="text-primary">✓</span> {t("ux.summary.benefitManage")}
               </li>
             </ul>
             <div className="flex gap-3 pt-4">
               <Button variant="outline" onClick={() => setShowLoginDialog(false)} className="flex-1">
-                Annuler
+                {t("ux.summary.cancel")}
               </Button>
               <Button onClick={handleLoginRedirect} className="flex-1">
-                Se connecter
+                {t("ux.summary.signIn")}
               </Button>
             </div>
           </div>

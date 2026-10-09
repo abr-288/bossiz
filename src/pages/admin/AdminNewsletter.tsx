@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Mail, Users, Download, Search, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface Subscriber {
   id: string;
@@ -20,6 +21,7 @@ interface Subscriber {
 }
 
 const AdminNewsletter = () => {
+  const { t } = useTranslation();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -32,7 +34,7 @@ const AdminNewsletter = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Erreur lors du chargement des abonnés");
+      toast.error(t("ux.bo.errorWhileLoadingSubscribers"));
     } else {
       setSubscribers(data || []);
     }
@@ -58,7 +60,7 @@ const AdminNewsletter = () => {
     a.download = `newsletter_subscribers_${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Export CSV téléchargé");
+    toast.success(t("ux.bo.csvExportDownloaded"));
   };
 
   if (loading) {
@@ -78,18 +80,18 @@ const AdminNewsletter = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Newsletter</h1>
-            <p className="text-muted-foreground">Gestion des abonnés à la newsletter</p>
+            <p className="text-muted-foreground">{t("ux.bo.newsletterSubscriberManagement")}</p>
           </div>
           <Button onClick={exportCSV} variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
-            Exporter CSV
+            {t("ux.bo.exportCsv")}
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Abonnés</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("ux.bo.totalSubscribers")}</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -98,7 +100,7 @@ const AdminNewsletter = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Ce mois</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("ux.bo.month")}</CardTitle>
               <Mail className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -115,12 +117,12 @@ const AdminNewsletter = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Liste des abonnés</CardTitle>
-            <CardDescription>Tous les abonnés à la newsletter</CardDescription>
+            <CardTitle>{t("ux.bo.subscriberList")}</CardTitle>
+            <CardDescription>{t("ux.bo.allNewsletterSubscribers")}</CardDescription>
             <div className="relative mt-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Rechercher par email..."
+                placeholder={t("ux.bo.searchEmail")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -132,14 +134,14 @@ const AdminNewsletter = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Email</TableHead>
-                  <TableHead>Date d'inscription</TableHead>
+                  <TableHead>{t("ux.bo.signUpDate")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={2} className="text-center text-muted-foreground">
-                      Aucun abonné trouvé
+                      {t("ux.bo.noSubscriberFound")}
                     </TableCell>
                   </TableRow>
                 ) : (

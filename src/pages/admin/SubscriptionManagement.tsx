@@ -115,24 +115,24 @@ export default function SubscriptionManagement() {
   });
 
   const iconOptions = [
-    { value: 'Crown', label: 'Couronne', icon: <Crown className="w-4 h-4" /> },
-    { value: 'Shield', label: 'Bouclier', icon: <Shield className="w-4 h-4" /> },
-    { value: 'Lock', label: 'Cadenas', icon: <Lock className="w-4 h-4" /> },
-    { value: 'Star', label: 'Étoile', icon: <Star className="w-4 h-4" /> },
-    { value: 'TrendingUp', label: 'Tendance', icon: <TrendingUp className="w-4 h-4" /> },
-    { value: 'Users', label: 'Utilisateurs', icon: <Users className="w-4 h-4" /> },
-    { value: 'DollarSign', label: 'Dollar', icon: <DollarSign className="w-4 h-4" /> },
-    { value: 'Calendar', label: 'Calendrier', icon: <Calendar className="w-4 h-4" /> },
-    { value: 'Settings', label: 'Paramètres', icon: <Settings className="w-4 h-4" /> }
+    { value: 'Crown', label: t("ux.bo.crown"), icon: <Crown className="w-4 h-4" /> },
+    { value: 'Shield', label: t("ux.bo.shield"), icon: <Shield className="w-4 h-4" /> },
+    { value: 'Lock', label: t("ux.bo.lock"), icon: <Lock className="w-4 h-4" /> },
+    { value: 'Star', label: t("ux.bo.star"), icon: <Star className="w-4 h-4" /> },
+    { value: 'TrendingUp', label: t("ux.bo.trend"), icon: <TrendingUp className="w-4 h-4" /> },
+    { value: 'Users', label: t("ux.bo.users"), icon: <Users className="w-4 h-4" /> },
+    { value: 'DollarSign', label: t("ux.bo.dollar"), icon: <DollarSign className="w-4 h-4" /> },
+    { value: 'Calendar', label: t("ux.bo.calendar"), icon: <Calendar className="w-4 h-4" /> },
+    { value: 'Settings', label: t("ux.bo.settings"), icon: <Settings className="w-4 h-4" /> }
   ];
 
   const colorOptions = [
-    { value: 'from-yellow-400 to-yellow-600', label: 'Jaune', preview: 'bg-gradient-to-r from-yellow-400 to-yellow-600' },
+    { value: 'from-yellow-400 to-yellow-600', label: t("ux.bo.yellow"), preview: 'bg-gradient-to-r from-yellow-400 to-yellow-600' },
     { value: 'from-purple-400 to-purple-600', label: 'Violet', preview: 'bg-gradient-to-r from-purple-400 to-purple-600' },
-    { value: 'from-gray-800 to-black', label: 'Noir', preview: 'bg-gradient-to-r from-gray-800 to-black' },
-    { value: 'from-blue-400 to-blue-600', label: 'Bleu', preview: 'bg-gradient-to-r from-blue-400 to-blue-600' },
-    { value: 'from-green-400 to-green-600', label: 'Vert', preview: 'bg-gradient-to-r from-green-400 to-green-600' },
-    { value: 'from-red-400 to-red-600', label: 'Rouge', preview: 'bg-gradient-to-r from-red-400 to-red-600' }
+    { value: 'from-gray-800 to-black', label: t("ux.bo.black"), preview: 'bg-gradient-to-r from-gray-800 to-black' },
+    { value: 'from-blue-400 to-blue-600', label: t("ux.bo.blue"), preview: 'bg-gradient-to-r from-blue-400 to-blue-600' },
+    { value: 'from-green-400 to-green-600', label: t("ux.bo.green"), preview: 'bg-gradient-to-r from-green-400 to-green-600' },
+    { value: 'from-red-400 to-red-600', label: t("ux.bo.red"), preview: 'bg-gradient-to-r from-red-400 to-red-600' }
   ];
 
   useEffect(() => {
@@ -153,8 +153,8 @@ export default function SubscriptionManagement() {
     } catch (error) {
       console.error('Error fetching subscription plans:', error);
       toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les plans d\'abonnement',
+        title: t("ux.bo.error"),
+        description: t("ux.bo.loadPlansError"),
         variant: 'destructive'
       });
     } finally {
@@ -218,8 +218,8 @@ export default function SubscriptionManagement() {
       if (!response.ok) throw new Error('Failed to save subscription plan');
       
       toast({
-        title: 'Succès',
-        description: selectedPlan?.id ? 'Plan mis à jour' : 'Plan créé',
+        title: t("ux.bo.success"),
+        description: selectedPlan?.id ? t("ux.bo.planUpdated2") : t("ux.bo.planCreated2"),
       });
       
       setIsEditDialogOpen(false);
@@ -229,8 +229,8 @@ export default function SubscriptionManagement() {
     } catch (error) {
       console.error('Error saving subscription plan:', error);
       toast({
-        title: 'Erreur',
-        description: 'Impossible de sauvegarder le plan d\'abonnement',
+        title: t("ux.bo.error"),
+        description: t("ux.bo.savePlanError"),
         variant: 'destructive'
       });
     } finally {
@@ -239,7 +239,7 @@ export default function SubscriptionManagement() {
   };
 
   const deleteSubscriptionPlan = async (planId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce plan d\'abonnement ?')) return;
+    if (!confirm(t("ux.bo.deletePlanConfirm"))) return;
     
     try {
       const response = await fetch(`/api/admin/subscription-plans/${planId}`, {
@@ -249,8 +249,8 @@ export default function SubscriptionManagement() {
       if (!response.ok) throw new Error('Failed to delete subscription plan');
       
       toast({
-        title: 'Succès',
-        description: 'Plan d\'abonnement supprimé',
+        title: t("ux.bo.success"),
+        description: t("ux.bo.planDeletedSub"),
       });
       
       fetchSubscriptionPlans();
@@ -260,8 +260,8 @@ export default function SubscriptionManagement() {
     } catch (error) {
       console.error('Error deleting subscription plan:', error);
       toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer le plan d\'abonnement',
+        title: t("ux.bo.error"),
+        description: t("ux.bo.deletePlanError"),
         variant: 'destructive'
       });
     }
@@ -313,7 +313,7 @@ export default function SubscriptionManagement() {
   };
 
   const addFeature = () => {
-    const featureName = prompt('Nom de la fonctionnalité:');
+    const featureName = prompt(t("ux.bo.featureName"));
     if (featureName) {
       handleFeatureToggle(featureName);
     }
@@ -331,14 +331,14 @@ export default function SubscriptionManagement() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Gestion des Abonnements</h1>
+          <h1 className="text-3xl font-bold">{t("ux.bo.subscriptionManagement")}</h1>
           <p className="text-muted-foreground">
-            Gérez tous les aspects de vos plans d'abonnement
+            {t("ux.bo.manageEveryAspectSubscriptionPlans")}
           </p>
         </div>
         <Button onClick={() => openEditDialog()}>
           <Plus className="w-4 h-4 mr-2" />
-          Nouveau Plan
+          {t("ux.bo.newPlan3")}
         </Button>
       </div>
 
@@ -347,7 +347,7 @@ export default function SubscriptionManagement() {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Plans d'Abonnement</CardTitle>
+              <CardTitle>{t("ux.bo.subscriptionPlans2")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {plans.map((plan) => (
@@ -373,8 +373,8 @@ export default function SubscriptionManagement() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
-                      {plan.is_popular && <Badge variant="default" className="text-xs">Populaire</Badge>}
-                      <div className={`w-2 h-2 rounded-full ${plan.is_active ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      {plan.is_popular && <Badge variant="default" className="text-xs">{t("ux.bo.popular")}</Badge>}
+                      <div className={`w-2 h-2 rounded-full ${plan.is_active ? 'bg-success' : 'bg-muted-foreground'}`} />
                     </div>
                   </div>
                 </div>
@@ -403,11 +403,11 @@ export default function SubscriptionManagement() {
                     <div className="flex items-center space-x-2">
                       <Button variant="outline" size="sm" onClick={() => openEditDialog(selectedPlan)}>
                         <Edit className="w-4 h-4 mr-1" />
-                        Modifier
+                        {t("ux.bo.edit")}
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => deleteSubscriptionPlan(selectedPlan.id!)}>
                         <Trash2 className="w-4 h-4 mr-1" />
-                        Supprimer
+                        {t("ux.bo.delete")}
                       </Button>
                     </div>
                   </div>
@@ -415,26 +415,26 @@ export default function SubscriptionManagement() {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                      <Label>Prix</Label>
+                      <Label>{t("ux.bo.price")}</Label>
                       <p className="text-2xl font-bold">
                         {selectedPlan.price.toLocaleString()} {selectedPlan.currency}
                       </p>
                     </div>
                     <div>
-                      <Label>Cycle de facturation</Label>
-                      <p className="text-lg">{selectedPlan.billing_cycle === 'monthly' ? 'Mensuel' : 'Annuel'}</p>
+                      <Label>{t("ux.bo.billingCycle")}</Label>
+                      <p className="text-lg">{selectedPlan.billing_cycle === 'monthly' ? t("ux.bo.monthly") : t("ux.bo.annual")}</p>
                     </div>
                     <div>
-                      <Label>Jours d'essai</Label>
+                      <Label>{t("ux.bo.trialDays")}</Label>
                       <p className="text-lg">{selectedPlan.trial_days} jours</p>
                     </div>
                     <div>
-                      <Label>Statut</Label>
+                      <Label>{t("ux.bo.status")}</Label>
                       <div className="flex items-center space-x-2">
                         <Badge variant={selectedPlan.is_active ? 'default' : 'secondary'}>
                           {selectedPlan.is_active ? 'Actif' : 'Inactif'}
                         </Badge>
-                        {selectedPlan.is_popular && <Badge variant="outline">Populaire</Badge>}
+                        {selectedPlan.is_popular && <Badge variant="outline">{t("ux.bo.popular")}</Badge>}
                       </div>
                     </div>
                   </div>
@@ -444,9 +444,9 @@ export default function SubscriptionManagement() {
               {/* Onglets */}
               <div className="flex space-x-1 bg-muted p-1 rounded-lg">
                 {[
-                  { key: 'plans', label: 'Plan', icon: <Settings className="w-4 h-4" /> },
-                  { key: 'features', label: 'Fonctionnalités', icon: <CheckCircle2 className="w-4 h-4" /> },
-                  { key: 'testimonials', label: 'Témoignages', icon: <Users className="w-4 h-4" /> },
+                  { key: 'plans', label: t("ux.bo.plan2"), icon: <Settings className="w-4 h-4" /> },
+                  { key: 'features', label: t("ux.bo.features"), icon: <CheckCircle2 className="w-4 h-4" /> },
+                  { key: 'testimonials', label: t("ux.bo.testimonials"), icon: <Users className="w-4 h-4" /> },
                   { key: 'faqs', label: 'FAQ', icon: <Eye className="w-4 h-4" /> }
                 ].map((tab) => (
                   <Button
@@ -466,7 +466,7 @@ export default function SubscriptionManagement() {
               {activeTab === 'features' && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Fonctionnalités du Plan</CardTitle>
+                    <CardTitle>{t("ux.bo.planFeatures")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -478,7 +478,7 @@ export default function SubscriptionManagement() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <Badge variant={feature.is_included ? 'default' : 'secondary'}>
-                              {feature.is_included ? 'Inclus' : 'Non inclus'}
+                              {feature.is_included ? 'Inclus' : t("ux.bo.notIncluded")}
                             </Badge>
                             <Button variant="outline" size="sm">
                               <Edit className="w-4 h-4" />
@@ -488,7 +488,7 @@ export default function SubscriptionManagement() {
                       ))}
                       <Button onClick={addFeature} className="w-full">
                         <Plus className="w-4 h-4 mr-2" />
-                        Ajouter une fonctionnalité
+                        {t("ux.bo.addFeature")}
                       </Button>
                     </div>
                   </CardContent>
@@ -498,7 +498,7 @@ export default function SubscriptionManagement() {
               {activeTab === 'testimonials' && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Témoignages</CardTitle>
+                    <CardTitle>{t("ux.bo.testimonials")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -512,7 +512,7 @@ export default function SubscriptionManagement() {
                                 <Star
                                   key={i}
                                   className={`w-4 h-4 ${
-                                    i < testimonial.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                    i < testimonial.rating ? 'text-gold fill-current' : 'text-gray-300'
                                   }`}
                                 />
                               ))}
@@ -520,7 +520,7 @@ export default function SubscriptionManagement() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <Badge variant={testimonial.is_verified ? 'default' : 'secondary'}>
-                              {testimonial.is_verified ? 'Vérifié' : 'Non vérifié'}
+                              {testimonial.is_verified ? 'Vérifié' : t("ux.bo.notVerified")}
                             </Badge>
                             <Button variant="outline" size="sm">
                               <Edit className="w-4 h-4" />
@@ -530,7 +530,7 @@ export default function SubscriptionManagement() {
                       ))}
                       <Button className="w-full">
                         <Plus className="w-4 h-4 mr-2" />
-                        Ajouter un témoignage
+                        {t("ux.bo.addTestimonial")}
                       </Button>
                     </div>
                   </CardContent>
@@ -540,7 +540,7 @@ export default function SubscriptionManagement() {
               {activeTab === 'faqs' && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Questions Fréquentes</CardTitle>
+                    <CardTitle>{t("ux.bo.frequentlyAskedQuestions")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -562,7 +562,7 @@ export default function SubscriptionManagement() {
                       ))}
                       <Button className="w-full">
                         <Plus className="w-4 h-4 mr-2" />
-                        Ajouter une FAQ
+                        {t("ux.bo.addFaq")}
                       </Button>
                     </div>
                   </CardContent>
@@ -574,9 +574,9 @@ export default function SubscriptionManagement() {
               <CardContent className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <Settings className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">Sélectionnez un plan</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("ux.bo.selectPlan")}</h3>
                   <p className="text-muted-foreground">
-                    Choisissez un plan d'abonnement pour voir et modifier ses détails
+                    {t("ux.bo.chooseSubscriptionPlanViewEdit")}
                   </p>
                 </div>
               </CardContent>
@@ -590,14 +590,14 @@ export default function SubscriptionManagement() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedPlan?.id ? 'Modifier le Plan' : 'Nouveau Plan d\'Abonnement'}
+              {selectedPlan?.id ? t("ux.bo.editPlan3") : 'Nouveau Plan d\'Abonnement'}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
             {/* Informations de base */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="plan_id">ID du Plan</Label>
+                <Label htmlFor="plan_id">{t("ux.bo.planId2")}</Label>
                 <Input
                   id="plan_id"
                   value={formData.plan_id}
@@ -606,7 +606,7 @@ export default function SubscriptionManagement() {
                 />
               </div>
               <div>
-                <Label htmlFor="name">Nom du Plan</Label>
+                <Label htmlFor="name">{t("ux.bo.planName")}</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -617,22 +617,22 @@ export default function SubscriptionManagement() {
             </div>
 
             <div>
-              <Label htmlFor="subtitle">Sous-titre</Label>
+              <Label htmlFor="subtitle">{t("ux.bo.subtitle")}</Label>
               <Input
                 id="subtitle"
                 value={formData.subtitle}
                 onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-                placeholder="Accès Premium aux services exclusifs"
+                placeholder={t("ux.bo.premiumAccessExclusiveServices")}
               />
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t("ux.bo.description")}</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Description détaillée du plan..."
+                placeholder={t("ux.bo.detailedPlanDescription")}
                 rows={3}
               />
             </div>
@@ -640,7 +640,7 @@ export default function SubscriptionManagement() {
             {/* Prix et Facturation */}
             <div className="grid grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="price">Prix</Label>
+                <Label htmlFor="price">{t("ux.bo.price")}</Label>
                 <Input
                   id="price"
                   type="number"
@@ -650,7 +650,7 @@ export default function SubscriptionManagement() {
                 />
               </div>
               <div>
-                <Label htmlFor="currency">Devise</Label>
+                <Label htmlFor="currency">{t("ux.bo.currency")}</Label>
                 <Select value={formData.currency} onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}>
                   <SelectTrigger>
                     <SelectValue />
@@ -663,19 +663,19 @@ export default function SubscriptionManagement() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="billing_cycle">Cycle</Label>
+                <Label htmlFor="billing_cycle">{t("ux.bo.cycle")}</Label>
                 <Select value={formData.billing_cycle} onValueChange={(value: any) => setFormData(prev => ({ ...prev, billing_cycle: value }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="monthly">Mensuel</SelectItem>
-                    <SelectItem value="yearly">Annuel</SelectItem>
+                    <SelectItem value="monthly">{t("ux.bo.monthly")}</SelectItem>
+                    <SelectItem value="yearly">{t("ux.bo.annual")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="trial_days">Jours d'essai</Label>
+                <Label htmlFor="trial_days">{t("ux.bo.trialDays")}</Label>
                 <Input
                   id="trial_days"
                   type="number"
@@ -689,7 +689,7 @@ export default function SubscriptionManagement() {
             {/* Apparence */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Icône</Label>
+                <Label>{t("ux.bo.icon")}</Label>
                 <Select value={formData.icon_name} onValueChange={(value) => setFormData(prev => ({ ...prev, icon_name: value }))}>
                   <SelectTrigger>
                     <SelectValue />
@@ -707,7 +707,7 @@ export default function SubscriptionManagement() {
                 </Select>
               </div>
               <div>
-                <Label>Schéma de couleurs</Label>
+                <Label>{t("ux.bo.colorScheme")}</Label>
                 <Select value={formData.color_scheme} onValueChange={(value) => setFormData(prev => ({ ...prev, color_scheme: value }))}>
                   <SelectTrigger>
                     <SelectValue />
@@ -734,7 +734,7 @@ export default function SubscriptionManagement() {
                   checked={formData.is_popular}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_popular: checked }))}
                 />
-                <Label htmlFor="is_popular">Plan populaire</Label>
+                <Label htmlFor="is_popular">{t("ux.bo.popularPlan")}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
@@ -742,13 +742,13 @@ export default function SubscriptionManagement() {
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
                 />
-                <Label htmlFor="is_active">Plan actif</Label>
+                <Label htmlFor="is_active">{t("ux.bo.activePlan")}</Label>
               </div>
             </div>
 
             {/* Fonctionnalités */}
             <div>
-              <Label>Fonctionnalités</Label>
+              <Label>{t("ux.bo.features")}</Label>
               <div className="space-y-2 mt-2">
                 {formData.features.map((feature, index) => (
                   <div key={index} className="flex items-center justify-between p-2 border rounded">
@@ -764,7 +764,7 @@ export default function SubscriptionManagement() {
                 ))}
                 <Button onClick={addFeature} variant="outline" className="w-full">
                   <Plus className="w-4 h-4 mr-2" />
-                  Ajouter une fonctionnalité
+                  {t("ux.bo.addFeature")}
                 </Button>
               </div>
             </div>
@@ -772,7 +772,7 @@ export default function SubscriptionManagement() {
             {/* Actions */}
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                Annuler
+                {t("ux.bo.cancel")}
               </Button>
               <Button onClick={saveSubscriptionPlan} disabled={saving}>
                 <Save className="w-4 h-4 mr-2" />

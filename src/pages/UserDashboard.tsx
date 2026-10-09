@@ -15,6 +15,7 @@ import { useOfflineBookings } from "@/hooks/useOfflineBookings";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { UserDashboardLayout } from "@/components/dashboard/UserDashboardLayout";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 interface Booking {
   id: string;
@@ -252,7 +253,7 @@ const UserDashboard = () => {
     if (booking?.services) {
       toast({
         title: booking.services.name,
-        description: `Départ le ${new Date(booking.start_date).toLocaleDateString("fr-FR")}`,
+        description: `Départ le ${new Date(booking.start_date).toLocaleDateString(currentLocaleTag())}`,
       });
     }
   };
@@ -316,7 +317,7 @@ const UserDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
+              <div className="text-2xl font-bold text-warning-foreground">{stats.pending}</div>
             </CardContent>
           </Card>
 
@@ -328,7 +329,7 @@ const UserDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-green-600">{stats.confirmed}</div>
+              <div className="text-2xl font-bold text-success">{stats.confirmed}</div>
             </CardContent>
           </Card>
 
@@ -352,7 +353,7 @@ const UserDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-blue-600">{stats.flightCount}</div>
+              <div className="text-2xl font-bold text-info">{stats.flightCount}</div>
             </CardContent>
           </Card>
 
@@ -364,7 +365,7 @@ const UserDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-purple-600">{stats.hotelCount}</div>
+              <div className="text-2xl font-bold text-primary">{stats.hotelCount}</div>
             </CardContent>
           </Card>
         </div>

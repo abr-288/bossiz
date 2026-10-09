@@ -29,34 +29,39 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { z } from "zod";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
+import { MOTION } from "@/lib/motion";
+import { passwordErrorMessage } from "@/lib/passwordErrors";
 
-// Validation schemas
-const profileSchema = z.object({
+// Validation schemas (messages traduits : construits avec la fonction t courante)
+const createProfileSchema = (t: TFunction) => z.object({
   full_name: z.string()
-    .min(2, "Le nom doit contenir au moins 2 caractères")
-    .max(100, "Le nom ne peut pas dépasser 100 caractères")
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]*$/, "Le nom ne peut contenir que des lettres")
+    .min(2, t("ux.account.errNameMin"))
+    .max(100, t("ux.account.errNameMax"))
+    .regex(/^[a-zA-ZÀ-ÿ\s'-]*$/, t("ux.account.errNameChars"))
     .or(z.literal("")),
   phone: z.string()
     .refine((val) => val === "" || /^(\+?\d{1,3}[\s-]?)?\d{8,15}$/.test(val.replace(/\s/g, "")), {
-      message: "Numéro de téléphone invalide"
+      message: t("ux.account.errPhone")
     }),
 });
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Mot de passe actuel requis"),
+const createPasswordSchema = (t: TFunction) => z.object({
+  currentPassword: z.string().min(1, t("ux.account.errCurrentPwd")),
   newPassword: z.string()
-    .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-    .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une majuscule")
-    .regex(/[a-z]/, "Le mot de passe doit contenir au moins une minuscule")
-    .regex(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre"),
+    .min(8, t("ux.account.errPwdMin"))
+    .regex(/[A-Z]/, t("ux.account.errPwdUpper"))
+    .regex(/[a-z]/, t("ux.account.errPwdLower"))
+    .regex(/[0-9]/, t("ux.account.errPwdDigit")),
   confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
+  message: t("ux.account.errPwdMatch"),
   path: ["confirmPassword"],
 });
 
 const Account = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -114,7 +119,7 @@ const Account = () => {
 
   const validateProfile = () => {
     try {
-      profileSchema.parse(profile);
+      createProfileSchema(t).parse(profile);
       setErrors({});
       return true;
     } catch (error) {
@@ -147,16 +152,16 @@ const Account = () => {
     setSaving(false);
 
     if (error) {
-      toast.error("Erreur lors de la mise à jour du profil");
+      toast.error(t("ux.account.profileError"));
     } else {
-      toast.success("Profil mis à jour avec succès");
+      toast.success(t("ux.account.profileSaved"));
       notifyProfileUpdated();
     }
   };
 
   const validatePasswords = () => {
     try {
-      passwordSchema.parse(passwords);
+      createPasswordSchema(t).parse(passwords);
       setErrors({});
       return true;
     } catch (error) {
@@ -184,9 +189,9 @@ const Account = () => {
     setSaving(false);
 
     if (error) {
-      toast.error("Erreur lors du changement de mot de passe");
+      toast.error(passwordErrorMessage(t, error));
     } else {
-      toast.success("Mot de passe mis à jour avec succès");
+      toast.success(t("ux.account.pwdSaved"));
       setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
     }
   };
@@ -198,13 +203,13 @@ const Account = () => {
     try {
       const { data, error } = await supabase.functions.invoke('delete-account', { body: {} });
       if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Échec de la suppression du compte");
+      if (!data?.success) throw new Error(data?.error || t("ux.account.deleteFailed"));
 
-      toast.success("Votre compte a été supprimé");
+      toast.success(t("ux.account.deleted"));
       await supabase.auth.signOut();
       navigate('/');
     } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : "Erreur lors de la suppression du compte");
+      toast.error(error instanceof Error ? error.message : t("ux.account.deleteError"));
     } finally {
       setDeletingAccount(false);
     }
@@ -248,7 +253,7 @@ const Account = () => {
 
   return (
     <UserDashboardLayout>
-      <div className="bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-6 md:py-12 relative overflow-hidden rounded-lg">
+      <div className="bg-primary/5 py-6 md:py-12 relative overflow-hidden rounded-lg">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
@@ -288,14 +293,14 @@ const Account = () => {
                   </AvatarFallback>
                 </Avatar>
                 <motion.div
-                  className="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-background"
+                  className="absolute -bottom-1 -right-1 bg-success w-6 h-6 rounded-full border-4 border-background"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </motion.div>
               <div className="text-center md:text-left">
                 <motion.h1 
-                  className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
+                  className="text-3xl md:text-4xl font-bold bg-primary bg-clip-text text-transparent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -321,10 +326,10 @@ const Account = () => {
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-background/50 backdrop-blur-sm p-1">
                   {[
-                    { value: "profile", icon: User, label: "Profil" },
-                    { value: "security", icon: Lock, label: "Sécurité" },
-                    { value: "preferences", icon: Bell, label: "Préférences" },
-                    { value: "payment", icon: CreditCard, label: "Paiement" },
+                    { value: "profile", icon: User, label: t("ux.account.tabProfile") },
+                    { value: "security", icon: Lock, label: t("ux.account.tabSecurity") },
+                    { value: "preferences", icon: Bell, label: t("ux.account.tabPreferences") },
+                    { value: "payment", icon: CreditCard, label: t("ux.account.tabPayment") },
                   ].map((tab) => (
                     <TabsTrigger
                       key={tab.value}
@@ -341,21 +346,21 @@ const Account = () => {
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: MOTION.slow }}
                     >
                       <Card className="backdrop-blur-sm bg-card/80 border-primary/10 shadow-xl">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <User className="h-5 w-5 text-primary" />
-                            Informations Personnelles
+                            {t("ux.account.personalInfo")}
                           </CardTitle>
                           <CardDescription>
-                            Gérez vos informations personnelles et de contact
+                            {t("ux.account.personalInfoDesc")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                           <ImageUpload
-                            label="Photo de profil"
+                            label={t("ux.account.photo")}
                             folder={`profile-avatars/${user?.id || ""}`}
                             value={profile.avatar_url}
                             onChange={(avatar_url) => setProfile((current) => ({ ...current, avatar_url }))}
@@ -373,14 +378,15 @@ const Account = () => {
                               <Input
                                 id="email"
                                 type="email"
+                                autoComplete="email"
                                 value={user?.email || ""}
                                 disabled
                                 className="flex-1 bg-muted/50"
                               />
-                              <Shield className="h-4 w-4 text-green-500" />
+                              <Shield className="h-4 w-4 text-success" />
                             </div>
                             <p className="text-xs text-muted-foreground">
-                              L'email ne peut pas être modifié pour des raisons de sécurité
+                              {t("ux.account.emailLocked")}
                             </p>
                           </motion.div>
 
@@ -390,12 +396,12 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
                           >
-                            <Label htmlFor="full_name">Nom Complet</Label>
+                            <Label htmlFor="full_name">{t("ux.account.fullName")}</Label>
                             <Input
                               id="full_name"
                               value={profile.full_name}
                               onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                              placeholder="Votre nom complet"
+                              placeholder={t("ux.account.fullNamePlaceholder")}
                               className={errors.full_name ? "border-destructive" : ""}
                             />
                             {errors.full_name && (
@@ -416,7 +422,7 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                           >
-                            <Label htmlFor="phone">Téléphone</Label>
+                            <Label htmlFor="phone">{t("ux.account.phone")}</Label>
                             <div className="flex items-center gap-2">
                               <Phone className="h-4 w-4 text-muted-foreground" />
                               <PhoneNumberInput
@@ -454,7 +460,7 @@ const Account = () => {
                               ) : (
                                 <Save className="mr-2 h-4 w-4" />
                               )}
-                              Enregistrer les modifications
+                              {t("ux.account.save")}
                             </Button>
                           </motion.div>
                         </CardContent>
@@ -466,7 +472,7 @@ const Account = () => {
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: MOTION.slow }}
                       className="space-y-6"
                     >
                       {/* Two-Factor Authentication Section */}
@@ -477,10 +483,10 @@ const Account = () => {
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <Lock className="h-5 w-5 text-primary" />
-                            Changer le Mot de Passe
+                            {t("ux.account.changePwdTitle")}
                           </CardTitle>
                           <CardDescription>
-                            Modifiez votre mot de passe pour sécuriser votre compte
+                            {t("ux.account.changePwdDesc")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
@@ -490,11 +496,12 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
                           >
-                            <Label htmlFor="current_password">Mot de passe actuel</Label>
+                            <Label htmlFor="current_password">{t("ux.account.currentPwd")}</Label>
                             <div className="relative">
                               <Input
                                 id="current_password"
                                 type={showCurrentPassword ? "text" : "password"}
+                                autoComplete="current-password"
                                 value={passwords.currentPassword}
                                 onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
                                 placeholder="••••••••"
@@ -526,11 +533,12 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
                           >
-                            <Label htmlFor="new_password">Nouveau mot de passe</Label>
+                            <Label htmlFor="new_password">{t("ux.account.newPwd")}</Label>
                             <div className="relative">
                               <Input
                                 id="new_password"
                                 type={showNewPassword ? "text" : "password"}
+                                autoComplete="new-password"
                                 value={passwords.newPassword}
                                 onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
                                 placeholder="••••••••"
@@ -553,10 +561,10 @@ const Account = () => {
                                       className={`h-1 flex-1 rounded-full ${
                                         passwordStrength >= level
                                           ? level <= 2
-                                            ? "bg-red-500"
+                                            ? "bg-destructive"
                                             : level <= 3
-                                            ? "bg-yellow-500"
-                                            : "bg-green-500"
+                                            ? "bg-gold"
+                                            : "bg-success"
                                           : "bg-muted"
                                       }`}
                                       initial={{ scaleX: 0 }}
@@ -587,11 +595,12 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                           >
-                            <Label htmlFor="confirm_password">Confirmer le mot de passe</Label>
+                            <Label htmlFor="confirm_password">{t("ux.account.confirmPwd")}</Label>
                             <div className="relative">
                               <Input
                                 id="confirm_password"
                                 type={showConfirmPassword ? "text" : "password"}
+                                autoComplete="new-password"
                                 value={passwords.confirmPassword}
                                 onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
                                 placeholder="••••••••"
@@ -609,10 +618,10 @@ const Account = () => {
                               <motion.p
                                 initial={{ opacity: 0, y: -5 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-xs text-green-500 flex items-center gap-1"
+                                className="text-xs text-success flex items-center gap-1"
                               >
                                 <Check className="h-3 w-3" />
-                                Les mots de passe correspondent
+                                {t("ux.account.pwdMatch")}
                               </motion.p>
                             )}
                             {errors.confirmPassword && (
@@ -642,7 +651,7 @@ const Account = () => {
                               ) : (
                                 <Lock className="mr-2 h-4 w-4" />
                               )}
-                              Changer le mot de passe
+                              {t("ux.account.changePwd")}
                             </Button>
                           </motion.div>
                         </CardContent>
@@ -653,11 +662,10 @@ const Account = () => {
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2 text-destructive">
                             <Trash2 className="h-5 w-5" />
-                            Supprimer mon compte
+                            {t("ux.account.deleteAccount")}
                           </CardTitle>
                           <CardDescription>
-                            Supprime définitivement vos données personnelles (nom, email, téléphone, documents de voyage).
-                            Vos réservations passées sont conservées de façon anonymisée pour nos obligations comptables et légales.
+                            {t("ux.account.deleteDesc")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -669,21 +677,20 @@ const Account = () => {
                                 ) : (
                                   <Trash2 className="mr-2 h-4 w-4" />
                                 )}
-                                Supprimer mon compte
+                                {t("ux.account.deleteAccount")}
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                                <AlertDialogTitle>{t("ux.account.areYouSure")}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Cette action est irréversible. Votre profil et vos données personnelles seront définitivement
-                                  anonymisés et vous serez déconnecté. Cette action ne peut pas être annulée.
+                                  {t("ux.account.deleteConfirmDesc")}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Annuler</AlertDialogCancel>
                                 <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                  Confirmer la suppression
+                                  {t("ux.account.confirmDelete")}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -697,34 +704,34 @@ const Account = () => {
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: MOTION.slow }}
                     >
                       <Card className="backdrop-blur-sm bg-card/80 border-primary/10 shadow-xl">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <Bell className="h-5 w-5 text-primary" />
-                            Préférences de Communication
+                            {t("ux.account.commTitle")}
                           </CardTitle>
                           <CardDescription>
-                            Gérez comment vous souhaitez recevoir nos communications
+                            {t("ux.account.commDesc")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                           {[
                             {
                               key: "emailNotifications",
-                              label: "Notifications par email",
-                              description: "Recevoir les confirmations et mises à jour par email",
+                              label: t("ux.account.emailNotif"),
+                              description: t("ux.account.emailNotifDesc"),
                             },
                             {
                               key: "smsNotifications",
-                              label: "Notifications SMS",
-                              description: "Recevoir les alertes importantes par SMS",
+                              label: t("ux.account.smsNotif"),
+                              description: t("ux.account.smsNotifDesc"),
                             },
                             {
                               key: "newsletter",
-                              label: "Newsletter",
-                              description: "Recevoir les offres spéciales et nouveautés",
+                              label: t("ux.account.newsletter"),
+                              description: t("ux.account.newsletterDesc"),
                             },
                           ].map((pref, index) => (
                             <motion.div
@@ -759,9 +766,9 @@ const Account = () => {
                             <div className="flex items-center gap-3">
                               <TrendingDown className="h-5 w-5 text-primary" />
                               <div className="space-y-1">
-                                <Label className="cursor-pointer">Alertes de prix</Label>
+                                <Label className="cursor-pointer">{t("ux.account.priceAlerts")}</Label>
                                 <p className="text-sm text-muted-foreground">
-                                  Créez et gérez vos alertes de baisse de prix par destination
+                                  {t("ux.account.priceAlertsDesc")}
                                 </p>
                               </div>
                             </div>
@@ -773,9 +780,9 @@ const Account = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
                           >
-                            <Button className="w-full" onClick={() => toast.success("Préférences enregistrées")}>
+                            <Button className="w-full" onClick={() => toast.success(t("ux.account.prefsSaved"))}>
                               <Save className="mr-2 h-4 w-4" />
-                              Enregistrer les préférences
+                              {t("ux.account.savePrefs")}
                             </Button>
                           </motion.div>
                         </CardContent>
@@ -787,16 +794,16 @@ const Account = () => {
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: MOTION.slow }}
                     >
                       <Card className="backdrop-blur-sm bg-card/80 border-primary/10 shadow-xl">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <CreditCard className="h-5 w-5 text-primary" />
-                            Moyens de Paiement
+                            {t("ux.account.paymentTitle")}
                           </CardTitle>
                           <CardDescription>
-                            Gérez vos méthodes de paiement enregistrées
+                            {t("ux.account.paymentDesc")}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -814,10 +821,9 @@ const Account = () => {
                             >
                               <CreditCard className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                             </motion.div>
-                            <p className="text-lg font-medium mb-2">Aucun moyen de paiement enregistré</p>
+                            <p className="text-lg font-medium mb-2">{t("ux.account.noCard")}</p>
                             <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                              Pour votre sécurité, nous ne stockons aucune carte bancaire. Vous la
-                              renseignez directement, de façon sécurisée, au moment du paiement.
+                              {t("ux.account.noCardDesc")}
                             </p>
                           </motion.div>
                         </CardContent>
@@ -835,9 +841,9 @@ const Account = () => {
               transition={{ delay: 0.4 }}
             >
               {[
-                { icon: Calendar, title: "Mes Réservations", subtitle: "Voir l'historique", href: "/booking-history", comingSoon: false },
-                { icon: Heart, title: "Mes Favoris", subtitle: "Bientôt disponible", href: "#", comingSoon: true },
-                { icon: MapPin, title: "Mes Destinations", subtitle: "Bientôt disponible", href: "#", comingSoon: true },
+                { icon: Calendar, title: t("ux.account.myBookings"), subtitle: t("ux.account.seeHistory"), href: "/booking-history", comingSoon: false },
+                { icon: Heart, title: t("ux.account.myFavorites"), subtitle: t("ux.account.comingSoon"), href: "#", comingSoon: true },
+                { icon: MapPin, title: t("ux.account.myDestinations"), subtitle: t("ux.account.comingSoon"), href: "#", comingSoon: true },
               ].map((item, index) => (
                 <motion.div
                   key={item.title}
@@ -856,7 +862,7 @@ const Account = () => {
                     <CardContent className="pt-6 text-center">
                       <motion.div
                         whileHover={item.comingSoon ? undefined : { rotate: [0, -10, 10, 0] }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: MOTION.slow }}
                       >
                         <item.icon className="h-8 w-8 mx-auto mb-2 text-primary" />
                       </motion.div>

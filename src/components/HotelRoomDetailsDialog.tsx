@@ -46,7 +46,7 @@ export const HotelRoomDetailsDialog = ({ open, onOpenChange, hotel, onBookNow }:
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-1 text-amber-500">
+            <div className="flex items-center gap-1 text-gold">
               {[...Array(5)].map((_, index) => (
                 <Star key={index} className="h-4 w-4 fill-current" />
               ))}

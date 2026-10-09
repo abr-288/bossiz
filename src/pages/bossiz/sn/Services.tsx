@@ -30,7 +30,7 @@ const BossizSNServices = () => {
         <div className="absolute inset-0 bg-bossiz-teal-dark/80" />
         <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
           <p className="text-bossiz-gold-light text-sm font-semibold uppercase tracking-[0.25em] mb-3">{content.services.eyebrow}</p>
-          <h1 className="font-black text-3xl md:text-5xl text-white drop-shadow-lg">
+          <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">
             {content.services.title}
           </h1>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, CalendarDays, Check, MapPin, ShieldCheck, Users } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, ShieldCheck, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,10 @@ import { OptionsStep } from "@/components/booking-steps/OptionsStep";
 import { PreferencesStep } from "@/components/booking-steps/PreferencesStep";
 import { SummaryStep } from "@/components/booking-steps/SummaryStep";
 import { Price } from "@/components/ui/price";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { BookingStepper } from "@/components/booking-steps/BookingStepper";
 
 interface Passenger {
   firstName: string;
@@ -23,6 +27,7 @@ interface Passenger {
 }
 
 const UnifiedBookingProcess = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -76,18 +81,18 @@ const UnifiedBookingProcess = () => {
   };
 
   const getStepTitle = (stepNumber: number) => {
-    if (stepNumber === 1) return "Participants";
+    if (stepNumber === 1) return t("ux.booking.stepParticipants");
     if (stepNumber === 2) {
-      if (serviceType === "flight") return "Bagages";
-      if (serviceType === "hotel" || serviceType === "stay") return "Options";
-      return "Extras";
+      if (serviceType === "flight") return t("ux.booking.stepBaggage");
+      if (serviceType === "hotel" || serviceType === "stay") return t("ux.booking.stepOptions");
+      return t("ux.booking.stepExtras");
     }
     if (stepNumber === 3) {
-      if (serviceType === "flight") return "Sièges";
-      if (serviceType === "hotel" || serviceType === "stay") return "Préférences";
-      return "Détails";
+      if (serviceType === "flight") return t("ux.booking.stepSeats");
+      if (serviceType === "hotel" || serviceType === "stay") return t("ux.booking.stepPreferences");
+      return t("ux.booking.stepDetails");
     }
-    return "Paiement";
+    return t("ux.booking.stepPayment");
   };
 
   const steps = [
@@ -124,7 +129,7 @@ const UnifiedBookingProcess = () => {
                 {flightData.airline} • Vol {flightData.flightNumber}
               </div>
               {flightData.stops > 0 && (
-                <div className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                <div className="mt-2 text-xs text-warning-foreground">
                   ⚠️ {flightData.stops} escale(s)
                 </div>
               )}
@@ -154,17 +159,83 @@ const UnifiedBookingProcess = () => {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <CalendarDays className="h-4 w-4 text-primary" />
           <span>
-            {new Date(startDate).toLocaleDateString("fr-FR")}
-            {endDate && ` – ${new Date(endDate).toLocaleDateString("fr-FR")}`}
+            {new Date(startDate).toLocaleDateString(currentLocaleTag())}
+            {endDate && ` – ${new Date(endDate).toLocaleDateString(currentLocaleTag())}`}
           </span>
         </div>
       </div>
     );
   };
 
+  const summaryCard = (
+      <Card className="overflow-hidden border shadow-sm">
+        <div className="border-b bg-muted/30 px-5 py-4">
+          <h2 className="font-semibold">{t("ux.booking.yourExperience")}</h2>
+          <p className="mt-1 text-xs text-muted-foreground">{t("ux.booking.essentialDetails")}</p>
+        </div>
+        <div className="space-y-5 p-5">
+          {renderServiceDetails()}
+          <Separator />
+          <div className="flex items-center justify-between text-sm">
+            <span className="flex items-center gap-2 text-muted-foreground">
+              <Users className="h-4 w-4" /> {t("ux.booking.participants")}
+            </span>
+            <span className="font-medium">
+              {t("ux.booking.adults", { count: adultsCount })}
+              {childrenCount > 0 && `, ${t("ux.booking.children", { count: childrenCount })}`}
+            </span>
+          </div>
+          {serviceType === "flight" && flightData && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t("ux.booking.fare")}</span>
+              <span className="font-medium">{flightData.fare === "basic" ? "Basic" : "Benefits"}</span>
+            </div>
+          )}
+          <div className="rounded-xl bg-primary/5 p-4">
+            <p className="text-xs text-muted-foreground">{t("ux.booking.basePrice")}</p>
+            <p className="mt-1 text-2xl font-bold text-primary">
+              <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("ux.booking.totalConfirmedLater")}</p>
+          </div>
+          <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <span>{t("ux.booking.reviewBeforeConfirm")}</span>
+          </div>
+        </div>
+      </Card>
+  );
+
   return (
     <div className="min-h-screen bg-background pt-16">
       <Navbar />
+
+      {/* Mobile : étape et prix toujours visibles, détail dans un volet */}
+      <div className="sticky top-14 z-30 border-b border-border bg-card/95 backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">
+              {t("ux.booking.stepOf", { current: currentStep, total: steps.length })} · {getStepTitle(currentStep)}
+            </p>
+            <p className="t-price truncate text-base text-foreground">
+              <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
+            </p>
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="shrink-0">
+                {t("ux.booking.detail")}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-3xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+              <SheetHeader className="mb-3 text-left">
+                <SheetTitle>{t("ux.booking.summary")}</SheetTitle>
+              </SheetHeader>
+              {summaryCard}
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
 
       <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-10">
         <Button
@@ -173,7 +244,7 @@ const UnifiedBookingProcess = () => {
           className="mb-5 -ml-3 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Retour
+          {t("ux.booking.back")}
         </Button>
 
         <section className="relative mb-8 overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-accent/10 p-6 shadow-sm md:p-9">
@@ -181,13 +252,13 @@ const UnifiedBookingProcess = () => {
           <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div className="max-w-2xl">
               <Badge variant="secondary" className="mb-4 rounded-full px-3 py-1">
-                {serviceType === "tour" ? "CIRCUIT & DÉCOUVERTE" : `${getServiceIcon()} RÉSERVATION`}
+                {serviceType === "tour" ? t("ux.booking.tourBadge") : `${getServiceIcon()} ${t("ux.booking.bookingBadge")}`}
               </Badge>
               <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                {serviceType === "tour" ? "Préparez votre escapade" : "Finalisez votre réservation"}
+                {serviceType === "tour" ? t("ux.booking.tourTitle") : t("ux.booking.title")}
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-                Quelques informations pour organiser votre expérience. Vérifiez les détails de la réservation avant de continuer.
+                {t("ux.booking.intro")}
               </p>
             </div>
             <div className="flex items-center gap-4 rounded-2xl border bg-background/80 px-5 py-4 shadow-sm backdrop-blur">
@@ -195,7 +266,7 @@ const UnifiedBookingProcess = () => {
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Prix de base</p>
+                <p className="text-xs text-muted-foreground">{t("ux.booking.basePrice")}</p>
                 <p className="text-xl font-bold text-primary">
                   <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
                 </p>
@@ -206,83 +277,14 @@ const UnifiedBookingProcess = () => {
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,2fr)] lg:gap-8">
           {/* Colonne gauche - Détails du service */}
-          <aside className="order-2 lg:order-1 lg:sticky lg:top-24">
-            <Card className="overflow-hidden border shadow-sm">
-              <div className="border-b bg-muted/30 px-5 py-4">
-                <h2 className="font-semibold">Votre expérience</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Détails essentiels de la réservation</p>
-              </div>
-              <div className="space-y-5 p-5">
-                {renderServiceDetails()}
-                <Separator />
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                    <Users className="h-4 w-4" /> Participants
-                  </span>
-                  <span className="font-medium">
-                    {adultsCount} adulte{adultsCount > 1 ? "s" : ""}
-                    {childrenCount > 0 && `, ${childrenCount} enfant${childrenCount > 1 ? "s" : ""}`}
-                  </span>
-                </div>
-                {serviceType === "flight" && flightData && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tarif</span>
-                    <span className="font-medium">{flightData.fare === "basic" ? "Basic" : "Benefits"}</span>
-                  </div>
-                )}
-                <div className="rounded-xl bg-primary/5 p-4">
-                  <p className="text-xs text-muted-foreground">Prix de base</p>
-                  <p className="mt-1 text-2xl font-bold text-primary">
-                    <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">Le total sera confirmé avant paiement.</p>
-                </div>
-                <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <span>Vous pourrez vérifier le récapitulatif avant de confirmer votre réservation.</span>
-                </div>
-              </div>
-            </Card>
+          <aside className="hidden lg:block lg:sticky lg:top-24">
+            {summaryCard}
           </aside>
 
           {/* Colonne droite - Processus de réservation */}
-          <div className="order-1 min-w-0 lg:order-2">
+          <div className="min-w-0">
             {/* Stepper */}
-            <Card className="mb-6 border shadow-sm">
-              <div className="flex items-center justify-between gap-2 p-4 md:p-6">
-                {steps.map((step, index) => (
-                  <div key={step.number} className="flex items-center flex-1">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all ${
-                          step.completed
-                            ? "bg-green-600 text-white"
-                            : currentStep === step.number
-                            ? "bg-primary text-primary-foreground shadow-md ring-4 ring-primary/10"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {step.completed ? <Check className="h-4 w-4" /> : step.number}
-                      </div>
-                      <span
-                        className={`mt-2 text-center text-xs font-medium sm:text-sm ${
-                          currentStep === step.number ? "text-foreground" : "text-muted-foreground"
-                        }`}
-                      >
-                        {step.title}
-                      </span>
-                    </div>
-                    {index < steps.length - 1 && (
-                      <Separator
-                        className={`mx-2 h-0.5 flex-1 sm:mx-4 ${
-                          step.completed ? "bg-green-600" : "bg-border"
-                        }`}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Card>
+            <BookingStepper steps={steps} currentStep={currentStep} className="mb-6" />
 
             {/* Contenu des étapes */}
             {currentStep === 1 && (

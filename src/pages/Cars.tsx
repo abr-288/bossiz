@@ -186,7 +186,7 @@ const Cars = () => {
 
       if (allCars.length > 0) {
         setApiCars(allCars);
-        toast.success(`${allCars.length} véhicules disponibles dans les destinations populaires`);
+        toast.success(t("ux.cars.loaded", { count: allCars.length }));
       }
     } catch (error) {
       console.error('Error loading default cars:', error);
@@ -397,7 +397,7 @@ const Cars = () => {
           alt={t('cars.title')}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
@@ -427,10 +427,10 @@ const Cars = () => {
               <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/20 rounded-xl">
                 <Badge className="bg-primary text-primary-foreground">
                   <CarIcon className="w-3 h-3 mr-1" />
-                  Véhicules disponibles
+                  {t("ux.cars.available")}
                 </Badge>
                 <span className="text-sm text-muted-foreground">
-                  Voitures de location dans les destinations populaires (Paris, Nice, Lyon, Marseille, Bordeaux)
+                  {t("ux.cars.availableDesc")}
                 </span>
               </div>
             )}
@@ -438,7 +438,7 @@ const Cars = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-card rounded-xl border">
               <div className="flex items-center gap-3">
-                <p className="font-medium">{filteredAndSortedCars.length} véhicules</p>
+                <p className="font-medium">{t("ux.cars.count", { count: filteredAndSortedCars.length })}</p>
                 {activeFiltersCount > 0 && <Badge variant="secondary">{activeFiltersCount} filtres</Badge>}
               </div>
               <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -466,7 +466,7 @@ const Cars = () => {
             {(loading || loadingDefault) && (
               <div className="space-y-4">
                 <p className="text-center text-muted-foreground">
-                  {loadingDefault ? 'Chargement des véhicules disponibles...' : 'Recherche en cours...'}
+                  {loadingDefault ? t("ux.cars.loading") : t("ux.cars.searching")}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -481,7 +481,7 @@ const Cars = () => {
               <div className="text-center py-16 bg-card rounded-xl border">
                 <CarIcon className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold mb-2">{t('cars.noVehicles')}</h3>
-                <p className="text-muted-foreground mb-4">Utilisez le formulaire de recherche ci-dessus</p>
+                <p className="text-muted-foreground mb-4">{t("ux.cars.useSearch")}</p>
                 {activeFiltersCount > 0 && <Button variant="outline" onClick={resetFilters}>{t('cars.resetFilters')}</Button>}
               </div>
             )}

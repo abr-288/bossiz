@@ -9,49 +9,51 @@ import { Loader2, Save, Mail, MessageSquare, AlertTriangle, Eye, EyeOff, CreditC
 import { useIntegrationCredentials, type IntegrationCredential } from "@/hooks/useIntegrationCredentials";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 // Champs attendus par prestataire — détermine le formulaire affiché.
 const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boolean }[]> = {
-  resend: [{ key: "api_key", label: "Clé API Resend", secret: true }],
+  resend: [{ key: "api_key", get label() { return i18n.t("ux.bo.resendApiKey"); }, secret: true }],
   smtp: [
-    { key: "host", label: "Hôte SMTP (ex: smtp.hebergeur.com)" },
-    { key: "port", label: "Port (465 = TLS, 587 = STARTTLS)" },
-    { key: "username", label: "Nom d'utilisateur" },
-    { key: "password", label: "Mot de passe", secret: true },
+    { key: "host", get label() { return i18n.t("ux.bo.smtpHostEGSmtp"); } },
+    { key: "port", get label() { return i18n.t("ux.bo.port465Tls587Starttls"); } },
+    { key: "username", get label() { return i18n.t("ux.bo.username"); } },
+    { key: "password", get label() { return i18n.t("ux.bo.password"); }, secret: true },
     { key: "from", label: "Adresse d'expédition (ex: Bossiz+ <contact@bossiz.com>)" },
   ],
   twilio: [
     { key: "account_sid", label: "Account SID" },
     { key: "auth_token", label: "Auth Token", secret: true },
-    { key: "from_number", label: "Numéro d'envoi (ex: +14155552671)" },
+    { key: "from_number", get label() { return i18n.t("ux.bo.senderNumberEG14155552671"); } },
   ],
   orange_sms_ci: [
     { key: "client_id", label: "Client ID" },
     { key: "client_secret", label: "Client Secret", secret: true },
-    { key: "sender_name", label: "Nom de l'expéditeur (ex: BOSSIZ)" },
+    { key: "sender_name", get label() { return i18n.t("ux.bo.senderNameEGBossiz"); } },
   ],
   africastalking: [
     { key: "username", label: "Username" },
-    { key: "api_key", label: "Clé API", secret: true },
-    { key: "sender_id", label: "Sender ID (optionnel)" },
+    { key: "api_key", get label() { return i18n.t("ux.bo.apiKey"); }, secret: true },
+    { key: "sender_id", get label() { return i18n.t("ux.bo.senderIdOptional"); } },
   ],
   sendexa: [
-    { key: "api_token", label: "Token du dashboard (Basic Auth)", secret: true },
-    { key: "sender_id", label: "Nom de l'expéditeur (optionnel)" },
+    { key: "api_token", get label() { return i18n.t("ux.bo.dashboardTokenBasicAuth"); }, secret: true },
+    { key: "sender_id", get label() { return i18n.t("ux.bo.senderNameOptional"); } },
   ],
   twilio_whatsapp: [
     { key: "account_sid", label: "Account SID" },
     { key: "auth_token", label: "Auth Token", secret: true },
-    { key: "from_number", label: "Numéro WhatsApp Business (ex: +14155238886)" },
+    { key: "from_number", get label() { return i18n.t("ux.bo.whatsappBusinessNumberEG"); } },
   ],
   sendexa_whatsapp: [
-    { key: "api_token", label: "Token du dashboard (Basic Auth)", secret: true },
-    { key: "sender_id", label: "Nom de l'expéditeur (optionnel)" },
+    { key: "api_token", get label() { return i18n.t("ux.bo.dashboardTokenBasicAuth"); }, secret: true },
+    { key: "sender_id", get label() { return i18n.t("ux.bo.senderNameOptional"); } },
   ],
   jeko: [
     { key: "store_id", label: "Store ID — UUID (Cockpit Jèko > Magasins)" },
-    { key: "api_key", label: "Clé API (X-API-KEY)", secret: true },
-    { key: "api_key_id", label: "Identifiant de clé (X-API-KEY-ID)" },
+    { key: "api_key", get label() { return i18n.t("ux.bo.apiKeyXApiKey"); }, secret: true },
+    { key: "api_key_id", get label() { return i18n.t("ux.bo.keyIdentifierXApiKey"); } },
     { key: "webhook_secret", label: "Secret Webhook (Cockpit > API & Webhooks)", secret: true },
   ],
 };
@@ -60,14 +62,14 @@ const PROVIDER_FIELDS: Record<string, { key: string; label: string; secret?: boo
 // configurés (contrairement aux autres, ils restent activables même si les
 // champs ci-dessous sont laissés vides).
 const ENV_FALLBACK_HINTS: Record<string, string> = {
-  resend: "Laissez ce champ vide pour continuer à utiliser le secret d'Edge Function déjà configuré (RESEND_API_KEY) — ou renseignez-le ici pour le remplacer sans passer par la CLI Supabase.",
+  get resend() { return i18n.t("ux.bo.leaveFieldEmptyKeepUsing"); },
 };
 
 const ACTIVE_DESCRIPTIONS: Record<string, string> = {
-  email: "Prestataire actif — utilisé pour tous les emails envoyés par le site",
-  sms: "Prestataire actif — utilisé pour tous les SMS envoyés par le site",
-  whatsapp: "Prestataire actif — utilisé pour les notifications WhatsApp (ex: approbation de voyage d'affaires)",
-  payment: "Prestataire actif — utilisé pour tous les nouveaux paiements",
+  get email() { return i18n.t("ux.bo.activeProviderUsedAllEmails"); },
+  get sms() { return i18n.t("ux.bo.activeProviderUsedAllSms"); },
+  get whatsapp() { return i18n.t("ux.bo.activeProviderUsedWhatsappNotifications"); },
+  get payment() { return i18n.t("ux.bo.activeProviderUsedAllNew"); },
 };
 
 function ExclusiveProviderCard({
@@ -134,14 +136,14 @@ function ExclusiveProviderCard({
             />
             {integration.provider === "jeko" && field.key === "store_id" && (
               <p className="mt-1 text-xs text-muted-foreground">
-                Saisissez l’UUID du magasin (format 8-4-4-4-12), pas son nom ni sa clé API.
+                {i18n.t("ux.bo.enterStoreUuid84")}
               </p>
             )}
           </div>
         ))}
         {integration.provider === "jeko" && credentials.store_id?.trim() && !hasValidJekoStoreId && (
           <p className="text-sm text-destructive">
-            Store ID invalide : copiez l’UUID du magasin depuis le Cockpit Jèko.
+            {i18n.t("ux.bo.invalidStoreIdCopyStore")}
           </p>
         )}
         <div className="flex items-center justify-between pt-2">
@@ -156,7 +158,7 @@ function ExclusiveProviderCard({
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-2 h-3.5 w-3.5" />}
-              Enregistrer
+              {i18n.t("ux.bo.save2")}
             </Button>
             <Button
               size="sm"
@@ -174,6 +176,7 @@ function ExclusiveProviderCard({
 }
 
 export default function AdminIntegrations() {
+  const { t } = useTranslation();
   const { integrations, loading, tableMissing, updateIntegration, activateExclusive } = useIntegrationCredentials();
 
   const emailIntegrations = integrations.filter((i) => i.category === "email");
@@ -196,7 +199,7 @@ export default function AdminIntegrations() {
           : { ok: false, message: `Échec (${data?.provider ?? "?"}) : ${data?.error ?? "erreur inconnue"}` },
       );
     } catch (err) {
-      setTestResult({ ok: false, message: err instanceof Error ? err.message : "Impossible de joindre la fonction de test." });
+      setTestResult({ ok: false, message: err instanceof Error ? err.message : t("ux.bo.unableReachTestFunction") });
     } finally {
       setTesting(false);
     }
@@ -209,9 +212,9 @@ export default function AdminIntegrations() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Intégrations (Email, SMS, Paiement)</h1>
+          <h1 className="text-2xl font-bold">{t("ux.bo.integrationsEmailSmsPayment2")}</h1>
           <p className="text-muted-foreground">
-            Renseignez ici les clés API de vos prestataires — dès qu'une intégration est activée
+            {t("ux.bo.enterProvidersApiKeysHere")}
             avec des clés valides, elle est utilisée immédiatement par le site (support, newsletter,
             factures, confirmations, alertes de prix).
           </p>
@@ -220,12 +223,12 @@ export default function AdminIntegrations() {
         {tableMissing && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Configuration en attente</AlertTitle>
+            <AlertTitle>{t("ux.bo.configurationPending")}</AlertTitle>
             <AlertDescription>
-              La table de stockage des identifiants n'existe pas encore sur la base de production.
+              {t("ux.bo.credentialsStorageTableDoesNot")}
               Une migration SQL est prête (<code>supabase/migrations/20260806000000_integration_credentials_and_otp.sql</code>)
               mais n'a pas pu être appliquée automatiquement (blocage de permission côté plateforme Supabase).
-              Exécutez-la une fois dans le SQL Editor du dashboard Supabase pour activer cette page.
+              {t("ux.bo.runOnceSupabaseDashboardSql")}
             </AlertDescription>
           </Alert>
         )}
@@ -238,8 +241,8 @@ export default function AdminIntegrations() {
           <Tabs defaultValue="email" className="space-y-6">
             <TabsList className="grid w-full max-w-xl grid-cols-3">
               <TabsTrigger value="email" className="gap-2"><Mail className="w-4 h-4" /> Email</TabsTrigger>
-              <TabsTrigger value="messaging" className="gap-2"><MessageSquare className="w-4 h-4" /> SMS / WhatsApp</TabsTrigger>
-              <TabsTrigger value="payment" className="gap-2"><CreditCard className="w-4 h-4" /> Paiement</TabsTrigger>
+              <TabsTrigger value="messaging" className="gap-2"><MessageSquare className="w-4 h-4" /> {t("ux.bo.smsWhatsapp")}</TabsTrigger>
+              <TabsTrigger value="payment" className="gap-2"><CreditCard className="w-4 h-4" /> {t("ux.bo.payment")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="email" className="space-y-6">
@@ -248,7 +251,7 @@ export default function AdminIntegrations() {
                 <Mail className="w-5 h-5" /> Email
               </h2>
               <p className="text-sm text-muted-foreground mb-3">
-                Un seul prestataire email est actif à la fois — c'est celui-là qui sera utilisé pour
+                {t("ux.bo.onlyOneEmailProviderActive")}
                 tous les envois (support, newsletter, factures, confirmations, alertes de prix).
               </p>
               <div className="grid gap-4 md:grid-cols-2">
@@ -262,24 +265,24 @@ export default function AdminIntegrations() {
                 ))}
               </div>
               <div className="mt-4 rounded-md border p-4 space-y-3">
-                <p className="text-sm font-medium">Tester l'envoi d'e-mails</p>
+                <p className="text-sm font-medium">{t("ux.bo.testEmailSending")}</p>
                 <p className="text-xs text-muted-foreground">
-                  Envoie un e-mail de test via le prestataire actif et affiche l'erreur exacte en cas d'échec.
+                  {t("ux.bo.sendsTestEmailThroughActive")}
                 </p>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <Input
                     type="email"
-                    placeholder="votre-adresse@exemple.com"
+                    placeholder={t("ux.bo.addressExampleCom")}
                     value={testEmail}
                     onChange={(e) => setTestEmail(e.target.value)}
                   />
                   <Button onClick={handleTestEmail} disabled={testing || !testEmail.trim()}>
                     {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
-                    Envoyer un test
+                    {t("ux.bo.sendTest")}
                   </Button>
                 </div>
                 {testResult && (
-                  <p className={`text-sm break-words ${testResult.ok ? "text-green-600" : "text-destructive"}`}>
+                  <p className={`text-sm break-words ${testResult.ok ? "text-success" : "text-destructive"}`}>
                     {testResult.message}
                   </p>
                 )}
@@ -293,7 +296,7 @@ export default function AdminIntegrations() {
                 <MessageSquare className="w-5 h-5" /> SMS
               </h2>
               <p className="text-sm text-muted-foreground mb-3">
-                Activez un seul prestataire SMS à la fois — c'est celui-là qui sera utilisé pour l'envoi.
+                {t("ux.bo.enableOnlyOneSmsProvider")}
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 {smsIntegrations.map((integration) => (
@@ -312,8 +315,8 @@ export default function AdminIntegrations() {
                 <MessageSquare className="w-5 h-5" /> WhatsApp
               </h2>
               <p className="text-sm text-muted-foreground mb-3">
-                Utilisé pour les notifications WhatsApp (ex: approbation de voyage d'affaires). Distinct du
-                prestataire SMS ci-dessus : un numéro WhatsApp Business n'est pas interchangeable avec un numéro SMS classique.
+                {t("ux.bo.usedWhatsappNotificationsEG")}
+                {t("ux.bo.smsProviderAboveWhatsappBusiness")}
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 {whatsappIntegrations.map((integration) => (
@@ -334,8 +337,8 @@ export default function AdminIntegrations() {
                 <CreditCard className="w-5 h-5" /> Paiement
               </h2>
               <p className="text-sm text-muted-foreground mb-3">
-                Un seul prestataire de paiement est actif à la fois — c'est celui-là qui traite tous
-                les nouveaux paiements de réservations et d'abonnements. Pour Jèko, pensez à configurer
+                {t("ux.bo.onlyOnePaymentProviderActive")}
+                {t("ux.bo.newBookingSubscriptionPaymentsJ")}
                 l'URL de webhook dans le Cockpit Jèko (Paramètres &gt; API &amp; Webhooks) :
                 <code className="ml-1 px-1.5 py-0.5 bg-muted rounded text-xs">https://gpwlzhegvjsbgbaepfjz.supabase.co/functions/v1/jeko-webhook</code>
               </p>

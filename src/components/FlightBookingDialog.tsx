@@ -93,13 +93,13 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
       <SheetContent side="right" className="w-full sm:max-w-[95vw] p-0 overflow-y-auto">
         <div className="h-full flex flex-col">
             {/* Header */}
-            <div className="p-6 border-b bg-gradient-to-r from-primary/10 to-primary/5 sticky top-0 z-10">
+            <div className="p-6 border-b bg-primary/5 sticky top-0 z-10">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-foreground">Informations relatives au voyage</h2>
+                  <h2 className="text-2xl font-bold text-foreground">{t("ux.flightDialog.title")}</h2>
                   <p className="text-sm text-muted-foreground mt-1">Bossiz+</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="hover:bg-background/50">
+                <Button aria-label={t("ux.flightDialog.close")} variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="hover:bg-background/50">
                   <X className="h-5 w-5" />
                 </Button>
               </div>
@@ -110,21 +110,21 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Briefcase className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Bagage cabine</span>
+                  <span className="font-medium">{t("ux.flightDialog.cabinBag")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Luggage className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Bagage en soute</span>
+                  <span className="font-medium">{t("ux.flightDialog.checkedBag")}</span>
                 </div>
               </div>
             </div>
 
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0">
               {/* Left Side - Flight Details */}
-              <div className="p-8 bg-gradient-to-b from-muted/30 to-background">
+              <div className="p-8 bg-muted/20">
                 <div className="space-y-6">
                   {/* Airline Header */}
-                  <Card className="p-5 bg-gradient-to-r from-primary/10 to-background border-primary/30 shadow-sm">
+                  <Card className="p-5 bg-primary/5 border-primary/30 shadow-sm">
                     <div className="flex items-center gap-4">
                       <div className="h-14 w-14 rounded-lg flex items-center justify-center overflow-hidden bg-white border border-border shrink-0">
                         <img 
@@ -141,7 +141,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Compagnie aérienne</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t("ux.flightDialog.airline")}</p>
                         <p className="text-xl font-bold text-foreground truncate">{flight.airline}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           {flight.flightNumber ? `Vol ${flight.airlineCode || ''}${flight.flightNumber}` : `Classe ${flight.class}`}
@@ -154,7 +154,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                   <Card className="p-6 shadow-sm">
                     <div className="flex items-center gap-2 mb-6">
                       <MapPin className="h-5 w-5 text-primary" />
-                      <h3 className="font-bold text-lg">Itinéraire détaillé</h3>
+                      <h3 className="font-bold text-lg">{t("ux.flightDialog.itinerary")}</h3>
                     </div>
                     
                     <div className="space-y-6">
@@ -163,7 +163,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                         <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">Départ</div>
+                            <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.departure")}</div>
                             <Calendar className="h-3 w-3 text-muted-foreground" />
                             <span className="text-xs text-muted-foreground font-medium">
                               {formatFlightDate(flightTimes.departureDate, 'long')}
@@ -185,22 +185,22 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                           <div>
                             <p className="text-sm font-semibold">Durée totale: {flightTimes.duration}</p>
                             <p className="text-xs text-muted-foreground">
-                              {stops === 0 ? 'Vol direct' : `${stops} escale${stops > 1 ? 's' : ''}`}
+                              {stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: stops })}
                             </p>
                           </div>
                         </div>
                         
                         {/* Stopover Warning - only if there are stops */}
                         {stops > 0 && (
-                          <div className="mt-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-lg p-4">
+                          <div className="mt-3 bg-warning border border-warning-foreground/20 rounded-lg p-4">
                             <div className="flex items-start gap-3">
-                              <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                              <Info className="h-5 w-5 text-warning-foreground flex-shrink-0 mt-0.5" />
                               <div>
-                                <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                                <p className="text-sm font-semibold text-warning-foreground">
                                   Vol avec {stops} escale{stops > 1 ? 's' : ''}
                                 </p>
-                                <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
-                                  Les détails des escales et temps de correspondance seront communiqués lors de la confirmation.
+                                <p className="text-xs text-warning-foreground mt-1">
+                                  {t("ux.flightDialog.stopsNote")}
                                 </p>
                               </div>
                             </div>
@@ -213,15 +213,15 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                         <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">Arrivée</div>
+                            <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.arrival")}</div>
                             <Calendar className="h-3 w-3 text-muted-foreground" />
                             <span className="text-xs text-muted-foreground font-medium">
                               {formatFlightDate(flightTimes.arrivalDate, 'long')}
                               {flightTimes.isNextDay && (
-                                <span className="ml-2 text-amber-600 dark:text-amber-400">(+1 jour)</span>
+                                <span className="ml-2 text-warning-foreground">(+1 jour)</span>
                               )}
                               {flightTimes.isMultiDay && (
-                                <span className="ml-2 text-amber-600 dark:text-amber-400">(+{flightTimes.daysDifference} jours)</span>
+                                <span className="ml-2 text-warning-foreground">(+{flightTimes.daysDifference} jours)</span>
                               )}
                             </span>
                           </div>
@@ -242,7 +242,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                             <div className="flex items-center gap-3 py-2">
                               <Clock className="h-5 w-5 text-primary" />
                               <div>
-                                <p className="text-sm font-semibold">Séjour à destination</p>
+                                <p className="text-sm font-semibold">{t("ux.flightDialog.stay")}</p>
                                 <p className="text-xs text-muted-foreground">
                                   Du {formatFlightDate(flightTimes.arrivalDate, 'short')} au {formatFlightDate(returnDate, 'short')}
                                 </p>
@@ -255,7 +255,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2 mb-1">
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">Départ retour</div>
+                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.returnDeparture")}</div>
                                 <Calendar className="h-3 w-3 text-muted-foreground" />
                                 <span className="text-xs text-muted-foreground font-medium">
                                   {formatFlightDate(returnDate, 'long')}
@@ -277,7 +277,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                               <div>
                                 <p className="text-sm font-semibold">Durée du vol retour: {flightTimes.duration}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {stops === 0 ? 'Vol direct' : `${stops} escale${stops > 1 ? 's' : ''}`}
+                                  {stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: stops })}
                                 </p>
                               </div>
                             </div>
@@ -288,12 +288,12 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2 mb-1">
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">Arrivée retour</div>
+                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.returnArrival")}</div>
                                 <Calendar className="h-3 w-3 text-muted-foreground" />
                                 <span className="text-xs text-muted-foreground font-medium">
                                   {formatFlightDate(returnDate, 'long')}
                                   {flightTimes.isNextDay && (
-                                    <span className="ml-2 text-amber-600 dark:text-amber-400">(+1 jour)</span>
+                                    <span className="ml-2 text-warning-foreground">(+1 jour)</span>
                                   )}
                                 </span>
                               </div>
@@ -314,8 +314,8 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                   <Card className="p-5 bg-gradient-to-br from-primary/15 to-primary/5 border-primary/30 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Prix du billet</p>
-                        <p className="text-sm text-muted-foreground">Par passager</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t("ux.flightDialog.ticketPrice")}</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.flightDialog.perPassenger")}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-3xl font-bold text-primary">
@@ -337,8 +337,8 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
 
               {/* Right Side - Fare Options */}
               <div className="p-8 bg-background">
-                <h3 className="text-2xl font-bold mb-2">Sélectionnez une option de réservation</h3>
-                <p className="text-sm text-muted-foreground mb-8">Choisissez l'option qui correspond le mieux à vos besoins</p>
+                <h3 className="text-2xl font-bold mb-2">{t("ux.flightDialog.chooseOption")}</h3>
+                <p className="text-sm text-muted-foreground mb-8">{t("ux.flightDialog.chooseOptionDesc")}</p>
                 
                 <div className="space-y-4">
                   {/* Basic Fare */}
@@ -348,9 +348,9 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                         <Briefcase className="h-6 w-6 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-xl font-bold mb-2">Tarif Basic</h4>
+                        <h4 className="text-xl font-bold mb-2">{t("ux.flightDialog.basic")}</h4>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          L'essentiel pour votre voyage. Billet d'avion uniquement avec bagage cabine inclus.
+                          {t("ux.flightDialog.basicDesc")}
                         </p>
                       </div>
                     </div>
@@ -358,15 +358,15 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                     <div className="space-y-3 mb-6">
                       <div className="flex items-start gap-2 text-sm">
                         <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">Bagages et sièges moins chers</span>
+                        <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk1")}</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">Remboursement instantané en crédit Bossiz+ en cas d&apos;annulation de la compagnie aérienne</span>
+                        <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk2")}</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">Informations en direct concernant les retards et les portes d&apos;embarquement</span>
+                        <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk3")}</span>
                       </div>
                     </div>
 
@@ -380,20 +380,20 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
 
                     <button className="w-full text-center text-sm text-primary mt-3 flex items-center justify-center gap-1">
                       <span>+</span>
-                      <span className="underline">Afficher les détails</span>
+                      <span className="underline">{t("ux.flightDialog.showDetails")}</span>
                     </button>
 
                     <div className="mt-4 space-y-2">
                       <div className="flex items-start gap-2 text-sm">
                         <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">Vol annulé ou retardé</span>
+                        <span className="text-muted-foreground">{t("ux.flightDialog.cancelledOrDelayed")}</span>
                       </div>
                       <div className="text-xs text-muted-foreground ml-6">
                         {t('flightBookingDialog.cancelPolicyNote')}
                       </div>
                       <div className="flex items-start gap-2 text-sm mt-3">
                         <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">Annulez ou modifiez votre voyage</span>
+                        <span className="text-muted-foreground">{t("ux.flightDialog.changeTrip")}</span>
                       </div>
                       <div className="text-xs text-muted-foreground ml-6">
                         {t('flightBookingDialog.changePolicyNote')}
@@ -409,8 +409,8 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="text-xl font-bold">Tarif Benefits</h4>
-                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">RECOMMANDÉ</span>
+                          <h4 className="text-xl font-bold">{t("ux.flightDialog.benefits")}</h4>
+                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">{t("ux.flightDialog.recommended")}</span>
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed">
                           {t('flightBookingDialog.benefitsDescription')}
@@ -421,19 +421,19 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
                     <div className="space-y-3 mb-6">
                       <div className="flex items-start gap-2 text-sm">
                         <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">Bagages et sièges à tarifs préférentiels</span>
+                        <span className="font-medium">{t("ux.flightDialog.benefitsPerk1")}</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">Remboursement instantané en cas d&apos;annulation par la compagnie</span>
+                        <span className="font-medium">{t("ux.flightDialog.benefitsPerk2")}</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">Informations en temps réel (retards, portes d&apos;embarquement)</span>
+                        <span className="font-medium">{t("ux.flightDialog.benefitsPerk3")}</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">Assistance prioritaire 24/7</span>
+                        <span className="font-medium">{t("ux.flightDialog.priority")}</span>
                       </div>
                     </div>
 
@@ -447,7 +447,7 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
 
                     <button className="w-full text-center text-sm text-primary mt-3 flex items-center justify-center gap-1">
                       <span>+</span>
-                      <span className="underline">Afficher les détails</span>
+                      <span className="underline">{t("ux.flightDialog.showDetails")}</span>
                     </button>
                   </Card>
                 </div>

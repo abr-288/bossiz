@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, CheckCircle, XCircle, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ConversionMetricsProps {
   stats: {
@@ -12,6 +13,7 @@ interface ConversionMetricsProps {
 }
 
 export function ConversionMetrics({ stats }: ConversionMetricsProps) {
+  const { t } = useTranslation();
   const { 
     totalBookings, 
     confirmedBookings, 
@@ -27,7 +29,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Taux de Conversion</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("ux.bo.conversionRate")}</CardTitle>
           <TrendingUp className="h-4 w-4 text-success" />
         </CardHeader>
         <CardContent>
@@ -40,7 +42,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Réservations Confirmées</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("ux.bo.confirmedBookings")}</CardTitle>
           <CheckCircle className="h-4 w-4 text-success" />
         </CardHeader>
         <CardContent>
@@ -53,7 +55,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Taux d'Annulation</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("ux.bo.cancellationRate")}</CardTitle>
           <XCircle className="h-4 w-4 text-destructive" />
         </CardHeader>
         <CardContent>
@@ -66,7 +68,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">En Attente</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("ux.bo.pending")}</CardTitle>
           <Clock className="h-4 w-4 text-warning" />
         </CardHeader>
         <CardContent>

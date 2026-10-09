@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Plane, Hotel, Car, MapPin, Calendar, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 interface BookingDialogProps {
   open: boolean;
@@ -89,7 +90,7 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
                 <label className="block space-y-2">
                   <span className="text-sm font-medium">Date de départ disponible</span>
                   <select className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={startDate} onChange={(event) => setStartDate(event.target.value)} required>
-                    {service.availableDates.map((date) => <option key={date} value={date}>{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</option>)}
+                    {service.availableDates.map((date) => <option key={date} value={date}>{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</option>)}
                   </select>
                 </label>
               )}

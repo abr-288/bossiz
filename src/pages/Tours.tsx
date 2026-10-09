@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Clock, Users, Map, Loader2, ExternalLink, CalendarDays } from "lucide-react";
+import { Star, MapPin, Clock, Users, Map, ExternalLink, CalendarDays } from "lucide-react";
 import { BookingDialog } from "@/components/BookingDialog";
 import { TourSearchForm } from "@/components/TourSearchForm";
 import { Pagination } from "@/components/Pagination";
@@ -14,8 +14,22 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
 import { useTourServices } from "@/hooks/useTourServices";
 import bannerTours from "@/assets/banner-tours.jpg";
+import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Link } from "react-router-dom";
 
 const TOUR_CATEGORIES = ["Culture & Patrimoine", "Nature & Randonnée", "Aventure", "Plage & Détente", "Gastronomie", "Ville & Découverte"];
+// Libellés affichés (la valeur française reste la clé de filtre en base)
+const TOUR_CATEGORY_KEYS: Record<string, string> = {
+  "Culture & Patrimoine": "catCulture",
+  "Nature & Randonnée": "catNature",
+  "Aventure": "catAdventure",
+  "Plage & Détente": "catBeach",
+  "Gastronomie": "catFood",
+  "Ville & Découverte": "catCity",
+};
 
 // Best-effort: pull the first number of days out of a free-text duration
 // like "3 jours / 2 nuits" so the duration filter buckets can work without
@@ -26,6 +40,7 @@ const parseDurationDays = (duration: string): number | null => {
 };
 
 const Tours = () => {
+  const { t } = useTranslation();
   const { tours, loading, error } = useTourServices();
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [destinationFilter, setDestinationFilter] = useState("");
@@ -98,7 +113,7 @@ const Tours = () => {
           alt="Circuits & Tours"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
@@ -107,7 +122,7 @@ const Tours = () => {
               Circuits & Tours
             </h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto text-center">
-              Découvrez des expériences inoubliables avec nos guides locaux
+              {t("ux.tours.subtitle")}
             </p>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -128,20 +143,20 @@ const Tours = () => {
                 <div>
                   <label className="text-sm font-medium mb-2 block">Destination</label>
                   <Input
-                    placeholder="Rechercher une destination..."
+                    placeholder={t("ux.tours.searchPlaceholder")}
                     value={destinationFilter}
                     onChange={(e) => setDestinationFilter(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Durée</label>
+                  <label className="text-sm font-medium mb-2 block">{t("ux.tours.duration")}</label>
                   <Select value={durationFilter} onValueChange={setDurationFilter}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Toutes" />
+                      <SelectValue placeholder={t("ux.tours.all")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Toutes</SelectItem>
+                      <SelectItem value="all">{t("ux.tours.all")}</SelectItem>
                       <SelectItem value="1day">1 jour</SelectItem>
                       <SelectItem value="2-3days">2-3 jours</SelectItem>
                       <SelectItem value="4plus">4+ jours</SelectItem>
@@ -164,7 +179,7 @@ const Tours = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Type d'activité</label>
+                  <label className="text-sm font-medium mb-2 block">{t("ux.tours.activityType")}</label>
                   <div className="space-y-2">
                     {TOUR_CATEGORIES.map((cat) => (
                       <label key={cat} className="flex items-center gap-2">
@@ -175,7 +190,7 @@ const Tours = () => {
                           checked={categoryFilter === cat}
                           onChange={() => setCategoryFilter(cat)}
                         />
-                        <span className="text-sm">{cat}</span>
+                        <span className="text-sm">{t(`ux.tours.${TOUR_CATEGORY_KEYS[cat]}`)}</span>
                       </label>
                     ))}
                     <label className="flex items-center gap-2">
@@ -186,7 +201,7 @@ const Tours = () => {
                         checked={categoryFilter === "all"}
                         onChange={() => setCategoryFilter("all")}
                       />
-                      <span className="text-sm">Toutes catégories</span>
+                      <span className="text-sm">{t("ux.tours.allCategories")}</span>
                     </label>
                   </div>
                 </div>
@@ -198,38 +213,36 @@ const Tours = () => {
           <div className="lg:col-span-3 space-y-6">
             <div className="flex justify-between items-center">
               <p className="text-muted-foreground">
-                {loading ? "Chargement..." : `${filteredTours.length} circuit${filteredTours.length !== 1 ? "s" : ""} trouvé${filteredTours.length !== 1 ? "s" : ""}`}
+                {loading ? t("common.loading") : t("ux.tours.found", { count: filteredTours.length })}
               </p>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="popular">Plus populaires</SelectItem>
-                  <SelectItem value="price-asc">Prix croissant</SelectItem>
-                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                  <SelectItem value="rating">Mieux notés</SelectItem>
+                  <SelectItem value="popular">{t("ux.tours.popular")}</SelectItem>
+                  <SelectItem value="price-asc">{t("ux.tours.priceAsc")}</SelectItem>
+                  <SelectItem value="price-desc">{t("ux.tours.priceDesc")}</SelectItem>
+                  <SelectItem value="rating">{t("ux.tours.topRated")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {loading ? (
-              <div className="flex items-center justify-center py-24">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              </div>
+              <CardGridSkeleton />
             ) : error ? (
               <Card className="p-12 text-center text-muted-foreground">
-                Impossible de charger les circuits pour le moment.
+                {t("ux.tours.loadError")}
               </Card>
             ) : filteredTours.length === 0 ? (
-              <Card className="p-12 text-center">
-                <Map className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <p className="text-lg font-medium mb-2">Aucun circuit disponible pour le moment</p>
-                <p className="text-muted-foreground mb-6">Nos guides locaux ajoutent bientôt leurs circuits. Revenez vite !</p>
-                <Button variant="outline" asChild>
-                  <a href="/devenir-partenaire">Vous êtes guide touristique ? Rejoignez-nous</a>
-                </Button>
-              </Card>
+              <Card>
+            <EmptyState
+              icon={Map}
+              title={t("ux.tours.emptyTitle")}
+              description={t("ux.tours.emptyDesc")}
+              action={<Button variant="outline" asChild><Link to="/devenir-partenaire">{t("ux.tours.joinGuide")}</Link></Button>}
+            />
+          </Card>
             ) : (
               <>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -256,8 +269,8 @@ const Tours = () => {
                         {tour.availableDates?.length > 0 && (
                           <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
                             <CalendarDays className="h-4 w-4 text-primary" />
-                            <span className="text-muted-foreground">Départs :</span>
-                            {tour.availableDates.slice(0, 3).map((date: string) => <span key={date} className="rounded-full bg-muted px-2 py-1">{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</span>)}
+                            <span className="text-muted-foreground">{t("ux.tours.departures")}</span>
+                            {tour.availableDates.slice(0, 3).map((date: string) => <span key={date} className="rounded-full bg-muted px-2 py-1">{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</span>)}
                             {tour.availableDates.length > 3 && <span className="text-muted-foreground">+{tour.availableDates.length - 3}</span>}
                           </div>
                         )}
@@ -289,13 +302,13 @@ const Tours = () => {
                           )}
                           <div className="flex items-center gap-1">
                             <Users className="w-4 h-4" />
-                            <span>Jusqu'à {tour.groupSizeMax} personnes</span>
+                            <span>{t("ux.tours.groupMax", { count: tour.groupSizeMax })}</span>
                           </div>
                         </div>
 
                         <div className="flex justify-between items-center mt-4 pt-4 border-t">
                           <div>
-                            <p className="text-sm text-muted-foreground">À partir de</p>
+                            <p className="text-sm text-muted-foreground">{t("ux.tours.from")}</p>
                             <p className="text-2xl font-bold text-primary">
                               <Price amount={tour.price} fromCurrency={tour.currency} />
                             </p>
@@ -312,7 +325,7 @@ const Tours = () => {
                             });
                             setDialogOpen(true);
                           }}>
-                            Réserver
+                            {t("ux.tours.book")}
                           </Button>
                         </div>
                       </CardContent>

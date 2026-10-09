@@ -54,7 +54,7 @@ export function BaggageInfo({
     additionalBagPrice: apiBaggageData.additionalBagPrice || staticAllowance.additionalBagPrice
   } : staticAllowance;
   
-  const { cabinText, checkedText, personalItemText } = formatBaggageInfo(allowance);
+  const { cabinText, checkedText, personalItemText } = formatBaggageInfo(allowance, t);
   const isLowCost = isLowCostCarrier(airline);
   
   // For API data, show a badge indicating real-time data
@@ -72,7 +72,7 @@ export function BaggageInfo({
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Bagage cabine: {cabinText}</p>
+              <p>{t("ux.baggage.cabinTooltip", { text: cabinText })}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -82,14 +82,14 @@ export function BaggageInfo({
             <TooltipTrigger asChild>
               <div className={cn(
                 "flex items-center gap-1",
-                allowance.checked.included ? "text-muted-foreground" : "text-amber-600"
+                allowance.checked.included ? "text-muted-foreground" : "text-warning-foreground"
               )}>
                 <Luggage className="h-3 w-3" />
-                <span>{allowance.checked.included ? `${allowance.checked.weightKg}kg` : "Non inclus"}</span>
+                <span>{allowance.checked.included ? `${allowance.checked.weightKg}kg` : t("ux.baggage.notIncluded")}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Bagage en soute: {checkedText}</p>
+              <p>{t("ux.baggage.checkedTooltip", { text: checkedText })}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -101,14 +101,14 @@ export function BaggageInfo({
     <Card className="p-4 bg-gradient-to-br from-card to-muted/10">
       <div className="flex items-center gap-2 mb-3">
         <Luggage className="h-4 w-4 text-primary" />
-        <h4 className="font-semibold text-sm">Bagages inclus</h4>
+        <h4 className="font-semibold text-sm">{t("ux.baggage.includedBags")}</h4>
         {isRealTimeData && (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-green-600 border-green-300">
+          <Badge variant="outline" className="text-xs px-1.5 py-0 text-success border-success/30">
             {t('baggageInfo.realDataBadge')}
           </Badge>
         )}
         {isLowCost && (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-amber-600 border-amber-300">
+          <Badge variant="outline" className="text-xs px-1.5 py-0 text-warning-foreground border-warning-foreground/20">
             Low-cost
           </Badge>
         )}
@@ -118,30 +118,30 @@ export function BaggageInfo({
         {/* Personal item */}
         {personalItemText && (
           <div className="flex items-start gap-2">
-            <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-              <ShoppingBag className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+            <div className="w-7 h-7 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+              <ShoppingBag className="h-3.5 w-3.5 text-success" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-medium text-foreground">Accessoire personnel</p>
-              <p className="text-[10px] text-muted-foreground truncate">{personalItemText}</p>
+              <p className="text-xs font-medium text-foreground">{t("ux.baggage.personal")}</p>
+              <p className="text-xs text-muted-foreground truncate">{personalItemText}</p>
             </div>
-            <Badge className="ml-auto shrink-0 text-[9px] px-1.5 py-0 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-              Inclus
+            <Badge className="ml-auto shrink-0 text-xs px-1.5 py-0 bg-success/10 text-success">
+              {t("ux.baggage.included")}
             </Badge>
           </div>
         )}
 
         {/* Cabin baggage */}
         <div className="flex items-start gap-2">
-          <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-            <Briefcase className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+          <div className="w-7 h-7 rounded-full bg-info/10 flex items-center justify-center shrink-0">
+            <Briefcase className="h-3.5 w-3.5 text-info" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-foreground">Bagage cabine</p>
-            <p className="text-[10px] text-muted-foreground">{cabinText}</p>
+            <p className="text-xs font-medium text-foreground">{t("ux.baggage.cabinTitle")}</p>
+            <p className="text-xs text-muted-foreground">{cabinText}</p>
           </div>
-          <Badge className="ml-auto shrink-0 text-[9px] px-1.5 py-0 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            Inclus
+          <Badge className="ml-auto shrink-0 text-xs px-1.5 py-0 bg-info/10 text-info">
+            {t("ux.baggage.included")}
           </Badge>
         </div>
 
@@ -150,36 +150,36 @@ export function BaggageInfo({
           <div className={cn(
             "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
             allowance.checked.included 
-              ? "bg-purple-100 dark:bg-purple-900/30" 
-              : "bg-amber-100 dark:bg-amber-900/30"
+              ? "bg-primary/10" 
+              : "bg-warning"
           )}>
             <Luggage className={cn(
               "h-3.5 w-3.5",
               allowance.checked.included 
-                ? "text-purple-600 dark:text-purple-400" 
-                : "text-amber-600 dark:text-amber-400"
+                ? "text-primary" 
+                : "text-warning-foreground"
             )} />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-foreground">Bagage en soute</p>
-            <p className="text-[10px] text-muted-foreground">{checkedText}</p>
+            <p className="text-xs font-medium text-foreground">{t("ux.baggage.checkedTitle")}</p>
+            <p className="text-xs text-muted-foreground">{checkedText}</p>
           </div>
           {allowance.checked.included ? (
-            <Badge className="ml-auto shrink-0 text-[9px] px-1.5 py-0 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-              Inclus
+            <Badge className="ml-auto shrink-0 text-xs px-1.5 py-0 bg-primary/10 text-primary">
+              {t("ux.baggage.included")}
             </Badge>
           ) : (
-            <Badge variant="outline" className="ml-auto shrink-0 text-[9px] px-1.5 py-0 text-amber-600 border-amber-300">
-              Payant
+            <Badge variant="outline" className="ml-auto shrink-0 text-xs px-1.5 py-0 text-warning-foreground border-warning-foreground/20">
+              {t("ux.baggage.paid")}
             </Badge>
           )}
         </div>
 
         {/* Low-cost warning */}
         {isLowCost && !allowance.checked.included && (
-          <div className="flex items-start gap-2 p-2 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
-            <p className="text-[10px] text-amber-700 dark:text-amber-400">
+          <div className="flex items-start gap-2 p-2 rounded-md bg-warning border border-warning-foreground/20">
+            <AlertTriangle className="h-3.5 w-3.5 text-warning-foreground shrink-0 mt-0.5" />
+            <p className="text-xs text-warning-foreground">
               {t('baggageInfo.lowCostWarning')}
             </p>
           </div>
@@ -190,9 +190,9 @@ export function BaggageInfo({
           <div className="flex items-center justify-between pt-2 border-t border-border/50">
             <div className="flex items-center gap-1.5">
               <Plus className="h-3 w-3 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground">Valise supplémentaire</span>
+              <span className="text-xs text-muted-foreground">{t("ux.baggage.extraSuitcase")}</span>
             </div>
-            <span className="text-[10px] font-medium text-primary">
+            <span className="text-xs font-medium text-primary">
               +<Price amount={allowance.additionalBagPrice} fromCurrency="EUR" showLoader={false} />
             </span>
           </div>
@@ -204,15 +204,14 @@ export function BaggageInfo({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 text-[10px] text-muted-foreground cursor-help">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-help">
                 <Info className="h-3 w-3" />
-                <span>Franchise bagages {airline}</span>
+                <span>{t("ux.baggage.allowance", { airline })}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-[200px]">
               <p className="text-xs">
-                Franchise basée sur le tarif {fareType === "benefits" ? "Benefits" : "Basic"} 
-                en classe {cabinClass === "ECONOMY" ? "Économique" : cabinClass}. 
+                {t("ux.baggage.basedOn", { fare: fareType === "benefits" ? "Benefits" : "Basic", cabin: cabinClass === "ECONOMY" ? t("ux.baggage.economy") : cabinClass })}{" "}
                 {t('baggageInfo.confirmationNote')}
               </p>
             </TooltipContent>

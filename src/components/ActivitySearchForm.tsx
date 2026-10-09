@@ -82,11 +82,11 @@ export const ActivitySearchForm = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("search.allCategories")}</SelectItem>
-              <SelectItem value="adventure">Aventure</SelectItem>
-              <SelectItem value="culture">Culture</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="relaxation">Détente</SelectItem>
-              <SelectItem value="gastronomy">Gastronomie</SelectItem>
+              <SelectItem value="adventure">{t("ux.misc.adventure")}</SelectItem>
+              <SelectItem value="culture">{t("ux.misc.culture")}</SelectItem>
+              <SelectItem value="sports">{t("ux.misc.sports")}</SelectItem>
+              <SelectItem value="relaxation">{t("ux.misc.relaxation")}</SelectItem>
+              <SelectItem value="gastronomy">{t("ux.misc.gastronomy")}</SelectItem>
             </SelectContent>
           </Select>
         </div>

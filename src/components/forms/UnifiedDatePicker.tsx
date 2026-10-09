@@ -5,9 +5,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS, fr, zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "react-i18next";
+import { MOTION } from "@/lib/motion";
 
 interface UnifiedDatePickerProps {
   label?: string;
@@ -30,7 +32,7 @@ export const UnifiedDatePicker = ({
   label,
   value,
   onChange,
-  placeholder = "Sélectionner une date",
+  placeholder,
   required = false,
   disabled = false,
   minDate,
@@ -38,6 +40,9 @@ export const UnifiedDatePicker = ({
   className,
   error,
 }: UnifiedDatePickerProps) => {
+  const { t, i18n } = useTranslation();
+  // Mois et jours dans la langue de l'interface (avant : toujours en français)
+  const dateLocale = i18n.language.startsWith("zh") ? zhCN : i18n.language.startsWith("en") ? enUS : fr;
   const [open, setOpen] = useState(false);
 
   const handleClear = () => {
@@ -54,7 +59,7 @@ export const UnifiedDatePicker = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: MOTION.slow }}
       className={cn("space-y-2", className)}
     >
       {label && (
@@ -77,7 +82,7 @@ export const UnifiedDatePicker = ({
             className={cn(
               "w-full h-12 justify-start text-left font-medium",
               "border-2 border-input hover:border-primary/50",
-              "transition-all duration-200",
+              "transition-all duration-base ease-standard",
               !value && "text-muted-foreground",
               error && "border-destructive",
               "group"
@@ -85,7 +90,7 @@ export const UnifiedDatePicker = ({
           >
             <CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
             <span className="truncate flex-1">
-              {value ? format(value, "dd MMMM yyyy", { locale: fr }) : placeholder}
+              {value ? format(value, "dd MMMM yyyy", { locale: dateLocale }) : placeholder ?? t("ux.datepicker.placeholder")}
             </span>
             {value && (
               <Button
@@ -111,17 +116,17 @@ export const UnifiedDatePicker = ({
               return false;
             }}
             initialFocus
-            locale={fr}
+            locale={dateLocale}
             className="rounded-xl border-2 border-primary/20 pointer-events-auto"
           />
         </PopoverContent>
       </Popover>
 
       {error && (
-        <motion.p
+        <motion.p role="alert"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-xs text-destructive font-medium flex items-center gap-1"
+          className="text-sm text-destructive font-medium flex items-center gap-1"
         >
           ⚠️ {error}
         </motion.p>

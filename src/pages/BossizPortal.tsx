@@ -28,6 +28,19 @@ import {
 import { useBossizConfigContext } from "@/contexts/BossizConfigContext";
 import { useTranslation } from "react-i18next";
 import { LazyImage } from "@/components/ui/lazy-image";
+
+// Playfair Display n'est plus chargée globalement (index.html) : seul ce
+// portail l'utilise (font-serif).
+const PLAYFAIR_HREF = "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap";
+const usePlayfairFont = () => {
+  useEffect(() => {
+    if (document.querySelector(`link[href="${PLAYFAIR_HREF}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = PLAYFAIR_HREF;
+    document.head.appendChild(link);
+  }, []);
+};
 import heroLuxuryLobby from "@/assets/hero-slide-3.jpg";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -53,6 +66,7 @@ const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
 const BossizPortal = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  usePlayfairFont();
 
   const NAV_LINKS = [
     { id: "sites", label: t("bossizPortal.nav.sites") },
@@ -79,7 +93,7 @@ const BossizPortal = () => {
     <div className="min-h-screen bg-bossiz-cream font-sans text-bossiz-navy-dark">
       {/* Header */}
       <header
-        className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
+        className={`fixed top-0 w-full z-50 transition-colors duration-slow ease-standard ${
           scrolled ? "bg-bossiz-cream/95 backdrop-blur-sm shadow-sm" : "bg-transparent"
         }`}
       >
@@ -90,7 +104,7 @@ const BossizPortal = () => {
                 BOSSIZ
               </span>
               <span
-                className={`block text-[10px] tracking-[0.35em] uppercase ${
+                className={`block text-xs tracking-[0.35em] uppercase ${
                   scrolled ? "text-bossiz-gold-dark" : "text-bossiz-gold-light"
                 }`}
               >
@@ -189,7 +203,7 @@ const BossizPortal = () => {
                 <div key={index}>
                   <Icon className="w-5 h-5 text-bossiz-gold-light mx-auto mb-3" strokeWidth={1.25} />
                   <div className="font-serif text-2xl md:text-3xl text-bossiz-gold-light mb-1">{stat.value}</div>
-                  <div className="text-white/50 text-[10px] uppercase tracking-[0.2em]">
+                  <div className="text-white/50 text-xs uppercase tracking-[0.2em]">
                     {t(`bossizPortal.stats.${index}`, stat.label)}
                   </div>
                 </div>
@@ -266,7 +280,7 @@ const BossizPortal = () => {
                         <div key={index} className="text-center">
                           <Icon className="w-4 h-4 text-bossiz-teal mx-auto mb-1" strokeWidth={1.5} />
                           <div className="font-serif text-lg text-bossiz-navy-dark">{stat.value}</div>
-                          <div className="text-[9px] text-bossiz-navy-dark/50 uppercase tracking-wide">
+                          <div className="text-xs text-bossiz-navy-dark/50 uppercase tracking-wide">
                             {t(`bossizPortal.sites.${site.id}.stats.${index}`, stat.label)}
                           </div>
                         </div>

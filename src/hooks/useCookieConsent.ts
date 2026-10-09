@@ -16,6 +16,10 @@ export interface CookieConsent {
 }
 
 const STORAGE_KEY = "bossiz-cookie-consent";
+// L'événement "storage" ne se déclenche que dans les AUTRES onglets : cet
+// événement local permet au chat et aux invites, qui attendent la réponse au
+// bandeau, de réagir dans l'onglet courant.
+const CHANGE_EVENT = "bossiz:cookie-consent-change";
 const CONSENT_VERSION = 1;
 
 function readStoredConsent(): CookieConsent | null {
@@ -46,8 +50,15 @@ export function useCookieConsent() {
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setConsent(readStoredConsent());
     };
+    // Le détail transporte le choix : il reste valable même si localStorage
+    // est indisponible (navigation privée stricte).
+    const onLocalChange = (e: Event) => setConsent((e as CustomEvent<CookieConsent>).detail);
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener(CHANGE_EVENT, onLocalChange);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(CHANGE_EVENT, onLocalChange);
+    };
   }, []);
 
   const save = useCallback((partial: { preferences: boolean; analytics: boolean }) => {
@@ -59,6 +70,7 @@ export function useCookieConsent() {
     };
     writeStoredConsent(next);
     setConsent(next);
+    window.dispatchEvent(new CustomEvent<CookieConsent>(CHANGE_EVENT, { detail: next }));
   }, []);
 
   const acceptAll = useCallback(() => save({ preferences: true, analytics: true }), [save]);

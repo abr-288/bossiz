@@ -29,7 +29,7 @@ const BossizCIFormules = () => {
         <img src={bannerImage} alt="Formules Bossiz Conciergerie" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-bossiz-ci-green/80" />
         <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
-          <h1 className="font-black text-3xl md:text-5xl text-white drop-shadow-lg">
+          <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">
             {content.plans.title}
           </h1>
         </div>
@@ -56,7 +56,7 @@ const BossizCIFormules = () => {
               >
                 <CardContent className="p-10 text-center">
                   {plan.featured && (
-                    <span className="inline-block mb-4 text-[10px] uppercase tracking-widest bg-bossiz-gold text-bossiz-navy-dark px-3 py-1 rounded-full font-bold">
+                    <span className="inline-block mb-4 text-xs uppercase tracking-widest bg-bossiz-gold text-bossiz-navy-dark px-3 py-1 rounded-full font-bold">
                       {content.plans.recommendedLabel}
                     </span>
                   )}

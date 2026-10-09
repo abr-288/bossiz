@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Users, Wifi, UtensilsCrossed, Car, Loader2, Globe, GitCompare, SlidersHorizontal, Hotel } from "lucide-react";
+import { Star, MapPin, Users, Wifi, UtensilsCrossed, Car, Globe, GitCompare, SlidersHorizontal, Hotel } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -26,6 +26,8 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerHotels from "@/assets/banner-hotels.jpg";
+import { EmptyState } from "@/components/ui/empty-state";
+import { HotelCardSkeleton } from "@/components/ui/search-result-skeletons";
 const Hotels = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -146,7 +148,7 @@ const Hotels = () => {
 
       if (allHotels.length > 0) {
         setApiHotels(allHotels);
-        toast.success(`${allHotels.length} hôtels réels chargés depuis ${destinations.length} destinations mondiales`);
+        toast.success(t("ux.hotels.loadedToast", { count: allHotels.length, destinations: destinations.length }));
       }
     };
 
@@ -197,7 +199,7 @@ const Hotels = () => {
       
       if (isMockData) {
         console.warn('⚠️ Displaying MOCK hotel data - APIs did not return results');
-        toast.warning("Aucune donnée réelle disponible. Affichage de suggestions d'exemple.");
+        toast.warning(t("ux.hotels.mockData"));
       }
       
       // Helper function to transform hotel data from any API source
@@ -253,10 +255,10 @@ const Hotels = () => {
         toast.success(`${transformedHotels.length} hébergements trouvés depuis ${sources.length} source(s) API: ${sources.join(', ')}`);
       } else {
         setApiHotels([]);
-        toast.error("Aucun hébergement disponible pour cette recherche. Les API n'ont retourné aucun résultat.");
+        toast.error(t("ux.hotels.noResultsApi"));
       }
     } else {
-      toast.error("Erreur lors de la recherche d'hôtels");
+      toast.error(t("ux.hotels.searchError"));
     }
   };
 
@@ -404,7 +406,7 @@ const Hotels = () => {
         return prev.filter((h) => h.id !== hotel.id);
       } else {
         if (prev.length >= 4) {
-          toast.error("Vous ne pouvez comparer que 4 hôtels maximum");
+          toast.error(t("ux.hotels.compareMax"));
           return prev;
         }
         return [...prev, hotel];
@@ -424,16 +426,16 @@ const Hotels = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage 
           src={bannerHotels}
-          alt="Hôtels & Hébergements" 
+          alt={t("ux.hotels.title")} 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
 
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Hôtels & Hébergements</h1>
-            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">Des hébergements de qualité partout dans le monde</p>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">{t("ux.hotels.title")}</h1>
+            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">{t("ux.hotels.subtitle")}</p>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <HotelSearchForm />
@@ -447,29 +449,29 @@ const Hotels = () => {
           {/* Filtres Desktop */}
           <aside className="hidden lg:block lg:col-span-1 space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Filtres</h2>
+              <h2 className="text-xl font-semibold mb-4">{t("ux.hotels.filters")}</h2>
               
               <div className="space-y-6">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Destination</label>
                   <Input 
-                    placeholder="Rechercher une ville..." 
+                    placeholder={t("ux.hotels.searchCity")} 
                     value={filterDestination}
                     onChange={(e) => setFilterDestination(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Étoiles</label>
+                  <label className="text-sm font-medium mb-2 block">{t("ux.hotels.stars")}</label>
                   <Select value={filterStars} onValueChange={setFilterStars}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Toutes" />
+                      <SelectValue placeholder={t("ux.hotels.all")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Toutes</SelectItem>
-                      <SelectItem value="5">5 étoiles</SelectItem>
-                      <SelectItem value="4">4 étoiles</SelectItem>
-                      <SelectItem value="3">3 étoiles</SelectItem>
+                      <SelectItem value="all">{t("ux.hotels.all")}</SelectItem>
+                      <SelectItem value="5">{t("ux.hotels.stars5")}</SelectItem>
+                      <SelectItem value="4">{t("ux.hotels.stars4")}</SelectItem>
+                      <SelectItem value="3">{t("ux.hotels.stars3")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -523,7 +525,7 @@ const Hotels = () => {
                     setSelectedAmenities([]);
                   }}
                 >
-                  Réinitialiser les filtres
+                  {t("ux.hotels.resetFilters")}
                 </Button>
               </div>
             </Card>
@@ -537,34 +539,34 @@ const Hotels = () => {
                 <SheetTrigger asChild>
                   <Button variant="outline" className="flex-1">
                     <SlidersHorizontal className="w-4 h-4 mr-2" />
-                    Filtres
+                    {t("ux.hotels.filters")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-full sm:w-[400px] overflow-y-auto">
                   <SheetHeader>
-                    <SheetTitle>Filtres</SheetTitle>
+                    <SheetTitle>{t("ux.hotels.filters")}</SheetTitle>
                   </SheetHeader>
                   <div className="space-y-6 mt-6">
                     <div>
                       <label className="text-sm font-medium mb-2 block">Destination</label>
                       <Input 
-                        placeholder="Rechercher une ville..." 
+                        placeholder={t("ux.hotels.searchCity")} 
                         value={filterDestination}
                         onChange={(e) => setFilterDestination(e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Étoiles</label>
+                      <label className="text-sm font-medium mb-2 block">{t("ux.hotels.stars")}</label>
                       <Select value={filterStars} onValueChange={setFilterStars}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Toutes" />
+                          <SelectValue placeholder={t("ux.hotels.all")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Toutes</SelectItem>
-                          <SelectItem value="5">5 étoiles</SelectItem>
-                          <SelectItem value="4">4 étoiles</SelectItem>
-                          <SelectItem value="3">3 étoiles</SelectItem>
+                          <SelectItem value="all">{t("ux.hotels.all")}</SelectItem>
+                          <SelectItem value="5">{t("ux.hotels.stars5")}</SelectItem>
+                          <SelectItem value="4">{t("ux.hotels.stars4")}</SelectItem>
+                          <SelectItem value="3">{t("ux.hotels.stars3")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -584,7 +586,7 @@ const Hotels = () => {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Équipements</label>
+                      <label className="text-sm font-medium mb-2 block">{t("ux.hotels.amenities")}</label>
                       <div className="space-y-2">
                         {availableAmenities.map(amenity => (
                           <div key={amenity} className="flex items-center space-x-2">
@@ -611,47 +613,49 @@ const Hotels = () => {
               </Sheet>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Trier" />
+                  <SelectValue placeholder={t("ux.hotels.sort")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="popular">Plus populaires</SelectItem>
-                  <SelectItem value="price-asc">Prix croissant</SelectItem>
-                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                  <SelectItem value="rating">Mieux notés</SelectItem>
+                  <SelectItem value="popular">{t("ux.hotels.popular")}</SelectItem>
+                  <SelectItem value="price-asc">{t("ux.hotels.priceAsc")}</SelectItem>
+                  <SelectItem value="price-desc">{t("ux.hotels.priceDesc")}</SelectItem>
+                  <SelectItem value="rating">{t("ux.hotels.topRated")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             {loading && (
-              <div className="flex justify-center items-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <span className="ml-3 text-lg">Recherche en cours...</span>
+              <div role="status" className="grid gap-6">
+                <span className="sr-only">{t("ux.hotels.searching")}</span>
+                <HotelCardSkeleton />
+                <HotelCardSkeleton />
+                <HotelCardSkeleton />
               </div>
             )}
             
             {/* Data Source Indicator */}
             {apiHotels.length === 0 && !hasSearched && filteredAndSortedHotels.length > 0 && (
-              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+              <div className="bg-info/10 border border-info/30 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 text-info">
                   <Hotel className="w-5 h-5" />
-                  <span className="font-medium">Suggestions d'hébergements à Abidjan</span>
+                  <span className="font-medium">{t("ux.hotels.suggestions")}</span>
                 </div>
-                <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                  Utilisez le formulaire de recherche ci-dessus pour voir les prix réels et la disponibilité en temps réel.
+                <p className="text-sm text-info mt-1">
+                  {t("ux.hotels.useSearch")}
                 </p>
               </div>
             )}
 
             {apiHotels.length > 0 && (
-              <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+              <div className="bg-success/10 border border-success/30 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 text-success">
                   <Globe className="w-5 h-5" />
-                  <span className="font-medium">{hasSearched ? 'Données réelles en temps réel' : 'Hôtels réels du monde entier'}</span>
+                  <span className="font-medium">{hasSearched ? t("ux.hotels.liveData") : t("ux.hotels.worldHotels")}</span>
                 </div>
-                <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                <p className="text-sm text-success mt-1">
                   {hasSearched 
                     ? `Prix et disponibilité actualisés depuis ${new Set(apiHotels.map((h: any) => h.source)).size} source(s): ${Array.from(new Set(apiHotels.map((h: any) => h.source))).join(', ')}`
-                    : `${apiHotels.length} hôtels chargés depuis plusieurs destinations populaires avec prix et détails réels`
+                    : t("ux.hotels.loadedDesc", { count: apiHotels.length })
                   }
                 </p>
               </div>
@@ -660,26 +664,27 @@ const Hotels = () => {
             {/* Desktop Header */}
             <div className="hidden lg:flex justify-between items-center">
               <p className="text-muted-foreground">
-                {filteredAndSortedHotels.length} hôtel{filteredAndSortedHotels.length > 1 ? 's' : ''} trouvé{filteredAndSortedHotels.length > 1 ? 's' : ''}
+                {t("ux.hotels.found", { count: filteredAndSortedHotels.length })}
               </p>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="popular">Plus populaires</SelectItem>
-                  <SelectItem value="price-asc">Prix croissant</SelectItem>
-                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                  <SelectItem value="rating">Mieux notés</SelectItem>
+                  <SelectItem value="popular">{t("ux.hotels.popular")}</SelectItem>
+                  <SelectItem value="price-asc">{t("ux.hotels.priceAsc")}</SelectItem>
+                  <SelectItem value="price-desc">{t("ux.hotels.priceDesc")}</SelectItem>
+                  <SelectItem value="rating">{t("ux.hotels.topRated")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {filteredAndSortedHotels.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-lg text-muted-foreground">Aucun hôtel ne correspond à vos critères</p>
-                <p className="text-sm text-muted-foreground mt-2">Essayez de modifier vos filtres ou votre recherche</p>
-              </div>
+              <EmptyState
+                icon={Hotel}
+                title={t("ux.hotels.emptyTitle")}
+                description={t("ux.hotels.emptyDesc")}
+              />
             ) : (
               <>
               <div className="grid gap-6">
@@ -693,11 +698,11 @@ const Hotels = () => {
                   
                   // Rating qualifier based on 10 scale
                   const getRatingQualifier = (rating: number) => {
-                    if (rating >= 9) return { text: 'Exceptionnel', color: 'text-emerald-600 dark:text-emerald-400' };
-                    if (rating >= 8) return { text: 'Excellent', color: 'text-green-600 dark:text-green-400' };
-                    if (rating >= 7) return { text: 'Très bien', color: 'text-blue-600 dark:text-blue-400' };
-                    if (rating >= 6) return { text: 'Bien', color: 'text-sky-600 dark:text-sky-400' };
-                    return { text: 'Correct', color: 'text-gray-600 dark:text-gray-400' };
+                    if (rating >= 9) return { text: t("ux.hotels.exceptional"), color: 'text-success' };
+                    if (rating >= 8) return { text: t("ux.hotels.excellent"), color: 'text-success' };
+                    if (rating >= 7) return { text: t("ux.hotels.veryGood"), color: 'text-info' };
+                    if (rating >= 6) return { text: t("ux.hotels.good"), color: 'text-sky-600 dark:text-sky-400' };
+                    return { text: t("ux.hotels.fair"), color: 'text-muted-foreground' };
                   };
                   const qualifier = getRatingQualifier(ratingOn10);
                   
@@ -708,7 +713,7 @@ const Hotels = () => {
                       <LazyImage
                         src={hotel.image}
                         alt={hotel.name}
-                        className="w-full h-full object-cover min-h-[300px] group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover min-h-[300px] group-hover:scale-105 transition-transform duration-slow ease-standard"
                       />
                       <div className="absolute top-2 left-2 flex gap-2">
                         <Checkbox
@@ -719,24 +724,24 @@ const Hotels = () => {
                       </div>
                       <div className="absolute top-2 right-2 flex flex-col gap-2">
                         {ratingOn10 >= 9 && (
-                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-0">
+                          <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
                             <Star className="w-3 h-3 mr-1 fill-white" />
-                            Top noté
+                            {t("ux.hotels.topRatedBadge")}
                           </Badge>
                         )}
                         {hotel.reviews > 200 && (
-                          <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-0">
-                            Populaire
+                          <Badge className="bg-info hover:bg-info/90 text-info-foreground border-0">
+                            {t("ux.hotels.popularBadge")}
                           </Badge>
                         )}
                         {(hotel as any).freeCancellation && (
-                          <Badge className="bg-green-500 hover:bg-green-600 text-white border-0">
-                            Annulation gratuite
+                          <Badge className="bg-success hover:bg-success/90 text-success-foreground border-0">
+                            {t("ux.hotels.freeCancel")}
                           </Badge>
                         )}
                         {(hotel as any).breakfast && (
-                          <Badge className="bg-orange-500 hover:bg-orange-600 text-white border-0">
-                            Petit-déj inclus
+                          <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
+                            {t("ux.hotels.breakfast")}
                           </Badge>
                         )}
                         {(hotel as any).source && (
@@ -763,7 +768,7 @@ const Hotels = () => {
                               {[...Array(Math.min(hotelStars, 5))].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="w-4 h-4 fill-amber-400 text-amber-400"
+                                  className="w-4 h-4 fill-gold text-gold"
                                 />
                               ))}
                               {hotelStars < 5 && [...Array(5 - Math.min(hotelStars, 5))].map((_, i) => (
@@ -812,14 +817,14 @@ const Hotels = () => {
 
                       <div className="flex justify-between items-end mt-auto pt-4 border-t">
                         <div>
-                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">À partir de</p>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t("ux.hotels.from")}</p>
                           <div className="flex items-baseline gap-2">
                             <p className="text-3xl font-bold text-primary">
                               {hotel.price.toLocaleString()}
                             </p>
                             <span className="text-lg font-semibold text-muted-foreground">{(hotel as any).currency || 'EUR'}</span>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">par nuit • Taxes incluses</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t("ux.hotels.perNight")}</p>
                         </div>
                         <Button size="lg" className="font-semibold" onClick={() => {
                           setSelectedHotel({
@@ -833,7 +838,7 @@ const Hotels = () => {
                           });
                           setDialogOpen(true);
                         }}>
-                          Voir les chambres
+                          {t("ux.hotels.seeRooms")}
                         </Button>
                       </div>
                     </CardContent>

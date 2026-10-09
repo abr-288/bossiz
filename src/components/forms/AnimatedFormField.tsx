@@ -3,6 +3,7 @@ import { motion, AnimatePresence, type Transition } from "framer-motion";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MOTION } from "@/lib/motion";
 
 // Animation configurations
 export const containerVariants = {
@@ -11,14 +12,14 @@ export const containerVariants = {
     opacity: 1, 
     scale: 1,
     transition: { 
-      duration: 0.5,
+      duration: MOTION.slow,
       staggerChildren: 0.1
     } as Transition
   },
   exit: { 
     opacity: 0, 
     scale: 0.95,
-    transition: { duration: 0.3 } as Transition
+    transition: { duration: MOTION.slow } as Transition
   }
 };
 
@@ -27,7 +28,7 @@ export const itemVariants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.4 } as Transition
+    transition: { duration: MOTION.slow } as Transition
   }
 };
 
@@ -41,6 +42,8 @@ interface FormFieldProps {
   value: string;
   onChange: (value: string) => void;
   showPasswordToggle?: boolean;
+  /** email, current-password, new-password : aide les gestionnaires de mots de passe des navigateurs */
+  autoComplete?: string;
 }
 
 const AnimatedFormField = ({ 
@@ -52,7 +55,8 @@ const AnimatedFormField = ({
   error,
   value,
   onChange,
-  showPasswordToggle 
+  showPasswordToggle,
+  autoComplete,
 }: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -79,12 +83,13 @@ const AnimatedFormField = ({
             id={name}
             name={name}
             type={showPasswordToggle && showPassword ? "text" : type}
+            autoComplete={autoComplete}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className={`h-12 md:h-11 text-base md:text-sm rounded-xl border-2 bg-background/50 backdrop-blur-sm transition-all duration-300 pr-12 placeholder:text-muted-foreground/50 ${
+            className={`h-12 md:h-11 text-base md:text-sm rounded-xl border-2 bg-background/50 backdrop-blur-sm transition-all duration-slow ease-standard pr-12 placeholder:text-muted-foreground/50 ${
               error 
                 ? "border-destructive/50 focus:border-destructive focus:ring-destructive/20" 
                 : isFocused 
@@ -102,7 +107,7 @@ const AnimatedFormField = ({
             <motion.div
               initial={false}
               animate={{ rotate: showPassword ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: MOTION.base }}
             >
               {showPassword ? <EyeOff className="h-5 w-5 md:h-4 md:w-4" /> : <Eye className="h-5 w-5 md:h-4 md:w-4" />}
             </motion.div>

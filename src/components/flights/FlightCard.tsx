@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
 import { getCityName, getAirportName } from "@/utils/airportNames";
 import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 const formatDuration = (duration: string): string => {
   if (!duration) return '';
@@ -47,7 +48,7 @@ export const FlightCard = ({
   const formatTime = (isoString: string) => {
     try {
       const date = new Date(isoString);
-      return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      return date.toLocaleTimeString(currentLocaleTag(), { hour: "2-digit", minute: "2-digit" });
     } catch {
       return isoString;
     }
@@ -89,7 +90,7 @@ export const FlightCard = ({
               <span className="text-lg sm:text-xl lg:text-2xl font-bold">{formatTime(departureTime)}</span>
               <span className="text-sm font-medium">{getCityName(departureAirport)}</span>
               <span className="text-xs text-muted-foreground">{departureAirport}</span>
-              <span className="text-[10px] text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate" title={getAirportName(departureAirport)}>
+              <span className="text-xs text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate" title={getAirportName(departureAirport)}>
                 {getAirportName(departureAirport)}
               </span>
             </div>
@@ -118,10 +119,10 @@ export const FlightCard = ({
 
               {/* Stops Badge */}
               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium animate-fade-in ${stops === 0
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                  ? 'bg-success/10 text-success'
                   : stops === 1
-                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    ? 'bg-warning text-warning-foreground'
+                    : 'bg-destructive/10 text-destructive'
                 }`}>
                 {stops === 0 ? (
                   <>
@@ -142,7 +143,7 @@ export const FlightCard = ({
               <span className="text-lg sm:text-xl lg:text-2xl font-bold">{formatTime(arrivalTime)}</span>
               <span className="text-sm font-medium">{getCityName(arrivalAirport)}</span>
               <span className="text-xs text-muted-foreground">{arrivalAirport}</span>
-              <span className="text-[10px] text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate text-right" title={getAirportName(arrivalAirport)}>
+              <span className="text-xs text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate text-right" title={getAirportName(arrivalAirport)}>
                 {getAirportName(arrivalAirport)}
               </span>
             </div>
@@ -170,7 +171,7 @@ export const FlightCard = ({
           </div>
           <Button
             onClick={onSelect}
-            className="sm:w-full bg-gold text-gold-foreground hover:bg-gold/90 font-semibold"
+            className="sm:w-full font-semibold"
           >
             {t('search.book')}
           </Button>

@@ -29,7 +29,7 @@ export function DarkModeToggle({ variant = "default", className = "" }: DarkMode
         title={isDark ? t("common.lightMode") : t("common.darkMode")}
       >
         {isDark ? (
-          <Sun className="h-4 w-4 text-yellow-400" />
+          <Sun className="h-4 w-4 text-gold" />
         ) : (
           <Moon className="h-4 w-4" />
         )}

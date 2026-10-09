@@ -133,11 +133,6 @@ const TestimonialsSection = () => {
       
       <div className="site-container relative z-10">
         <div className="text-center mb-8 md:mb-14 lg:mb-16 animate-slide-up-fade px-4">
-          <div className="inline-block mb-3 md:mb-4">
-            <span className="px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-secondary/10 text-secondary text-xs md:text-sm font-semibold">
-              ⭐ Avis Clients
-            </span>
-          </div>
           <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gradient mb-4 md:mb-6">
             {t('testimonials.title')}
           </h2>
@@ -156,6 +151,7 @@ const TestimonialsSection = () => {
         <div className="relative max-w-6xl mx-auto">
           {/* Navigation Buttons */}
           <Button
+            aria-label="Précédent"
             variant="outline"
             size="icon"
             onClick={scrollPrev}
@@ -165,6 +161,7 @@ const TestimonialsSection = () => {
           </Button>
           
           <Button
+            aria-label="Suivant"
             variant="outline"
             size="icon"
             onClick={scrollNext}
@@ -182,17 +179,17 @@ const TestimonialsSection = () => {
                   className="flex-[0_0_85%] sm:flex-[0_0_70%] md:flex-[0_0_calc(50%-1rem)] lg:flex-[0_0_calc(33.333%-1.5rem)] min-w-0"
                 >
                   <Card 
-                    className="group border-2 border-border/50 hover:border-secondary/50 shadow-xl hover:shadow-2xl transition-all duration-500 hover-lift rounded-xl md:rounded-2xl bg-gradient-card relative overflow-hidden h-full"
+                    className="group border-2 border-border/50 hover:border-secondary/50 shadow-xl hover:shadow-2xl transition-all duration-slow ease-standard hover-lift rounded-xl md:rounded-2xl bg-gradient-card relative overflow-hidden h-full"
                   >
                     {/* Shimmer effect */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-slow ease-standard pointer-events-none">
                       <div className="absolute inset-0 animate-shimmer" />
                     </div>
                     
                     <CardContent className="p-5 md:p-8 lg:p-10 relative z-10 h-full flex flex-col">
                       {/* Quote icon with glow effect */}
                       <div className="mb-4 md:mb-6 relative">
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center group-hover:animate-pulse-glow">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-primary/5 flex items-center justify-center group-hover:animate-pulse-glow">
                           <Quote className="w-6 h-6 md:w-8 md:h-8 text-primary group-hover:text-secondary transition-colors" />
                         </div>
                       </div>
@@ -238,13 +235,13 @@ const TestimonialsSection = () => {
               <button
                 key={index}
                 onClick={() => scrollTo(index)}
-                className={`group transition-all duration-300 ${
+                className={`group transition-all duration-slow ease-standard ${
                   index === selectedIndex ? 'w-12' : 'w-3'
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               >
                 <div
-                  className={`h-3 rounded-full transition-all duration-300 ${
+                  className={`h-3 rounded-full transition-all duration-slow ease-standard ${
                     index === selectedIndex
                       ? 'gradient-primary shadow-primary'
                       : 'bg-border group-hover:bg-secondary/50'

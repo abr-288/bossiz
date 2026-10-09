@@ -12,8 +12,10 @@ import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function AdminServices() {
+  const { t } = useTranslation();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,8 +63,8 @@ export default function AdminServices() {
     } catch (error) {
       console.error("Error fetching services:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les services",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableLoadServices"),
         variant: "destructive",
       });
     } finally {
@@ -80,11 +82,11 @@ export default function AdminServices() {
           .eq("id", editingService.id);
 
         if (error) throw error;
-        toast({ title: "Service mis à jour avec succès" });
+        toast({ title: t("ux.bo.serviceUpdatedSuccessfully") });
       } else {
         const { error } = await supabase.from("services").insert([formData]);
         if (error) throw error;
-        toast({ title: "Service créé avec succès" });
+        toast({ title: t("ux.bo.serviceCreatedSuccessfully") });
       }
 
       setDialogOpen(false);
@@ -93,26 +95,26 @@ export default function AdminServices() {
     } catch (error) {
       console.error("Error saving service:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder le service",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableSaveService"),
         variant: "destructive",
       });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce service ?")) return;
+    if (!confirm(t("ux.bo.youSureYouWantDelete4"))) return;
 
     try {
       const { error } = await supabase.from("services").delete().eq("id", id);
       if (error) throw error;
-      toast({ title: "Service supprimé avec succès" });
+      toast({ title: t("ux.bo.serviceDeletedSuccessfully") });
       fetchServices();
     } catch (error) {
       console.error("Error deleting service:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le service",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableDeleteService"),
         variant: "destructive",
       });
     }
@@ -160,24 +162,24 @@ export default function AdminServices() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Gestion des Services</h1>
+          <h1 className="text-3xl font-bold">{t("ux.bo.serviceManagement")}</h1>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={resetForm}>
                 <Plus className="h-4 w-4 mr-2" />
-                Nouveau Service
+                {t("ux.bo.newService")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {editingService ? "Modifier le service" : "Créer un service"}
+                  {editingService ? t("ux.bo.editService") : t("ux.bo.createService")}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Nom</Label>
+                    <Label>{t("ux.bo.name")}</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -185,7 +187,7 @@ export default function AdminServices() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Type</Label>
+                    <Label>{t("ux.bo.type")}</Label>
                     <Select
                       value={formData.type}
                       onValueChange={(value: "hotel" | "flight" | "car" | "tour" | "event" | "flight_hotel") => 
@@ -196,17 +198,17 @@ export default function AdminServices() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="hotel">Hôtel</SelectItem>
-                        <SelectItem value="flight">Vol</SelectItem>
-                        <SelectItem value="car">Voiture</SelectItem>
-                        <SelectItem value="tour">Tour</SelectItem>
-                        <SelectItem value="event">Événement</SelectItem>
-                        <SelectItem value="flight_hotel">Vol + Hôtel</SelectItem>
+                        <SelectItem value="hotel">{t("ux.bo.hotel")}</SelectItem>
+                        <SelectItem value="flight">{t("ux.bo.flight")}</SelectItem>
+                        <SelectItem value="car">{t("ux.bo.car")}</SelectItem>
+                        <SelectItem value="tour">{t("ux.bo.tour")}</SelectItem>
+                        <SelectItem value="event">{t("ux.bo.event")}</SelectItem>
+                        <SelectItem value="flight_hotel">{t("ux.bo.flightHotel")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Localisation</Label>
+                    <Label>{t("ux.bo.location")}</Label>
                     <Input
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -214,14 +216,14 @@ export default function AdminServices() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Destination</Label>
+                    <Label>{t("ux.bo.destination")}</Label>
                     <Input
                       value={formData.destination}
                       onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Prix par unité</Label>
+                    <Label>{t("ux.bo.pricePerUnit")}</Label>
                     <Input
                       type="number"
                       value={formData.price_per_unit}
@@ -230,7 +232,7 @@ export default function AdminServices() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Devise</Label>
+                    <Label>{t("ux.bo.currency")}</Label>
                     <Select
                       value={formData.currency}
                       onValueChange={(value) => setFormData({ ...formData, currency: value })}
@@ -247,7 +249,7 @@ export default function AdminServices() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -261,7 +263,7 @@ export default function AdminServices() {
                       checked={formData.available}
                       onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
                     />
-                    Disponible
+                    {t("ux.bo.available")}
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -269,15 +271,15 @@ export default function AdminServices() {
                       checked={formData.featured}
                       onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                     />
-                    En vedette
+                    {t("ux.bo.featured")}
                   </label>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Annuler
+                    {t("ux.bo.cancel")}
                   </Button>
                   <Button type="submit">
-                    {editingService ? "Mettre à jour" : "Créer"}
+                    {editingService ? t("ux.bo.update") : "Créer"}
                   </Button>
                 </div>
               </form>
@@ -289,7 +291,7 @@ export default function AdminServices() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher un service..."
+              placeholder={t("ux.bo.searchService")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -300,30 +302,30 @@ export default function AdminServices() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les types</SelectItem>
-              <SelectItem value="hotel">Hôtel</SelectItem>
-              <SelectItem value="flight">Vol</SelectItem>
-              <SelectItem value="car">Voiture</SelectItem>
-              <SelectItem value="tour">Tour</SelectItem>
-              <SelectItem value="event">Événement</SelectItem>
-              <SelectItem value="flight_hotel">Vol + Hôtel</SelectItem>
+              <SelectItem value="all">{t("ux.bo.allTypes")}</SelectItem>
+              <SelectItem value="hotel">{t("ux.bo.hotel")}</SelectItem>
+              <SelectItem value="flight">{t("ux.bo.flight")}</SelectItem>
+              <SelectItem value="car">{t("ux.bo.car")}</SelectItem>
+              <SelectItem value="tour">{t("ux.bo.tour")}</SelectItem>
+              <SelectItem value="event">{t("ux.bo.event")}</SelectItem>
+              <SelectItem value="flight_hotel">{t("ux.bo.flightHotel")}</SelectItem>
             </SelectContent>
           </Select>
           <ExportButtons data={filteredServices} filename="services" />
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Chargement...</div>
+          <div className="text-center py-12">{t("ux.bo.loading")}</div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Prix</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("ux.bo.name")}</TableHead>
+                <TableHead>{t("ux.bo.type")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.price")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead>{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -339,8 +341,8 @@ export default function AdminServices() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      {service.available && <Badge variant="secondary">Disponible</Badge>}
-                      {service.featured && <Badge>Vedette</Badge>}
+                      {service.available && <Badge variant="secondary">{t("ux.bo.available")}</Badge>}
+                      {service.featured && <Badge>{t("ux.bo.featured2")}</Badge>}
                     </div>
                   </TableCell>
                   <TableCell>

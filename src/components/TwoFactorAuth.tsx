@@ -32,8 +32,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 export function TwoFactorAuth() {
+  const { t } = useTranslation();
   const {
     factors,
     loading,
@@ -53,22 +56,22 @@ export function TwoFactorAuth() {
 
   const handleStartEnrollment = async () => {
     try {
-      await enrollTOTP("Application Authenticator");
+      await enrollTOTP(t("ux.twoFactor.app"));
       setShowEnrollment(true);
     } catch (err) {
-      toast.error("Impossible de démarrer la configuration 2FA");
+      toast.error(t("ux.twoFactor.startError"));
     }
   };
 
   const handleVerify = async () => {
     if (verificationCode.length !== 6) {
-      toast.error("Le code doit contenir 6 chiffres");
+      toast.error(t("ux.twoFactor.codeLength"));
       return;
     }
 
     const success = await verifyAndActivate(verificationCode);
     if (success) {
-      toast.success("Authentification à deux facteurs activée !");
+      toast.success(t("ux.twoFactor.enabled"));
       setShowEnrollment(false);
       setVerificationCode("");
     }
@@ -83,15 +86,15 @@ export function TwoFactorAuth() {
   const handleUnenroll = async (factorId: string) => {
     const success = await unenrollFactor(factorId);
     if (success) {
-      toast.success("Authentification à deux facteurs désactivée");
+      toast.success(t("ux.twoFactor.disabled"));
     } else {
-      toast.error("Impossible de désactiver le 2FA");
+      toast.error(t("ux.twoFactor.disableError"));
     }
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Clé copiée dans le presse-papiers");
+    toast.success(t("ux.twoFactor.copied"));
   };
 
   if (loading) {
@@ -109,10 +112,10 @@ export function TwoFactorAuth() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
-          Authentification à Deux Facteurs (2FA)
+          {t("ux.twoFactor.title")}
         </CardTitle>
         <CardDescription>
-          Renforcez la sécurité de votre compte avec une application d'authentification
+          {t("ux.twoFactor.subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -122,36 +125,36 @@ export function TwoFactorAuth() {
           animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-lg flex items-center gap-4 ${
             hasMFAEnabled 
-              ? "bg-green-500/10 border border-green-500/20" 
-              : "bg-yellow-500/10 border border-yellow-500/20"
+              ? "bg-success/10 border border-success/30" 
+              : "bg-warning border border-warning-foreground/20"
           }`}
         >
           {hasMFAEnabled ? (
             <>
-              <ShieldCheck className="h-8 w-8 text-green-500" />
+              <ShieldCheck className="h-8 w-8 text-success" />
               <div>
-                <h3 className="font-semibold text-green-700 dark:text-green-400">2FA Activé</h3>
+                <h3 className="font-semibold text-success">{t("ux.twoFactor.on")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Votre compte est protégé par l'authentification à deux facteurs
+                  {t("ux.twoFactor.onDesc")}
                 </p>
               </div>
-              <Badge variant="outline" className="ml-auto border-green-500 text-green-600">
+              <Badge variant="outline" className="ml-auto border-success text-success">
                 <Check className="h-3 w-3 mr-1" />
-                Actif
+                {t("ux.twoFactor.active")}
               </Badge>
             </>
           ) : (
             <>
-              <ShieldOff className="h-8 w-8 text-yellow-500" />
+              <ShieldOff className="h-8 w-8 text-gold" />
               <div>
-                <h3 className="font-semibold text-yellow-700 dark:text-yellow-400">2FA Non Activé</h3>
+                <h3 className="font-semibold text-warning-foreground">{t("ux.twoFactor.off")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Activez le 2FA pour une sécurité renforcée
+                  {t("ux.twoFactor.offDesc")}
                 </p>
               </div>
-              <Badge variant="outline" className="ml-auto border-yellow-500 text-yellow-600">
+              <Badge variant="outline" className="ml-auto border-gold text-warning-foreground">
                 <AlertTriangle className="h-3 w-3 mr-1" />
-                Inactif
+                {t("ux.twoFactor.inactive")}
               </Badge>
             </>
           )}
@@ -165,7 +168,7 @@ export function TwoFactorAuth() {
             transition={{ delay: 0.1 }}
             className="space-y-3"
           >
-            <Label>Méthodes configurées</Label>
+            <Label>{t("ux.twoFactor.methods")}</Label>
             {factors.map((factor) => (
               <div
                 key={factor.id}
@@ -174,9 +177,9 @@ export function TwoFactorAuth() {
                 <div className="flex items-center gap-3">
                   <Smartphone className="h-5 w-5 text-primary" />
                   <div>
-                    <p className="font-medium">{factor.friendly_name || "Application Authenticator"}</p>
+                    <p className="font-medium">{factor.friendly_name || t("ux.twoFactor.app")}</p>
                     <p className="text-xs text-muted-foreground">
-                      Ajouté le {new Date(factor.created_at).toLocaleDateString('fr-FR')}
+                      Ajouté le {new Date(factor.created_at).toLocaleDateString(currentLocaleTag())}
                     </p>
                   </div>
                 </div>
@@ -188,19 +191,19 @@ export function TwoFactorAuth() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Désactiver le 2FA ?</AlertDialogTitle>
+                      <AlertDialogTitle>{t("ux.twoFactor.disableTitle")}</AlertDialogTitle>
                       <AlertDialogDescription>
                         Cette action va désactiver l'authentification à deux facteurs sur votre compte.
                         Vous devrez la reconfigurer pour la réactiver.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogCancel>{t("ux.twoFactor.cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleUnenroll(factor.id)}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
-                        Désactiver
+                        {t("ux.twoFactor.disable")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -223,7 +226,7 @@ export function TwoFactorAuth() {
               <Alert>
                 <QrCode className="h-4 w-4" />
                 <AlertDescription>
-                  Scannez le QR code avec votre application d'authentification (Google Authenticator, Authy, etc.)
+                  {t("ux.twoFactor.scan")}
                 </AlertDescription>
               </Alert>
 
@@ -236,7 +239,7 @@ export function TwoFactorAuth() {
                 >
                   <img
                     src={enrollmentData.qrCode}
-                    alt="QR Code pour 2FA"
+                    alt={t("ux.twoFactor.qrAlt")}
                     className="w-48 h-48"
                   />
                 </motion.div>
@@ -244,13 +247,14 @@ export function TwoFactorAuth() {
                 {/* Manual entry secret */}
                 <div className="w-full space-y-2">
                   <Label className="text-sm text-muted-foreground">
-                    Ou entrez cette clé manuellement :
+                    {t("ux.twoFactor.manualKey")}
                   </Label>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 p-2 bg-muted rounded text-sm font-mono break-all">
                       {enrollmentData.secret}
                     </code>
                     <Button
+                      aria-label={t("ux.twoFactor.copy")}
                       variant="outline"
                       size="icon"
                       onClick={() => copyToClipboard(enrollmentData.secret)}
@@ -264,7 +268,7 @@ export function TwoFactorAuth() {
               {/* Verification code input */}
               <div className="space-y-3">
                 <Label htmlFor="verification-code">
-                  Entrez le code à 6 chiffres de votre application
+                  {t("ux.twoFactor.enterCode")}
                 </Label>
                 <Input
                   id="verification-code"
@@ -297,7 +301,7 @@ export function TwoFactorAuth() {
                   className="flex-1"
                   disabled={verifying}
                 >
-                  Annuler
+                  {t("ux.twoFactor.cancel")}
                 </Button>
                 <Button
                   onClick={handleVerify}
@@ -309,7 +313,7 @@ export function TwoFactorAuth() {
                   ) : (
                     <Check className="mr-2 h-4 w-4" />
                   )}
-                  Vérifier et Activer
+                  {t("ux.twoFactor.verify")}
                 </Button>
               </div>
             </motion.div>
@@ -331,7 +335,7 @@ export function TwoFactorAuth() {
                   ) : (
                     <Smartphone className="mr-2 h-4 w-4" />
                   )}
-                  Configurer l'authentification à deux facteurs
+                  {t("ux.twoFactor.setup")}
                 </Button>
               )}
             </motion.div>
@@ -347,12 +351,12 @@ export function TwoFactorAuth() {
         >
           <h4 className="font-medium mb-2 flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
-            Pourquoi activer le 2FA ?
+            {t("ux.twoFactor.why")}
           </h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Protection supplémentaire contre les accès non autorisés</li>
-            <li>• Sécurisation de vos réservations et données personnelles</li>
-            <li>• Alertes en cas de tentative de connexion suspecte</li>
+            <li>{t("ux.twoFactor.why1")}</li>
+            <li>{t("ux.twoFactor.why2")}</li>
+            <li>{t("ux.twoFactor.why3")}</li>
           </ul>
         </motion.div>
       </CardContent>

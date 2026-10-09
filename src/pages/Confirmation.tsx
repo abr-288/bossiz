@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
+import { MOTION } from "@/lib/motion";
 
 const Confirmation = () => {
   const { t, i18n } = useTranslation();
@@ -154,19 +155,19 @@ const Confirmation = () => {
   const getStatusConfig = () => {
     if (booking?.status === 'confirmed') {
       return {
-        icon: <CheckCircle2 className="h-20 w-20 text-green-500" />,
+        icon: <CheckCircle2 className="h-20 w-20 text-success" />,
         title: t('confirmation.confirmed'),
         description: t('confirmation.confirmedDesc'),
-        bgClass: "from-green-500/20 to-green-500/5",
-        borderClass: "border-green-500/30",
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-success/30",
       };
     } else if (booking?.status === 'cancelled' && booking?.payment_status === 'refunded') {
       return {
-        icon: <XCircle className="h-20 w-20 text-amber-500" />,
+        icon: <XCircle className="h-20 w-20 text-gold" />,
         title: t('confirmation.cancelled'),
         description: t('confirmation.cancelledDesc'),
-        bgClass: "from-amber-500/20 to-amber-500/5",
-        borderClass: "border-amber-500/30",
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-warning-foreground/20",
       };
     } else if (booking?.status === 'failed' || booking?.payment_status === 'failed') {
       return {
@@ -181,19 +182,19 @@ const Confirmation = () => {
       // supplier (see create-pnr) - never shown as a green success yet,
       // since it may still automatically resolve to a refund.
       return {
-        icon: <Clock className="h-20 w-20 text-amber-500 animate-pulse" />,
+        icon: <Clock className="h-20 w-20 text-gold animate-pulse" />,
         title: t('confirmation.processingSupplier'),
         description: t('confirmation.processingSupplierDesc'),
-        bgClass: "from-amber-500/20 to-amber-500/5",
-        borderClass: "border-amber-500/30",
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-warning-foreground/20",
       };
     } else if (booking?.payment_status === 'pending') {
       return {
-        icon: <Clock className="h-20 w-20 text-amber-500 animate-pulse" />,
+        icon: <Clock className="h-20 w-20 text-gold animate-pulse" />,
         title: t('confirmation.paymentPending'),
         description: t('confirmation.paymentPendingDesc'),
-        bgClass: "from-amber-500/20 to-amber-500/5",
-        borderClass: "border-amber-500/30",
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-warning-foreground/20",
       };
     }
     return {
@@ -304,7 +305,7 @@ const Confirmation = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", duration: 0.5 }}
+                  transition={{ type: "spring", duration: MOTION.slow }}
                 >
                   {statusConfig.icon}
                 </motion.div>
@@ -321,7 +322,7 @@ const Confirmation = () => {
           </Card>
 
           {/* Booking Reference */}
-          <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+          <Card className="border-2 border-primary/20 bg-primary/5">
             <CardContent className="py-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="text-center md:text-left">
@@ -331,13 +332,14 @@ const Confirmation = () => {
                       {bookingRef}
                     </span>
                     <Button
+                      aria-label="Copier"
                       variant="ghost"
                       size="icon"
                       onClick={copyToClipboard}
                       className="shrink-0"
                     >
                       {copied ? (
-                        <Check className="h-5 w-5 text-green-500" />
+                        <Check className="h-5 w-5 text-success" />
                       ) : (
                         <Copy className="h-5 w-5" />
                       )}
@@ -480,7 +482,7 @@ const Confirmation = () => {
                   )}
                   <Badge 
                     variant={['paid', 'partially_paid'].includes(booking.payment_status) ? 'default' : 'secondary'}
-                    className={['paid', 'partially_paid'].includes(booking.payment_status) ? 'bg-green-500' : ''}
+                    className={['paid', 'partially_paid'].includes(booking.payment_status) ? 'bg-success' : ''}
                   >
                     {booking.payment_status === 'paid' ? '✓ ' + t('confirmation.paid') : t('confirmation.pending')}
                   </Badge>
@@ -547,9 +549,9 @@ const Confirmation = () => {
           </div>
 
           {/* Important Info */}
-          <Card className="border-amber-500/30 bg-amber-500/5">
+          <Card className="border-warning-foreground/20 bg-warning">
             <CardContent className="py-4">
-              <h3 className="font-semibold mb-2 text-amber-700 dark:text-amber-400">
+              <h3 className="font-semibold mb-2 text-warning-foreground">
                 {t('confirmation.important')}
               </h3>
               <ul className="text-sm text-muted-foreground space-y-1">

@@ -13,26 +13,28 @@ import { useCompany } from "@/hooks/useCompany";
 import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerBusiness from "@/assets/banner-business.jpg";
+import { useTranslation } from "react-i18next";
 
 const benefits = [
   {
     icon: CreditCard,
-    title: "Paiement centralisé",
-    description: "Un seul responsable paie tous les voyages de l'équipe avec une carte, plus besoin que chaque employé avance ses frais.",
+    title: "ux.companiesData.b1",
+    description: "ux.companiesData.b1Desc",
   },
   {
     icon: FileText,
-    title: "Fini les justificatifs papier",
-    description: "Toutes les réservations de l'entreprise sont regroupées au même endroit, avec leur statut de paiement.",
+    title: "ux.companiesData.b2",
+    description: "ux.companiesData.b2Desc",
   },
   {
     icon: Users,
-    title: "Équipe illimitée",
-    description: "Ajoutez vos employés en un instant avec un simple code d'invitation, sans validation manuelle.",
+    title: "ux.companiesData.b3",
+    description: "ux.companiesData.b3Desc",
   },
 ];
 
 const Companies = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { company, loading: companyLoading, refetch } = useCompany();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -56,7 +58,7 @@ const Companies = () => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Connectez-vous pour créer un compte entreprise");
+      toast.error(t("ux.companies.signInToCreate"));
       navigate("/auth");
       return;
     }
@@ -71,11 +73,11 @@ const Companies = () => {
     setCreating(false);
 
     if (error) {
-      toast.error(error.message || "Impossible de créer le compte entreprise");
+      toast.error(error.message || t("ux.companies.createError"));
       return;
     }
 
-    toast.success("Compte entreprise créé !");
+    toast.success(t("ux.companies.created"));
     refetch();
   };
 
@@ -83,7 +85,7 @@ const Companies = () => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Connectez-vous pour rejoindre une entreprise");
+      toast.error(t("ux.companies.signInToJoin"));
       navigate("/auth");
       return;
     }
@@ -93,7 +95,7 @@ const Companies = () => {
     setJoining(false);
 
     if (error || !data?.[0]) {
-      toast.error(error?.message || "Code d'invitation invalide");
+      toast.error(error?.message || t("ux.companies.invalidCode"));
       return;
     }
 
@@ -113,20 +115,20 @@ const Companies = () => {
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
 
-      <div className="relative py-16 md:py-24 overflow-hidden bg-primary">
+      <div className="relative py-16 md:py-24 overflow-hidden bg-brand">
         <LazyImage
           src={bannerBusiness}
-          alt="Espace entreprises"
+          alt={t("ux.companies.bannerAlt")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/60 to-primary/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <Building2 className="w-12 h-12 text-white mx-auto mb-4" />
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            Espace Entreprises
+            {t("ux.companies.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            Simplifiez les voyages d'affaires de votre équipe, du réservation au paiement
+            {t("ux.companies.subtitle")}
           </p>
         </div>
       </div>
@@ -140,8 +142,8 @@ const Companies = () => {
                   <b.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-bold mb-1">{b.title}</h3>
-                  <p className="text-sm text-muted-foreground">{b.description}</p>
+                  <h3 className="font-bold mb-1">{t(b.title)}</h3>
+                  <p className="text-sm text-muted-foreground">{t(b.description)}</p>
                 </div>
               </CardContent>
             </Card>
@@ -151,13 +153,13 @@ const Companies = () => {
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>Créer le compte de mon entreprise</CardTitle>
-              <CardDescription>Vous deviendrez l'administrateur de facturation</CardDescription>
+              <CardTitle>{t("ux.companies.createTitle")}</CardTitle>
+              <CardDescription>{t("ux.companies.createDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleCreate} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Nom de l'entreprise *</Label>
+                  <Label>{t("ux.companies.companyName")}</Label>
                   <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
@@ -165,18 +167,18 @@ const Companies = () => {
                   <Textarea value={companyDescription} onChange={(e) => setCompanyDescription(e.target.value)} rows={2} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Email de facturation</Label>
+                  <Label>{t("ux.companies.billingEmail")}</Label>
                   <Input type="email" value={billingEmail} onChange={(e) => setBillingEmail(e.target.value)} placeholder="comptabilite@entreprise.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Téléphone de facturation</Label>
+                  <Label>{t("ux.companies.billingPhone")}</Label>
                   <Input value={billingPhone} onChange={(e) => setBillingPhone(e.target.value)} />
                 </div>
                 <Button type="submit" className="w-full" disabled={creating || !isAuthenticated}>
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Créer le compte entreprise"}
+                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : t("ux.companies.create")}
                 </Button>
                 {!isAuthenticated && (
-                  <p className="text-xs text-muted-foreground text-center">Connectez-vous d'abord pour créer un compte entreprise.</p>
+                  <p className="text-xs text-muted-foreground text-center">{t("ux.companies.signInFirstCreate")}</p>
                 )}
               </form>
             </CardContent>
@@ -184,13 +186,13 @@ const Companies = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Rejoindre mon entreprise</CardTitle>
-              <CardDescription>Votre administrateur vous a donné un code d'invitation</CardDescription>
+              <CardTitle>{t("ux.companies.joinTitle")}</CardTitle>
+              <CardDescription>{t("ux.companies.joinDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleJoin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Code d'invitation *</Label>
+                  <Label>{t("ux.companies.code")}</Label>
                   <Input
                     value={inviteCode}
                     onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
@@ -200,10 +202,10 @@ const Companies = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" variant="outline" disabled={joining || !isAuthenticated}>
-                  {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : "Rejoindre l'entreprise"}
+                  {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : t("ux.companies.join")}
                 </Button>
                 {!isAuthenticated && (
-                  <p className="text-xs text-muted-foreground text-center">Connectez-vous d'abord pour rejoindre une entreprise.</p>
+                  <p className="text-xs text-muted-foreground text-center">{t("ux.companies.signInFirstJoin")}</p>
                 )}
               </form>
             </CardContent>

@@ -8,13 +8,27 @@ import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Search, HelpCircle, Mail, Phone, MessageCircle } from "lucide-react";
-import { HELP_DOMAINS, HELP_FAQ } from "@/data/helpFaqData";
+import { HELP_DOMAINS as HELP_DOMAINS_FR, HELP_FAQ as HELP_FAQ_FR } from "@/data/helpFaqData";
+import { HELP_DOMAINS_EN, HELP_FAQ_EN } from "@/data/helpFaqData.en";
+import { HELP_DOMAINS_ZH, HELP_FAQ_ZH } from "@/data/helpFaqData.zh";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerHelp from "@/assets/hero-beach.jpg";
 
 const Help = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+
+  // FAQ dans la langue de l'interface (versions alignées sur le fichier français)
+  const lang = i18n.language.startsWith("zh") ? "zh" : i18n.language.startsWith("en") ? "en" : "fr";
+  const { HELP_DOMAINS, HELP_FAQ } = useMemo(() => {
+    if (lang === "fr") return { HELP_DOMAINS: HELP_DOMAINS_FR, HELP_FAQ: HELP_FAQ_FR };
+    const domains = lang === "zh" ? HELP_DOMAINS_ZH : HELP_DOMAINS_EN;
+    const faq = lang === "zh" ? HELP_FAQ_ZH : HELP_FAQ_EN;
+    return {
+      HELP_DOMAINS: HELP_DOMAINS_FR.map((d) => ({ ...d, label: domains[d.id]?.[0] ?? d.label, description: domains[d.id]?.[1] ?? d.description })),
+      HELP_FAQ: HELP_FAQ_FR.map((entry, i) => (faq[i]?.[0] === entry.domain ? { ...entry, question: faq[i][1], answer: faq[i][2] } : entry)),
+    };
+  }, [lang]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -29,7 +43,7 @@ const Help = () => {
         faq.question.toLowerCase().includes(query) ||
         faq.answer.toLowerCase().includes(query)
     );
-  }, [isSearching, searchQuery]);
+  }, [isSearching, searchQuery, HELP_FAQ]);
 
   const faqCountByDomain = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -37,7 +51,7 @@ const Help = () => {
       counts[faq.domain] = (counts[faq.domain] || 0) + 1;
     });
     return counts;
-  }, []);
+  }, [HELP_FAQ]);
 
   const handleDomainClick = (domainId: string) => {
     setSearchQuery("");
@@ -56,19 +70,19 @@ const Help = () => {
       <Navbar />
 
       {/* Hero */}
-      <div className="relative py-16 md:py-24 bg-primary overflow-hidden">
+      <div className="relative py-16 md:py-24 bg-brand overflow-hidden">
         <LazyImage
           src={bannerHelp}
           alt={t("help.title", "Centre d'aide")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-primary/65" />
+        <div className="absolute inset-0 bg-brand/65" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         </div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-6xl font-black mb-4 text-white drop-shadow-lg tracking-tighter">
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg tracking-tighter">
               {t("help.title", "Centre d'aide")}
             </h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto font-medium">
@@ -202,14 +216,14 @@ const Help = () => {
       </div>
 
       {/* Contact CTA */}
-      <div className="bg-primary text-white py-16">
+      <div className="bg-brand text-brand-foreground py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">{t("help.ctaTitle", "Vous ne trouvez pas votre réponse ?")}</h2>
           <p className="text-xl mb-8 text-white/90">
             {t("help.ctaSubtitle", "Notre équipe est disponible pour vous accompagner")}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Button size="lg" variant="secondary" onClick={() => navigate("/contact")}>
+            <Button size="lg" onClick={() => navigate("/contact")}>
               <Mail className="mr-2 h-5 w-5" />
               {t("help.contactSupport", "Nous contacter")}
             </Button>

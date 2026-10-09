@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import bannerTours from "@/assets/banner-tours.jpg";
+import { useTranslation } from "react-i18next";
+import { MOTION } from "@/lib/motion";
 
 interface PartnershipType {
   id: string;
@@ -44,94 +46,95 @@ const partnershipTypes: PartnershipType[] = [
   {
     id: "hotels",
     icon: Hotel,
-    title: "Hôtels & hébergements",
-    tagline: "Chambres, résidences, villas",
-    facts: ["Gratuit", "Partage 90/10*"],
+    title: "ux.partnershipData.hotelsTitle",
+    tagline: "ux.partnershipData.hotelsTagline",
+    facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
     conditions: [
-      "Inscription gratuite, sans engagement",
-      "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client",
-      "Pour les réservations réglées en ligne via Jèko, Bossiz conserve 10% et vous reverse 90% sous 24 heures après confirmation de la réservation.",
-      "Espace de gestion autonome (offres, disponibilités) une fois la candidature validée",
+      "ux.partnershipData.signup",
+      "ux.partnershipData.hotelsC2",
+      "ux.partnershipData.hotelsC3",
+      "ux.partnershipData.hotelsC4",
     ],
-    ctaLabel: "Devenir partenaire hôtel",
+    ctaLabel: "ux.partnershipData.hotelsCta",
     ctaTo: "/devenir-partenaire?type=hotel",
   },
   {
     id: "restaurants",
     icon: UtensilsCrossed,
-    title: "Restaurants",
-    tagline: "Réservation de table en ligne",
-    facts: ["Gratuit", "Partage 90/10*"],
+    title: "ux.partnershipData.restaurantsTitle",
+    tagline: "ux.partnershipData.restaurantsTagline",
+    facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
     conditions: [
-      "Inscription gratuite, sans engagement",
-      "Les réservations de table sont réglées directement au restaurant ; aucun reversement automatique Jèko n'est déclenché pour ces paiements.",
-      "Les paiements encaissés par Bossiz via Jèko suivent le partage 90/10 et sont reversés sous 24 heures.",
-      "Gérez votre menu et vos disponibilités depuis votre espace agence",
+      "ux.partnershipData.signup",
+      "ux.partnershipData.restaurantsC2",
+      "ux.partnershipData.restaurantsC3",
+      "ux.partnershipData.restaurantsC4",
     ],
-    ctaLabel: "Devenir partenaire restaurant",
+    ctaLabel: "ux.partnershipData.restaurantsCta",
     ctaTo: "/devenir-partenaire?type=restaurant",
   },
   {
     id: "activities",
     icon: Compass,
-    title: "Activités & tours",
-    tagline: "Excursions, visites guidées",
-    facts: ["Gratuit", "Partage 90/10*"],
+    title: "ux.partnershipData.activitiesTitle",
+    tagline: "ux.partnershipData.activitiesTagline",
+    facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
     conditions: [
-      "Inscription gratuite, sans engagement",
-      "Pour les réservations réglées en ligne via Jèko, Bossiz conserve 10% et vous reverse 90% sous 24 heures.",
-      "Visibilité dans les résultats Activités & Tours",
+      "ux.partnershipData.signup",
+      "ux.partnershipData.activitiesC2",
+      "ux.partnershipData.activitiesC3",
     ],
-    ctaLabel: "Devenir partenaire activité",
+    ctaLabel: "ux.partnershipData.activitiesCta",
     ctaTo: "/devenir-partenaire?type=activity",
   },
   {
     id: "artisans",
     icon: Hammer,
-    title: "Artisans & guides",
-    tagline: "Créations & savoir-faire local",
-    facts: ["Gratuit", "Partage 90/10*"],
+    title: "ux.partnershipData.artisansTitle",
+    tagline: "ux.partnershipData.artisansTagline",
+    facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
     conditions: [
-      "Inscription gratuite, sans engagement",
-      "Les commandes réglées via Jèko suivent le partage 90/10 ; les demandes doivent être confirmées depuis votre espace agence.",
-      "Les paiements reçus directement par vous ne sont pas reversés automatiquement par Jèko.",
-      "Fiche dédiée avec photos et description",
+      "ux.partnershipData.signup",
+      "ux.partnershipData.artisansC2",
+      "ux.partnershipData.artisansC3",
+      "ux.partnershipData.artisansC4",
     ],
-    ctaLabel: "Devenir partenaire artisan",
+    ctaLabel: "ux.partnershipData.artisansCta",
     ctaTo: "/devenir-partenaire?type=artisan",
   },
   {
     id: "wellness",
     icon: Sparkles,
-    title: "Bien-être & Beauté",
-    tagline: "Spa, coiffure, institut, yoga",
-    facts: ["Gratuit", "Partage 90/10*"],
+    title: "ux.partnershipData.wellnessTitle",
+    tagline: "ux.partnershipData.wellnessTagline",
+    facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
     conditions: [
-      "Inscription gratuite, sans engagement",
-      "Gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence",
-      "Le règlement des prestations se fait directement auprès de vous ; aucun reversement automatique Jèko n'est déclenché pour ces paiements.",
+      "ux.partnershipData.signup",
+      "ux.partnershipData.wellnessC2",
+      "ux.partnershipData.wellnessC3",
     ],
-    ctaLabel: "Devenir partenaire bien-être",
+    ctaLabel: "ux.partnershipData.wellnessCta",
     ctaTo: "/devenir-partenaire?type=wellness",
   },
   {
     id: "cars",
     icon: Car,
-    title: "Location de voitures",
-    tagline: "Pro ou Flotte",
-    facts: ["Dès 25 000 XOF/mois", "Commission selon le forfait"],
+    title: "ux.partnershipData.carsTitle",
+    tagline: "ux.partnershipData.carsTagline",
+    facts: ["ux.partnershipData.carsFrom", "ux.partnershipData.carsCommission"],
     conditions: [
-      "Deux forfaits payants : Pro (25 000 XOF/mois) et Flotte (60 000 XOF/mois). Un forfait actif est requis pour publier un véhicule.",
-      "La commission applicable dépend du forfait souscrit.",
-      "Mise en avant, support prioritaire et badge vérifié selon le forfait choisi",
+      "ux.partnershipData.carsC1",
+      "ux.partnershipData.carsC2",
+      "ux.partnershipData.carsC3",
     ],
-    ctaLabel: "Devenir partenaire voiture",
+    ctaLabel: "ux.partnershipData.carsCta",
     ctaTo: "/devenir-partenaire?type=cars",
-    highlight: "Forfaits payants",
+    highlight: "ux.partnershipData.paidPlans",
   },
 ];
 
 const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number }) => {
+  const { t } = useTranslation();
   const Icon = type.icon;
   const [open, setOpen] = useState(false);
 
@@ -140,9 +143,9 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      transition={{ duration: MOTION.slow, delay: index * 0.05 }}
     >
-      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40">
+      <Card className="flex flex-col h-full transition-all duration-slow ease-standard hover:shadow-lg hover:-translate-y-1 hover:border-primary/40">
         <CardContent className="p-5 flex flex-col flex-1">
           <div className="flex items-start justify-between gap-2 mb-3">
             <div className="w-11 h-11 flex-shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -150,13 +153,13 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
             </div>
             {type.highlight && (
               <Badge variant="secondary" className="flex-shrink-0 text-xs">
-                {type.highlight}
+                {t(type.highlight)}
               </Badge>
             )}
           </div>
 
-          <h3 className="font-bold text-base mb-0.5">{type.title}</h3>
-          <p className="text-sm text-muted-foreground mb-3">{type.tagline}</p>
+          <h3 className="font-bold text-base mb-0.5">{t(type.title)}</h3>
+          <p className="text-sm text-muted-foreground mb-3">{t(type.tagline)}</p>
 
           <div className="flex flex-wrap gap-1.5 mb-4">
             {type.facts.map((fact) => (
@@ -164,14 +167,14 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
                 key={fact}
                 className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground"
               >
-                {fact}
+                {t(fact)}
               </span>
             ))}
           </div>
 
           <Collapsible open={open} onOpenChange={setOpen} className="mb-4">
             <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-primary hover:underline">
-              Voir les conditions
+              {t("ux.partnershipData.seeConditions")}
               <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -179,7 +182,7 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
                 {type.conditions.map((condition) => (
                   <li key={condition} className="flex items-start gap-1.5 text-xs text-muted-foreground">
                     <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
-                    <span>{condition}</span>
+                    <span>{t(condition)}</span>
                   </li>
                 ))}
               </ul>
@@ -187,7 +190,7 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
           </Collapsible>
 
           <Button asChild className="w-full mt-auto">
-            <Link to={type.ctaTo}>{type.ctaLabel}</Link>
+            <Link to={type.ctaTo}>{t(type.ctaLabel)}</Link>
           </Button>
         </CardContent>
       </Card>
@@ -198,58 +201,58 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
 const steps = [
   {
     icon: FileText,
-    title: "Envoyez votre candidature",
-    description: "Choisissez votre type de partenariat et remplissez le formulaire en quelques minutes.",
+    title: "ux.partnershipData.step1Title",
+    description: "ux.partnershipData.step1Desc",
   },
   {
     icon: Search,
-    title: "Étude de votre dossier",
-    description: "Notre équipe étudie chaque candidature manuellement avant toute activation.",
+    title: "ux.partnershipData.step2Title",
+    description: "ux.partnershipData.step2Desc",
   },
   {
     icon: Rocket,
-    title: "Activation de votre espace",
-    description: "Une fois validé, vous gérez vos offres, tarifs et disponibilités en toute autonomie.",
+    title: "ux.partnershipData.step3Title",
+    description: "ux.partnershipData.step3Desc",
   },
 ];
 
 const Partnership = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative py-16 md:py-20 bg-primary overflow-hidden">
+      <section className="relative py-16 md:py-20 bg-brand overflow-hidden">
         <LazyImage
           src={bannerTours}
-          alt="Devenir partenaire Bossiz+"
+          alt={t("ux.partnership.bannerAlt")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-primary/70" />
+        <div className="absolute inset-0 bg-brand/70" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 text-white/90 text-sm font-medium mb-3">
             <Handshake className="w-4 h-4" />
-            Espace partenaires
+            {t("ux.partnership.eyebrow")}
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
-            Tous nos partenariats
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter drop-shadow-lg">
+            {t("ux.partnership.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium mb-8">
-            Hôtels, restaurants, activités, artisans ou location de voitures : choisissez votre catégorie,
-            découvrez les conditions et inscrivez-vous en quelques minutes.
+            {t("ux.partnershipData.heroDesc")}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-white/90 text-sm font-medium">
             <span className="flex items-center gap-2">
               <LayoutGrid className="w-4 h-4 text-gold" />
-              6 catégories de partenariat
+              {t("ux.partnership.categories")}
             </span>
             <span className="flex items-center gap-2">
               <Percent className="w-4 h-4 text-gold" />
-              Partage 90/10*
+              {t("ux.partnershipData.share")}
             </span>
             <span className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gold" />
-              Réponse sous quelques jours
+              {t("ux.partnership.response")}
             </span>
           </div>
         </div>
@@ -263,14 +266,12 @@ const Partnership = () => {
           ))}
         </div>
         <p className="text-sm text-muted-foreground text-center max-w-3xl mx-auto -mt-10 mb-16">
-          * Le partage 90/10 et le reversement sous 24 heures s'appliquent aux paiements encaissés via Jèko.
-          Les règlements effectués directement auprès du partenaire ne transitent pas par Bossiz et ne peuvent
-          pas être reversés automatiquement.
+          {t("ux.partnershipData.footnote")}
         </p>
 
         {/* How it works */}
         <div className="mb-16">
-          <h2 className="text-2xl font-black text-foreground mb-10 text-center">Comment ça marche</h2>
+          <h2 className="text-2xl font-extrabold text-foreground mb-10 text-center">{t("ux.partnership.how")}</h2>
           <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 max-w-4xl mx-auto">
             <div className="hidden md:block absolute top-7 left-[16.5%] right-[16.5%] h-px bg-border" />
             {steps.map((step, index) => {
@@ -283,8 +284,8 @@ const Partnership = () => {
                       {index + 1}
                     </span>
                   </div>
-                  <h3 className="font-bold mb-2">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground">{step.description}</p>
+                  <h3 className="font-bold mb-2">{t(step.title)}</h3>
+                  <p className="text-sm text-muted-foreground">{t(step.description)}</p>
                 </div>
               );
             })}
@@ -294,15 +295,15 @@ const Partnership = () => {
         {/* Bottom CTA */}
         <div className="text-center max-w-xl mx-auto">
           <p className="text-sm text-muted-foreground mb-2">
-            Vous proposez un autre type de service touristique ?
+            {t("ux.partnership.other")}
           </p>
           <Button asChild variant="outline" size="lg">
-            <Link to="/devenir-partenaire">Envoyer une candidature générale</Link>
+            <Link to="/devenir-partenaire">{t("ux.partnership.general")}</Link>
           </Button>
           <p className="text-sm text-muted-foreground mt-6">
-            Déjà partenaire ?{" "}
+            {t("ux.partnershipData.alreadyPartner")}{" "}
             <Link to="/agency" className="text-primary font-medium hover:underline">
-              Accédez à votre espace agence
+              {t("ux.partnership.agencySpace")}
             </Link>
           </p>
         </div>

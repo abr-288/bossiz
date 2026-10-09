@@ -30,6 +30,8 @@ import {
   Loader2,
   RefreshCw
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface SubscriptionRequest {
   id: string;
@@ -54,20 +56,21 @@ const planIcons: Record<string, React.ReactNode> = {
 };
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  contacted: "bg-blue-100 text-blue-800 border-blue-200",
-  approved: "bg-green-100 text-green-800 border-green-200",
-  rejected: "bg-red-100 text-red-800 border-red-200",
+  pending: "bg-warning text-warning-foreground border-warning-foreground/20",
+  contacted: "bg-info/10 text-info border-info/30",
+  approved: "bg-success/10 text-success border-success/30",
+  rejected: "bg-destructive/10 text-destructive border-destructive/30",
 };
 
 const statusLabels: Record<string, string> = {
-  pending: "En attente",
-  contacted: "Contacté",
-  approved: "Approuvé",
-  rejected: "Rejeté",
+  get pending() { return i18n.t("ux.bo.pending2"); },
+  get contacted() { return i18n.t("ux.bo.contacted2"); },
+  get approved() { return i18n.t("ux.bo.approved2"); },
+  get rejected() { return i18n.t("ux.bo.rejected2"); },
 };
 
 export default function AdminSubscriptions() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,7 +93,7 @@ export default function AdminSubscriptions() {
       setRequests(data || []);
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: t("ux.bo.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -114,7 +117,7 @@ export default function AdminSubscriptions() {
       if (error) throw error;
 
       toast({
-        title: "Statut mis à jour",
+        title: t("ux.bo.statusUpdated"),
         description: `La demande a été marquée comme "${statusLabels[status]}"`,
       });
 
@@ -122,7 +125,7 @@ export default function AdminSubscriptions() {
       setSelectedRequest(null);
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: t("ux.bo.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -156,12 +159,12 @@ export default function AdminSubscriptions() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Demandes d'abonnement</h1>
-            <p className="text-muted-foreground">Gérez les demandes de souscription Bossiz Conciergerie</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("ux.bo.subscriptionRequests2")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.manageBossizConciergeSubscriptionRequests")}</p>
           </div>
           <Button onClick={fetchRequests} variant="outline" className="gap-2">
             <RefreshCw className="w-4 h-4" />
-            Actualiser
+            {t("ux.bo.refresh")}
           </Button>
         </div>
 
@@ -171,7 +174,7 @@ export default function AdminSubscriptions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total</p>
+                  <p className="text-sm text-muted-foreground">{t("ux.bo.total")}</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
                 <MessageSquare className="w-8 h-8 text-muted-foreground" />
@@ -182,10 +185,10 @@ export default function AdminSubscriptions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">En attente</p>
-                  <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+                  <p className="text-sm text-muted-foreground">{t("ux.bo.pending2")}</p>
+                  <p className="text-2xl font-bold text-warning-foreground">{stats.pending}</p>
                 </div>
-                <Clock className="w-8 h-8 text-yellow-500" />
+                <Clock className="w-8 h-8 text-gold" />
               </div>
             </CardContent>
           </Card>
@@ -193,10 +196,10 @@ export default function AdminSubscriptions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Contactés</p>
-                  <p className="text-2xl font-bold text-blue-600">{stats.contacted}</p>
+                  <p className="text-sm text-muted-foreground">{t("ux.bo.contacted")}</p>
+                  <p className="text-2xl font-bold text-info">{stats.contacted}</p>
                 </div>
-                <Phone className="w-8 h-8 text-blue-500" />
+                <Phone className="w-8 h-8 text-info" />
               </div>
             </CardContent>
           </Card>
@@ -204,10 +207,10 @@ export default function AdminSubscriptions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Approuvés</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
+                  <p className="text-sm text-muted-foreground">{t("ux.bo.approved3")}</p>
+                  <p className="text-2xl font-bold text-success">{stats.approved}</p>
                 </div>
-                <CheckCircle2 className="w-8 h-8 text-green-500" />
+                <CheckCircle2 className="w-8 h-8 text-success" />
               </div>
             </CardContent>
           </Card>
@@ -220,7 +223,7 @@ export default function AdminSubscriptions() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
-                  placeholder="Rechercher par nom, email, téléphone..."
+                  placeholder={t("ux.bo.searchNameEmailPhone")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -228,22 +231,22 @@ export default function AdminSubscriptions() {
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full md:w-[180px]">
-                  <SelectValue placeholder="Statut" />
+                  <SelectValue placeholder={t("ux.bo.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  <SelectItem value="pending">En attente</SelectItem>
-                  <SelectItem value="contacted">Contacté</SelectItem>
-                  <SelectItem value="approved">Approuvé</SelectItem>
-                  <SelectItem value="rejected">Rejeté</SelectItem>
+                  <SelectItem value="all">{t("ux.bo.allStatuses")}</SelectItem>
+                  <SelectItem value="pending">{t("ux.bo.pending2")}</SelectItem>
+                  <SelectItem value="contacted">{t("ux.bo.contacted2")}</SelectItem>
+                  <SelectItem value="approved">{t("ux.bo.approved2")}</SelectItem>
+                  <SelectItem value="rejected">{t("ux.bo.rejected2")}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={planFilter} onValueChange={setPlanFilter}>
                 <SelectTrigger className="w-full md:w-[180px]">
-                  <SelectValue placeholder="Offre" />
+                  <SelectValue placeholder={t("ux.bo.offer")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les offres</SelectItem>
+                  <SelectItem value="all">{t("ux.bo.allOffers")}</SelectItem>
                   <SelectItem value="corporate">Corporate</SelectItem>
                   <SelectItem value="premium">Premium VIP</SelectItem>
                   <SelectItem value="visa">Visa+</SelectItem>
@@ -266,19 +269,19 @@ export default function AdminSubscriptions() {
               </div>
             ) : filteredRequests.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
-                Aucune demande trouvée
+                {t("ux.bo.noRequestFound")}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Offre</TableHead>
-                      <TableHead>Nom</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Statut</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("ux.bo.date")}</TableHead>
+                      <TableHead>{t("ux.bo.offer")}</TableHead>
+                      <TableHead>{t("ux.bo.name")}</TableHead>
+                      <TableHead>{t("ux.bo.contact")}</TableHead>
+                      <TableHead>{t("ux.bo.status")}</TableHead>
+                      <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -328,7 +331,7 @@ export default function AdminSubscriptions() {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-lg">
                               <DialogHeader>
-                                <DialogTitle>Détails de la demande</DialogTitle>
+                                <DialogTitle>{t("ux.bo.requestDetails")}</DialogTitle>
                                 <DialogDescription>
                                   Demande pour {request.plan_name}
                                 </DialogDescription>
@@ -336,11 +339,11 @@ export default function AdminSubscriptions() {
                               <div className="space-y-4 mt-4">
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
-                                    <Label className="text-muted-foreground">Nom</Label>
+                                    <Label className="text-muted-foreground">{t("ux.bo.name")}</Label>
                                     <p className="font-medium">{request.name}</p>
                                   </div>
                                   <div>
-                                    <Label className="text-muted-foreground">Entreprise</Label>
+                                    <Label className="text-muted-foreground">{t("ux.bo.company")}</Label>
                                     <p className="font-medium">{request.company || "-"}</p>
                                   </div>
                                 </div>
@@ -366,17 +369,17 @@ export default function AdminSubscriptions() {
                                 </div>
                                 {request.message && (
                                   <div>
-                                    <Label className="text-muted-foreground">Message</Label>
+                                    <Label className="text-muted-foreground">{t("ux.bo.message")}</Label>
                                     <p className="mt-1 p-3 bg-muted rounded-lg text-sm">{request.message}</p>
                                   </div>
                                 )}
                                 <div>
-                                  <Label htmlFor="notes">Notes internes</Label>
+                                  <Label htmlFor="notes">{t("ux.bo.internalNotes")}</Label>
                                   <Textarea
                                     id="notes"
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
-                                    placeholder="Ajouter des notes..."
+                                    placeholder={t("ux.bo.addNotes")}
                                     className="mt-1"
                                   />
                                 </div>
@@ -389,16 +392,16 @@ export default function AdminSubscriptions() {
                                     disabled={isUpdating}
                                   >
                                     <Phone className="w-4 h-4" />
-                                    Marquer contacté
+                                    {t("ux.bo.markAsContacted")}
                                   </Button>
                                   <Button
                                     size="sm"
-                                    className="gap-2 bg-green-600 hover:bg-green-700"
+                                    className="gap-2 bg-success hover:bg-success/90"
                                     onClick={() => updateStatus(request.id, "approved")}
                                     disabled={isUpdating}
                                   >
                                     <CheckCircle2 className="w-4 h-4" />
-                                    Approuver
+                                    {t("ux.bo.approve")}
                                   </Button>
                                   <Button
                                     size="sm"
@@ -408,7 +411,7 @@ export default function AdminSubscriptions() {
                                     disabled={isUpdating}
                                   >
                                     <XCircle className="w-4 h-4" />
-                                    Rejeter
+                                    {t("ux.bo.reject")}
                                   </Button>
                                 </div>
                               </div>

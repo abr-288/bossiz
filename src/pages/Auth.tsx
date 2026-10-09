@@ -21,6 +21,7 @@ import {
   validateForm,
   getPasswordStrength,
 } from "@/lib/authValidation";
+import { passwordErrorMessage } from "@/lib/passwordErrors";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -187,7 +188,7 @@ const Auth = () => {
     if (error) {
       toast({
         title: t('common.error'),
-        description: error.message,
+        description: passwordErrorMessage(t, error),
         variant: "destructive",
       });
     } else {
@@ -201,7 +202,7 @@ const Auth = () => {
   };
 
   const passwordStrength = getPasswordStrength(signUpForm.password);
-  const strengthColors = ["bg-destructive", "bg-orange-500", "bg-yellow-500", "bg-lime-500", "bg-green-500"];
+  const strengthColors = ["bg-destructive", "bg-gold", "bg-gold", "bg-lime-500", "bg-success"];
   const strengthLabels = [
     t('auth.passwordStrength.veryWeak'),
     t('auth.passwordStrength.weak'),
@@ -230,16 +231,16 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
       <main className="flex-1 flex items-center justify-center p-4 md:p-8 pt-24 lg:pt-32 relative overflow-x-hidden">
       <div className="w-full max-w-6xl flex flex-col lg:flex-row">
         {/* Left side - Form */}
         <div className="flex-1 flex flex-col items-center justify-center">
-          <Card className="bg-white border border-gray-200 shadow-sm rounded-3xl w-full max-w-lg">
+          <Card className="bg-card border border-border shadow-sm rounded-3xl w-full max-w-lg">
             <CardHeader className="text-center pb-6 pt-4 px-6">
-              <CardDescription className="text-gray-600">
+              <CardDescription className="text-muted-foreground">
                 {t('auth.yourAgency')}
               </CardDescription>
             </CardHeader>
@@ -250,32 +251,34 @@ const Auth = () => {
                 <div key="update-password">
                   <form onSubmit={handleUpdatePassword} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nouveau mot de passe
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        {t("ux.auth.newPassword")}
                       </label>
                       <Input
                         type="password"
+                        autoComplete="new-password"
                         placeholder="••••••••"
                         value={updateForm.password}
                         onChange={(e) => setUpdateForm({ ...updateForm, password: e.target.value })}
-                        className="h-11 border-gray-300 rounded-md"
+                        className="h-11 border-input rounded-md"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Confirmer le mot de passe
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        {t("ux.auth.confirmPassword")}
                       </label>
                       <Input
                         type="password"
+                        autoComplete="new-password"
                         placeholder="••••••••"
                         value={updateForm.confirmPassword}
                         onChange={(e) => setUpdateForm({ ...updateForm, confirmPassword: e.target.value })}
-                        className="h-11 border-gray-300 rounded-md"
+                        className="h-11 border-input rounded-md"
                       />
                     </div>
                     <Button 
                       type="submit" 
-                      className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-md transition-colors" 
+                      className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-md transition-colors" 
                       disabled={loading}
                     >
                       {loading ? t('common.loading') : t('auth.updateBtn')}
@@ -285,18 +288,18 @@ const Auth = () => {
               ) : (
                 <div key="main-form">
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-gray-100 p-1 rounded-xl">
+                    <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-muted p-1 rounded-xl">
                       <TabsTrigger 
                         value="signin"
-                        className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg text-sm font-medium text-gray-700 data-[state=active]:text-gray-900"
+                        className="data-[state=active]:bg-card data-[state=active]:shadow-sm rounded-lg text-sm font-medium text-foreground data-[state=active]:text-foreground"
                       >
-                        Connexion
+                        {t("ux.auth.signIn")}
                       </TabsTrigger>
                       <TabsTrigger 
                         value="signup"
-                        className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg text-sm font-medium text-gray-700 data-[state=active]:text-gray-900"
+                        className="data-[state=active]:bg-card data-[state=active]:shadow-sm rounded-lg text-sm font-medium text-foreground data-[state=active]:text-foreground"
                       >
-                        Inscription
+                        {t("ux.auth.signUp")}
                       </TabsTrigger>
                     </TabsList>
 
@@ -307,6 +310,7 @@ const Auth = () => {
                             label={t('auth.email')}
                             name="signin-email"
                             type="email"
+                            autoComplete="email"
                             placeholder={t('auth.emailPlaceholder')}
                             icon={<Mail className="w-4 h-4" />}
                             error={signInErrors.email}
@@ -318,6 +322,7 @@ const Auth = () => {
                             label={t('auth.password')}
                             name="signin-password"
                             type="password"
+                            autoComplete="current-password"
                             placeholder="••••••••"
                             icon={<Lock className="w-4 h-4" />}
                             error={signInErrors.password}
@@ -334,20 +339,20 @@ const Auth = () => {
                                 onCheckedChange={(checked) => setRememberMe(checked === true)}
                                 className="transition-all data-[state=checked]:bg-primary"
                               />
-                              <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">{t('auth.rememberMe')}</span>
+                              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{t('auth.rememberMe')}</span>
                             </label>
                             <button
                               type="button"
                               onClick={() => navigate("/forgot-password")}
                               className="text-sm font-medium text-primary hover:text-primary-dark transition-colors"
                             >
-                              Mot de passe oublié ?
+                              {t("ux.auth.forgot")}
                             </button>
                           </div>
                           
                           <Button 
                             type="submit" 
-                            className="w-full h-12 gradient-primary hover:shadow-primary hover:scale-[1.02] text-white font-medium rounded-xl transition-all duration-300 shadow-lg mt-2" 
+                            className="w-full h-12 gradient-primary hover:shadow-primary hover:scale-[1.02] text-white font-medium rounded-xl transition-all duration-slow ease-standard shadow-lg mt-2" 
                             disabled={loading}
                           >
                             {loading ? t('common.loading') : t('auth.loginNow')}
@@ -355,17 +360,17 @@ const Auth = () => {
                           
                           <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
-                              <div className="w-full border-t border-gray-300"></div>
+                              <div className="w-full border-t border-border"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                              <span className="px-4 bg-white text-gray-500">ou continuer avec</span>
+                              <span className="px-4 bg-card text-muted-foreground">{t("ux.auth.orContinue")}</span>
                             </div>
                           </div>
                           
                           <Button
                             type="button"
                             variant="outline"
-                            className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors rounded-xl flex items-center justify-center gap-2"
+                            className="w-full h-11 border-input hover:border-foreground/40 hover:bg-muted transition-colors rounded-xl flex items-center justify-center gap-2"
                             disabled={loading}
                             onClick={handleGoogleSignIn}
                           >
@@ -397,6 +402,7 @@ const Auth = () => {
                             label={t('auth.email')}
                             name="signup-email"
                             type="email"
+                            autoComplete="email"
                             placeholder={t('auth.emailPlaceholder')}
                             icon={<Mail className="w-4 h-4" />}
                             error={signUpErrors.email}
@@ -408,6 +414,7 @@ const Auth = () => {
                             label={t('auth.password')}
                             name="signup-password"
                             type="password"
+                            autoComplete="new-password"
                             placeholder="••••••••"
                             icon={<Lock className="w-4 h-4" />}
                             error={signUpErrors.password}
@@ -425,8 +432,8 @@ const Auth = () => {
                                 className="pt-1 pb-2 space-y-2 overflow-hidden"
                               >
                                 <div className="flex justify-between items-center text-xs">
-                                  <span className="text-gray-500">{t('auth.passwordStrengthLabel')}</span>
-                                  <span className={`font-medium ${passwordStrength > 2 ? 'text-green-600' : 'text-orange-500'}`}>
+                                  <span className="text-muted-foreground">{t('auth.passwordStrengthLabel')}</span>
+                                  <span className={`font-medium ${passwordStrength > 2 ? 'text-success' : 'text-warning-foreground'}`}>
                                     {strengthLabels[passwordStrength]}
                                   </span>
                                 </div>
@@ -434,8 +441,8 @@ const Auth = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <div 
                                       key={i} 
-                                      className={`flex-1 rounded-full transition-all duration-500 ${
-                                        i < passwordStrength ? strengthColors[passwordStrength - 1] : 'bg-gray-200'
+                                      className={`flex-1 rounded-full transition-all duration-slow ease-standard ${
+                                        i < passwordStrength ? strengthColors[passwordStrength - 1] : 'bg-muted'
                                       }`}
                                     />
                                   ))}
@@ -451,14 +458,14 @@ const Auth = () => {
                               onCheckedChange={(checked) => setAcceptTerms(checked === true)}
                               className="mt-1 data-[state=checked]:bg-primary"
                             />
-                            <label htmlFor="accept-terms" className="text-sm text-gray-600 leading-relaxed cursor-pointer">
-                              J'accepte les{" "}
+                            <label htmlFor="accept-terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                              {t("ux.auth.iAccept")}{" "}
                               <a href="/terms" target="_blank" className="text-primary font-medium hover:underline">
-                                Conditions Générales
+                                {t("ux.auth.terms")}
                               </a>{" "}
-                              et la{" "}
+                              {t("ux.auth.andThe")}{" "}
                               <a href="/privacy" target="_blank" className="text-primary font-medium hover:underline">
-                                Politique de Confidentialité
+                                {t("ux.auth.privacy")}
                               </a>
                             </label>
                           </div>
@@ -468,7 +475,7 @@ const Auth = () => {
                           
                           <Button 
                             type="submit" 
-                            className="w-full h-12 gradient-primary hover:shadow-primary hover:scale-[1.02] text-white font-medium rounded-xl transition-all duration-300 shadow-lg mt-2" 
+                            className="w-full h-12 gradient-primary hover:shadow-primary hover:scale-[1.02] text-white font-medium rounded-xl transition-all duration-slow ease-standard shadow-lg mt-2" 
                             disabled={loading}
                           >
                             {loading ? t('common.loading') : t('auth.createAccount')}
@@ -476,17 +483,17 @@ const Auth = () => {
                           
                           <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
-                              <div className="w-full border-t border-gray-300"></div>
+                              <div className="w-full border-t border-border"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                              <span className="px-4 bg-white text-gray-500">ou s'inscrire avec</span>
+                              <span className="px-4 bg-card text-muted-foreground">{t("ux.auth.orSignUp")}</span>
                             </div>
                           </div>
                           
                           <Button
                             type="button"
                             variant="outline"
-                            className="w-full h-11 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors rounded-xl flex items-center justify-center gap-2"
+                            className="w-full h-11 border-input hover:border-foreground/40 hover:bg-muted transition-colors rounded-xl flex items-center justify-center gap-2"
                             disabled={loading}
                             onClick={handleGoogleSignIn}
                           >
@@ -499,11 +506,11 @@ const Auth = () => {
                             <span>Google</span>
                           </Button>
 
-                          <p className="text-xs text-center text-gray-500 leading-relaxed px-2">
-                            En vous inscrivant, vous acceptez nos{" "}
-                            <a href="/terms" className="text-gray-700 hover:text-gray-900 font-medium underline-offset-2 hover:underline">conditions d'utilisation</a>
-                            {" "}et notre{" "}
-                            <a href="/privacy" className="text-gray-700 hover:text-gray-900 font-medium underline-offset-2 hover:underline">politique de confidentialité</a>
+                          <p className="text-xs text-center text-muted-foreground leading-relaxed px-2">
+                            {t("ux.auth.byRegistering")}{" "}
+                            <a href="/terms" className="text-foreground hover:text-foreground font-medium underline-offset-2 hover:underline">{t("ux.auth.termsOfUse")}</a>
+                            {" "}{t("ux.auth.andOur")}{" "}
+                            <a href="/privacy" className="text-foreground hover:text-foreground font-medium underline-offset-2 hover:underline">{t("ux.auth.privacyLower")}</a>
                           </p>
                         </form>
                       </TabsContent>
@@ -520,7 +527,7 @@ const Auth = () => {
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="gap-2 text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 rounded-xl transition-all"
+            className="gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>{t('auth.backToHome')}</span>
@@ -545,23 +552,23 @@ const Auth = () => {
               </h2>
               <p className="text-lg text-center text-white/90 max-w-md">
                 {activeTab === "signin" 
-                  ? "Connectez-vous pour accéder à des milliers de destinations et réserver vos prochains voyages."
-                  : "Créez votre compte et découvrez un monde de possibilités de voyage à portée de clic."
+                  ? t("ux.auth.heroSignIn")
+                  : t("ux.auth.heroSignUp")
                 }
               </p>
               
               <div className="mt-8 grid grid-cols-3 gap-6 text-center">
                 <div className="glass p-4 rounded-xl slide-up-fade" style={{ animationDelay: '0.1s' }}>
                   <div className="text-2xl font-bold">Multi</div>
-                  <div className="text-sm text-white/80">destinations</div>
+                  <div className="text-sm text-white/80">{t("ux.auth.statDestinations")}</div>
                 </div>
                 <div className="glass p-4 rounded-xl slide-up-fade" style={{ animationDelay: '0.2s' }}>
                   <div className="text-2xl font-bold">100%</div>
-                  <div className="text-sm text-white/80">sécurisé</div>
+                  <div className="text-sm text-white/80">{t("ux.auth.statSecure")}</div>
                 </div>
                 <div className="glass p-4 rounded-xl slide-up-fade" style={{ animationDelay: '0.3s' }}>
                   <div className="text-2xl font-bold">24/7</div>
-                  <div className="text-sm text-white/80">support</div>
+                  <div className="text-sm text-white/80">{t("ux.auth.statSupport")}</div>
                 </div>
               </div>
             </div>

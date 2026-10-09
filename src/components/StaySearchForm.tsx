@@ -133,7 +133,7 @@ export const StaySearchForm = () => {
             <Alert variant="destructive" className="py-2">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-xs font-medium">
-                Veuillez corriger les erreurs dans le formulaire
+                {t("ux.staySearch.fixErrors")}
               </AlertDescription>
             </Alert>
           </motion.div>
@@ -155,7 +155,7 @@ export const StaySearchForm = () => {
             className={cn("w-full", errors.destination && touched.destination ? "border-destructive" : "")}
           />
           {errors.destination && touched.destination && (
-            <p className="text-[10px] text-destructive mt-1 font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-1">
+            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-1">
               {errors.destination}
             </p>
           )}
@@ -173,7 +173,7 @@ export const StaySearchForm = () => {
             className="w-full"
           />
           {errors.checkIn && touched.checkIn && (
-            <p className="text-[10px] text-destructive mt-1 font-bold uppercase tracking-wider">
+            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider">
               {errors.checkIn}
             </p>
           )}
@@ -191,7 +191,7 @@ export const StaySearchForm = () => {
             className="w-full"
           />
           {errors.checkOut && touched.checkOut && (
-            <p className="text-[10px] text-destructive mt-1 font-bold uppercase tracking-wider">
+            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider">
               {errors.checkOut}
             </p>
           )}
@@ -218,7 +218,7 @@ export const StaySearchForm = () => {
                 <SelectItem value="apartment">Appartement</SelectItem>
                 <SelectItem value="house">Maison</SelectItem>
                 <SelectItem value="villa">Villa</SelectItem>
-                <SelectItem value="guesthouse">Maison d'hôtes</SelectItem>
+                <SelectItem value="guesthouse">{t("ux.staySearch.guesthouse")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -255,7 +255,7 @@ export const StaySearchForm = () => {
           <UnifiedSubmitButton 
             fullWidth
             disabled={hasErrors}
-            className={cn("h-12 shadow-xl shadow-primary/20 font-black", hasErrors && "opacity-50 cursor-not-allowed")}
+            className={cn("h-12 shadow-xl shadow-primary/20 font-extrabold", hasErrors && "opacity-50 cursor-not-allowed")}
           >
             {t("search.search")}
           </UnifiedSubmitButton>

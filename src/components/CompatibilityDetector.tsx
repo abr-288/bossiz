@@ -109,10 +109,10 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
     <>
       {/* Compatibility Warning Banner */}
       {showWarning && compatibilityIssues.length > 0 && (
-        <Alert className="mb-4 border-orange-200 bg-orange-50">
-          <AlertTriangle className="h-4 w-4 text-orange-600" />
+        <Alert className="mb-4 border-warning-foreground/20 bg-warning">
+          <AlertTriangle className="h-4 w-4 text-warning-foreground" />
           <div className="flex-1">
-            <AlertDescription className="text-orange-800">
+            <AlertDescription className="text-warning-foreground">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-semibold mb-1">Attention : Problèmes de compatibilité détectés</p>
@@ -155,14 +155,14 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
       {/* Critical Error Overlay */}
       {!isCompatible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4 text-center">
-            <AlertTriangle className="h-12 w-12 text-orange-600 mx-auto mb-4" />
+          <div className="bg-card rounded-lg p-6 max-w-md mx-4 text-center">
+            <AlertTriangle className="h-12 w-12 text-warning-foreground mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Appareil non compatible</h2>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               Votre appareil ou navigateur n'est pas compatible avec Bossiz+.
               Vous allez être redirigé vers la page de compatibilité.
             </p>
-            <div className="space-y-2 text-sm text-gray-500">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p>Redirection automatique dans 3 secondes...</p>
               <Button 
                 size="sm" 

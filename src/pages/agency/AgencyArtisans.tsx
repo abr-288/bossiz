@@ -22,6 +22,7 @@ import { LocationPicker, type PartnerLocation } from "@/components/agency/Locati
 import { Plus, Pencil, Trash2, Hammer, Search, X, Check, ShoppingBag } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface Product {
   name: string;
@@ -87,6 +88,7 @@ const emptyForm = {
 };
 
 export default function AgencyArtisans() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [artisans, setArtisans] = useState<Artisan[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
@@ -152,10 +154,10 @@ export default function AgencyArtisans() {
   const updateOrderStatus = async (id: string, status: "confirmed" | "cancelled") => {
     const { error } = await supabase.from("artisan_orders").update({ status }).eq("id", id);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Succès", description: status === "confirmed" ? "Commande confirmée" : "Commande refusée" });
+    toast({ title: t("ux.bo.success"), description: status === "confirmed" ? t("ux.bo.orderConfirmed") : t("ux.bo.orderDeclined") });
     fetchAgencyAndArtisans();
   };
 
@@ -191,18 +193,18 @@ export default function AgencyArtisans() {
       if (editing) {
         const { error } = await supabase.from("artisans").update(artisanData).eq("id", editing.id);
         if (error) throw error;
-        toast({ title: "Succès", description: "Artisan mis à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.artisanUpdated") });
       } else {
         const { error } = await supabase.from("artisans").insert(artisanData);
         if (error) throw error;
-        toast({ title: "Succès", description: "Artisan ajouté" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.artisanAdded") });
       }
 
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndArtisans();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -227,12 +229,12 @@ export default function AgencyArtisans() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer cet artisan ?")) return;
+    if (!confirm(t("ux.bo.deleteArtisan"))) return;
     const { error } = await supabase.from("artisans").delete().eq("id", id);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Succès", description: "Artisan supprimé" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.artisanDeleted") });
       fetchAgencyAndArtisans();
     }
   };
@@ -253,25 +255,25 @@ export default function AgencyArtisans() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Mes Artisans</h1>
-            <p className="text-muted-foreground">Mettez en valeur des artisans locaux et leurs créations</p>
+            <h1 className="text-2xl font-bold">{t("ux.bo.myArtisans")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.showcaseLocalArtisansTheirCreations")}</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nouvel Artisan</Button>
+              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newArtisan")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>{editing ? "Modifier l'artisan" : "Nouvel artisan"}</DialogTitle>
+                <DialogTitle>{editing ? t("ux.bo.editArtisan") : "Nouvel artisan"}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Nom *</Label>
+                    <Label>{t("ux.bo.name2")}</Label>
                     <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
                   </div>
                   <div className="space-y-2">
-                    <Label>Métier *</Label>
+                    <Label>{t("ux.bo.craft")}</Label>
                     <Select value={formData.craft_type} onValueChange={(v) => setFormData({ ...formData, craft_type: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -283,38 +285,38 @@ export default function AgencyArtisans() {
                 <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Ville / Quartier *</Label>
+                    <Label>{t("ux.bo.cityDistrict")}</Label>
                     <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
                   </div>
                   <div className="space-y-2">
-                    <Label>Adresse</Label>
+                    <Label>{t("ux.bo.address")}</Label>
                     <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Téléphone</Label>
+                    <Label>{t("ux.bo.phone")}</Label>
                     <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                   </div>
                   <div className="space-y-2">
                     <Label>WhatsApp</Label>
                     <Input value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="+225 XX XX XX XX XX" />
-                    <p className="text-xs text-muted-foreground">Indiquez bien l'indicatif pays (+225…), sinon le bouton WhatsApp du client ne fonctionnera pas.</p>
+                    <p className="text-xs text-muted-foreground">{t("ux.bo.includeCountryCode225Otherwise")}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Présentation</Label>
+                  <Label>{t("ux.bo.introduction")}</Label>
                   <Textarea
-                    placeholder="Le parcours de l'artisan, son savoir-faire..."
+                    placeholder={t("ux.bo.artisanSBackgroundTheirKnow")}
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     rows={3}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Photo de couverture</Label>
+                  <Label>{t("ux.bo.coverPhoto")}</Label>
                   <ImageUpload
-                    label="Photo de l'artisan / atelier"
+                    label={t("ux.bo.photoArtisanWorkshop")}
                     folder="agency-artisans"
                     value={formData.image_url}
                     onChange={(url) => setFormData({ ...formData, image_url: url })}
@@ -323,17 +325,18 @@ export default function AgencyArtisans() {
 
                 <div className="space-y-3 border-t pt-4">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">Créations à mettre en avant</p>
+                    <p className="text-sm font-medium">{t("ux.bo.featuredCreations")}</p>
                     <Button type="button" size="sm" variant="outline" onClick={addProduct}>
                       <Plus className="h-3.5 w-3.5 mr-1" /> Ajouter
                     </Button>
                   </div>
                   {formData.products.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Aucune création ajoutée pour l'instant.</p>
+                    <p className="text-sm text-muted-foreground">{t("ux.bo.noCreationAddedYet")}</p>
                   )}
                   {formData.products.map((product, index) => (
                     <div key={index} className="border rounded-lg p-3 space-y-3 relative">
                       <Button
+                        aria-label={t("ux.bo.removeProduct")}
                         type="button"
                         size="icon"
                         variant="ghost"
@@ -344,11 +347,11 @@ export default function AgencyArtisans() {
                       </Button>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <Label className="text-xs">Nom de la création</Label>
+                          <Label className="text-xs">{t("ux.bo.creationName")}</Label>
                           <Input value={product.name} onChange={(e) => updateProduct(index, "name", e.target.value)} />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-xs">Prix</Label>
+                          <Label className="text-xs">{t("ux.bo.price")}</Label>
                           <div className="flex gap-2">
                             <Input type="number" value={product.price} onChange={(e) => updateProduct(index, "price", e.target.value)} />
                             <span className="flex items-center rounded-md border px-3 text-sm text-muted-foreground">XOF</span>
@@ -356,11 +359,11 @@ export default function AgencyArtisans() {
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Description</Label>
+                        <Label className="text-xs">{t("ux.bo.description")}</Label>
                         <Textarea rows={2} value={product.description} onChange={(e) => updateProduct(index, "description", e.target.value)} />
                       </div>
                       <ImageUpload
-                        label="Photo de la création"
+                        label={t("ux.bo.photoCreation")}
                         folder="agency-artisans"
                         value={product.image_url}
                         onChange={(url) => updateProduct(index, "image_url", url)}
@@ -371,12 +374,12 @@ export default function AgencyArtisans() {
 
                 <div className="flex items-center gap-2">
                   <Switch checked={formData.available} onCheckedChange={(c) => setFormData({ ...formData, available: c })} />
-                  <Label>Visible sur le site</Label>
+                  <Label>{t("ux.bo.visibleSite")}</Label>
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
-                  <Button type="submit">{editing ? "Mettre à jour" : "Créer"}</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                  <Button type="submit">{editing ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -385,29 +388,29 @@ export default function AgencyArtisans() {
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Rechercher..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          <Input placeholder={t("ux.bo.search")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
         </div>
 
         <div className="border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Artisan</TableHead>
-                <TableHead>Métier</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Créations</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("ux.bo.artisan")}</TableHead>
+                <TableHead>{t("ux.bo.craft2")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.creations")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8">Chargement...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     <Hammer className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    Aucun artisan
+                    {t("ux.bo.noArtisan")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -423,10 +426,10 @@ export default function AgencyArtisans() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(a)}>
+                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(a)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(a.id)}>
+                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(a.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>
@@ -438,31 +441,31 @@ export default function AgencyArtisans() {
         </div>
 
         <div>
-          <h2 className="text-xl font-bold mb-1">Demandes de commande</h2>
+          <h2 className="text-xl font-bold mb-1">{t("ux.bo.orderRequests")}</h2>
           <p className="text-muted-foreground mb-4">
-            Confirmez une demande pour l'accepter (une commission est alors due) ou refusez-la si vous ne pouvez pas l'honorer.
+            {t("ux.bo.confirmRequestAcceptCommissionThen")}
           </p>
           <div className="border rounded-lg">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Artisan</TableHead>
-                  <TableHead>Création</TableHead>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Montant</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Reçue le</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("ux.bo.artisan")}</TableHead>
+                  <TableHead>{t("ux.bo.creation")}</TableHead>
+                  <TableHead>{t("ux.bo.customer")}</TableHead>
+                  <TableHead>{t("ux.bo.amount")}</TableHead>
+                  <TableHead>{t("ux.bo.status")}</TableHead>
+                  <TableHead>{t("ux.bo.received")}</TableHead>
+                  <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {ordersLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8">Chargement...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
                 ) : orders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       <ShoppingBag className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                      Aucune demande pour l'instant
+                      {t("ux.bo.noRequestsYet")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -481,7 +484,7 @@ export default function AgencyArtisans() {
                         <Badge
                           variant={o.status === "confirmed" ? "default" : o.status === "cancelled" ? "destructive" : "secondary"}
                         >
-                          {o.status === "pending" ? "En attente" : o.status === "confirmed" ? "Confirmée" : o.status === "cancelled" ? "Refusée" : o.status}
+                          {o.status === "pending" ? t("ux.bo.pending2") : o.status === "confirmed" ? "Confirmée" : o.status === "cancelled" ? "Refusée" : o.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
@@ -492,7 +495,7 @@ export default function AgencyArtisans() {
                           <div className="flex justify-end gap-2">
                             <Button size="sm" variant="outline" onClick={() => updateOrderStatus(o.id, "confirmed")}>
                               <Check className="h-4 w-4 mr-1" />
-                              Confirmer
+                              {t("ux.bo.confirm")}
                             </Button>
                             <Button size="sm" variant="ghost" onClick={() => updateOrderStatus(o.id, "cancelled")}>
                               <X className="h-4 w-4 text-destructive" />

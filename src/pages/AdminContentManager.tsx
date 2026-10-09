@@ -62,7 +62,7 @@ const AdminContentManager = () => {
     { value: 'primary', label: 'Primaire', class: 'bg-primary' },
     { value: 'secondary', label: 'Secondaire', class: 'bg-secondary' },
     { value: 'white', label: 'Blanc', class: 'bg-white border' },
-    { value: 'gray', label: 'Gris', class: 'bg-gray-500' },
+    { value: 'gray', label: 'Gris', class: 'bg-muted-foreground' },
   ];
 
   const iconOptions = [
@@ -159,19 +159,19 @@ const AdminContentManager = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white pt-16">
+    <div className="min-h-screen bg-background pt-16">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-black mb-2">Gestion du Contenu</h1>
-            <p className="text-gray-700">Modifiez le contenu, les couleurs et les textes de votre site</p>
+            <p className="text-foreground">Modifiez le contenu, les couleurs et les textes de votre site</p>
           </div>
           <Button 
             onClick={() => navigate('/admin')}
@@ -194,7 +194,7 @@ const AdminContentManager = () => {
           <TabsContent value="sections">
             <div className="space-y-4">
               {pageSections.map((section) => (
-                <Card key={section.id} className="border-2 border-gray-300">
+                <Card key={section.id} className="border-2 border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-bold text-black">
@@ -305,7 +305,7 @@ const AdminContentManager = () => {
           <TabsContent value="plans">
             <div className="space-y-4">
               {customizablePlans.map((plan) => (
-                <Card key={plan.id} className="border-2 border-gray-300">
+                <Card key={plan.id} className="border-2 border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-bold text-black">
@@ -424,7 +424,7 @@ const AdminContentManager = () => {
           <TabsContent value="testimonials">
             <div className="space-y-4">
               {testimonials.map((testimonial) => (
-                <Card key={testimonial.id} className="border-2 border-gray-300">
+                <Card key={testimonial.id} className="border-2 border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-bold text-black">
@@ -530,7 +530,7 @@ const AdminContentManager = () => {
           <TabsContent value="values">
             <div className="space-y-4">
               {valuePropositions.map((value) => (
-                <Card key={value.id} className="border-2 border-gray-300">
+                <Card key={value.id} className="border-2 border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-bold text-black">
@@ -639,13 +639,13 @@ const AdminContentManager = () => {
           <TabsContent value="settings">
             <div className="space-y-4">
               {globalSettings.map((setting) => (
-                <Card key={setting.id} className="border-2 border-gray-300">
+                <Card key={setting.id} className="border-2 border-border">
                   <CardHeader>
                     <CardTitle className="text-lg font-bold text-black">
                       {setting.setting_key}
                     </CardTitle>
                     {setting.description && (
-                      <p className="text-sm text-gray-600">{setting.description}</p>
+                      <p className="text-sm text-muted-foreground">{setting.description}</p>
                     )}
                   </CardHeader>
                   <CardContent>

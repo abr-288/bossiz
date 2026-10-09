@@ -85,11 +85,11 @@ const AdminUsers = () => {
   const getRoleBadge = (role: string | null) => {
     switch (role) {
       case 'admin':
-        return <Badge className="bg-red-500">Admin</Badge>;
+        return <Badge className="bg-destructive">Admin</Badge>;
       case 'agent':
-        return <Badge className="bg-blue-500">Agent</Badge>;
+        return <Badge className="bg-info">Agent</Badge>;
       case 'user':
-        return <Badge className="bg-green-500">Utilisateur</Badge>;
+        return <Badge className="bg-success text-success-foreground">Utilisateur</Badge>;
       default:
         return <Badge variant="outline">Non défini</Badge>;
     }
@@ -216,18 +216,18 @@ const AdminUsers = () => {
       </Card>
 
       {/* Debug Information */}
-      <Card className="mt-6 border-yellow-200 bg-yellow-50">
+      <Card className="mt-6 border-warning-foreground/20 bg-warning">
         <CardHeader>
-          <CardTitle className="text-yellow-800">Informations de Débogage</CardTitle>
+          <CardTitle className="text-warning-foreground">Informations de Débogage</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-yellow-800">
+          <div className="text-sm text-warning-foreground">
             <p><strong>Total d'utilisateurs:</strong> {users.length}</p>
             <p><strong>Utilisateurs filtrés:</strong> {filteredUsers.length}</p>
             <p><strong>Terme de recherche:</strong> "{searchTerm}"</p>
             <details className="mt-2">
               <summary className="cursor-pointer font-semibold">Voir les données brutes</summary>
-              <pre className="mt-2 p-2 bg-yellow-100 rounded text-xs overflow-x-auto">
+              <pre className="mt-2 p-2 bg-warning rounded text-xs overflow-x-auto">
                 {JSON.stringify(filteredUsers, null, 2)}
               </pre>
             </details>

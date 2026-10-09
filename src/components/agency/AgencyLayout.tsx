@@ -9,12 +9,14 @@ import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { getProfilePhotoUrl, getUserPhotoFromMetadata } from "@/lib/profilePhoto";
+import { useTranslation } from "react-i18next";
 
 interface AgencyLayoutProps {
   children: ReactNode;
 }
 
 export function AgencyLayout({ children }: AgencyLayoutProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [agencyName, setAgencyName] = useState<string>("");
   const [profilePhoto, setProfilePhoto] = useState<string | undefined>();
@@ -52,8 +54,8 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
 
       if (!roles) {
         toast({
-          title: "Accès refusé",
-          description: "Vous n'êtes pas associé à une agence",
+          title: t("ux.bo.accessDenied"),
+          description: t("ux.bo.youNotLinkedAgency"),
           variant: "destructive",
         });
         navigate("/");
@@ -80,8 +82,8 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
 
       if (!agency || agencyError || !agency.is_active) {
         toast({
-          title: "Accès refusé",
-          description: "Votre agence n'est pas active",
+          title: t("ux.bo.accessDenied"),
+          description: t("ux.bo.agencyNotActive"),
           variant: "destructive",
         });
         navigate("/");
@@ -111,7 +113,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 animate-spin text-primary" />
-          <p className="text-muted-foreground">Vérification des accès...</p>
+          <p className="text-muted-foreground">{t("ux.bo.checkingAccess")}</p>
         </div>
       </div>
     );
@@ -120,7 +122,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <div className="fixed top-0 left-0 right-0 h-1 z-[60]" style={{ backgroundColor: "#0f766e" }} />
+        <div className="fixed top-0 left-0 right-0 h-1 z-banner bg-brand" />
         <AgencySidebar
           enabledFeatures={enabledFeatures}
           profileName={profileName}
@@ -131,7 +133,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
             <div className="flex items-center gap-2 md:gap-4 min-w-0">
               <SidebarTrigger className="touch-target flex-shrink-0" />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" aria-label={t("ux.bo.backHome")} title={t("ux.bo.backHome")}>
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>
@@ -141,8 +143,8 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
           </header>
           <main className="flex-1 p-3 md:p-6 overflow-auto">
             {featureDisabled && (
-              <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200" role="status">
-                Cette rubrique est désactivée par l’administrateur. Vos éléments restent consultables, mais aucune modification n’est autorisée.
+              <div className="mb-4 rounded-lg border border-warning-foreground/20 bg-warning p-3 text-sm text-warning-foreground" role="status">
+                {t("ux.bo.sectionDisabledAdministratorItemsRemain")}
               </div>
             )}
             <fieldset disabled={featureDisabled} className="m-0 min-w-0 border-0 p-0 disabled:opacity-100">

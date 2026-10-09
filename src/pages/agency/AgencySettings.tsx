@@ -19,14 +19,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Building2, CreditCard, Loader2, Save } from "lucide-react";
 import { JEKO_PAYOUT_METHODS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 const bankFields = [
-  { key: "bankName", label: "Nom de la banque" },
-  { key: "bankCode", label: "Code banque" },
-  { key: "swiftCode", label: "Code SWIFT / BIC" },
-  { key: "agencyCode", label: "Code agence" },
-  { key: "accountNumber", label: "Numéro de compte" },
-  { key: "key", label: "Clé RIB" },
+  { key: "bankName", get label() { return i18n.t("ux.bo.bankName"); } },
+  { key: "bankCode", get label() { return i18n.t("ux.bo.bankCode"); } },
+  { key: "swiftCode", get label() { return i18n.t("ux.bo.swiftBicCode"); } },
+  { key: "agencyCode", get label() { return i18n.t("ux.bo.branchCode"); } },
+  { key: "accountNumber", get label() { return i18n.t("ux.bo.accountNumber"); } },
+  { key: "key", get label() { return i18n.t("ux.bo.ribKey"); } },
 ] as const;
 
 type BankField = (typeof bankFields)[number]["key"];
@@ -57,6 +59,7 @@ interface BrandingSubscription {
 }
 
 export default function AgencySettings() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -143,13 +146,13 @@ export default function AgencySettings() {
     try {
       const normalizedNumber = mobileMoneyNumber.trim().replace(/[\s()-]/g, "");
       if (payoutMethod && !beneficiaryName.trim()) {
-        throw new Error("Renseignez le nom exact du bénéficiaire du compte de réception.");
+        throw new Error(t("ux.bo.enterExactNameReceivingAccount"));
       }
       if (payoutMethod && payoutMethod !== "bank" && !/^\+[1-9]\d{7,14}$/.test(normalizedNumber)) {
-        throw new Error("Le numéro Mobile Money doit être au format international, par exemple +2250700000000.");
+        throw new Error(t("ux.bo.mobileMoneyNumberMustInternational"));
       }
       if (payoutMethod === "bank" && bankFields.some(({ key }) => !bankDetails[key].trim())) {
-        throw new Error("Complétez tous les champs du RIB pour recevoir les virements bancaires.");
+        throw new Error(t("ux.bo.fillAllRibFieldsReceive"));
       }
 
       const { error } = await supabase
@@ -184,8 +187,8 @@ export default function AgencySettings() {
       }
 
       toast({
-        title: "Succès",
-        description: "Paramètres mis à jour",
+        title: t("ux.bo.success"),
+        description: t("ux.bo.settingsUpdated"),
       });
 
       if (payoutMethod) {
@@ -195,16 +198,16 @@ export default function AgencySettings() {
         if (payoutProcessError) {
           console.error("Saved payout details but could not process due payouts:", payoutProcessError);
           toast({
-            title: "Coordonnées enregistrées",
-            description: "Impossible de lancer les reversements en attente. L'équipe Bossiz en a besoin pour vérifier la configuration.",
+            title: t("ux.bo.detailsSaved"),
+            description: t("ux.bo.unableStartPendingPayoutsBossiz"),
             variant: "destructive",
           });
         }
       }
     } catch (error: unknown) {
       toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Impossible d'enregistrer les paramètres.",
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableSaveSettings"),
         variant: "destructive",
       });
     } finally {
@@ -217,7 +220,7 @@ export default function AgencySettings() {
     setStartingBrandingPayment(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Connectez-vous avec le compte de votre agence pour continuer.");
+      if (!user) throw new Error(t("ux.bo.logAgencySAccountContinue"));
 
       let subscriptionId =
         brandingSubscription?.status === "pending" || brandingSubscription?.status === "processing"
@@ -231,7 +234,7 @@ export default function AgencySettings() {
           .select("id, status, ends_at")
           .single();
         if (subscriptionError || !subscription) {
-          throw subscriptionError || new Error("Impossible de préparer l’abonnement branding.");
+          throw subscriptionError || new Error(t("ux.bo.unablePrepareBrandingSubscription"));
         }
         subscriptionId = subscription.id;
         setBrandingSubscription(subscription as BrandingSubscription);
@@ -258,14 +261,14 @@ export default function AgencySettings() {
         throw new Error(await getEdgeFunctionErrorMessage(error, "Le paiement du branding n'a pas pu être initialisé."));
       }
       if (!data?.success || typeof data.payment_url !== "string") {
-        throw new Error(data?.error || "Aucun lien de paiement n'a été créé. Le branding reste désactivé.");
+        throw new Error(data?.error || t("ux.bo.noPaymentLinkWasCreated"));
       }
 
       window.location.assign(data.payment_url);
     } catch (error) {
       toast({
-        title: "Paiement non démarré",
-        description: error instanceof Error ? error.message : "Impossible d'initialiser le paiement.",
+        title: t("ux.bo.paymentNotStarted"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableInitializePayment"),
         variant: "destructive",
       });
     } finally {
@@ -287,7 +290,7 @@ export default function AgencySettings() {
     return (
       <AgencyLayout>
         <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Chargement...</p>
+          <p className="text-muted-foreground">{t("ux.bo.loading")}</p>
         </div>
       </AgencyLayout>
     );
@@ -297,9 +300,9 @@ export default function AgencySettings() {
     <AgencyLayout>
       <div className="space-y-6 max-w-2xl">
         <div>
-          <h1 className="text-2xl font-bold">Paramètres de l'agence</h1>
+          <h1 className="text-2xl font-bold">{t("ux.bo.agencySettings2")}</h1>
           <p className="text-muted-foreground">
-            Gérez les informations de votre agence
+            {t("ux.bo.manageAgencySInformation")}
           </p>
         </div>
 
@@ -308,15 +311,15 @@ export default function AgencySettings() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Informations générales
+                {t("ux.bo.generalInformation")}
               </CardTitle>
               <CardDescription>
-                Ces informations peuvent être affichées aux clients si la visibilité est activée
+                {t("ux.bo.informationCanShownCustomersIf")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nom de l'agence</Label>
+                <Label htmlFor="name">{t("ux.bo.agencyName2")}</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -326,18 +329,18 @@ export default function AgencySettings() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t("ux.bo.description")}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  placeholder="Décrivez votre agence..."
+                  placeholder={t("ux.bo.describeAgency")}
                 />
               </div>
 
               <ImageUpload
-                label="Logo de l'agence"
+                label={t("ux.bo.agencyLogo")}
                 folder="agency-logos"
                 value={formData.logo_url}
                 onChange={(logo_url) => setFormData({ ...formData, logo_url })}
@@ -345,7 +348,7 @@ export default function AgencySettings() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="contact_email">Email de contact</Label>
+                  <Label htmlFor="contact_email">{t("ux.bo.contactEmail")}</Label>
                   <Input
                     id="contact_email"
                     type="email"
@@ -354,7 +357,7 @@ export default function AgencySettings() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="contact_phone">Téléphone</Label>
+                  <Label htmlFor="contact_phone">{t("ux.bo.phone")}</Label>
                   <PhoneNumberInput
                     id="contact_phone"
                     value={formData.contact_phone}
@@ -376,30 +379,30 @@ export default function AgencySettings() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Branding visible aux clients
+                {t("ux.bo.brandingVisibleCustomers")}
               </CardTitle>
               <CardDescription>
-                Votre nom et votre logo s’affichent sur vos offres pendant 30 jours après confirmation du paiement.
-                Tarif : 2 500 F CFA par mois.
+                {t("ux.bo.nameLogoAppearOffers30")}
+                {t("ux.bo.price2500FCfa")}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               {brandingIsActive ? (
                 <div>
-                  <p className="font-medium text-green-700 dark:text-green-400">Branding actif</p>
+                  <p className="font-medium text-success">{t("ux.bo.brandingActive")}</p>
                   <p className="text-sm text-muted-foreground">
                     Expire le {new Date(brandingSubscription.ends_at).toLocaleDateString("fr-FR")}.
                   </p>
                 </div>
               ) : brandingSubscription?.status === "processing" ? (
                 <p className="text-sm text-muted-foreground">
-                  Paiement en cours de confirmation. Le branding s’activera après validation.
+                  {t("ux.bo.paymentBeingConfirmedBrandingWill")}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   {brandingHasExpired
-                    ? "Votre abonnement a expiré. Renouvelez-le pour réactiver le branding."
-                    : "Le branding est désactivé jusqu’à la confirmation du paiement."}
+                    ? t("ux.bo.subscriptionHasExpiredRenewReactivate")
+                    : t("ux.bo.brandingDisabledUntilPaymentConfirmed")}
                 </p>
               )}
               <Button
@@ -415,28 +418,28 @@ export default function AgencySettings() {
                 ) : (
                   <CreditCard className="mr-2 h-4 w-4" />
                 )}
-                {brandingIsActive ? "Abonnement en cours" : "Payer 2 500 F avec Jèko"}
+                {brandingIsActive ? t("ux.bo.subscriptionProgress") : t("ux.bo.pay2500FJ")}
               </Button>
             </CardContent>
           </Card>
 
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Moyen de réception des reversements</CardTitle>
+              <CardTitle>{t("ux.bo.payoutMethod")}</CardTitle>
               <CardDescription>
-                Bossiz conserve 10% et votre agence reçoit 90% des ventes réglées en ligne via Jèko sous 24 heures.
-                Ces coordonnées sont privées et utilisées uniquement pour vos reversements.
+                {t("ux.bo.bossizKeeps10AgencyReceives")}
+                {t("ux.bo.theseDetailsPrivateUsedOnly")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="payout-method">Moyen de paiement Jèko</Label>
+                <Label htmlFor="payout-method">{t("ux.bo.jKoPaymentMethod")}</Label>
                 <Select
                   value={payoutMethod}
                   onValueChange={(value) => setPayoutMethod(value as JekoPayoutMethod)}
                 >
                   <SelectTrigger id="payout-method">
-                    <SelectValue placeholder="Choisissez un moyen de réception" />
+                    <SelectValue placeholder={t("ux.bo.choosePayoutMethod")} />
                   </SelectTrigger>
                   <SelectContent>
                     {JEKO_PAYOUT_METHODS.map((method) => (
@@ -449,7 +452,7 @@ export default function AgencySettings() {
               {payoutMethod && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="beneficiary-name">Nom du titulaire</Label>
+                    <Label htmlFor="beneficiary-name">{t("ux.bo.accountHolderName")}</Label>
                     <Input
                       id="beneficiary-name"
                       value={beneficiaryName}
@@ -473,7 +476,7 @@ export default function AgencySettings() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Label htmlFor="mobile-money-number">Numéro Mobile Money</Label>
+                      <Label htmlFor="mobile-money-number">{t("ux.bo.mobileMoneyNumber")}</Label>
                       <PhoneNumberInput
                         id="mobile-money-number"
                         value={mobileMoneyNumber}

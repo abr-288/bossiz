@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ReactNode, useState } from "react";
+import { ReactNode, useId, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,7 @@ import { LucideIcon } from "lucide-react";
 import { ValidationIndicator } from "@/components/forms/ValidationIndicator";
 import { ContextualHelp } from "@/components/forms/ContextualHelp";
 import { PhoneNumberInput } from "@/components/PhoneNumberInput";
+import { MOTION } from "@/lib/motion";
 
 interface UnifiedFormFieldProps {
   label?: string;
@@ -64,8 +65,12 @@ export const UnifiedFormField = ({
   maxLength,
   defaultValue,
 }: UnifiedFormFieldProps) => {
-  const fieldId = id || name || `field-${Math.random()}`;
+  // useId : identifiant stable (Math.random changeait à chaque rendu et cassait label/champ)
+  const autoId = useId();
+  const fieldId = id || name || autoId;
+  const messageId = `${fieldId}-message`;
   const [touched, setTouched] = useState(false);
+  const isInvalid = Boolean(error && touched);
 
   const handleBlur = () => {
     setTouched(true);
@@ -83,7 +88,7 @@ export const UnifiedFormField = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: MOTION.slow }}
       className={cn("space-y-2", className)}
     >
       {label && (
@@ -109,6 +114,8 @@ export const UnifiedFormField = ({
           <Textarea
             id={fieldId}
             name={name}
+            aria-invalid={isInvalid || undefined}
+            aria-describedby={error || hint ? messageId : undefined}
             placeholder={placeholder}
             value={value}
             onChange={onChange}
@@ -120,10 +127,10 @@ export const UnifiedFormField = ({
             className={cn(
               "min-h-[120px] resize-none",
               "border-2 border-input hover:border-primary/50 focus:border-primary",
-              "transition-all duration-200",
+              "transition-all duration-base ease-standard",
               "placeholder:text-muted-foreground/60",
               error && touched && "border-destructive focus:border-destructive",
-              !error && touched && value && "border-green-500 focus:ring-green-500"
+              !error && touched && value && "border-success focus:ring-success"
             )}
           />
         ) : type === "tel" ? (
@@ -139,7 +146,7 @@ export const UnifiedFormField = ({
             disabled={disabled}
             className={cn(
               error && touched && "[&_input]:border-destructive",
-              !error && touched && value && "[&_input]:border-green-500"
+              !error && touched && value && "[&_input]:border-success"
             )}
           />
         ) : (
@@ -150,6 +157,8 @@ export const UnifiedFormField = ({
             <Input
               id={fieldId}
               name={name}
+              aria-invalid={isInvalid || undefined}
+              aria-describedby={error || hint ? messageId : undefined}
               type={type}
               placeholder={placeholder}
               value={value}
@@ -165,11 +174,11 @@ export const UnifiedFormField = ({
               className={cn(
                 Icon && "pl-11",
                 "h-12 border-2 border-input hover:border-primary/50 focus:border-primary",
-                "transition-all duration-200",
+                "transition-all duration-base ease-standard",
                 "placeholder:text-muted-foreground/60",
                 "font-medium",
                 error && touched && "border-destructive focus:border-destructive",
-                !error && touched && value && "border-green-500 focus:ring-green-500"
+                !error && touched && value && "border-success focus:ring-success"
               )}
             />
           </>
@@ -177,12 +186,13 @@ export const UnifiedFormField = ({
       </div>
 
       {hint && !error && (
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
+        <p id={messageId} className="text-xs text-muted-foreground flex items-center gap-1">
           {hint}
         </p>
       )}
 
       <ValidationIndicator
+        id={!hint || error ? messageId : undefined}
         status={getValidationStatus()}
         message={error || (touched && value ? validMessage : undefined)}
       />

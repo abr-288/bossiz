@@ -1,5 +1,6 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { useContext, ReactNode } from "react";
 import { useBossizConfig, BossizSiteConfig, BossizGlobalConfig } from "@/hooks/useBossizConfig";
+import { singletonContext } from "@/lib/singletonContext";
 
 interface BossizConfigContextType {
   sites: BossizSiteConfig[];
@@ -10,7 +11,7 @@ interface BossizConfigContextType {
   refetch: () => Promise<void>;
 }
 
-const BossizConfigContext = createContext<BossizConfigContextType | undefined>(undefined);
+const BossizConfigContext = singletonContext<BossizConfigContextType | undefined>("BossizConfig", undefined);
 
 export const BossizConfigProvider = ({ children }: { children: ReactNode }) => {
   const { sites, globalConfig, loading, updateSiteConfig, updateGlobalConfig, refetch } = useBossizConfig();

@@ -44,7 +44,8 @@ const ALLOWED_REDIRECT_PATHS = ["/reset-password", "/auth"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const IP_LIMIT = { windowMs: 15 * 60 * 1000, maxRequests: 10, keyPrefix: "pwreset-ip" };
-const EMAIL_LIMIT = { windowMs: 60 * 60 * 1000, maxRequests: 3, keyPrefix: "pwreset-email" };
+// 5 par heure : un client dont le premier lien a échoué doit pouvoir en redemander.
+const EMAIL_LIMIT = { windowMs: 60 * 60 * 1000, maxRequests: 5, keyPrefix: "pwreset-email" };
 
 const ok = () =>
   new Response(JSON.stringify({ success: true }), {
@@ -87,7 +88,16 @@ serve(async (req) => {
       options: { redirectTo: `${SITE_URL}${redirectPath}` },
     });
 
-    const actionLink = data?.properties?.action_link;
+    // Lien vers notre propre page avec le jeton haché, au lieu du lien
+    // /auth/v1/verify de Supabase : ce dernier consomme le jeton (usage unique)
+    // dès la première ouverture, y compris par les robots qui analysent les
+    // liens des e-mails (Gmail, antivirus). Le client voyait alors « lien
+    // invalide ou expiré ». Ici, le jeton n'est vérifié qu'à la validation du
+    // nouveau mot de passe, par la page /reset-password.
+    const hashedToken = data?.properties?.hashed_token;
+    const actionLink = hashedToken
+      ? `${SITE_URL}/reset-password?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`
+      : undefined;
     if (error && /not.?found/i.test(error.message)) {
       // Keep the response identical for an unknown address to prevent account enumeration.
       return ok();

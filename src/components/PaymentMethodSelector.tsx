@@ -15,7 +15,7 @@ const paymentMethods: PaymentMethod[] = [
     name: "Jèko",
     description: "Mobile Money ou carte bancaire sur la page sécurisée Jèko",
     icon: <Wallet className="h-6 w-6" />,
-    color: "bg-orange-500/10 text-orange-500 border-orange-500/30",
+    color: "bg-warning text-warning-foreground border-warning-foreground/20",
   },
 ];
 
@@ -35,7 +35,7 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
             type="button"
             onClick={() => onChange(method.id)}
             className={cn(
-              "relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200",
+              "relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-base ease-standard",
               "hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
               isSelected
                 ? "border-primary bg-primary/5 shadow-sm"

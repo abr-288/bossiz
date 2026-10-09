@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 // Bossiz+.
 const HotelsWidget = () => {
   return (
-    <Card className="w-full max-w-4xl mx-auto border border-gray-200 shadow-sm rounded-3xl overflow-hidden">
+    <Card className="w-full max-w-4xl mx-auto border border-border shadow-sm rounded-3xl overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="text-xl">Trouvez votre hôtel à Abidjan</CardTitle>
         <CardDescription className="flex items-center gap-1.5">

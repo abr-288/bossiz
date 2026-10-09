@@ -98,7 +98,7 @@ const LegalNotice = () => {
                     {section.content.map((line, i) => (
                       <p
                         key={i}
-                        className={`text-sm leading-relaxed ${line.includes("à compléter") ? "text-amber-600 dark:text-amber-400 font-medium" : "text-muted-foreground"}`}
+                        className={`text-sm leading-relaxed ${line.includes("à compléter") ? "text-warning-foreground font-medium" : "text-muted-foreground"}`}
                         dangerouslySetInnerHTML={{
                           __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>'),
                         }}

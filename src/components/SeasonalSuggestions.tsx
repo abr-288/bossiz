@@ -18,10 +18,10 @@ interface SeasonalInfo {
 }
 
 const seasonalData: SeasonalInfo[] = [
-  { key: "spring", color: "bg-green-500" },
-  { key: "summer", color: "bg-orange-500" },
-  { key: "autumn", color: "bg-amber-600" },
-  { key: "winter", color: "bg-blue-500" }
+  { key: "spring", color: "bg-success" },
+  { key: "summer", color: "bg-gold" },
+  { key: "autumn", color: "bg-gold" },
+  { key: "winter", color: "bg-info" }
 ];
 
 export const SeasonalSuggestions = () => {

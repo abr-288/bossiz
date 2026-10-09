@@ -18,6 +18,7 @@ import { safeValidate } from "@/lib/formHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PriceCalendar } from "@/components/flights/PriceCalendar";
+import { UnifiedPassengerSelector } from "@/components/forms/UnifiedPassengerSelector";
 import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 
 /**
@@ -207,7 +208,7 @@ export const FlightSearchForm = () => {
             }}
             whileTap={{ scale: 0.98 }}
             className={cn(
-              "px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm border",
+              "px-4 py-2 rounded-lg font-medium transition-all duration-base ease-standard text-sm border",
               tripType === value
                 ? "bg-primary text-primary-foreground border-primary shadow-sm"
                 : "bg-background text-foreground border-border hover:border-primary/50"
@@ -231,15 +232,16 @@ export const FlightSearchForm = () => {
             }}
             placeholder={t("search.cityOrAirport")}
             required
-            className={cn("h-11", errors.origin && touched.origin ? "border-destructive" : "")}
+            className={cn(errors.origin && touched.origin ? "border-destructive" : "")}
           />
           {errors.origin && touched.origin && (
-            <p className="text-xs text-destructive mt-1">{errors.origin}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">{errors.origin}</p>
           )}
         </div>
 
         <div className="sm:col-span-1 flex justify-center items-center pt-6">
           <Button
+            aria-label="Inverser le départ et l'arrivée"
             type="button"
             variant="outline"
             size="icon"
@@ -261,10 +263,10 @@ export const FlightSearchForm = () => {
             }}
             placeholder={t("search.cityOrAirport")}
             required
-            className={cn("h-11", errors.destination && touched.destination ? "border-destructive" : "")}
+            className={cn(errors.destination && touched.destination ? "border-destructive" : "")}
           />
           {errors.destination && touched.destination && (
-            <p className="text-xs text-destructive mt-1">{errors.destination}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">{errors.destination}</p>
           )}
         </div>
       </div>
@@ -287,7 +289,7 @@ export const FlightSearchForm = () => {
             required
           />
           {errors.departureDate && touched.departureDate && (
-            <p className="text-xs text-destructive mt-1">{errors.departureDate}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">{errors.departureDate}</p>
           )}
         </div>
 
@@ -305,75 +307,25 @@ export const FlightSearchForm = () => {
               required
             />
             {errors.returnDate && touched.returnDate && (
-              <p className="text-xs text-destructive mt-1">{errors.returnDate}</p>
+              <p role="alert" className="text-sm text-destructive mt-1">{errors.returnDate}</p>
             )}
           </div>
         )}
       </div>
 
-      {/* Ligne 3: Passagers et Classe */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">
-            {t("search.adults")}
-          </label>
-          <Select 
-            value={adults.toString()} 
-            onValueChange={(value) => {
-              setAdults(parseInt(value));
-              handleBlur("adults");
-            }}
-          >
-            <SelectTrigger className={cn("h-11 bg-background", errors.adults && touched.adults && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">{t("search.children")}</label>
-          <Select 
-            value={children.toString()} 
-            onValueChange={(value) => {
-              setChildren(parseInt(value));
-              handleBlur("children");
-            }}
-          >
-            <SelectTrigger className={cn("h-11 bg-background", errors.children && touched.children && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">{t("search.infants", "Bébés")}</label>
-          <Select 
-            value={infants.toString()} 
-            onValueChange={(value) => {
-              setInfants(parseInt(value));
-              handleBlur("infants");
-            }}
-          >
-            <SelectTrigger className={cn("h-11 bg-background", errors.infants && touched.infants && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {[0, 1, 2, 3, 4].map((num) => (
-                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Ligne 3: Voyageurs (un seul champ) et Classe */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <UnifiedPassengerSelector
+          label={t("search.travelers", "Voyageurs")}
+          value={{ adults, children, infants }}
+          onChange={(value) => {
+            setAdults(Math.max(1, value.adults));
+            setChildren(value.children);
+            setInfants(value.infants ?? 0);
+            handleBlur("adults");
+          }}
+          showInfants
+        />
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-foreground">{t("search.class.title")}</label>

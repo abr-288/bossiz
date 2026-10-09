@@ -10,8 +10,10 @@ import { toast } from "sonner";
 import { MapPin, RefreshCw, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 const AdminDestinations = () => {
+  const { t } = useTranslation();
   const [cache, setCache] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,7 @@ const AdminDestinations = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Erreur lors du chargement");
+      toast.error(t("ux.bo.errorWhileLoading"));
     } else {
       setCache(data || []);
     }
@@ -53,18 +55,18 @@ const AdminDestinations = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Destinations</h1>
-            <p className="text-muted-foreground">Cache des destinations et gestion</p>
+            <p className="text-muted-foreground">{t("ux.bo.destinationCacheManagement")}</p>
           </div>
           <Button onClick={fetchCache} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Actualiser
+            {t("ux.bo.refresh")}
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Entrées en cache</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("ux.bo.cachedEntries")}</CardTitle>
               <MapPin className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -73,7 +75,7 @@ const AdminDestinations = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Expirées</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("ux.bo.expired")}</CardTitle>
               <Trash2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -86,25 +88,25 @@ const AdminDestinations = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Cache des destinations</CardTitle>
-            <CardDescription>Entrées actuellement en cache</CardDescription>
+            <CardTitle>{t("ux.bo.destinationCache")}</CardTitle>
+            <CardDescription>{t("ux.bo.entriesCurrentlyCached")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Clé</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Créé le</TableHead>
-                  <TableHead>Expire le</TableHead>
+                  <TableHead>{t("ux.bo.key")}</TableHead>
+                  <TableHead>{t("ux.bo.source")}</TableHead>
+                  <TableHead>{t("ux.bo.status")}</TableHead>
+                  <TableHead>{t("ux.bo.created2")}</TableHead>
+                  <TableHead>{t("ux.bo.expires")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {cache.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground">
-                      Aucune entrée en cache
+                      {t("ux.bo.noCachedEntries")}
                     </TableCell>
                   </TableRow>
                 ) : (

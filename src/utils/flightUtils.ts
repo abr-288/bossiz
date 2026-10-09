@@ -1,3 +1,4 @@
+import { currentLocaleTag } from "@/lib/dateLocale";
 /**
  * Flight utility functions for calculating and formatting flight data
  */
@@ -175,7 +176,7 @@ export const formatFlightDate = (dateString: string, format: 'short' | 'long' = 
     if (isNaN(date.getTime())) return dateString;
     
     if (format === 'long') {
-      return date.toLocaleDateString('fr-FR', { 
+      return date.toLocaleDateString(currentLocaleTag(), { 
         weekday: 'long', 
         day: 'numeric', 
         month: 'long', 
@@ -183,7 +184,7 @@ export const formatFlightDate = (dateString: string, format: 'short' | 'long' = 
       });
     }
     
-    return date.toLocaleDateString('fr-FR', { 
+    return date.toLocaleDateString(currentLocaleTag(), { 
       day: 'numeric', 
       month: 'short'
     });

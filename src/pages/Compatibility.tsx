@@ -23,8 +23,10 @@ import {
   Tablet,
   Info
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Compatibility = () => {
+  const { t } = useTranslation();
   const [deviceInfo, setDeviceInfo] = useState({
     userAgent: '',
     platform: '',
@@ -71,28 +73,28 @@ const Compatibility = () => {
     // Check for old browsers
     if (ua.includes('msie') || ua.includes('trident')) {
       issues.push('Internet Explorer n\'est plus supporté');
-      recommendations.push('Utilisez Chrome, Firefox, Safari ou Edge');
+      recommendations.push(t("ux.compat.useBrowser"));
       isCompatible = false;
     }
 
     // Check JavaScript
     if (!info.jsEnabled) {
-      issues.push('JavaScript est désactivé');
-      recommendations.push('Activez JavaScript dans les paramètres de votre navigateur');
+      issues.push(t("ux.compat.noJs"));
+      recommendations.push(t("ux.compat.noJsFix"));
       isCompatible = false;
     }
 
     // Check cookies
     if (!info.cookieEnabled) {
-      issues.push('Les cookies sont désactivés');
-      recommendations.push('Activez les cookies pour une meilleure expérience');
+      issues.push(t("ux.compat.noCookies"));
+      recommendations.push(t("ux.compat.noCookiesFix"));
     }
 
     // Check screen resolution
     const [width] = info.screenResolution.split('x').map(Number);
     if (width < 320) {
-      issues.push('Écran trop petit (minimum 320px)');
-      recommendations.push('Utilisez un appareil avec un écran plus grand');
+      issues.push(t("ux.compat.smallScreen"));
+      recommendations.push(t("ux.compat.smallScreenFix"));
       isCompatible = false;
     }
 
@@ -100,8 +102,8 @@ const Compatibility = () => {
     if (ua.includes('iphone') || ua.includes('ipad')) {
       const iosMatch = ua.match(/os (\d+)_/);
       if (iosMatch && parseInt(iosMatch[1]) < 12) {
-        issues.push('Version iOS trop ancienne (minimum iOS 12)');
-        recommendations.push('Mettez à jour votre appareil iOS');
+        issues.push(t("ux.compat.oldIos"));
+        recommendations.push(t("ux.compat.oldIosFix"));
         isCompatible = false;
       }
     }
@@ -110,8 +112,8 @@ const Compatibility = () => {
     if (ua.includes('android')) {
       const androidMatch = ua.match(/android (\d+)/);
       if (androidMatch && parseInt(androidMatch[1]) < 6) {
-        issues.push('Version Android trop ancienne (minimum Android 6)');
-        recommendations.push('Mettez à jour votre appareil Android');
+        issues.push(t("ux.compat.oldAndroid"));
+        recommendations.push(t("ux.compat.oldAndroidFix"));
         isCompatible = false;
       }
     }
@@ -174,81 +176,81 @@ const Compatibility = () => {
   const troubleshootingSteps = [
     {
       icon: <RefreshCw className="w-5 h-5" />,
-      title: 'Rafraîchir la page',
-      description: 'Appuyez sur F5 ou Cmd+R pour recharger'
+      title: t("ux.compat.refresh"),
+      description: t("ux.compat.refreshDesc")
     },
     {
       icon: <Settings className="w-5 h-5" />,
-      title: 'Vérifier les paramètres',
-      description: 'Activez JavaScript et les cookies'
+      title: t("ux.compat.checkSettings"),
+      description: t("ux.compat.checkSettingsDesc")
     },
     {
       icon: <Wifi className="w-5 h-5" />,
-      title: 'Vérifier la connexion',
-      description: 'Assurez-vous d\'avoir une connexion internet stable'
+      title: t("ux.compat.checkConnection"),
+      description: t("ux.misc.stableConnection")
     },
     {
       icon: <Battery className="w-5 h-5" />,
-      title: 'Économiseur d\'énergie',
-      description: 'Désactivez temporairement le mode économie'
+      title: t("ux.misc.powerSaver"),
+      description: t("ux.compat.powerSaveDesc")
     },
     {
       icon: <HardDrive className="w-5 h-5" />,
-      title: 'Vider le cache',
-      description: 'Effacez les données du navigateur'
+      title: t("ux.compat.clearCache"),
+      description: t("ux.compat.clearCacheDesc")
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <div className="min-h-screen bg-muted/40 py-8">
       <div className="container max-w-4xl mx-auto px-4">
         
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             {compatibility.isCompatible ? (
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+              <CheckCircle2 className="w-8 h-8 text-success" />
             ) : (
-              <AlertTriangle className="w-8 h-8 text-orange-600" />
+              <AlertTriangle className="w-8 h-8 text-warning-foreground" />
             )}
-            <h1 className="text-3xl font-bold text-gray-900">
-              Page de Compatibilité
+            <h1 className="text-3xl font-bold text-foreground">
+              {t("ux.compat.title")}
             </h1>
           </div>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-muted-foreground">
             Vérification de la compatibilité de votre appareil avec Bossiz+
           </p>
         </div>
 
         {/* Compatibility Status */}
-        <Card className={`mb-8 ${compatibility.isCompatible ? 'border-green-200 bg-green-50' : 'border-orange-200 bg-orange-50'}`}>
+        <Card className={`mb-8 ${compatibility.isCompatible ? 'border-success/30 bg-success/10' : 'border-warning-foreground/20 bg-warning'}`}>
           <CardHeader>
-            <CardTitle className={`flex items-center gap-2 ${compatibility.isCompatible ? 'text-green-800' : 'text-orange-800'}`}>
+            <CardTitle className={`flex items-center gap-2 ${compatibility.isCompatible ? 'text-success' : 'text-warning-foreground'}`}>
               {compatibility.isCompatible ? (
                 <>
                   <CheckCircle2 className="w-6 h-6" />
-                  Votre appareil est compatible
+                  {t("ux.compat.ok")}
                 </>
               ) : (
                 <>
                   <AlertTriangle className="w-6 h-6" />
-                  Problèmes de compatibilité détectés
+                  {t("ux.compat.issues")}
                 </>
               )}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {compatibility.isCompatible ? (
-              <p className="text-green-700">
-                Félicitations ! Votre appareil peut utiliser toutes les fonctionnalités de Bossiz+.
+              <p className="text-success">
+                {t("ux.compat.okDesc")}
               </p>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-orange-800 mb-2">Problèmes détectés :</h4>
+                  <h4 className="font-semibold text-warning-foreground mb-2">{t("ux.compat.issuesList")}</h4>
                   <ul className="space-y-1">
                     {compatibility.issues.map((issue, index) => (
-                      <li key={index} className="flex items-start gap-2 text-orange-700">
+                      <li key={index} className="flex items-start gap-2 text-warning-foreground">
                         <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                         {issue}
                       </li>
@@ -256,10 +258,10 @@ const Compatibility = () => {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-orange-800 mb-2">Recommandations :</h4>
+                  <h4 className="font-semibold text-warning-foreground mb-2">Recommandations :</h4>
                   <ul className="space-y-1">
                     {compatibility.recommendations.map((rec, index) => (
-                      <li key={index} className="flex items-start gap-2 text-orange-700">
+                      <li key={index} className="flex items-start gap-2 text-warning-foreground">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
                         {rec}
                       </li>
@@ -276,10 +278,10 @@ const Compatibility = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Smartphone className="w-6 h-6" />
-              Informations sur votre appareil
+              {t("ux.compat.deviceInfo")}
             </CardTitle>
             <CardDescription>
-              Détails techniques de votre configuration actuelle
+              {t("ux.compat.deviceInfoDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -302,17 +304,17 @@ const Compatibility = () => {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">Résolution</Badge>
+                  <Badge variant="outline">{t("ux.compat.resolution")}</Badge>
                   <Monitor className="w-4 h-4" />
                   <span className="text-sm">{deviceInfo.screenResolution}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">Connexion</Badge>
+                  <Badge variant="outline">{t("ux.compat.connection")}</Badge>
                   <Wifi className="w-4 h-4" />
                   <span className="text-sm">{deviceInfo.connectionType}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">Mémoire</Badge>
+                  <Badge variant="outline">{t("ux.compat.memory")}</Badge>
                   <HardDrive className="w-4 h-4" />
                   <span className="text-sm">{deviceInfo.memory}</span>
                 </div>
@@ -324,9 +326,9 @@ const Compatibility = () => {
         {/* Supported Browsers */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Navigateurs supportés</CardTitle>
+            <CardTitle>{t("ux.compat.browsers")}</CardTitle>
             <CardDescription>
-              Pour une expérience optimale, utilisez l'un de ces navigateurs
+              {t("ux.compat.browsersDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -340,7 +342,7 @@ const Compatibility = () => {
                     </div>
                     <Badge variant="outline">{browser.version}</Badge>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-muted-foreground mb-3">
                     Plateformes: {browser.platforms.join(', ')}
                   </p>
                   <Button 
@@ -350,7 +352,7 @@ const Compatibility = () => {
                     onClick={() => window.open(browser.downloadUrl, '_blank')}
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Télécharger
+                    {t("ux.compat.download")}
                   </Button>
                 </div>
               ))}
@@ -361,21 +363,21 @@ const Compatibility = () => {
         {/* Troubleshooting */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Dépannage</CardTitle>
+            <CardTitle>{t("ux.compat.troubleshoot")}</CardTitle>
             <CardDescription>
-              Solutions aux problèmes courants
+              {t("ux.compat.troubleshootDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {troubleshootingSteps.map((step, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center flex-shrink-0">
                     {step.icon}
                   </div>
                   <div>
                     <h4 className="font-semibold">{step.title}</h4>
-                    <p className="text-sm text-gray-600">{step.description}</p>
+                    <p className="text-sm text-muted-foreground">{step.description}</p>
                   </div>
                 </div>
               ))}
@@ -387,11 +389,11 @@ const Compatibility = () => {
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Si vous rencontrez toujours des problèmes, vous pouvez :
+            {t("ux.compat.stillIssues")}
             <ul className="mt-2 space-y-1 list-disc list-inside">
-              <li>Contacter notre support technique</li>
-              <li>Utiliser un autre appareil</li>
-              <li>Essayer notre version mobile simplifiée</li>
+              <li>{t("ux.compat.contactSupport")}</li>
+              <li>{t("ux.compat.otherDevice")}</li>
+              <li>{t("ux.compat.lite")}</li>
             </ul>
           </AlertDescription>
         </Alert>
@@ -403,7 +405,7 @@ const Compatibility = () => {
             className="flex-1"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Retour à l'accueil
+            {t("ux.compat.backHome")}
           </Button>
           <Button 
             variant="outline"
@@ -411,7 +413,7 @@ const Compatibility = () => {
             className="flex-1"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Recharger la page
+            {t("ux.compat.reload")}
           </Button>
         </div>
       </div>

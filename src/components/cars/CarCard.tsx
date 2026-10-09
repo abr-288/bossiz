@@ -20,6 +20,8 @@ import {
   MapPin
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { carLabel } from "@/lib/carLabels";
+import { MOTION } from "@/lib/motion";
 
 export interface CarData {
   id: string;
@@ -67,10 +69,10 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
 
   const getCategoryColor = (category: string) => {
     const cat = category.toLowerCase();
-    if (cat.includes('luxe') || cat.includes('luxury') || cat.includes('premium')) return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
-    if (cat.includes('suv') || cat.includes('4x4')) return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
-    if (cat.includes('économique') || cat.includes('economy') || cat.includes('mini')) return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-    if (cat.includes('berline') || cat.includes('sedan')) return 'bg-purple-500/10 text-purple-600 border-purple-500/20';
+    if (cat.includes('luxe') || cat.includes('luxury') || cat.includes('premium')) return 'bg-warning text-warning-foreground border-warning-foreground/20';
+    if (cat.includes('suv') || cat.includes('4x4')) return 'bg-success/10 text-success border-success/30';
+    if (cat.includes('économique') || cat.includes('economy') || cat.includes('mini')) return 'bg-info/10 text-info border-info/20';
+    if (cat.includes('berline') || cat.includes('sedan')) return 'bg-primary/10 text-primary border-primary/40';
     return 'bg-muted text-muted-foreground border-border';
   };
 
@@ -86,27 +88,27 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: MOTION.slow }}
     >
-      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group border-border/50 bg-card">
+      <Card className="overflow-hidden hover:shadow-xl transition-all duration-slow ease-standard group border-border/50 bg-card">
         {/* Image Section */}
         <div className="relative h-48 md:h-56 overflow-hidden bg-muted">
           <LazyImage
             src={imageError ? placeholderImage : car.image}
             alt={car.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow ease-standard"
             onError={() => setImageError(true)}
           />
           
           {/* Overlay badges */}
           <div className="absolute top-3 left-3 flex flex-wrap gap-2">
             <Badge className={`${getCategoryColor(car.category)} border font-medium`}>
-              {car.category}
+              {carLabel(t, car.category)}
             </Badge>
             {car.freeCancellation && (
-              <Badge className="bg-green-500/90 text-white border-0 text-xs">
+              <Badge className="bg-success text-success-foreground border-0 text-xs">
                 <Check className="w-3 h-3 mr-1" />
-                Annulation gratuite
+                {t("ux.car.freeCancel")}
               </Badge>
             )}
           </div>
@@ -125,7 +127,7 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
             <div className="absolute bottom-3 left-3">
               <Badge className="bg-primary/90 text-primary-foreground border-0 text-xs">
                 <Gauge className="w-3 h-3 mr-1" />
-                Kilométrage illimité
+                {t("ux.car.unlimitedKm")}
               </Badge>
             </div>
           )}
@@ -179,13 +181,13 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
               <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
                 <Settings className="w-4 h-4 text-muted-foreground" />
               </div>
-              <span className="text-foreground font-medium text-xs">{car.transmission}</span>
+              <span className="text-foreground font-medium text-xs">{carLabel(t, car.transmission)}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
                 <span className="text-sm">{getFuelIcon(car.fuel)}</span>
               </div>
-              <span className="text-foreground font-medium text-xs">{car.fuel}</span>
+              <span className="text-foreground font-medium text-xs">{carLabel(t, car.fuel)}</span>
             </div>
           </div>
 
@@ -194,18 +196,18 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
             {car.airConditioning && (
               <Badge variant="outline" className="text-xs">
                 <Snowflake className="w-3 h-3 mr-1" />
-                Climatisation
+                {t("ux.car.aircon")}
               </Badge>
             )}
             {car.doors && (
               <Badge variant="outline" className="text-xs">
                 <DoorOpen className="w-3 h-3 mr-1" />
-                {car.doors} portes
+                {t("ux.car.doors", { count: car.doors })}
               </Badge>
             )}
             {car.fuelPolicy && (
               <Badge variant="outline" className="text-xs capitalize">
-                {car.fuelPolicy === 'full-to-full' ? 'Plein/Plein' : car.fuelPolicy}
+                {car.fuelPolicy === 'full-to-full' ? t('ux.car.fullToFull') : car.fuelPolicy}
               </Badge>
             )}
           </div>
@@ -240,13 +242,13 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
                 className="hidden sm:flex"
               >
                 <Info className="w-4 h-4 mr-1" />
-                Détails
+                {t("ux.car.details")}
               </Button>
               <Button 
                 onClick={() => onBook(car)}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
               >
-                Réserver
+                {t("ux.car.book")}
               </Button>
             </div>
           </div>

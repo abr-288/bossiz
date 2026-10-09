@@ -9,6 +9,7 @@ import { Price } from "@/components/ui/price";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Destination } from "@/hooks/useDestinations";
+import { MOTION } from "@/lib/motion";
 
 interface DestinationCardProps {
   destination: Destination;
@@ -17,13 +18,13 @@ interface DestinationCardProps {
 }
 
 const categoryColors: Record<string, string> = {
-  "Ville": "bg-blue-500/90",
+  "Ville": "bg-info",
   "Plage": "bg-cyan-500/90",
   "Île": "bg-teal-500/90",
-  "Montagne": "bg-emerald-500/90",
-  "Culture": "bg-amber-500/90",
-  "Nature": "bg-green-500/90",
-  "Attraction": "bg-purple-500/90",
+  "Montagne": "bg-success",
+  "Culture": "bg-gold",
+  "Nature": "bg-success",
+  "Attraction": "bg-primary",
 };
 
 export const DestinationCard = ({ destination, index = 0, variant = "default" }: DestinationCardProps) => {
@@ -47,15 +48,15 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: index * 0.05 }}
+        transition={{ duration: MOTION.slow, delay: index * 0.05 }}
         whileHover={{ y: -4 }}
       >
-        <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+        <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-slow ease-standard">
           <div className="relative h-32 overflow-hidden">
             <LazyImage
               src={imageError ? "/placeholder.svg" : destination.image}
               alt={destination.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-110"
               onError={() => setImageError(true)}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -77,16 +78,16 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
+        transition={{ duration: MOTION.slow, delay: index * 0.1 }}
         whileHover={{ y: -8 }}
         className="h-full"
       >
-        <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+        <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-slow ease-standard h-full flex flex-col">
           <div className="relative h-64 overflow-hidden">
             <LazyImage
               src={imageError ? "/placeholder.svg" : destination.image}
               alt={destination.name}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-110"
               onError={() => setImageError(true)}
             />
             
@@ -100,13 +101,14 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
                   {destination.category}
                 </Badge>
                 {destination.trending && (
-                  <Badge className="bg-orange-500/90 text-white border-0 text-xs font-medium">
+                  <Badge className="bg-gold text-gold-foreground border-0 text-xs font-medium">
                     <TrendingUp className="w-3 h-3 mr-1" />
                     Tendance
                   </Badge>
                 )}
               </div>
               <Button
+                aria-label="Ajouter aux favoris"
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 bg-white/20 backdrop-blur-sm hover:bg-white/40 text-white"
@@ -115,7 +117,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
                   setIsFavorite(!isFavorite);
                 }}
               >
-                <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+                <Heart className={`w-4 h-4 ${isFavorite ? "fill-destructive text-destructive" : ""}`} />
               </Button>
             </div>
 
@@ -134,7 +136,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-full">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <Star className="w-4 h-4 fill-gold text-gold" />
                   <span className="font-semibold text-sm">{destination.rating.toFixed(1)}</span>
                 </div>
                 <span className="text-muted-foreground text-xs">
@@ -143,7 +145,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
               </div>
               {destination.temperature && (
                 <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                  <Thermometer className="w-4 h-4 text-orange-500" />
+                  <Thermometer className="w-4 h-4 text-warning-foreground" />
                   <span>{destination.temperature}°C</span>
                 </div>
               )}
@@ -210,16 +212,16 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      transition={{ duration: MOTION.slow, delay: index * 0.05 }}
       whileHover={{ y: -6 }}
       className="h-full"
     >
-      <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+      <Card className="group overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-slow ease-standard h-full flex flex-col">
         <div className="relative h-48 overflow-hidden">
           <LazyImage
             src={imageError ? "/placeholder.svg" : destination.image}
             alt={destination.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-110"
             onError={() => setImageError(true)}
           />
           
@@ -232,6 +234,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
               {destination.category}
             </Badge>
             <Button
+              aria-label="Ajouter aux favoris"
               variant="ghost"
               size="icon"
               className="h-8 w-8 bg-white/20 backdrop-blur-sm hover:bg-white/40 text-white"
@@ -240,13 +243,13 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
                 setIsFavorite(!isFavorite);
               }}
             >
-              <Heart className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+              <Heart className={`w-4 h-4 ${isFavorite ? "fill-destructive text-destructive" : ""}`} />
             </Button>
           </div>
 
           {destination.trending && (
             <div className="absolute top-3 left-20">
-              <Badge className="bg-orange-500/90 text-white border-0 text-xs">
+              <Badge className="bg-gold text-gold-foreground border-0 text-xs">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 Tendance
               </Badge>
@@ -267,7 +270,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
           {/* Rating */}
           <div className="flex items-center gap-2 mb-2">
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <Star className="w-4 h-4 fill-gold text-gold" />
               <span className="font-semibold text-sm">{destination.rating.toFixed(1)}</span>
             </div>
             <span className="text-muted-foreground text-xs">
@@ -275,7 +278,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
             </span>
             {destination.temperature && (
               <div className="ml-auto flex items-center gap-1 text-muted-foreground text-xs">
-                <Thermometer className="w-3 h-3 text-orange-500" />
+                <Thermometer className="w-3 h-3 text-warning-foreground" />
                 {destination.temperature}°C
               </div>
             )}

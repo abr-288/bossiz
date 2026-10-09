@@ -37,7 +37,7 @@ export default function Payment() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const bookingId = searchParams.get("bookingId");
 
   const [loading, setLoading] = useState(true);
@@ -61,8 +61,8 @@ export default function Payment() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
-          title: "Non authentifié",
-          description: "Veuillez vous connecter pour continuer",
+          title: t("ux.payment.notAuthenticated"),
+          description: t("ux.payment.signInToContinue"),
           variant: "destructive",
         });
         navigate("/auth");
@@ -81,7 +81,7 @@ export default function Payment() {
       if (!data) {
         toast({
           title: "Erreur",
-          description: "Réservation introuvable ou accès refusé",
+          description: t("ux.payment.notFoundOrDenied"),
           variant: "destructive",
         });
         navigate("/dashboard");
@@ -91,16 +91,16 @@ export default function Payment() {
       // Check if payment already completed
       if (data.payment_status === "paid") {
         toast({
-          title: "Paiement déjà effectué",
-          description: "Cette réservation a déjà été payée",
+          title: t("ux.payment.alreadyPaid"),
+          description: t("ux.payment.alreadyPaidDesc"),
         });
         navigate("/dashboard");
         return;
       }
       if (data.payment_status === "partially_paid") {
         toast({
-          title: "Acompte déjà réglé",
-          description: "Le solde de cette réservation est à régler sur place.",
+          title: t("ux.payment.depositPaid"),
+          description: t("ux.payment.balanceOnSite"),
         });
         navigate("/booking-history");
         return;
@@ -109,8 +109,8 @@ export default function Payment() {
       // Check if booking is cancelled
       if (data.status === "cancelled") {
         toast({
-          title: "Réservation annulée",
-          description: "Cette réservation a été annulée",
+          title: t("ux.payment.cancelled"),
+          description: t("ux.payment.cancelledDesc"),
           variant: "destructive",
         });
         navigate("/dashboard");
@@ -122,7 +122,7 @@ export default function Payment() {
       console.error("Error loading booking:", error);
       toast({
         title: "Erreur",
-        description: error instanceof Error ? error.message : "Impossible de charger la réservation",
+        description: error instanceof Error ? error.message : t("ux.payment.loadError"),
         variant: "destructive",
       });
       navigate("/dashboard");
@@ -147,10 +147,10 @@ export default function Payment() {
     // Set timeout for payment process (30 seconds)
     const timeoutId = setTimeout(() => {
       setProcessing(false);
-      setGeneralError("Le délai de traitement du paiement a expiré. Veuillez réessayer.");
+      setGeneralError(t("ux.payment.timeoutExpired"));
       toast({
-        title: "Délai dépassé",
-        description: "Le traitement du paiement a pris trop de temps. Veuillez réessayer.",
+        title: t("ux.payment.timeout"),
+        description: t("ux.payment.timeoutDesc"),
         variant: "destructive",
       });
     }, 30000);
@@ -168,13 +168,13 @@ export default function Payment() {
       if (checkError) throw checkError;
 
       if (!currentBooking) {
-        throw new Error("Réservation introuvable");
+        throw new Error(t("ux.payment.notFound"));
       }
 
       if (currentBooking.payment_status === "paid") {
         toast({
-          title: "Paiement déjà effectué",
-          description: "Cette réservation a déjà été payée",
+          title: t("ux.payment.alreadyPaid"),
+          description: t("ux.payment.alreadyPaidDesc"),
         });
         navigate("/dashboard");
         return;
@@ -182,8 +182,8 @@ export default function Payment() {
 
       if (currentBooking.status === "cancelled") {
         toast({
-          title: "Réservation annulée",
-          description: "Cette réservation a été annulée et ne peut être payée",
+          title: t("ux.payment.cancelled"),
+          description: t("ux.payment.cancelledCannotPay"),
           variant: "destructive",
         });
         navigate("/dashboard");
@@ -213,28 +213,28 @@ export default function Payment() {
         console.error("Erreur edge function:", error);
         
         // Extraire le message d'erreur
-        throw new Error(await getEdgeFunctionErrorMessage(error, "Une erreur est survenue lors du traitement du paiement."));
+        throw new Error(await getEdgeFunctionErrorMessage(error, t("ux.payment.processingError")));
       }
 
       // Vérifier le succès de la réponse
       if (!data) {
-        throw new Error("Aucune réponse reçue du serveur de paiement");
+        throw new Error(t("ux.payment.noResponse"));
       }
 
       if (!data.success) {
         // Afficher le message d'erreur spécifique de l'edge function
-        const errorMsg = data.error || "Échec de la création du paiement";
+        const errorMsg = data.error || t("ux.payment.createFailed");
         throw new Error(errorMsg);
       }
 
       if (!data.payment_url) {
-        throw new Error("URL de paiement non reçue. Veuillez réessayer.");
+        throw new Error(t("ux.payment.noUrl"));
       }
 
       // Succès - afficher un toast avant la redirection
       toast({
-        title: "Redirection vers le paiement",
-        description: "Vous allez être redirigé vers la page de paiement sécurisée...",
+        title: t("ux.payment.redirecting"),
+        description: t("ux.payment.redirectingDesc"),
       });
 
       // Petit délai pour permettre l'affichage du toast
@@ -248,7 +248,7 @@ export default function Payment() {
       console.error("Erreur de paiement:", error);
       
       // Déterminer le message d'erreur approprié
-      let userMessage = "Une erreur inattendue est survenue";
+      let userMessage = t("ux.payment.unexpected");
       
       if (error instanceof Error) {
         userMessage = error.message;
@@ -258,19 +258,19 @@ export default function Payment() {
       
       // Messages spécifiques pour certaines erreurs
       if (userMessage.includes("401") || userMessage.includes("Non autorisé") || userMessage.includes("Unauthorized")) {
-        userMessage = "Session expirée. Veuillez vous reconnecter.";
+        userMessage = t("ux.payment.sessionExpired");
       } else if (userMessage.includes("timeout") || userMessage.includes("TIMEOUT")) {
-        userMessage = "Le serveur met trop de temps à répondre. Veuillez réessayer.";
+        userMessage = t("ux.payment.slowServer");
       } else if (userMessage.includes("network") || userMessage.includes("fetch")) {
-        userMessage = "Problème de connexion. Vérifiez votre connexion internet.";
+        userMessage = t("ux.payment.network");
       } else if (userMessage.includes("502") || userMessage.includes("503")) {
-        userMessage = "Le service de paiement est temporairement indisponible. Veuillez réessayer.";
+        userMessage = t("ux.payment.unavailable");
       }
       
       setGeneralError(userMessage);
       
       toast({
-        title: "Erreur de paiement",
+        title: t("ux.payment.error"),
         description: userMessage,
         variant: "destructive",
       });
@@ -301,13 +301,13 @@ export default function Payment() {
                 <CheckCircle2 className="h-7 w-7" />
               </div>
               <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">
-                Récapitulatif de réservation
+                {t("ux.payment.eyebrow")}
               </p>
               <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-                Vérifiez les informations
+                {t("ux.payment.title")}
               </h1>
               <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-                Consultez les détails ci-dessous. Vous serez ensuite redirigé vers Jèko pour effectuer votre paiement sécurisé.
+                {t("ux.payment.intro")}
               </p>
             </div>
 
@@ -319,12 +319,12 @@ export default function Payment() {
             )}
 
             <Card className="overflow-hidden border-0 shadow-lg">
-              <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 md:p-8">
+              <div className="bg-primary/5 p-6 md:p-8">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Votre séjour</p>
+                    <p className="text-sm text-muted-foreground">{t("ux.payment.yourTrip")}</p>
                     <h2 className="mt-1 text-2xl font-bold">
-                      {booking.services?.name || "Réservation Bossiz+"}
+                      {booking.services?.name || t("ux.payment.defaultName")}
                     </h2>
                     {booking.services?.type && (
                       <p className="mt-1 text-sm capitalize text-muted-foreground">
@@ -333,7 +333,7 @@ export default function Payment() {
                     )}
                   </div>
                   <div className="rounded-full border bg-background/80 px-3 py-1 text-xs font-medium">
-                    Réf. {booking.id.substring(0, 8).toUpperCase()}
+                    {t("ux.payment.ref", { ref: booking.id.substring(0, 8).toUpperCase() })}
                   </div>
                 </div>
               </div>
@@ -343,9 +343,9 @@ export default function Payment() {
                   <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
                     <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Date de début</p>
+                      <p className="text-xs text-muted-foreground">{t("ux.payment.startDate")}</p>
                       <p className="mt-1 font-medium">
-                        {new Date(booking.start_date).toLocaleDateString("fr-FR", {
+                        {new Date(booking.start_date).toLocaleDateString(i18n.language, {
                           day: "2-digit",
                           month: "long",
                           year: "numeric",
@@ -357,9 +357,9 @@ export default function Payment() {
                     <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
                       <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                       <div>
-                        <p className="text-xs text-muted-foreground">Date de fin</p>
+                        <p className="text-xs text-muted-foreground">{t("ux.payment.endDate")}</p>
                         <p className="mt-1 font-medium">
-                          {new Date(booking.end_date).toLocaleDateString("fr-FR", {
+                          {new Date(booking.end_date).toLocaleDateString(i18n.language, {
                             day: "2-digit",
                             month: "long",
                             year: "numeric",
@@ -372,7 +372,7 @@ export default function Payment() {
                     <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
                       <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                       <div>
-                        <p className="text-xs text-muted-foreground">Destination</p>
+                        <p className="text-xs text-muted-foreground">{t("ux.payment.destination")}</p>
                         <p className="mt-1 font-medium">{booking.services.location}</p>
                       </div>
                     </div>
@@ -380,14 +380,14 @@ export default function Payment() {
                   <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
                     <Users className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Voyageurs</p>
+                      <p className="text-xs text-muted-foreground">{t("ux.payment.travellers")}</p>
                       <p className="mt-1 font-medium">{booking.guests}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap justify-between gap-2 border-t pt-5 text-sm">
-                  <span className="text-muted-foreground">Réservation au nom de</span>
+                  <span className="text-muted-foreground">{t("ux.payment.bookedBy")}</span>
                   <span className="font-medium">{booking.customer_name}</span>
                 </div>
 
@@ -396,8 +396,8 @@ export default function Payment() {
                     <div>
                       <p className="text-sm text-muted-foreground">
                         {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0
-                          ? `Acompte à régler (${booking.deposit_percent} %)`
-                          : "Total à régler"}
+                          ? t("ux.payment.depositDue", { percent: booking.deposit_percent })
+                          : t("ux.payment.totalDue")}
                       </p>
                       <p className="mt-1 text-3xl font-bold text-primary">
                         <Price amount={amountToPay} fromCurrency={booking.currency} />
@@ -407,7 +407,7 @@ export default function Payment() {
                   </div>
                   {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0 && (
                     <div className="mt-4 flex justify-between border-t pt-3 text-sm">
-                      <span className="text-muted-foreground">Solde restant à régler sur place</span>
+                      <span className="text-muted-foreground">{t("ux.payment.balanceDue")}</span>
                       <span className="font-medium">
                         <Price amount={booking.balance_due} fromCurrency={booking.currency} />
                       </span>
@@ -417,15 +417,15 @@ export default function Payment() {
 
                 {booking.notes && (
                   <div className="rounded-xl border p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Note de réservation</p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("ux.payment.note")}</p>
                     <p className="mt-2 text-sm">{booking.notes}</p>
                   </div>
                 )}
 
-                <div className="flex gap-3 rounded-xl border border-green-500/20 bg-green-500/5 p-4">
-                  <ShieldCheck className="h-5 w-5 shrink-0 text-green-600" />
+                <div className="flex gap-3 rounded-xl border border-success/30 bg-success/5 p-4">
+                  <ShieldCheck className="h-5 w-5 shrink-0 text-success" />
                   <p className="text-sm text-muted-foreground">
-                    Le paiement sera effectué sur la page sécurisée de Jèko. Vos données bancaires ne sont pas saisies ni conservées sur Bossiz+.
+                    {t("ux.payment.secureNote")}
                   </p>
                 </div>
 
@@ -433,17 +433,17 @@ export default function Payment() {
                   {processing ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Préparation du paiement...
+                      {t("ux.payment.preparing")}
                     </>
                   ) : (
                     <>
-                      Continuer vers le paiement Jèko
+                      {t("ux.payment.continue")}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </>
                   )}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">
-                  Vous quitterez Bossiz+ pour finaliser le paiement sur Jèko.
+                  {t("ux.payment.leaveNote")}
                 </p>
               </div>
             </Card>

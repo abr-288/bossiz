@@ -21,6 +21,7 @@ import { MapPin, Calendar, Users, MoreVertical, Edit, Trash2, CheckCircle, XCirc
 import { useBookingPDF } from "@/hooks/useBookingPDF";
 import { Price } from "@/components/ui/price";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 interface Booking {
   id: string;
@@ -75,7 +76,7 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button aria-label="Plus d'actions" variant="ghost" size="icon">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -124,12 +125,12 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>{new Date(booking.start_date).toLocaleDateString("fr-FR")}</span>
+              <span>{new Date(booking.start_date).toLocaleDateString(currentLocaleTag())}</span>
             </div>
             {booking.end_date && (
               <>
                 <span className="text-muted-foreground">→</span>
-                <span>{new Date(booking.end_date).toLocaleDateString("fr-FR")}</span>
+                <span>{new Date(booking.end_date).toLocaleDateString(currentLocaleTag())}</span>
               </>
             )}
           </div>

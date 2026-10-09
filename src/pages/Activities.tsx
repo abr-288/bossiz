@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Star, Tag, Loader2, Activity } from "lucide-react";
+import { MapPin, Clock, Star, Tag, Activity } from "lucide-react";
 import { useState, useEffect } from "react";
 import { BookingDialog } from "@/components/BookingDialog";
 import { ActivitySearchForm } from "@/components/ActivitySearchForm";
@@ -11,6 +11,8 @@ import { useActivitySearch } from "@/hooks/useActivitySearch";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerActivities from "@/assets/banner-activities.jpg";
 import { useTranslation } from "react-i18next";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 const Activities = () => {
   const { t } = useTranslation();
@@ -33,7 +35,7 @@ const Activities = () => {
           alt={t('activities.title')} 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
         <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
@@ -49,9 +51,7 @@ const Activities = () => {
       
       <main className="flex-1 container mx-auto px-4 py-8">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : activities.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-xl text-muted-foreground">{t('activities.noActivities')}</p>
@@ -64,14 +64,14 @@ const Activities = () => {
                 <LazyImage 
                   src={activity.image_url || 'https://images.unsplash.com/photo-1583338505874-0cd6e2b57407'} 
                   alt={activity.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-slow ease-standard"
                 />
                 <div className="absolute top-4 left-4 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
                   <Tag className="w-3 h-3" />
                   {activity.category}
                 </div>
                 <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <Star className="w-4 h-4 fill-gold text-gold" />
                   <span className="text-sm font-semibold">{activity.rating}</span>
                 </div>
               </div>
@@ -84,7 +84,7 @@ const Activities = () => {
                     {activity.location}
                   </div>
                   {activity.maps_url && <a href={activity.maps_url} target="_blank" rel="noreferrer" className="mb-3 inline-block text-sm text-primary underline underline-offset-2">Voir le lieu sur la carte</a>}
-                  {!!activity.available_dates?.length && <div className="mb-3 flex flex-wrap gap-2" aria-label="Dates disponibles">{activity.available_dates.slice(0, 4).map((date) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString("fr-FR")}</span>)}</div>}
+                  {!!activity.available_dates?.length && <div className="mb-3 flex flex-wrap gap-2" aria-label="Dates disponibles">{activity.available_dates.slice(0, 4).map((date) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</span>)}</div>}
                   {activity.description && (
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                       {activity.description}

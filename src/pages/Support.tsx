@@ -89,13 +89,13 @@ const Support = () => {
       <Navbar />
 
       {/* Hero Section with help search */}
-      <section className="relative min-h-[45vh] md:min-h-[50vh] flex items-center justify-center overflow-hidden bg-primary">
+      <section className="relative min-h-[45vh] md:min-h-[50vh] flex items-center justify-center overflow-hidden bg-brand">
         <LazyImage
           src={bannerSupport}
           alt={t("pages.support.title", "Support")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-primary/65"></div>
+        <div className="absolute inset-0 bg-brand/65"></div>
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         </div>
@@ -104,7 +104,7 @@ const Support = () => {
 
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter drop-shadow-lg">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tighter drop-shadow-lg">
               {t("pages.support.title")}
             </h1>
             <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md mb-8">
@@ -117,7 +117,7 @@ const Support = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t("pages.support.search.placeholder")}
-                className="h-14 pl-14 pr-12 rounded-2xl text-base shadow-2xl border-0 bg-white text-foreground"
+                className="h-14 pl-14 pr-12 rounded-2xl text-base shadow-2xl border-0 bg-card text-foreground"
               />
               {isSearching && (
                 <button
@@ -135,13 +135,13 @@ const Support = () => {
 
       <main className="flex-1 container mx-auto px-4 py-12">
         {/* Manage my booking - prominent quick access */}
-        <Card className="relative z-20 -mt-16 mb-12 border-0 bg-white shadow-2xl rounded-3xl overflow-hidden">
+        <Card className="relative z-20 -mt-16 mb-12 border-0 bg-card shadow-xl rounded-3xl overflow-hidden">
           <CardContent className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
               <CalendarCheck className="w-8 h-8 md:w-10 md:h-10 text-primary" />
             </div>
             <div className="flex-1 text-center md:text-left">
-              <h2 className="text-xl md:text-2xl font-black text-foreground mb-1">
+              <h2 className="text-xl md:text-2xl font-extrabold text-foreground mb-1">
                 {t("pages.support.manageBooking.title")}
               </h2>
               <p className="text-muted-foreground font-medium">
@@ -195,7 +195,7 @@ const Support = () => {
           /* Category grid */
           <div className="mb-16">
             <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-black text-foreground mb-2">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2">
                 {t("pages.support.categories.sectionTitle")}
               </h2>
               <p className="text-muted-foreground font-medium">
@@ -256,7 +256,7 @@ const Support = () => {
                     <MessageCircle className="w-6 h-6 text-primary" />
                   </div>
                   <h4 className="font-bold text-sm mb-2">{t('pages.support.contact.chat')}</h4>
-                  <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-white font-bold rounded-lg" onClick={handleChatClick}>
+                  <Button size="sm" className="w-full font-bold rounded-lg" onClick={handleChatClick}>
                     {t('pages.support.startChat')}
                   </Button>
                 </CardContent>
@@ -345,7 +345,7 @@ const Support = () => {
 
         {/* Newsletter Banner - Solid Version */}
         <div className="mt-16">
-          <Card className="border-0 bg-primary text-white rounded-3xl overflow-hidden shadow-2xl relative">
+          <Card className="border-0 bg-brand text-brand-foreground rounded-3xl overflow-hidden shadow-2xl relative">
             {/* Background texture (dots or lines) */}
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
               <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(45deg, white 25%, transparent 25%, transparent 50%, white 50%, white 75%, transparent 75%, transparent)', backgroundSize: '40px 40px' }} />
@@ -355,7 +355,7 @@ const Support = () => {
 
             <CardContent className="p-10 md:p-16 relative z-10">
               <div className="max-w-3xl mx-auto text-center">
-                <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">{t('pages.support.followNews')} <br className="hidden md:block" /> Bossiz+</h3>
+                <h3 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">{t('pages.support.followNews')} <br className="hidden md:block" /> Bossiz+</h3>
                 <p className="text-lg text-white/80 mb-10 max-w-xl mx-auto font-medium">
                   {t('footer.newsletter.description')}
                 </p>
@@ -371,7 +371,7 @@ const Support = () => {
                       className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-14 rounded-2xl"
                     />
                   </div>
-                  <UnifiedSubmitButton loading={subscribing} className="bg-secondary text-secondary-foreground h-14 px-8 rounded-2xl font-black text-lg shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95">
+                  <UnifiedSubmitButton loading={subscribing} className="bg-secondary text-secondary-foreground h-14 px-8 rounded-2xl font-extrabold text-lg shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95">
                     {t('pages.support.subscribe')}
                   </UnifiedSubmitButton>
                 </UnifiedForm>

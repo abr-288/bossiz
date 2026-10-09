@@ -9,6 +9,8 @@ import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { autoConvertAndFormat } from '@/utils/currencyConverter';
 import { useTranslation } from 'react-i18next';
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { MOTION } from "@/lib/motion";
 
 interface OrderItem {
   id: string;
@@ -42,7 +44,7 @@ const OrderSummary = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [orderData, setOrderData] = useState<OrderSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -67,13 +69,13 @@ const OrderSummary = () => {
           // Générer des données basées sur le planId
           generateDemoOrder();
         } else {
-          throw new Error('Aucune commande trouvée');
+          throw new Error(t("ux.order.notFoundToast"));
         }
       } catch (error: any) {
         console.error('Error fetching order:', error);
         toast({
           title: 'Erreur',
-          description: 'Impossible de charger les détails de la commande',
+          description: t("ux.order.loadError"),
           variant: 'destructive',
         });
         navigate('/');
@@ -180,13 +182,15 @@ const OrderSummary = () => {
 
   const handlePrint = () => {
     if (!orderData) return;
-    
+    const p = (key: string, options?: Record<string, unknown>) => t(`ux.print.${key}`, options);
+    const cycle = (c: string) => (c === 'monthly' ? p('monthly') : p('annual'));
+
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(`
-        <html>
+        <html lang="${i18n.language}">
           <head>
-            <title>Récapitulatif de Commande - Bossiz Conciergerie</title>
+            <title>${p('title')} - Bossiz Conciergerie</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; }
               .header { text-align: center; margin-bottom: 30px; }
@@ -198,31 +202,31 @@ const OrderSummary = () => {
           </head>
           <body>
             <div class="header">
-              <h1>Récapitulatif de Commande</h1>
+              <h1>${p('title')}</h1>
               <h2>Bossiz Conciergerie</h2>
             </div>
             <div class="order-info">
-              <p><strong>Numéro de commande:</strong> ${orderData.orderId}</p>
-              <p><strong>Date:</strong> ${new Date(orderData.orderDate).toLocaleDateString('fr-FR')}</p>
-              <p><strong>Client:</strong> ${orderData.customerInfo.name}</p>
-              <p><strong>Email:</strong> ${orderData.customerInfo.email}</p>
+              <p><strong>${p('orderNumber')}:</strong> ${orderData.orderId}</p>
+              <p><strong>${p('date')}:</strong> ${new Date(orderData.orderDate).toLocaleDateString(i18n.language)}</p>
+              <p><strong>${p('customer')}:</strong> ${orderData.customerInfo.name}</p>
+              <p><strong>${p('email')}:</strong> ${orderData.customerInfo.email}</p>
             </div>
             ${orderData.items.map(item => `
               <div class="item">
-                <h3>${item.name} - ${item.billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}</h3>
+                <h3>${item.name} - ${cycle(item.billingCycle)}</h3>
                 <p>${item.description}</p>
-                <p><strong>Prix:</strong> ${autoConvertAndFormat(item.price, item.currency)}</p>
-                ${item.trialDays > 0 ? `<p><strong>Jours d'essai:</strong> ${item.trialDays} jours</p>` : ''}
+                <p><strong>${p('price')}:</strong> ${autoConvertAndFormat(item.price, item.currency)}</p>
+                ${item.trialDays > 0 ? `<p><strong>${p('trialDays')}:</strong> ${p('days', { count: item.trialDays })}</p>` : ''}
                 <ul>
                   ${item.features.map(feature => `<li>${feature}</li>`).join('')}
                 </ul>
               </div>
             `).join('')}
             <div class="total">
-              <p>Total: ${autoConvertAndFormat(orderData.total, orderData.currency)}</p>
+              <p>${p('total')}: ${autoConvertAndFormat(orderData.total, orderData.currency)}</p>
             </div>
             <div class="footer">
-              <p>Merci de votre confiance dans Bossiz Conciergerie</p>
+              <p>${p('thanks')}</p>
             </div>
           </body>
         </html>
@@ -234,51 +238,52 @@ const OrderSummary = () => {
 
   const handleDownloadPDF = () => {
     if (!orderData) return;
-    
-    // Créer un contenu PDF simplifié
+    const p = (key: string, options?: Record<string, unknown>) => t(`ux.print.${key}`, options);
+    const cycle = (c: string) => (c === 'monthly' ? p('monthly') : p('annual'));
+    const title = p('title').toUpperCase();
+
+    // Récapitulatif texte dans la langue de l'utilisateur
     const pdfContent = `
-RÉCAPITULATIF DE COMMANDE
-========================
+${title}
+${'='.repeat(title.length)}
 
 BOSSIZ CONCIERGERIE
-${new Date().toLocaleDateString('fr-FR')}
+${new Date().toLocaleDateString(currentLocaleTag())}
 
-NUMÉRO DE COMMANDE: ${orderData.orderId}
+${p('orderNumber').toUpperCase()}: ${orderData.orderId}
 
-INFORMATIONS CLIENT
+${p('customerInfo').toUpperCase()}
 -----------------
-Nom: ${orderData.customerInfo.name}
-Email: ${orderData.customerInfo.email}
-Téléphone: ${orderData.customerInfo.phone}
+${p('name')}: ${orderData.customerInfo.name}
+${p('email')}: ${orderData.customerInfo.email}
+${p('phone')}: ${orderData.customerInfo.phone}
 
-DÉTAIL DE LA COMMANDE
+${p('orderDetail').toUpperCase()}
 ---------------------
 
 ${orderData.items.map(item => `
-${item.name.toUpperCase()} - ${item.billingCycle === 'monthly' ? 'MENSUEL' : 'ANNUEL'}
+${item.name.toUpperCase()} - ${cycle(item.billingCycle).toUpperCase()}
 ${'='.repeat(50)}
 ${item.description}
 
-Prix: ${autoConvertAndFormat(item.price, item.currency)}
-${item.trialDays > 0 ? `Période d'essai: ${item.trialDays} jours` : ''}
-${item.discount > 0 ? `Réduction: ${item.discount}%` : ''}
+${p('price')}: ${autoConvertAndFormat(item.price, item.currency)}
+${item.trialDays > 0 ? `${p('trialDays')}: ${p('days', { count: item.trialDays })}` : ''}
+${item.discount > 0 ? `${p('discount')}: ${item.discount}%` : ''}
 
-FONCTIONNALITÉS:
+${p('features').toUpperCase()}:
 ${item.features.map(feature => `• ${feature}`).join('\n')}
 
 `).join('')}
 
-RÉCAPITULATIF FINANCIER
+${p('financial').toUpperCase()}
 ----------------------
-Sous-total: ${autoConvertAndFormat(orderData.subtotal, orderData.currency)}
-${orderData.discount > 0 ? `Réduction: ${autoConvertAndFormat(orderData.discount, orderData.currency)}` : ''}
-Total: ${autoConvertAndFormat(orderData.total, orderData.currency)}
+${p('subtotal')}: ${autoConvertAndFormat(orderData.subtotal, orderData.currency)}
+${orderData.discount > 0 ? `${p('discount')}: ${autoConvertAndFormat(orderData.discount, orderData.currency)}` : ''}
+${p('total')}: ${autoConvertAndFormat(orderData.total, orderData.currency)}
 
-MÉTHODE DE PAIEMENT: ${orderData.paymentMethod}
+${p('paymentMethod').toUpperCase()}: ${orderData.paymentMethod}
 
-MÉTHODE DE PAIEMENT: ${orderData.paymentMethod}
-
-Merci de votre confiance dans Bossiz Conciergerie
+${p('thanks')}
     `;
 
     // Télécharger comme fichier texte
@@ -286,15 +291,15 @@ Merci de votre confiance dans Bossiz Conciergerie
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `recapitulatif-commande-${orderData.orderId}.txt`;
+    a.download = `${t('ux.print.fileName')}-${orderData.orderId}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 
     toast({
-      title: 'Téléchargement',
-      description: 'Le récapitulatif a été téléchargé',
+      title: t("ux.order.download"),
+      description: t("ux.order.downloaded"),
     });
   };
 
@@ -310,19 +315,19 @@ Merci de votre confiance dans Bossiz Conciergerie
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-muted/40 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-info"></div>
       </div>
     );
   }
 
   if (!orderData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-muted/40 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Commande non trouvée</h2>
-          <Button onClick={handleBackToSubscriptions} className="bg-blue-600 hover:bg-blue-700">
-            Retour aux abonnements
+          <h2 className="text-2xl font-bold text-foreground mb-4">{t("ux.order.notFound")}</h2>
+          <Button onClick={handleBackToSubscriptions}>
+            {t("ux.order.backToPlans")}
           </Button>
         </div>
       </div>
@@ -330,13 +335,13 @@ Merci de votre confiance dans Bossiz Conciergerie
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
+    <div className="min-h-screen bg-muted/40 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: MOTION.slow }}
           className="mb-8"
         >
           <div className="flex items-center justify-between">
@@ -346,7 +351,7 @@ Merci de votre confiance dans Bossiz Conciergerie
               className="flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Retour
+              {t("ux.order.back")}
             </Button>
             <div className="flex gap-2">
               <Button
@@ -355,11 +360,11 @@ Merci de votre confiance dans Bossiz Conciergerie
                 className="flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
-                Imprimer
+                {t("ux.order.print")}
               </Button>
               <Button
                 onClick={handleDownloadPDF}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                className="flex items-center gap-2 bg-info hover:bg-info/90"
               >
                 <Download className="w-4 h-4" />
                 {t('pages.orderSummary.downloadPdf')}
@@ -372,10 +377,10 @@ Merci de votre confiance dans Bossiz Conciergerie
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: MOTION.slow, delay: 0.1 }}
         >
-          <Card className="mb-8 border-2 border-blue-200 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+          <Card className="mb-8 border-2 border-info/30 shadow-lg">
+            <CardHeader className="bg-info text-info-foreground">
               <CardTitle className="text-2xl font-bold flex items-center gap-3">
                 <Shield className="w-8 h-8" />
                 {t('pages.orderSummary.title')}
@@ -384,20 +389,20 @@ Merci de votre confiance dans Bossiz Conciergerie
             <CardContent className="p-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Informations de la commande</h3>
+                  <h3 className="font-semibold text-foreground mb-2">{t("ux.order.orderInfo")}</h3>
                   <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Numéro:</span> {orderData.orderId}</p>
-                    <p><span className="font-medium">Date:</span> {new Date(orderData.orderDate).toLocaleDateString('fr-FR')}</p>
-                    <p><span className="font-medium">Statut:</span> 
-                      <Badge className="ml-2 bg-green-100 text-green-800">En attente de paiement</Badge>
+                    <p><span className="font-medium">{t("ux.order.number")}</span> {orderData.orderId}</p>
+                    <p><span className="font-medium">{t("ux.order.date")}</span> {new Date(orderData.orderDate).toLocaleDateString(i18n.language)}</p>
+                    <p><span className="font-medium">{t("ux.order.status")}</span> 
+                      <Badge className="ml-2 bg-success/10 text-success">{t("ux.order.awaitingPayment")}</Badge>
                     </p>
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Méthode de paiement</h3>
+                  <h3 className="font-semibold text-foreground mb-2">{t("ux.order.paymentMethod")}</h3>
                   <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Prestataire:</span> {orderData.paymentMethod}</p>
-                    <p><span className="font-medium">Devise:</span> {orderData.currency}</p>
+                    <p><span className="font-medium">{t("ux.order.provider")}</span> {orderData.paymentMethod}</p>
+                    <p><span className="font-medium">{t("ux.order.currency")}</span> {orderData.currency}</p>
                   </div>
                 </div>
               </div>
@@ -409,27 +414,27 @@ Merci de votre confiance dans Bossiz Conciergerie
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: MOTION.slow, delay: 0.2 }}
         >
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Star className="w-5 h-5" />
-                Informations du client
+                {t("ux.order.customerInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Nom complet</label>
+                  <label className="text-sm font-medium text-foreground">{t("ux.order.fullName")}</label>
                   <p className="mt-1 text-lg font-semibold">{orderData.customerInfo.name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Email</label>
+                  <label className="text-sm font-medium text-foreground">{t("ux.order.email")}</label>
                   <p className="mt-1 text-lg">{orderData.customerInfo.email}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Téléphone</label>
+                  <label className="text-sm font-medium text-foreground">{t("ux.order.phone")}</label>
                   <p className="mt-1 text-lg">{orderData.customerInfo.phone}</p>
                 </div>
               </div>
@@ -441,34 +446,34 @@ Merci de votre confiance dans Bossiz Conciergerie
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          transition={{ duration: MOTION.slow, delay: 0.3 }}
         >
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Détails de la commande</CardTitle>
+              <CardTitle>{t("ux.order.orderDetails")}</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-6">
                 {orderData.items.map((item, index) => (
-                  <div key={item.id} className="border rounded-lg p-6 bg-gray-50">
+                  <div key={item.id} className="border rounded-lg p-6 bg-muted">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
-                        <p className="text-gray-600 mt-1">{item.description}</p>
+                        <h3 className="text-xl font-bold text-foreground">{item.name}</h3>
+                        <p className="text-muted-foreground mt-1">{item.description}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-info">
                           {autoConvertAndFormat(item.price, item.currency)}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                           {item.billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}
                         </p>
                       </div>
                     </div>
                     
                     {item.trialDays > 0 && (
-                      <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-center gap-2 text-green-800">
+                      <div className="mb-4 p-3 bg-success/10 border border-success/30 rounded-lg">
+                        <div className="flex items-center gap-2 text-success">
                           <Clock className="w-4 h-4" />
                           <span className="font-medium">
                             {item.trialDays} jours d'essai gratuits
@@ -478,11 +483,11 @@ Merci de votre confiance dans Bossiz Conciergerie
                     )}
 
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Fonctionnalités incluses:</h4>
+                      <h4 className="font-semibold text-foreground mb-3">{t("ux.order.features")}</h4>
                       <div className="grid md:grid-cols-2 gap-3">
                         {item.features.map((feature, featureIndex) => (
                           <div key={featureIndex} className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
                             <span>{feature}</span>
                           </div>
                         ))}
@@ -490,9 +495,9 @@ Merci de votre confiance dans Bossiz Conciergerie
                     </div>
 
                     {item.discount > 0 && (
-                      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p className="text-yellow-800 font-medium">
-                          Réduction spéciale de {item.discount}% pour l'abonnement annuel
+                      <div className="mt-4 p-3 bg-warning border border-warning-foreground/20 rounded-lg">
+                        <p className="text-warning-foreground font-medium">
+                          {t("ux.order.yearlyDiscount", { percent: item.discount })}
                         </p>
                       </div>
                     )}
@@ -507,10 +512,10 @@ Merci de votre confiance dans Bossiz Conciergerie
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: MOTION.slow, delay: 0.4 }}
         >
-          <Card className="mb-8 border-2 border-green-200">
-            <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white">
+          <Card className="mb-8 border-2 border-success/30">
+            <CardHeader className="bg-success text-success-foreground">
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="w-6 h-6" />
                 {t('pages.orderSummary.financialSummary')}
@@ -519,15 +524,15 @@ Merci de votre confiance dans Bossiz Conciergerie
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex justify-between text-lg">
-                  <span>Sous-total:</span>
+                  <span>{t("ux.order.subtotal")}</span>
                   <span className="font-medium">
                     {autoConvertAndFormat(orderData.subtotal, orderData.currency)}
                   </span>
                 </div>
                 
                 {orderData.discount > 0 && (
-                  <div className="flex justify-between text-lg text-green-600">
-                    <span>Réduction:</span>
+                  <div className="flex justify-between text-lg text-success">
+                    <span>{t("ux.order.discount")}</span>
                     <span className="font-medium">
                       -{autoConvertAndFormat(orderData.discount, orderData.currency)}
                     </span>
@@ -536,9 +541,9 @@ Merci de votre confiance dans Bossiz Conciergerie
                 
                 <Separator />
                 
-                <div className="flex justify-between text-2xl font-bold text-gray-900">
-                  <span>Total à payer:</span>
-                  <span className="text-blue-600">
+                <div className="flex justify-between text-2xl font-bold text-foreground">
+                  <span>{t("ux.order.total")}</span>
+                  <span className="text-info">
                     {autoConvertAndFormat(orderData.total, orderData.currency)}
                   </span>
                 </div>
@@ -551,7 +556,7 @@ Merci de votre confiance dans Bossiz Conciergerie
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+          transition={{ duration: MOTION.slow, delay: 0.5 }}
           className="flex justify-center gap-4"
         >
           <Button
@@ -559,11 +564,11 @@ Merci de votre confiance dans Bossiz Conciergerie
             onClick={handleBackToSubscriptions}
             className="px-8 py-3 text-lg"
           >
-            Modifier l'abonnement
+            {t("ux.order.changePlan")}
           </Button>
           <Button
             onClick={handleProceedToPayment}
-            className="px-8 py-3 text-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 flex items-center gap-2"
+            className="px-8 py-3 text-lg bg-info hover:bg-info/90 flex items-center gap-2"
           >
             {t('booking.summary.proceedToPayment')}
             <ArrowRight className="w-5 h-5" />

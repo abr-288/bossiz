@@ -1,11 +1,12 @@
-import React, { createContext, useContext } from 'react';
+import React, { useContext } from 'react';
+import { singletonContext } from "@/lib/singletonContext";
 
 interface CurrencyContextType {
   selectedCurrency: string;
   formatPrice: (amount: number, currency?: string) => string;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+const CurrencyContext = singletonContext<CurrencyContextType | undefined>("Currency", undefined);
 
 // Single currency: XOF (Franc CFA)
 const FIXED_CURRENCY = {

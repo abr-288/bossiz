@@ -42,19 +42,19 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import bannerBecomePartner from "@/assets/hero-slide-1.jpg";
 
 const partnerTypeOptions = [
-  { value: "hotel", label: "Hôtel / hébergement", icon: Hotel },
-  { value: "restaurant", label: "Restaurant", icon: UtensilsCrossed },
-  { value: "activity", label: "Activité / excursion / tour", icon: Compass },
-  { value: "artisan", label: "Artisan / guide local", icon: Hammer },
-  { value: "wellness", label: "Bien-être & Beauté (spa, coiffure, institut, yoga...)", icon: Sparkles },
-  { value: "cars", label: "Location de voitures", icon: Car },
+  { value: "hotel", label: "ux.partnerForm.typeHotel", icon: Hotel },
+  { value: "restaurant", label: "ux.partnerForm.typeRestaurant", icon: UtensilsCrossed },
+  { value: "activity", label: "ux.partnerForm.typeActivity", icon: Compass },
+  { value: "artisan", label: "ux.partnerForm.typeArtisan", icon: Hammer },
+  { value: "wellness", label: "ux.partnerForm.typeWellness", icon: Sparkles },
+  { value: "cars", label: "ux.partnerForm.typeCars", icon: Car },
 ] as const;
 
 type PartnerTypeValue = (typeof partnerTypeOptions)[number]["value"];
 
 const carPlanOptions = [
-  { value: "pro", label: "Pro — 25 000 XOF/mois, jusqu'à 15 véhicules" },
-  { value: "flotte", label: "Flotte — 60 000 XOF/mois, véhicules illimités" },
+  { value: "pro", label: "ux.partnerForm.planPro" },
+  { value: "flotte", label: "ux.partnerForm.planFleet" },
 ];
 
 const carPlanLabels: Record<string, string> = {
@@ -63,62 +63,62 @@ const carPlanLabels: Record<string, string> = {
 };
 
 const commonConditions = [
-  "Chaque candidature est étudiée manuellement par notre équipe avant toute activation.",
-  "Bossiz+ peut refuser ou suspendre un partenariat en cas de non-respect de ces conditions.",
+  "ux.partnerForm.common1",
+  "ux.partnerForm.common2",
 ];
 
 const conditionsByType: Record<PartnerTypeValue, string[]> = {
   hotel: [
-    "Inscription gratuite, sans engagement.",
-    "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client.",
-    "Bossiz conserve 10% et vous reverse 90% des réservations réglées en ligne via Jèko sous 24 heures.",
-    "Votre établissement est géré en autonomie depuis votre espace agence une fois la candidature validée.",
+    "ux.partnerForm.signup",
+    "ux.partnerForm.hotel2",
+    "ux.partnerForm.share24",
+    "ux.partnerForm.hotel4",
   ],
   restaurant: [
-    "Inscription gratuite, sans engagement.",
-    "Bossiz conserve 10% et vous reverse 90% des ventes encaissées par la plateforme via Jèko sous 24 heures.",
-    "Vous gérez votre menu, vos disponibilités et votre prix moyen depuis votre espace agence.",
+    "ux.partnerForm.signup",
+    "ux.partnerForm.restaurant2",
+    "ux.partnerForm.restaurant3",
   ],
   activity: [
-    "Inscription gratuite, sans engagement.",
-    "Bossiz conserve 10% et vous reverse 90% des réservations réglées en ligne via Jèko sous 24 heures.",
-    "Votre activité est visible dans les résultats Activités & Tours.",
+    "ux.partnerForm.signup",
+    "ux.partnerForm.share24",
+    "ux.partnerForm.activity3",
   ],
   artisan: [
-    "Inscription gratuite, sans engagement.",
-    "Bossiz conserve 10% et vous reverse 90% des commandes encaissées par la plateforme via Jèko sous 24 heures.",
-    "Les demandes de commande sont à valider vous-même depuis votre espace agence avant qu'une commission ne soit due.",
-    "Une fiche dédiée présente votre savoir-faire avec photos et description.",
+    "ux.partnerForm.signup",
+    "ux.partnerForm.artisan2",
+    "ux.partnerForm.artisan3",
+    "ux.partnerForm.artisan4",
   ],
   wellness: [
-    "Regroupe spas, salons de manucure/pédicure, barbershops, instituts de beauté et studios de yoga.",
-    "Inscription gratuite, sans engagement.",
-    "Les prestations réglées directement auprès de l'agence ne sont pas encaissées par Bossiz et ne peuvent donc pas être reversées automatiquement par Jèko.",
-    "Vos clients prennent rendez-vous en ligne sur vos créneaux et prestations ; le règlement de la prestation reste géré directement avec vous.",
-    "Vous gérez vos prestations, tarifs, horaires et créneaux depuis votre espace agence.",
+    "ux.partnerForm.wellness1",
+    "ux.partnerForm.signup",
+    "ux.partnerForm.wellness3",
+    "ux.partnerForm.wellness4",
+    "ux.partnerForm.wellness5",
   ],
   cars: [
-    "Un forfait voiture payant (Pro ou Flotte) est nécessaire avant la mise en ligne de vos véhicules.",
-    "La commission applicable dépend du forfait souscrit.",
-    "Le nombre de véhicules en ligne et les mises en avant dépendent du forfait souscrit.",
+    "ux.partnerForm.cars1",
+    "ux.partnerForm.cars2",
+    "ux.partnerForm.cars3",
   ],
 };
 
 const benefits = [
   {
     icon: Users,
-    title: "Visibilité auprès de nos clients",
-    description: "Votre établissement apparaît directement dans les résultats de recherche Bossiz+.",
+    title: "ux.partnerForm.benefit1",
+    description: "ux.partnerForm.benefit1Desc",
   },
   {
     icon: BadgePercent,
-    title: "Vos prix, sans surcoût",
-    description: "Contrairement aux autres sources, aucune commission n'est ajoutée sur vos tarifs partenaires.",
+    title: "ux.partnerForm.benefit2",
+    description: "ux.partnerForm.benefit2Desc",
   },
   {
     icon: TrendingUp,
-    title: "Gestion autonome",
-    description: "Un espace dédié pour gérer vos offres une fois votre candidature approuvée.",
+    title: "ux.partnerForm.benefit3",
+    description: "ux.partnerForm.benefit3Desc",
   },
 ];
 
@@ -129,7 +129,9 @@ const isPartnerType = (value: string | null): value is PartnerTypeValue =>
   !!value && partnerTypeOptions.some((option) => option.value === value);
 
 const BecomePartner = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // La candidature est lue en français dans le back-office : libellés enregistrés en français.
+  const tFr = i18n.getFixedT("fr");
   const [searchParams] = useSearchParams();
   const requestedCarPlan = searchParams.get("plan");
   const requestedTypeParam = searchParams.get("type");
@@ -167,12 +169,12 @@ const BecomePartner = () => {
     if (!file) return;
 
     if (file.size > MAX_LOGO_SIZE) {
-      toast.error("Le logo doit faire moins de 2 Mo.");
+      toast.error(t("ux.becomePartner.logoTooBig"));
       e.target.value = "";
       return;
     }
     if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
-      toast.error("Formats acceptés pour le logo : JPEG, PNG ou WEBP.");
+      toast.error(t("ux.becomePartner.logoFormats"));
       e.target.value = "";
       return;
     }
@@ -184,11 +186,11 @@ const BecomePartner = () => {
       const { data, error } = await supabase.functions.invoke("upload-partner-logo", {
         body: uploadData,
       });
-      if (error || !data?.url) throw error || new Error("Réponse invalide");
+      if (error || !data?.url) throw error || new Error(t("ux.becomePartner.invalidResponse"));
       setLogoUrl(data.url);
     } catch (error) {
       console.error("Logo upload error:", error);
-      toast.error("Impossible de télécharger le logo. Réessayez.");
+      toast.error(t("ux.becomePartner.logoUploadError"));
     } finally {
       setLogoUploading(false);
       e.target.value = "";
@@ -199,17 +201,17 @@ const BecomePartner = () => {
     e.preventDefault();
 
     if (!partnerType) {
-      toast.error("Veuillez choisir un type de partenariat.");
+      toast.error(t("ux.becomePartner.pickType"));
       return;
     }
 
     if (!acceptedConditions) {
-      toast.error("Veuillez accepter les conditions du partenariat avant de continuer.");
+      toast.error(t("ux.becomePartner.acceptTerms"));
       return;
     }
 
     if (!preferredPayoutMethod) {
-      toast.error("Veuillez choisir votre moyen de réception des reversements.");
+      toast.error(t("ux.becomePartner.pickPayout"));
       return;
     }
 
@@ -217,11 +219,12 @@ const BecomePartner = () => {
       partnerApplicationSchema.parse(formData);
     } catch (error) {
       const message = error instanceof ZodError ? error.errors[0]?.message : undefined;
-      toast.error(message || "Veuillez vérifier vos informations.");
+      toast.error(message || t("ux.becomePartner.checkInfo"));
       return;
     }
 
-    const typeLabel = partnerTypeOptions.find((option) => option.value === partnerType)?.label;
+    const typeKey = partnerTypeOptions.find((option) => option.value === partnerType)?.label;
+    const typeLabel = typeKey ? tFr(typeKey) : undefined;
     const finalDescription = [
       typeLabel ? `Type de partenariat : ${typeLabel}` : null,
       partnerType === "cars" ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}` : null,
@@ -251,7 +254,7 @@ const BecomePartner = () => {
 
     if (error) {
       console.error("Partner application error:", error);
-      toast.error("Impossible d'envoyer votre candidature. Veuillez réessayer.");
+      toast.error(t("ux.becomePartner.sendError"));
       return;
     }
 
@@ -282,22 +285,22 @@ const BecomePartner = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative py-16 md:py-20 bg-primary overflow-hidden">
+      <section className="relative py-16 md:py-20 bg-brand overflow-hidden">
         <LazyImage
           src={bannerBecomePartner}
-          alt={t("pages.becomePartner.title", "Devenir partenaire")}
+          alt={t("ux.becomePartner.title")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-primary/65" />
+        <div className="absolute inset-0 bg-brand/65" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
-            {t("pages.becomePartner.title", "Devenir partenaire")}
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter drop-shadow-lg">
+            {t("ux.becomePartner.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
-            {t("pages.becomePartner.subtitle", "Hôtel, restaurant, activité, artisan, location de voitures... Listez vos services sur Bossiz+ et touchez de nouveaux clients")}
+            {t("ux.becomePartner.subtitle")}
           </p>
         </div>
       </section>
@@ -306,9 +309,9 @@ const BecomePartner = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
           {/* Benefits */}
           <div className="lg:col-span-2 lg:sticky lg:top-24 lg:self-start">
-            <h2 className="text-2xl font-black text-foreground mb-6 flex items-center gap-2">
+            <h2 className="text-2xl font-extrabold text-foreground mb-6 flex items-center gap-2">
               <Handshake className="w-6 h-6 text-primary" />
-              {t("pages.becomePartner.benefitsTitle", "Pourquoi nous rejoindre")}
+              {t("ux.becomePartner.benefitsTitle")}
             </h2>
             <div className="space-y-4">
               {benefits.map((benefit) => {
@@ -320,8 +323,8 @@ const BecomePartner = () => {
                         <Icon className="w-6 h-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-bold mb-1">{benefit.title}</h3>
-                        <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                        <h3 className="font-bold mb-1">{t(benefit.title)}</h3>
+                        <p className="text-sm text-muted-foreground">{t(benefit.description)}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -329,14 +332,11 @@ const BecomePartner = () => {
               })}
             </div>
             <p className="text-sm text-muted-foreground mt-6">
-              {t(
-                "pages.becomePartner.reviewNote",
-                "Chaque candidature est étudiée manuellement par notre équipe avant activation de votre espace partenaire."
-              )}
+              {t("ux.becomePartner.manualReview")}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
               <Link to="/partenariat" className="text-primary font-medium hover:underline">
-                Voir tous les types de partenariat et leurs conditions
+                {t("ux.becomePartner.seeAllTypes")}
               </Link>
             </p>
           </div>
@@ -345,7 +345,7 @@ const BecomePartner = () => {
           <div className="lg:col-span-3">
             <Card className="overflow-hidden">
               <CardHeader className="border-b border-border bg-muted/30">
-                <CardTitle>{t("pages.becomePartner.formTitle", "Votre candidature")}</CardTitle>
+                <CardTitle>{t("ux.becomePartner.formTitle")}</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <AnimatePresence mode="wait">
@@ -360,14 +360,12 @@ const BecomePartner = () => {
                       <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                         <PartyPopper className="w-8 h-8 text-primary" />
                       </div>
-                      <h3 className="text-xl font-bold mb-2">Candidature envoyée !</h3>
+                      <h3 className="text-xl font-bold mb-2">{t("ux.becomePartner.sent")}</h3>
                       <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
-                        Merci{selectedTypeMeta ? ` pour votre candidature ${selectedTypeMeta.label.toLowerCase()}` : ""}.
-                        Notre équipe étudie chaque dossier manuellement et vous recontactera par email
-                        à l'adresse indiquée.
+                        {t("ux.partnerForm.thanks")}
                       </p>
                       <Button variant="outline" onClick={resetForm}>
-                        Envoyer une autre candidature
+                        {t("ux.becomePartner.sendAnother")}
                       </Button>
                     </motion.div>
                   ) : (
@@ -378,12 +376,12 @@ const BecomePartner = () => {
                           <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center flex-shrink-0">
                             1
                           </span>
-                          Type de partenariat
+                          {t("ux.becomePartner.type")}
                         </div>
                         <div className="space-y-2">
                           <Select value={partnerType} onValueChange={handleTypeChange}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Choisissez un type de partenariat" />
+                              <SelectValue placeholder={t("ux.becomePartner.chooseType")} />
                             </SelectTrigger>
                             <SelectContent>
                               {partnerTypeOptions.map((option) => {
@@ -392,7 +390,7 @@ const BecomePartner = () => {
                                   <SelectItem key={option.value} value={option.value}>
                                     <span className="flex items-center gap-2">
                                       <Icon className="w-4 h-4 text-primary" />
-                                      {option.label}
+                                      {t(option.label)}
                                     </span>
                                   </SelectItem>
                                 );
@@ -410,24 +408,24 @@ const BecomePartner = () => {
                               className="space-y-2 overflow-hidden"
                             >
                               <label className="text-sm font-medium block">
-                                Forfait souhaité <span className="text-destructive">*</span>
+                                {t("ux.partnerForm.plan")} <span className="text-destructive">*</span>
                               </label>
                               <Select value={carPlan} onValueChange={setCarPlan}>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Choisissez un forfait" />
+                                  <SelectValue placeholder={t("ux.becomePartner.choosePlan")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {carPlanOptions.map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
+                                      {t(option.label)}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                               <p className="text-xs text-muted-foreground">
-                                Détails complets sur la{" "}
+                                {t("ux.partnerForm.fullDetails")}{" "}
                                 <Link to="/partenaires/voitures" className="text-primary hover:underline">
-                                  page des forfaits voiture
+                                  {t("ux.partnerForm.carPlansPage")}
                                 </Link>
                                 .
                               </p>
@@ -440,20 +438,20 @@ const BecomePartner = () => {
                           <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center flex-shrink-0">
                             2
                           </span>
-                          Vos informations
+                          {t("ux.becomePartner.yourInfo")}
                         </div>
 
                         <UnifiedFormField
-                          label={t("pages.becomePartner.form.name", "Nom de l'agence / de l'établissement")}
+                          label={t("ux.becomePartner.formName")}
                           name="name"
-                          placeholder="Ex: Onomo Hotel Abidjan"
+                          placeholder={t("ux.becomePartner.namePlaceholder")}
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           required
                         />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <UnifiedFormField
-                            label={t("pages.becomePartner.form.email", "Email de contact")}
+                            label={t("ux.becomePartner.formEmail")}
                             name="contactEmail"
                             type="email"
                             placeholder="contact@votrehotel.com"
@@ -462,7 +460,7 @@ const BecomePartner = () => {
                             required
                           />
                           <UnifiedFormField
-                            label={t("pages.becomePartner.form.phone", "Téléphone")}
+                            label={t("ux.becomePartner.formPhone")}
                             name="contactPhone"
                             type="tel"
                             placeholder="+225 XX XX XX XX XX"
@@ -480,7 +478,7 @@ const BecomePartner = () => {
                             onValueChange={(value) => setPreferredPayoutMethod(value as JekoPayoutMethod)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Choisissez votre moyen de réception" />
+                              <SelectValue placeholder={t("ux.becomePartner.choosePayout")} />
                             </SelectTrigger>
                             <SelectContent>
                               {JEKO_PAYOUT_METHODS.map((method) => (
@@ -489,7 +487,7 @@ const BecomePartner = () => {
                             </SelectContent>
                           </Select>
                           <p className="text-xs text-muted-foreground">
-                            Vos coordonnées de réception seront demandées dans votre espace agence après validation.
+                            {t("ux.becomePartner.payoutLater")}
                           </p>
                         </div>
 
@@ -500,7 +498,7 @@ const BecomePartner = () => {
                               {logoUploading ? (
                                 <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
                               ) : logoUrl ? (
-                                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                                <img src={logoUrl} alt={t("ux.becomePartner.logo")} className="w-full h-full object-cover" />
                               ) : (
                                 <ImagePlus className="w-5 h-5 text-muted-foreground/50" />
                               )}
@@ -521,10 +519,11 @@ const BecomePartner = () => {
                                   disabled={logoUploading}
                                   onClick={() => logoInputRef.current?.click()}
                                 >
-                                  {logoUploading ? "Téléchargement..." : logoUrl ? "Changer le logo" : "Choisir un fichier"}
+                                  {logoUploading ? t("ux.becomePartner.uploading") : logoUrl ? t("ux.becomePartner.changeLogo") : t("ux.becomePartner.chooseFile")}
                                 </Button>
                                 {logoUrl && !logoUploading && (
                                   <Button
+                                    aria-label={t("ux.becomePartner.removeLogo")}
                                     type="button"
                                     variant="ghost"
                                     size="icon"
@@ -536,7 +535,7 @@ const BecomePartner = () => {
                                 )}
                               </div>
                               <p className="text-xs text-muted-foreground">
-                                JPEG, PNG ou WEBP — 2 Mo maximum.
+                                {t("ux.becomePartner.logoHint")}
                               </p>
                             </div>
                           </div>
@@ -544,10 +543,10 @@ const BecomePartner = () => {
 
                         <div className="space-y-2">
                           <label className="text-sm font-medium block">
-                            {t("pages.becomePartner.form.description", "Présentez votre établissement")}
+                            {t("ux.becomePartner.formDescription")}
                           </label>
                           <Textarea
-                            placeholder="Nombre de chambres/places, localisation, services proposés..."
+                            placeholder={t("ux.becomePartner.descPlaceholder")}
                             rows={5}
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -573,13 +572,13 @@ const BecomePartner = () => {
                               className="rounded-lg border border-border bg-muted/40 p-4 space-y-3"
                             >
                               <p className="text-sm font-semibold">
-                                Conditions — {selectedTypeMeta?.label}
+                                {t("ux.partnerForm.conditionsFor", { type: selectedTypeMeta ? t(selectedTypeMeta.label) : "" })}
                               </p>
                               <ul className="space-y-2">
                                 {activeConditions.map((condition) => (
                                   <li key={condition} className="flex items-start gap-2 text-sm text-muted-foreground">
                                     <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                                    <span>{condition}</span>
+                                    <span>{t(condition)}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -591,13 +590,13 @@ const BecomePartner = () => {
                                   className="mt-0.5"
                                 />
                                 <label htmlFor="accept-conditions" className="text-sm cursor-pointer">
-                                  J'ai lu et j'accepte les conditions de ce partenariat.
+                                  {t("ux.partnerForm.accept")}
                                 </label>
                               </div>
                             </motion.div>
                           ) : (
                             <p className="text-sm text-muted-foreground italic">
-                              Choisissez un type de partenariat ci-dessus pour afficher les conditions correspondantes.
+                              {t("ux.becomePartner.pickTypeForTerms")}
                             </p>
                           )}
                         </AnimatePresence>
@@ -607,7 +606,7 @@ const BecomePartner = () => {
                           fullWidth
                           disabled={!partnerType || !acceptedConditions}
                         >
-                          {t("pages.becomePartner.form.submit", "Envoyer ma candidature")}
+                          {t("ux.becomePartner.formSubmit")}
                         </UnifiedSubmitButton>
                       </UnifiedForm>
                     </motion.div>

@@ -95,7 +95,13 @@ serve(async (req) => {
       email,
       options: { redirectTo: `${SITE_URL}/reset-password` },
     });
-    const actionLink = linkData?.properties?.action_link;
+    // Lien vers /reset-password avec le jeton haché (vérifié à la validation
+    // du mot de passe) : le lien Supabase /verify était consommé par les
+    // robots qui analysent les liens des e-mails.
+    const hashedToken = linkData?.properties?.hashed_token;
+    const actionLink = hashedToken
+      ? `${SITE_URL}/reset-password?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`
+      : undefined;
     if (linkError || !actionLink) {
       console.error("generateLink error:", linkError?.message);
       return json({ success: true, userId: created.user.id, created: true, emailSent: false });

@@ -62,32 +62,32 @@ const InstallDropdown: React.FC<InstallDropdownProps> = ({ className, size = 'de
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         ref={dropdownRef}
-        className="w-56 bg-white border border-gray-200 shadow-lg rounded-lg"
+        className="w-56 bg-popover border border-border shadow-lg rounded-lg"
         align="end"
       >
         <DropdownMenuItem 
           onClick={() => handleInstall('android')}
-          className="flex items-center px-4 py-3 cursor-pointer hover:bg-green-50 transition-colors"
+          className="flex items-center px-4 py-3 cursor-pointer hover:bg-success/10 transition-colors"
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
+          <div className="w-8 h-8 bg-success rounded-lg flex items-center justify-center mr-3">
             <Smartphone className="w-4 h-4 text-white" />
           </div>
           <div className="flex-1">
-            <div className="font-semibold text-gray-900">Android</div>
-            <div className="text-sm text-gray-500">APK direct ou installation PWA</div>
+            <div className="font-semibold text-foreground">Android</div>
+            <div className="text-sm text-muted-foreground">APK direct ou installation PWA</div>
           </div>
         </DropdownMenuItem>
         
         <DropdownMenuItem 
           onClick={() => handleInstall('ios')}
-          className="flex items-center px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors"
+          className="flex items-center px-4 py-3 cursor-pointer hover:bg-info/10 transition-colors"
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mr-3">
             <Apple className="w-4 h-4 text-white" />
           </div>
           <div className="flex-1">
-            <div className="font-semibold text-gray-900">iOS</div>
-            <div className="text-sm text-gray-500">Installation PWA ou App Store</div>
+            <div className="font-semibold text-foreground">iOS</div>
+            <div className="text-sm text-muted-foreground">Installation PWA ou App Store</div>
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -13,6 +13,8 @@ import { useBossizMicrositeContent, type BossizMicrositeContent } from "@/hooks/
 import { useBossizConfig, type BossizSiteConfig, type BossizGlobalConfig } from "@/hooks/useBossizConfig";
 import type { BossizCountry } from "@/components/bossiz/BossizSiteLayout";
 import { BOSSIZ_ICON_NAMES, getBossizIcon } from "@/data/bossizIconMap";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 type ServiceItem = BossizMicrositeContent["servicesList"][number];
 type AdditionalServiceItem = BossizMicrositeContent["additionalServicesList"][number];
@@ -32,6 +34,7 @@ const SITE_ID_BY_COUNTRY: Record<BossizCountry, string> = {
 };
 
 function MicrositeContentForm({ country }: { country: BossizCountry }) {
+  const { t } = useTranslation();
   const { content, loading, updateContent } = useBossizMicrositeContent(country);
   const [form, setForm] = useState<BossizMicrositeContent | null>(null);
   const [saving, setSaving] = useState(false);
@@ -58,37 +61,37 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Identité</CardTitle>
-          <CardDescription>Sous-titre affiché dans l'en-tête et le pied de page</CardDescription>
+          <CardTitle>{t("ux.bo.identity")}</CardTitle>
+          <CardDescription>{t("ux.bo.subtitleShownHeaderFooter")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Label>Tagline</Label>
+          <Label>{t("ux.bo.tagline")}</Label>
           <Input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} />
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Bannière d'accueil (héro)</CardTitle>
-          <CardDescription>Texte affiché sur la photo en page d'accueil</CardDescription>
+          <CardTitle>{t("ux.bo.homeBannerHero")}</CardTitle>
+          <CardDescription>{t("ux.bo.textShownHomepagePhoto")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Eyebrow (petit texte au-dessus du titre)</Label>
+            <Label>{t("ux.bo.eyebrowSmallTextAboveTitle")}</Label>
             <Input value={form.hero.eyebrow} onChange={(e) => setForm({ ...form, hero: { ...form.hero, eyebrow: e.target.value } })} />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>Titre ligne 1</Label>
+              <Label>{t("ux.bo.titleLine1")}</Label>
               <Input value={form.hero.titleLine1} onChange={(e) => setForm({ ...form, hero: { ...form.hero, titleLine1: e.target.value } })} />
             </div>
             <div>
-              <Label>Titre ligne 2 (couleur or)</Label>
+              <Label>{t("ux.bo.titleLine2GoldColor")}</Label>
               <Input value={form.hero.titleLine2} onChange={(e) => setForm({ ...form, hero: { ...form.hero, titleLine2: e.target.value } })} />
             </div>
           </div>
           <div>
-            <Label>Sous-titre</Label>
+            <Label>{t("ux.bo.subtitle")}</Label>
             <Textarea rows={2} value={form.hero.subtitle} onChange={(e) => setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } })} />
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -96,12 +99,12 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
               <div key={key} className="space-y-2 border rounded-lg p-3">
                 <Label className="text-xs uppercase text-muted-foreground">{key}</Label>
                 <Input
-                  placeholder="Valeur (ex: 800+)"
+                  placeholder={t("ux.bo.valueEG800")}
                   value={form.hero.stats[key].value}
                   onChange={(e) => setForm({ ...form, hero: { ...form.hero, stats: { ...form.hero.stats, [key]: { ...form.hero.stats[key], value: e.target.value } } } })}
                 />
                 <Input
-                  placeholder="Libellé"
+                  placeholder={t("ux.bo.label")}
                   value={form.hero.stats[key].label}
                   onChange={(e) => setForm({ ...form, hero: { ...form.hero, stats: { ...form.hero.stats, [key]: { ...form.hero.stats[key], label: e.target.value } } } })}
                 />
@@ -113,7 +116,7 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Citation (philosophie)</CardTitle>
+          <CardTitle>{t("ux.bo.quotePhilosophy")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea rows={2} value={form.philosophy} onChange={(e) => setForm({ ...form, philosophy: e.target.value })} />
@@ -122,15 +125,15 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Page « À propos »</CardTitle>
+          <CardTitle>{t("ux.bo.aboutPage")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Titre</Label>
+            <Label>{t("ux.bo.title2")}</Label>
             <Input value={form.about.title} onChange={(e) => setForm({ ...form, about: { ...form.about, title: e.target.value } })} />
           </div>
           <div>
-            <Label>Description</Label>
+            <Label>{t("ux.bo.description")}</Label>
             <Textarea rows={2} value={form.about.description} onChange={(e) => setForm({ ...form, about: { ...form.about, description: e.target.value } })} />
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -138,13 +141,13 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
               <div key={key} className="space-y-2 border rounded-lg p-3">
                 <Label className="text-xs uppercase text-muted-foreground">{key}</Label>
                 <Input
-                  placeholder="Titre"
+                  placeholder={t("ux.bo.title2")}
                   value={form.about.values[key].title}
                   onChange={(e) => setForm({ ...form, about: { ...form.about, values: { ...form.about.values, [key]: { ...form.about.values[key], title: e.target.value } } } })}
                 />
                 <Textarea
                   rows={3}
-                  placeholder="Texte"
+                  placeholder={t("ux.bo.text")}
                   value={form.about.values[key].text}
                   onChange={(e) => setForm({ ...form, about: { ...form.about, values: { ...form.about.values, [key]: { ...form.about.values[key], text: e.target.value } } } })}
                 />
@@ -152,7 +155,7 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
             ))}
           </div>
           <div>
-            <Label>Texte du bouton</Label>
+            <Label>{t("ux.bo.buttonText")}</Label>
             <Input value={form.about.cta} onChange={(e) => setForm({ ...form, about: { ...form.about, cta: e.target.value } })} />
           </div>
         </CardContent>
@@ -160,19 +163,19 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Page « Services »</CardTitle>
+          <CardTitle>{t("ux.bo.servicesPage")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Eyebrow</Label>
+            <Label>{t("ux.bo.eyebrow")}</Label>
             <Input value={form.services.eyebrow} onChange={(e) => setForm({ ...form, services: { ...form.services, eyebrow: e.target.value } })} />
           </div>
           <div>
-            <Label>Titre</Label>
+            <Label>{t("ux.bo.title2")}</Label>
             <Input value={form.services.title} onChange={(e) => setForm({ ...form, services: { ...form.services, title: e.target.value } })} />
           </div>
           <div>
-            <Label>Sous-titre</Label>
+            <Label>{t("ux.bo.subtitle")}</Label>
             <Textarea rows={2} value={form.services.subtitle} onChange={(e) => setForm({ ...form, services: { ...form.services, subtitle: e.target.value } })} />
           </div>
         </CardContent>
@@ -180,8 +183,8 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Services principaux</CardTitle>
-          <CardDescription>Les 4 grandes cartes de services affichées en haut de la page Services</CardDescription>
+          <CardTitle>{t("ux.bo.mainServices")}</CardTitle>
+          <CardDescription>{t("ux.bo.n4LargeServiceCardsShown")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.servicesList.map((service, index) => (
@@ -213,8 +216,8 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Services additionnels</CardTitle>
-          <CardDescription>Les petites cartes de services complémentaires</CardDescription>
+          <CardTitle>{t("ux.bo.additionalServices")}</CardTitle>
+          <CardDescription>{t("ux.bo.smallComplementaryServiceCards")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.additionalServicesList.map((service, index) => (
@@ -246,11 +249,11 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Témoignages</CardTitle>
+          <CardTitle>{t("ux.bo.testimonials")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Titre de la section</Label>
+            <Label>{t("ux.bo.sectionTitle")}</Label>
             <Input value={form.testimonialsTitle} onChange={(e) => setForm({ ...form, testimonialsTitle: e.target.value })} />
           </div>
           {form.testimonialsList.map((testimonial, index) => (
@@ -278,22 +281,22 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
             <Plus className="mr-2 h-4 w-4" /> Ajouter un témoignage
           </Button>
           <p className="text-xs text-muted-foreground mt-2">
-            Les témoignages eux-mêmes restent gérés dans le code pour l'instant.
+            {t("ux.bo.testimonialsThemselvesStillManagedCode")}
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Appel à l'action « Contact »</CardTitle>
+          <CardTitle>{t("ux.bo.contactCallAction")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Titre</Label>
+            <Label>{t("ux.bo.title2")}</Label>
             <Input value={form.contactCta.title} onChange={(e) => setForm({ ...form, contactCta: { ...form.contactCta, title: e.target.value } })} />
           </div>
           <div>
-            <Label>Texte du bouton</Label>
+            <Label>{t("ux.bo.buttonText")}</Label>
             <Input value={form.contactCta.button} onChange={(e) => setForm({ ...form, contactCta: { ...form.contactCta, button: e.target.value } })} />
           </div>
         </CardContent>
@@ -301,12 +304,12 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Coordonnées</CardTitle>
+          <CardTitle>{t("ux.bo.contactDetails")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           {"phone" in form.contact || country === "ci" ? (
             <div>
-              <Label>Téléphone (laisser vide pour masquer)</Label>
+              <Label>{t("ux.bo.phoneLeaveEmptyHide")}</Label>
               <Input
                 value={form.contact.phone ?? ""}
                 onChange={(e) => setForm({ ...form, contact: { ...form.contact, phone: e.target.value, phoneHref: `tel:${e.target.value.replace(/\s/g, "")}` } })}
@@ -318,7 +321,7 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
             <Input value={form.contact.email} onChange={(e) => setForm({ ...form, contact: { ...form.contact, email: e.target.value } })} />
           </div>
           <div className="md:col-span-2">
-            <Label>Adresse</Label>
+            <Label>{t("ux.bo.address")}</Label>
             <Input value={form.contact.address} onChange={(e) => setForm({ ...form, contact: { ...form.contact, address: e.target.value } })} />
           </div>
         </CardContent>
@@ -326,28 +329,28 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Page « Formules »</CardTitle>
+          <CardTitle>{t("ux.bo.plansPage")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Titre</Label>
+            <Label>{t("ux.bo.title2")}</Label>
             <Input value={form.plans.title} onChange={(e) => setForm({ ...form, plans: { ...form.plans, title: e.target.value } })} />
           </div>
           <div>
-            <Label>Sous-titre</Label>
+            <Label>{t("ux.bo.subtitle")}</Label>
             <Textarea rows={2} value={form.plans.subtitle} onChange={(e) => setForm({ ...form, plans: { ...form.plans, subtitle: e.target.value } })} />
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <Label>Libellé "formules mensuelles"</Label>
+              <Label>{t("ux.bo.monthlyPlansLabel")}</Label>
               <Input value={form.plans.monthlyLabel} onChange={(e) => setForm({ ...form, plans: { ...form.plans, monthlyLabel: e.target.value } })} />
             </div>
             <div>
-              <Label>Libellé "séjours courts"</Label>
+              <Label>{t("ux.bo.shortStaysLabel")}</Label>
               <Input value={form.plans.shortStayLabel} onChange={(e) => setForm({ ...form, plans: { ...form.plans, shortStayLabel: e.target.value } })} />
             </div>
             <div>
-              <Label>Badge "recommandée"</Label>
+              <Label>{t("ux.bo.recommendedBadge")}</Label>
               <Input value={form.plans.recommendedLabel} onChange={(e) => setForm({ ...form, plans: { ...form.plans, recommendedLabel: e.target.value } })} />
             </div>
           </div>
@@ -356,7 +359,7 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Formules mensuelles</CardTitle>
+          <CardTitle>{t("ux.bo.monthlyPlans")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.monthlyPlansList.map((plan, index) => (
@@ -384,7 +387,7 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Séjours courts</CardTitle>
+          <CardTitle>{t("ux.bo.shortStays")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.shortStayPlansList.map((plan, index) => (
@@ -412,7 +415,7 @@ function MicrositeContentForm({ country }: { country: BossizCountry }) {
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={handleSave} disabled={saving} size="lg" className="shadow-lg">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Enregistrer
+          {t("ux.bo.save2")}
         </Button>
       </div>
     </div>
@@ -459,55 +462,58 @@ function ListTextField({ label, values, onChange }: { label: string; values: str
 }
 
 function ServiceItemEditor({ service, onChange, onRemove }: { service: ServiceItem; onChange: (s: ServiceItem) => void; onRemove: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 flex-1">
           <IconPicker value={service.icon} onChange={(icon) => onChange({ ...service, icon })} />
-          <Input placeholder="Titre" value={service.title} onChange={(e) => onChange({ ...service, title: e.target.value })} />
+          <Input placeholder={t("ux.bo.title2")} value={service.title} onChange={(e) => onChange({ ...service, title: e.target.value })} />
         </div>
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <Textarea placeholder="Description" rows={2} value={service.description} onChange={(e) => onChange({ ...service, description: e.target.value })} />
-      <ListTextField label="Points clés" values={service.features} onChange={(features) => onChange({ ...service, features })} />
+      <Textarea placeholder={t("ux.bo.description")} rows={2} value={service.description} onChange={(e) => onChange({ ...service, description: e.target.value })} />
+      <ListTextField label={t("ux.bo.keyPoints")} values={service.features} onChange={(features) => onChange({ ...service, features })} />
     </div>
   );
 }
 
 function AdditionalServiceItemEditor({ service, onChange, onRemove }: { service: AdditionalServiceItem; onChange: (s: AdditionalServiceItem) => void; onRemove: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 flex-1">
           <IconPicker value={service.icon} onChange={(icon) => onChange({ ...service, icon })} />
-          <Input placeholder="Titre" value={service.title} onChange={(e) => onChange({ ...service, title: e.target.value })} />
+          <Input placeholder={t("ux.bo.title2")} value={service.title} onChange={(e) => onChange({ ...service, title: e.target.value })} />
         </div>
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <ListTextField label="Éléments" values={service.items} onChange={(items) => onChange({ ...service, items })} />
+      <ListTextField label={t("ux.bo.items")} values={service.items} onChange={(items) => onChange({ ...service, items })} />
     </div>
   );
 }
 
 function PlanItemEditor({ plan, onChange, onRemove, showFeatured }: { plan: PlanItem | ShortStayItem; onChange: (p: PlanItem) => void; onRemove: () => void; showFeatured?: boolean }) {
+  const { t } = useTranslation();
   const featured = "featured" in plan ? plan.featured : false;
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
-        <Input placeholder="Nom" value={plan.name} onChange={(e) => onChange({ name: e.target.value, detail: plan.detail, featured })} className="flex-1" />
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Input placeholder={t("ux.bo.name")} value={plan.name} onChange={(e) => onChange({ name: e.target.value, detail: plan.detail, featured })} className="flex-1" />
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <Textarea placeholder="Détail" rows={2} value={plan.detail} onChange={(e) => onChange({ name: plan.name, detail: e.target.value, featured })} />
+      <Textarea placeholder={t("ux.bo.details")} rows={2} value={plan.detail} onChange={(e) => onChange({ name: plan.name, detail: e.target.value, featured })} />
       {showFeatured && (
         <div className="flex items-center gap-2">
           <Switch checked={featured} onCheckedChange={(checked) => onChange({ name: plan.name, detail: plan.detail, featured: checked })} />
-          <Label>Formule mise en avant (badge "recommandée")</Label>
+          <Label>{t("ux.bo.highlightedPlanRecommendedBadge")}</Label>
         </div>
       )}
     </div>
@@ -515,74 +521,78 @@ function PlanItemEditor({ plan, onChange, onRemove, showFeatured }: { plan: Plan
 }
 
 function TestimonialItemEditor({ testimonial, onChange, onRemove }: { testimonial: TestimonialItem; onChange: (t: TestimonialItem) => void; onRemove: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="grid gap-3 md:grid-cols-2 flex-1">
-          <Input placeholder="Nom" value={testimonial.name} onChange={(e) => onChange({ ...testimonial, name: e.target.value })} />
-          <Input placeholder="Rôle" value={testimonial.role} onChange={(e) => onChange({ ...testimonial, role: e.target.value })} />
+          <Input placeholder={t("ux.bo.name")} value={testimonial.name} onChange={(e) => onChange({ ...testimonial, name: e.target.value })} />
+          <Input placeholder={t("ux.bo.role")} value={testimonial.role} onChange={(e) => onChange({ ...testimonial, role: e.target.value })} />
         </div>
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <Textarea placeholder="Témoignage" rows={2} value={testimonial.content} onChange={(e) => onChange({ ...testimonial, content: e.target.value })} />
-      <Input placeholder="Localisation" value={testimonial.location} onChange={(e) => onChange({ ...testimonial, location: e.target.value })} />
+      <Textarea placeholder={t("ux.bo.testimonial")} rows={2} value={testimonial.content} onChange={(e) => onChange({ ...testimonial, content: e.target.value })} />
+      <Input placeholder={t("ux.bo.location")} value={testimonial.location} onChange={(e) => onChange({ ...testimonial, location: e.target.value })} />
     </div>
   );
 }
 
 function GlobalStatItemEditor({ stat, onChange, onRemove }: { stat: GlobalStatItem; onChange: (s: GlobalStatItem) => void; onRemove: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 flex-1">
           <IconPicker value={stat.icon} onChange={(icon) => onChange({ ...stat, icon })} />
-          <Input placeholder="Valeur (ex: 8000+)" value={stat.value} onChange={(e) => onChange({ ...stat, value: e.target.value })} />
+          <Input placeholder={t("ux.bo.valueEG8000")} value={stat.value} onChange={(e) => onChange({ ...stat, value: e.target.value })} />
         </div>
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <Input placeholder="Libellé" value={stat.label} onChange={(e) => onChange({ ...stat, label: e.target.value })} />
-      <Input placeholder="Description courte" value={stat.description} onChange={(e) => onChange({ ...stat, description: e.target.value })} />
+      <Input placeholder={t("ux.bo.label")} value={stat.label} onChange={(e) => onChange({ ...stat, label: e.target.value })} />
+      <Input placeholder={t("ux.bo.shortDescription")} value={stat.description} onChange={(e) => onChange({ ...stat, description: e.target.value })} />
     </div>
   );
 }
 
 function PortalServiceItemEditor({ service, onChange, onRemove }: { service: PortalServiceItem; onChange: (s: PortalServiceItem) => void; onRemove: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
-        <Input placeholder="Titre" value={service.title} onChange={(e) => onChange({ ...service, title: e.target.value })} className="flex-1" />
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Input placeholder={t("ux.bo.title2")} value={service.title} onChange={(e) => onChange({ ...service, title: e.target.value })} className="flex-1" />
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <Textarea placeholder="Description" rows={2} value={service.description} onChange={(e) => onChange({ ...service, description: e.target.value })} />
-      <ListTextField label="Points clés" values={service.features} onChange={(features) => onChange({ ...service, features })} />
+      <Textarea placeholder={t("ux.bo.description")} rows={2} value={service.description} onChange={(e) => onChange({ ...service, description: e.target.value })} />
+      <ListTextField label={t("ux.bo.keyPoints")} values={service.features} onChange={(features) => onChange({ ...service, features })} />
       <div className="grid gap-3 md:grid-cols-2">
-        <Input placeholder="Dégradé (ex: from-blue-500 to-blue-600)" value={service.color} onChange={(e) => onChange({ ...service, color: e.target.value })} />
-        <Input placeholder="URL image" value={service.image} onChange={(e) => onChange({ ...service, image: e.target.value })} />
+        <Input placeholder={t("ux.bo.gradientEGFromBlue")} value={service.color} onChange={(e) => onChange({ ...service, color: e.target.value })} />
+        <Input placeholder={t("ux.bo.imageUrl2")} value={service.image} onChange={(e) => onChange({ ...service, image: e.target.value })} />
       </div>
     </div>
   );
 }
 
 function CompanyValueItemEditor({ value, onChange, onRemove }: { value: CompanyValueItem; onChange: (v: CompanyValueItem) => void; onRemove: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 flex-1">
           <IconPicker value={value.icon} onChange={(icon) => onChange({ ...value, icon })} />
-          <Input placeholder="Titre" value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} />
+          <Input placeholder={t("ux.bo.title2")} value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} />
         </div>
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={onRemove}>
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
-      <Textarea placeholder="Description" rows={2} value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} />
-      <Input placeholder="Dégradé (ex: from-blue-500 to-blue-600)" value={value.color} onChange={(e) => onChange({ ...value, color: e.target.value })} />
+      <Textarea placeholder={t("ux.bo.description")} rows={2} value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} />
+      <Input placeholder={t("ux.bo.gradientEGFromBlue")} value={value.color} onChange={(e) => onChange({ ...value, color: e.target.value })} />
     </div>
   );
 }
@@ -621,20 +631,20 @@ function PortalGlobalForm({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Bannière d'accueil du portail</CardTitle>
-          <CardDescription>Contenu affiché sur la page qui liste les sites Bossiz (CI/SN)</CardDescription>
+          <CardTitle>{i18n.t("ux.bo.portalHomeBanner")}</CardTitle>
+          <CardDescription>{i18n.t("ux.bo.contentShownPageListingBossiz")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Titre</Label>
+            <Label>{i18n.t("ux.bo.title2")}</Label>
             <Input value={form.hero.title} onChange={(e) => setForm({ ...form, hero: { ...form.hero, title: e.target.value } })} />
           </div>
           <div>
-            <Label>Sous-titre</Label>
+            <Label>{i18n.t("ux.bo.subtitle")}</Label>
             <Input value={form.hero.subtitle} onChange={(e) => setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } })} />
           </div>
           <div>
-            <Label>Description</Label>
+            <Label>{i18n.t("ux.bo.description")}</Label>
             <Textarea rows={2} value={form.hero.description} onChange={(e) => setForm({ ...form, hero: { ...form.hero, description: e.target.value } })} />
           </div>
         </CardContent>
@@ -642,7 +652,7 @@ function PortalGlobalForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Statistiques globales</CardTitle>
+          <CardTitle>{i18n.t("ux.bo.globalStatistics")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.globalStats.map((stat, index) => (
@@ -669,7 +679,7 @@ function PortalGlobalForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Services (grille principale)</CardTitle>
+          <CardTitle>{i18n.t("ux.bo.servicesMainGrid")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.services.map((service, index) => (
@@ -701,7 +711,7 @@ function PortalGlobalForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Valeurs de l'entreprise</CardTitle>
+          <CardTitle>{i18n.t("ux.bo.companyValues")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {form.companyValues.map((value, index) => (
@@ -734,7 +744,7 @@ function PortalGlobalForm({
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={handleSave} disabled={saving} size="lg" className="shadow-lg">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Enregistrer
+          {i18n.t("ux.bo.save2")}
         </Button>
       </div>
     </div>
@@ -774,46 +784,46 @@ function SiteCardForm({
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Carte sur le portail Bossiz</CardTitle>
+        <CardTitle>{i18n.t("ux.bo.cardBossizPortal")}</CardTitle>
         <CardDescription>
-          Ce qui s'affiche pour ce pays sur la page qui liste tous les sites Bossiz (/bossiz)
+          {i18n.t("ux.bo.whatShownCountryPageListing")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <Label>Titre</Label>
+            <Label>{i18n.t("ux.bo.title2")}</Label>
             <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
           </div>
           <div>
-            <Label>Sous-titre</Label>
+            <Label>{i18n.t("ux.bo.subtitle")}</Label>
             <Input value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} />
           </div>
         </div>
         <div>
-          <Label>Tagline</Label>
+          <Label>{i18n.t("ux.bo.tagline")}</Label>
           <Input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} />
         </div>
         <div>
-          <Label>Description</Label>
+          <Label>{i18n.t("ux.bo.description")}</Label>
           <Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <Label>Localisation</Label>
+            <Label>{i18n.t("ux.bo.location")}</Label>
             <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
           </div>
           <div>
-            <Label>URL de l'image</Label>
+            <Label>{i18n.t("ux.bo.imageUrl")}</Label>
             <Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
           </div>
         </div>
 
-        <ListTextField label="Services affichés" values={form.features} onChange={(features) => setForm({ ...form, features })} />
-        <ListTextField label="Points forts" values={form.highlights} onChange={(highlights) => setForm({ ...form, highlights })} />
+        <ListTextField label={i18n.t("ux.bo.servicesShown")} values={form.features} onChange={(features) => setForm({ ...form, features })} />
+        <ListTextField label={i18n.t("ux.bo.highlights")} values={form.highlights} onChange={(highlights) => setForm({ ...form, highlights })} />
 
         <div className="space-y-2">
-          <Label>Statistiques de la carte</Label>
+          <Label>{i18n.t("ux.bo.cardStatistics")}</Label>
           {form.stats.map((stat, index) => (
             <div key={index} className="flex items-center gap-2 border rounded-lg p-3">
               <IconPicker
@@ -825,7 +835,7 @@ function SiteCardForm({
                 }}
               />
               <Input
-                placeholder="Valeur"
+                placeholder={i18n.t("ux.bo.value")}
                 value={stat.value}
                 onChange={(e) => {
                   const list = [...form.stats];
@@ -834,7 +844,7 @@ function SiteCardForm({
                 }}
               />
               <Input
-                placeholder="Libellé"
+                placeholder={i18n.t("ux.bo.label")}
                 value={stat.label}
                 onChange={(e) => {
                   const list = [...form.stats];
@@ -843,6 +853,7 @@ function SiteCardForm({
                 }}
               />
               <Button
+                aria-label={i18n.t("ux.bo.delete")}
                 variant="ghost"
                 size="icon"
                 onClick={() => setForm({ ...form, stats: form.stats.filter((_, i) => i !== index) })}
@@ -862,7 +873,7 @@ function SiteCardForm({
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <Label>Téléphone</Label>
+            <Label>{i18n.t("ux.bo.phone")}</Label>
             <Input value={form.contact.phone} onChange={(e) => setForm({ ...form, contact: { ...form.contact, phone: e.target.value } })} />
           </div>
           <div>
@@ -870,30 +881,30 @@ function SiteCardForm({
             <Input value={form.contact.email} onChange={(e) => setForm({ ...form, contact: { ...form.contact, email: e.target.value } })} />
           </div>
           <div className="md:col-span-2">
-            <Label>Adresse</Label>
+            <Label>{i18n.t("ux.bo.address")}</Label>
             <Input value={form.contact.address} onChange={(e) => setForm({ ...form, contact: { ...form.contact, address: e.target.value } })} />
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <div>
-            <Label>Dégradé principal</Label>
+            <Label>{i18n.t("ux.bo.mainGradient")}</Label>
             <Input value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} placeholder="from-orange-600 to-red-600" />
           </div>
           <div>
-            <Label>Dégradé de fond</Label>
+            <Label>{i18n.t("ux.bo.backgroundGradient")}</Label>
             <Input value={form.bgColor} onChange={(e) => setForm({ ...form, bgColor: e.target.value })} placeholder="from-orange-50 via-white to-red-50" />
           </div>
           <div>
-            <Label>Couleur de bordure</Label>
-            <Input value={form.borderColor} onChange={(e) => setForm({ ...form, borderColor: e.target.value })} placeholder="border-orange-200" />
+            <Label>{i18n.t("ux.bo.borderColor")}</Label>
+            <Input value={form.borderColor} onChange={(e) => setForm({ ...form, borderColor: e.target.value })} placeholder="border-warning-foreground/20" />
           </div>
         </div>
 
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-2 h-3.5 w-3.5" />}
-            Enregistrer la carte
+            {i18n.t("ux.bo.saveCard")}
           </Button>
         </div>
       </CardContent>
@@ -902,24 +913,25 @@ function SiteCardForm({
 }
 
 export default function AdminBossizMicrosites() {
+  const { t } = useTranslation();
   const { sites, globalConfig, loading: portalLoading, updateSiteConfig, updateGlobalConfig } = useBossizConfig();
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Contenu Bossiz</h1>
+          <h1 className="text-2xl font-bold">{t("ux.bo.bossizContent")}</h1>
           <p className="text-muted-foreground">
-            Gérez ici tout le contenu Bossiz en un seul endroit : le portail global qui liste les
+            {t("ux.bo.manageAllBossizContentHere")}
             sites (/bossiz), et le contenu propre à chaque site Conciergerie (Côte d'Ivoire et Sénégal).
           </p>
         </div>
 
         <Tabs defaultValue="global">
           <TabsList>
-            <TabsTrigger value="global">Portail global</TabsTrigger>
-            <TabsTrigger value="ci">Côte d'Ivoire</TabsTrigger>
-            <TabsTrigger value="sn">Sénégal</TabsTrigger>
+            <TabsTrigger value="global">{t("ux.bo.globalPortal")}</TabsTrigger>
+            <TabsTrigger value="ci">{t("ux.bo.cTeDIvoire")}</TabsTrigger>
+            <TabsTrigger value="sn">{t("ux.bo.senegal")}</TabsTrigger>
           </TabsList>
           <TabsContent value="global" className="mt-6">
             <PortalGlobalForm globalConfig={globalConfig} loading={portalLoading} onSave={updateGlobalConfig} />

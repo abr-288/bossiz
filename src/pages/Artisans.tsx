@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MapPin, Hammer, Loader2, Phone, MessageCircle, ShoppingBag } from "lucide-react";
+import { MapPin, Hammer, Phone, MessageCircle, ShoppingBag } from "lucide-react";
 import { useArtisans } from "@/hooks/useArtisans";
 import { Price } from "@/components/ui/price";
 import { ArtisanOrderDialog } from "@/components/artisans/ArtisanOrderDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerArtisans from "@/assets/banner-artisans.jpg";
+import { useTranslation } from "react-i18next";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Link } from "react-router-dom";
 
 const CRAFT_TYPES = ["Sculpture sur bois", "Bijoux & Accessoires", "Textile & Tissage", "Poterie & Céramique", "Maroquinerie", "Peinture & Art", "Vannerie", "Autre"];
 
@@ -19,6 +23,7 @@ const waLink = (whatsapp: string, message: string) =>
   `https://wa.me/${whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`;
 
 const Artisans = () => {
+  const { t } = useTranslation();
   const { artisans, loading, error } = useArtisans();
   const [search, setSearch] = useState("");
   const [craftFilter, setCraftFilter] = useState("all");
@@ -43,20 +48,20 @@ const Artisans = () => {
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
 
-      <div className="relative py-16 md:py-24 overflow-hidden bg-primary">
+      <div className="relative py-16 md:py-24 overflow-hidden bg-brand">
         <LazyImage
           src={bannerArtisans}
-          alt="Artisans locaux"
+          alt={t("ux.artisans.bannerAlt")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/60 to-primary/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <Hammer className="w-12 h-12 text-white mx-auto mb-4" />
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            Artisans Locaux
+            {t("ux.artisans.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            Découvrez le savoir-faire et les créations d'artisans locaux
+            {t("ux.artisans.subtitle")}
           </p>
         </div>
       </div>
@@ -64,35 +69,33 @@ const Artisans = () => {
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="flex-1">
-            <Input placeholder="Rechercher un artisan, une ville..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input placeholder={t("ux.artisans.search")} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <Select value={craftFilter} onValueChange={setCraftFilter}>
             <SelectTrigger className="w-full sm:w-[220px]">
-              <SelectValue placeholder="Métier" />
+              <SelectValue placeholder={t("ux.artisans.craft")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les métiers</SelectItem>
+              <SelectItem value="all">{t("ux.artisans.allCrafts")}</SelectItem>
               {CRAFT_TYPES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : error ? (
           <Card className="p-12 text-center text-muted-foreground">
-            Impossible de charger les artisans pour le moment.
+            {t("ux.artisans.loadError")}
           </Card>
         ) : filtered.length === 0 ? (
-          <Card className="p-12 text-center">
-            <Hammer className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <p className="text-lg font-medium mb-2">Aucun artisan mis en avant pour le moment</p>
-            <p className="text-muted-foreground mb-6">Nos partenaires ajoutent bientôt leurs artisans locaux. Revenez vite !</p>
-            <Button variant="outline" asChild>
-              <a href="/devenir-partenaire">Vous représentez un artisan ? Rejoignez-nous</a>
-            </Button>
+          <Card>
+            <EmptyState
+              icon={Hammer}
+              title={t("ux.artisans.emptyTitle")}
+              description={t("ux.artisans.emptyDesc")}
+              action={<Button variant="outline" asChild><Link to="/devenir-partenaire">{t("ux.artisans.join")}</Link></Button>}
+            />
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -124,7 +127,7 @@ const Artisans = () => {
                     </p>
                   )}
                   <Button variant="outline" className="mt-auto w-full">
-                    Voir le profil
+                    {t("ux.artisans.seeProfile")}
                   </Button>
                 </CardContent>
               </Card>
@@ -179,7 +182,7 @@ const Artisans = () => {
 
               {selectedArtisan.products?.length > 0 && (
                 <div className="space-y-3">
-                  <h4 className="font-semibold">Créations</h4>
+                  <h4 className="font-semibold">{t("ux.artisans.creations")}</h4>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {selectedArtisan.products.map((product: any, i: number) => (
                       <Card key={i} className="overflow-hidden">
@@ -203,7 +206,7 @@ const Artisans = () => {
                             onClick={() => setOrderingProduct(product)}
                           >
                             <ShoppingBag className="w-3.5 h-3.5" />
-                            Demander
+                            {t("ux.artisans.request")}
                           </Button>
                         </CardContent>
                       </Card>

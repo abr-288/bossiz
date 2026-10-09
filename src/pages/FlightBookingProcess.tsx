@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Plane, Check } from "lucide-react";
+import { ArrowLeft, Plane } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import { Price } from "@/components/ui/price";
 import { validateAndCorrectFlightTimes, formatFlightDate } from "@/utils/flightUtils";
 import { BaggageInfo } from "@/components/booking-steps/BaggageInfo";
 import { getCityName, getAirportName } from "@/utils/airportNames";
+import { useTranslation } from "react-i18next";
+import { BookingStepper } from "@/components/booking-steps/BookingStepper";
 
 interface Passenger {
   firstName: string;
@@ -27,6 +29,7 @@ interface Passenger {
 }
 
 const FlightBookingProcess = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -91,10 +94,10 @@ const FlightBookingProcess = () => {
   const [selectedPreferences, setSelectedPreferences] = useState<Record<string, any>>({});
 
   const steps = [
-    { number: 1, title: "Passagers", completed: currentStep > 1 },
-    { number: 2, title: "Bagages", completed: currentStep > 2 },
-    { number: 3, title: "Sièges", completed: currentStep > 3 },
-    { number: 4, title: "Paiement", completed: false },
+    { number: 1, title: t("ux.flightBooking.stepPassengers"), completed: currentStep > 1 },
+    { number: 2, title: t("ux.flightBooking.stepBaggage"), completed: currentStep > 2 },
+    { number: 3, title: t("ux.flightBooking.stepSeats"), completed: currentStep > 3 },
+    { number: 4, title: t("ux.flightBooking.stepPayment"), completed: false },
   ];
 
   return (
@@ -110,34 +113,32 @@ const FlightBookingProcess = () => {
             className="mb-4 hover:bg-primary/10"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour aux résultats
+            {t("ux.flightBooking.backToResults")}
           </Button>
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
               <h1 className="text-3xl font-bold text-foreground mb-2">
-                Réservation de vol
+                {t("ux.flightBooking.title")}
               </h1>
               <p className="text-muted-foreground flex items-center gap-2">
                 <Plane className="h-4 w-4" />
                 {flightData.origin} → {flightData.destination}
               </p>
             </div>
-            <Badge variant="secondary" className="text-lg px-4 py-2">
-              <span className="font-bold text-primary">
-                <Price amount={parseInt(flightData.price)} fromCurrency="EUR" showLoader />
-              </span>
-            </Badge>
+            <p className="t-price text-2xl text-foreground">
+              <Price amount={parseInt(flightData.price)} fromCurrency="EUR" showLoader />
+            </p>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Colonne gauche - Détails du vol */}
-          <div className="lg:col-span-1">
+          <div className="min-w-0 lg:col-span-1">
             <Card className="p-6 sticky top-24 bg-gradient-to-br from-card to-muted/20">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <Plane className="h-5 w-5 text-primary" />
-                Détails du vol
+                {t("ux.flightBooking.details")}
               </h3>
 
               <div className="space-y-4">
@@ -176,28 +177,28 @@ const FlightBookingProcess = () => {
                 <div className="flex items-center gap-2">
                   <div className="text-center min-w-[50px]">
                     <p className="text-sm font-bold">{flightData.departureTime}</p>
-                    <p className="text-[10px] text-muted-foreground">{flightData.origin}</p>
-                    <p className="text-[8px] text-muted-foreground/70 max-w-[80px] truncate" title={getAirportName(flightData.origin)}>
+                    <p className="text-xs text-muted-foreground">{flightData.origin}</p>
+                    <p className="text-xs text-muted-foreground/70 max-w-[80px] truncate" title={getAirportName(flightData.origin)}>
                       {getAirportName(flightData.origin)}
                     </p>
                   </div>
                   <div className="flex-1 flex flex-col items-center gap-0.5 min-w-0">
-                    <Badge variant="secondary" className="px-1.5 py-0 text-[10px] whitespace-nowrap">
+                    <Badge variant="secondary" className="px-1.5 py-0 text-xs whitespace-nowrap">
                       {flightData.duration}
                     </Badge>
                     <div className="w-full h-[1px] bg-border" />
-                    <span className="text-[9px] text-muted-foreground">
-                      {flightData.stops === 0 ? 'Direct' : `${flightData.stops} escale${flightData.stops > 1 ? "s" : ""}`}
+                    <span className="text-xs text-muted-foreground">
+                      {flightData.stops === 0 ? t("ux.flightBooking.direct") : t("ux.summary.stops", { count: flightData.stops })}
                     </span>
                   </div>
                   <div className="text-center min-w-[50px]">
                     <p className="text-sm font-bold">
                       {flightData.arrivalTime}
-                      {flightData.isNextDay && <sup className="text-[8px] text-amber-600 ml-0.5">+1</sup>}
-                      {flightData.isMultiDay && <sup className="text-[8px] text-amber-600 ml-0.5">+{flightData.daysDifference}</sup>}
+                      {flightData.isNextDay && <sup className="text-xs text-warning-foreground ml-0.5">+1</sup>}
+                      {flightData.isMultiDay && <sup className="text-xs text-warning-foreground ml-0.5">+{flightData.daysDifference}</sup>}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">{flightData.destination}</p>
-                    <p className="text-[8px] text-muted-foreground/70 max-w-[80px] truncate" title={getAirportName(flightData.destination)}>
+                    <p className="text-xs text-muted-foreground">{flightData.destination}</p>
+                    <p className="text-xs text-muted-foreground/70 max-w-[80px] truncate" title={getAirportName(flightData.destination)}>
                       {getAirportName(flightData.destination)}
                     </p>
                   </div>
@@ -206,8 +207,8 @@ const FlightBookingProcess = () => {
                 {/* Arrival date if different */}
                 {(flightData.isNextDay || flightData.isMultiDay) && (
                   <div className="text-center">
-                    <p className="text-[10px] text-amber-600 dark:text-amber-400">
-                      Arrivée le {formatFlightDate(flightData.arrivalDate, 'short')}
+                    <p className="text-xs text-warning-foreground">
+                      {t("ux.flightBooking.arrivalOn", { date: formatFlightDate(flightData.arrivalDate, 'short') })}
                     </p>
                   </div>
                 )}
@@ -216,18 +217,18 @@ const FlightBookingProcess = () => {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Passagers</span>
+                    <span className="text-muted-foreground">{t("ux.flightBooking.passengers")}</span>
                     <span className="font-medium">
-                      {adultsCount} adulte{adultsCount > 1 ? "s" : ""}
-                      {childrenCount > 0 && `, ${childrenCount} enfant${childrenCount > 1 ? "s" : ""}`}
+                      {t("ux.booking.adults", { count: adultsCount })}
+                      {childrenCount > 0 && `, ${t("ux.booking.children", { count: childrenCount })}`}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Classe</span>
-                    <span className="font-medium">Économique</span>
+                    <span className="text-muted-foreground">{t("ux.flightBooking.class")}</span>
+                    <span className="font-medium">{t("ux.flightBooking.economy")}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tarif</span>
+                    <span className="text-muted-foreground">{t("ux.flightBooking.fare")}</span>
                     <span className="font-medium">
                       {flightData.fare === "basic" ? "Basic" : "Benefits"}
                     </span>
@@ -238,7 +239,7 @@ const FlightBookingProcess = () => {
 
                 <div className="bg-primary/10 rounded-lg p-3">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold">Prix du vol</span>
+                    <span className="font-semibold">{t("ux.flightBooking.price")}</span>
                     <span className="text-xl font-bold text-primary">
                       <Price amount={parseInt(flightData.price)} fromCurrency="EUR" showLoader />
                     </span>
@@ -257,43 +258,9 @@ const FlightBookingProcess = () => {
           </div>
 
           {/* Colonne droite - Processus de réservation */}
-          <div className="lg:col-span-2">
+          <div className="min-w-0 lg:col-span-2">
             {/* Stepper */}
-            <Card className="p-6 mb-6 bg-gradient-to-r from-primary/5 to-transparent">
-              <div className="flex items-center justify-between">
-                {steps.map((step, index) => (
-                  <div key={step.number} className="flex items-center flex-1">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all ${
-                          step.completed
-                            ? "bg-green-500 text-white shadow-lg"
-                            : currentStep === step.number
-                            ? "bg-primary text-white shadow-lg scale-110"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {step.completed ? <Check className="h-6 w-6" /> : step.number}
-                      </div>
-                      <span
-                        className={`text-sm font-medium mt-2 ${
-                          currentStep === step.number ? "text-primary font-semibold" : "text-muted-foreground"
-                        }`}
-                      >
-                        {step.title}
-                      </span>
-                    </div>
-                    {index < steps.length - 1 && (
-                      <Separator
-                        className={`flex-1 mx-4 h-1 ${
-                          step.completed ? "bg-green-500" : "bg-muted"
-                        }`}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Card>
+            <BookingStepper steps={steps} currentStep={currentStep} className="mb-6" />
 
             {/* Contenu des étapes */}
             {currentStep === 1 && (

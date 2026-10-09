@@ -33,6 +33,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { Plus, Pencil, Trash2, UtensilsCrossed, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface Restaurant {
   id: string;
@@ -56,13 +58,13 @@ interface Restaurant {
 }
 
 const DAYS: { key: string; label: string }[] = [
-  { key: "mon", label: "Lundi" },
-  { key: "tue", label: "Mardi" },
-  { key: "wed", label: "Mercredi" },
-  { key: "thu", label: "Jeudi" },
-  { key: "fri", label: "Vendredi" },
-  { key: "sat", label: "Samedi" },
-  { key: "sun", label: "Dimanche" },
+  { key: "mon", get label() { return i18n.t("ux.bo.monday"); } },
+  { key: "tue", get label() { return i18n.t("ux.bo.tuesday"); } },
+  { key: "wed", get label() { return i18n.t("ux.bo.wednesday"); } },
+  { key: "thu", get label() { return i18n.t("ux.bo.thursday"); } },
+  { key: "fri", get label() { return i18n.t("ux.bo.friday"); } },
+  { key: "sat", get label() { return i18n.t("ux.bo.saturday"); } },
+  { key: "sun", get label() { return i18n.t("ux.bo.sunday"); } },
 ];
 
 const emptyOpeningHours = () =>
@@ -91,6 +93,7 @@ const emptyForm = {
 };
 
 export default function AgencyRestaurants() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
@@ -164,18 +167,18 @@ export default function AgencyRestaurants() {
       if (editing) {
         const { error } = await supabase.from("restaurants").update(restaurantData).eq("id", editing.id);
         if (error) throw error;
-        toast({ title: "Succès", description: "Restaurant mis à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.restaurantUpdated") });
       } else {
         const { error } = await supabase.from("restaurants").insert(restaurantData);
         if (error) throw error;
-        toast({ title: "Succès", description: "Restaurant créé" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.restaurantCreated") });
       }
 
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndRestaurants();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -207,12 +210,12 @@ export default function AgencyRestaurants() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer ce restaurant ? Les réservations liées seront aussi supprimées.")) return;
+    if (!confirm(t("ux.bo.deleteRestaurantRelatedBookingsWill"))) return;
     const { error } = await supabase.from("restaurants").delete().eq("id", id);
     if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Succès", description: "Restaurant supprimé" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.restaurantDeleted") });
       fetchAgencyAndRestaurants();
     }
   };
@@ -224,27 +227,27 @@ export default function AgencyRestaurants() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Mes Restaurants</h1>
-            <p className="text-muted-foreground">Gérez vos restaurants et leurs créneaux de réservation</p>
+            <h1 className="text-2xl font-bold">{t("ux.bo.myRestaurants")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.manageRestaurantsTheirBookingSlots")}</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nouveau Restaurant</Button>
+              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newRestaurant")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>{editing ? "Modifier le restaurant" : "Nouveau restaurant"}</DialogTitle>
+                <DialogTitle>{editing ? t("ux.bo.editRestaurant") : t("ux.bo.newRestaurant2")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Nom *</Label>
+                    <Label>{t("ux.bo.name2")}</Label>
                     <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
                   </div>
                   <div className="space-y-2">
-                    <Label>Cuisine</Label>
+                    <Label>{t("ux.bo.cuisine")}</Label>
                     <Input
-                      placeholder="Ex: Ivoirienne, Italienne..."
+                      placeholder={t("ux.bo.eGIvorianItalian")}
                       value={formData.cuisine_type}
                       onChange={(e) => setFormData({ ...formData, cuisine_type: e.target.value })}
                     />
@@ -252,41 +255,41 @@ export default function AgencyRestaurants() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Ville / Quartier *</Label>
+                    <Label>{t("ux.bo.cityDistrict")}</Label>
                     <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
                   </div>
                   <div className="space-y-2">
-                    <Label>Adresse</Label>
+                    <Label>{t("ux.bo.address")}</Label>
                     <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                   </div>
                 </div>
                 <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Gamme de prix</Label>
+                    <Label>{t("ux.bo.priceRange")}</Label>
                     <Select value={formData.price_range} onValueChange={(v) => setFormData({ ...formData, price_range: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="€">€ - Abordable</SelectItem>
-                        <SelectItem value="€€">€€ - Modéré</SelectItem>
-                        <SelectItem value="€€€">€€€ - Élevé</SelectItem>
+                        <SelectItem value="€€">{t("ux.bo.moderate")}</SelectItem>
+                        <SelectItem value="€€€">{t("ux.bo.high")}</SelectItem>
                         <SelectItem value="€€€€">€€€€ - Luxe</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Téléphone</Label>
+                    <Label>{t("ux.bo.phone")}</Label>
                     <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Couverts max par créneau *</Label>
+                    <Label>{t("ux.bo.maxCoversPerSlot")}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -296,7 +299,7 @@ export default function AgencyRestaurants() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Intervalle entre créneaux (min)</Label>
+                    <Label>{t("ux.bo.intervalBetweenSlotsMin")}</Label>
                     <Select value={formData.slot_interval_minutes} onValueChange={(v) => setFormData({ ...formData, slot_interval_minutes: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -309,22 +312,22 @@ export default function AgencyRestaurants() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Prix moyen par personne (XOF) *</Label>
+                  <Label>{t("ux.bo.averagePricePerPersonXof")}</Label>
                   <Input
                     type="number"
                     min="0"
-                    placeholder="Ex: 8000"
+                    placeholder={t("ux.bo.eG8000")}
                     value={formData.average_ticket_price}
                     onChange={(e) => setFormData({ ...formData, average_ticket_price: e.target.value })}
                     required
                   />
                   <p className="text-xs text-muted-foreground">
-                    Sert de base au calcul de la commission due sur chaque réservation confirmée (non affiché publiquement aux clients).
+                    {t("ux.bo.usedCalculateCommissionOwedEach")}
                   </p>
                 </div>
 
                 <div className="space-y-3 border-t pt-4">
-                  <p className="text-sm font-medium">Horaires d'ouverture</p>
+                  <p className="text-sm font-medium">{t("ux.bo.openingHours")}</p>
                   {DAYS.map((day) => {
                     const hours = formData.openingHours[day.key];
                     return (
@@ -368,16 +371,16 @@ export default function AgencyRestaurants() {
                             />
                           </>
                         )}
-                        {hours.closed && <span className="text-sm text-muted-foreground">Fermé</span>}
+                        {hours.closed && <span className="text-sm text-muted-foreground">{t("ux.bo.closed")}</span>}
                       </div>
                     );
                   })}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Photo</Label>
+                  <Label>{t("ux.bo.photo")}</Label>
                   <ImageUpload
-                    label="Photo du restaurant"
+                    label={t("ux.bo.restaurantPhoto")}
                     folder="agency-restaurants"
                     value={formData.image_url}
                     onChange={(url) => setFormData({ ...formData, image_url: url })}
@@ -386,12 +389,12 @@ export default function AgencyRestaurants() {
 
                 <div className="flex items-center gap-2">
                   <Switch checked={formData.available} onCheckedChange={(c) => setFormData({ ...formData, available: c })} />
-                  <Label>Visible sur le site</Label>
+                  <Label>{t("ux.bo.visibleSite")}</Label>
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
-                  <Button type="submit">{editing ? "Mettre à jour" : "Créer"}</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                  <Button type="submit">{editing ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -400,29 +403,29 @@ export default function AgencyRestaurants() {
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Rechercher..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          <Input placeholder={t("ux.bo.search")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
         </div>
 
         <div className="border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Restaurant</TableHead>
-                <TableHead>Cuisine</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Gamme</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("ux.bo.restaurant")}</TableHead>
+                <TableHead>{t("ux.bo.cuisine")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.range")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8">Chargement...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     <UtensilsCrossed className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    Aucun restaurant
+                    {t("ux.bo.noRestaurant")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -438,10 +441,10 @@ export default function AgencyRestaurants() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(r)}>
+                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(r)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(r.id)}>
+                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(r.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

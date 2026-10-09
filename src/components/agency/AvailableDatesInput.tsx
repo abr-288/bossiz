@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function AvailableDatesInput({ dates, onChange, label = "Dates de disponibilité" }: { dates: string[]; onChange: (dates: string[]) => void; label?: string }) {
+  const { t } = useTranslation();
   const [date, setDate] = useState("");
   const addDate = () => {
     if (!date || dates.includes(date)) return;
@@ -17,10 +19,10 @@ export function AvailableDatesInput({ dates, onChange, label = "Dates de disponi
       <Label>{label}</Label>
       <div className="flex gap-2">
         <Input type="date" min={new Date().toISOString().slice(0, 10)} value={date} onChange={(event) => setDate(event.target.value)} />
-        <Button type="button" variant="outline" onClick={addDate} disabled={!date}>Ajouter</Button>
+        <Button type="button" variant="outline" onClick={addDate} disabled={!date}>{t("ux.bo.add")}</Button>
       </div>
       {dates.length > 0 ? (
-        <div className="flex flex-wrap gap-2" aria-label="Dates ajoutées">
+        <div className="flex flex-wrap gap-2" aria-label={t("ux.bo.addedDates")}>
           {dates.map((item) => (
             <span key={item} className="inline-flex items-center gap-1 rounded-full border bg-muted px-3 py-1 text-sm">
               {new Date(`${item}T12:00:00`).toLocaleDateString("fr-FR")}
@@ -28,7 +30,7 @@ export function AvailableDatesInput({ dates, onChange, label = "Dates de disponi
             </span>
           ))}
         </div>
-      ) : <p className="text-xs text-muted-foreground">Aucune date précise ajoutée. Le service reste ouvert selon ses disponibilités habituelles.</p>}
+      ) : <p className="text-xs text-muted-foreground">{t("ux.bo.noSpecificDatesAddedService")}</p>}
     </div>
   );
 }

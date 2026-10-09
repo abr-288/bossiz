@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Loader2, Star, type LucideIcon } from "lucide-react";
+import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Star, type LucideIcon } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { Price } from "@/components/ui/price";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 interface Booking {
   id: string;
@@ -168,9 +169,7 @@ const BookingHistory = () => {
   if (loading) {
     return (
       <UserDashboardLayout>
-        <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
+        <div className="flex-1 p-4 md:p-6"><CardGridSkeleton count={4} gridClassName="grid-cols-1" imageClassName="h-20" /></div>
       </UserDashboardLayout>
     );
   }
@@ -186,7 +185,7 @@ const BookingHistory = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList aria-label="Filtrer les réservations par service" className="mb-6 grid h-auto w-full grid-cols-3 justify-stretch gap-1 sm:inline-flex sm:h-10 sm:w-auto sm:grid-cols-none sm:justify-center sm:gap-0">
+          <TabsList aria-label={t("ux.history.filterLabel")} className="mb-6 grid h-auto w-full grid-cols-3 justify-stretch gap-1 sm:inline-flex sm:h-10 sm:w-auto sm:grid-cols-none sm:justify-center sm:gap-0">
             <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="all">{t('bookingHistory.tabs.all')} ({bookings.length})</TabsTrigger>
             <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="flight">{t('bookingHistory.tabs.flights')} ({filterBookings("flight").length})</TabsTrigger>
             <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="hotel">{t('bookingHistory.tabs.hotels')} ({filterBookings("hotel").length})</TabsTrigger>
@@ -321,7 +320,7 @@ const BookingHistory = () => {
                         {reviewPromptEnabled && isReviewEligible(booking) && (
                           reviewedBookingIds.has(booking.id) ? (
                             <Button variant="ghost" disabled className="gap-2 text-muted-foreground">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              <Star className="w-4 h-4 fill-gold text-gold" />
                               Avis envoyé
                             </Button>
                           ) : (

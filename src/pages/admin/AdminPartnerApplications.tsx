@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { FileText, Search, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 interface PartnerApplication {
   id: string;
@@ -33,12 +35,13 @@ interface PartnerApplication {
 }
 
 const carPlanLabels: Record<string, string> = {
-  decouverte: "Découverte",
-  pro: "Pro",
+  get decouverte() { return i18n.t("ux.bo.discovery"); },
+  get pro() { return i18n.t("ux.bo.pro"); },
   flotte: "Flotte",
 };
 
 export default function AdminPartnerApplications() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [applications, setApplications] = useState<PartnerApplication[]>([]);
@@ -61,8 +64,8 @@ export default function AdminPartnerApplications() {
     } catch (error) {
       console.error("Error fetching partner applications:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les candidatures",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableLoadApplications"),
         variant: "destructive",
       });
     } finally {
@@ -81,7 +84,7 @@ export default function AdminPartnerApplications() {
 
       if (error) throw error;
 
-      toast({ title: "Succès", description: "Candidature rejetée" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.applicationRejected") });
       fetchApplications();
 
       supabase.functions
@@ -92,8 +95,8 @@ export default function AdminPartnerApplications() {
     } catch (error: any) {
       console.error("Error rejecting application:", error);
       toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors du rejet",
+        title: t("ux.bo.error"),
+        description: error.message || t("ux.bo.errorWhileRejecting"),
         variant: "destructive",
       });
     }
@@ -117,9 +120,9 @@ export default function AdminPartnerApplications() {
   };
 
   const statusBadge = (status: string) => {
-    if (status === "approved") return <Badge>Approuvée</Badge>;
-    if (status === "rejected") return <Badge variant="destructive">Rejetée</Badge>;
-    return <Badge variant="secondary">En attente</Badge>;
+    if (status === "approved") return <Badge>{t("ux.bo.approved")}</Badge>;
+    if (status === "rejected") return <Badge variant="destructive">{t("ux.bo.rejected")}</Badge>;
+    return <Badge variant="secondary">{t("ux.bo.pending2")}</Badge>;
   };
 
   const filteredApplications = applications.filter(
@@ -132,9 +135,9 @@ export default function AdminPartnerApplications() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Candidatures Partenaires</h1>
+          <h1 className="text-2xl font-bold">{t("ux.bo.partnerApplications")}</h1>
           <p className="text-muted-foreground">
-            Candidatures reçues via la page publique "Devenir partenaire"
+            {t("ux.bo.applicationsReceivedThroughPublicBecome")}
           </p>
         </div>
 
@@ -142,7 +145,7 @@ export default function AdminPartnerApplications() {
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher une candidature..."
+              placeholder={t("ux.bo.searchApplication")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -154,28 +157,28 @@ export default function AdminPartnerApplications() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Agence</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Forfait demandé</TableHead>
-                <TableHead>Reversement souhaité</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Reçue le</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("ux.bo.agency")}</TableHead>
+                <TableHead>{t("ux.bo.contact")}</TableHead>
+                <TableHead>{t("ux.bo.description")}</TableHead>
+                <TableHead>{t("ux.bo.requestedPlan")}</TableHead>
+                <TableHead>{t("ux.bo.preferredPayout")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead>{t("ux.bo.received")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8">
-                    Chargement...
+                    {t("ux.bo.loading")}
                   </TableCell>
                 </TableRow>
               ) : filteredApplications.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    Aucune candidature trouvée
+                    {t("ux.bo.noApplicationFound")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -222,9 +225,10 @@ export default function AdminPartnerApplications() {
                             onClick={() => handleCreateAgency(application)}
                           >
                             <Check className="h-4 w-4 mr-1" />
-                            Créer l'agence
+                            {t("ux.bo.createAgency")}
                           </Button>
                           <Button
+                            aria-label={t("ux.bo.rejectApplication")}
                             variant="ghost"
                             size="icon"
                             onClick={() => handleReject(application.id)}

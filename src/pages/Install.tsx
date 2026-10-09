@@ -10,8 +10,11 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import heroImage from "@/assets/ordinateur.jpg";
+import { useTranslation } from "react-i18next";
+import { MOTION } from "@/lib/motion";
 
 const Install = () => {
+  const { t } = useTranslation();
   const { isInstallable, isInstalled, install } = usePWA();
   const { isSupported, permission, requestPermission, subscribe, sendNotification } = usePushNotifications();
 
@@ -31,8 +34,8 @@ const Install = () => {
     const granted = await requestPermission();
     if (granted) {
       await subscribe();
-      sendNotification('Notifications activées', {
-        body: 'Vous recevrez désormais des notifications pour vos réservations',
+      sendNotification(t("ux.install.notifOn"), {
+        body: t("ux.install.notifOnDesc"),
         tag: 'welcome'
       });
     }
@@ -41,33 +44,33 @@ const Install = () => {
   const features = [
     {
       icon: Zap,
-      title: "Ultra rapide",
-      description: "Chargement instantané, même avec une connexion lente"
+      title: t("ux.install.fast"),
+      description: t("ux.install.fastDesc")
     },
     {
       icon: Wifi,
-      title: "Mode hors-ligne",
-      description: "Consultez vos réservations sans internet"
+      title: t("ux.install.offline"),
+      description: t("ux.install.offlineDesc")
     },
     {
       icon: Bell,
       title: "Notifications",
-      description: "Alertes de prix et rappels de voyage"
+      description: t("ux.install.alertsDesc")
     },
     {
       icon: Shield,
-      title: "Sécurisé",
-      description: "Données chiffrées et paiements protégés"
+      title: t("ux.install.secure"),
+      description: t("ux.install.secureDesc")
     },
     {
       icon: Clock,
-      title: "Toujours à jour",
-      description: "Mises à jour automatiques en arrière-plan"
+      title: t("ux.install.upToDate"),
+      description: t("ux.install.upToDateDesc")
     },
     {
       icon: Globe,
       title: "Multi-plateforme",
-      description: "Fonctionne sur tous vos appareils"
+      description: t("ux.install.allDevices")
     }
   ];
 
@@ -76,9 +79,9 @@ const Install = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white py-16 md:py-24 overflow-hidden">
-        <img src={heroImage} alt="Installer Bossiz+" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/85 to-primary/80" />
+      <div className="relative bg-brand text-brand-foreground py-16 md:py-24 overflow-hidden">
+        <img src={heroImage} alt={t("ux.install.title")} className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-brand/85" />
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ 
@@ -91,7 +94,7 @@ const Install = () => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: MOTION.slow }}
             className="text-center"
           >
             {/* App Icon Preview */}
@@ -105,20 +108,20 @@ const Install = () => {
             </motion.div>
 
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              Installez Bossiz+
+              {t("ux.install.titleShort")}
             </h1>
             <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8">
-              Accédez à vos voyages en un clic depuis votre écran d'accueil
+              {t("ux.install.subtitle")}
             </p>
 
             {isInstalled ? (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="inline-flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-6 py-3"
+                className="inline-flex items-center gap-2 bg-success/15 border border-success/30 rounded-full px-6 py-3"
               >
                 <Check className="w-5 h-5 text-green-300" />
-                <span className="font-medium">Application installée</span>
+                <span className="font-medium">{t("ux.install.installed")}</span>
               </motion.div>
             ) : (
               <motion.div
@@ -128,7 +131,7 @@ const Install = () => {
               >
                 <InstallDropdown 
                   size="lg"
-                  className="bg-white text-primary hover:bg-white/90 shadow-lg h-14 px-6 text-lg font-semibold"
+                  className="bg-white text-brand hover:bg-white/90 shadow-lg h-14 px-6 text-lg font-semibold"
                 />
               </motion.div>
             )}
@@ -149,21 +152,21 @@ const Install = () => {
             >
               {/* iOS Instructions */}
               <Card className={cn(
-                "overflow-hidden transition-all duration-300",
+                "overflow-hidden transition-all duration-slow ease-standard",
                 isIOS && "ring-2 ring-primary shadow-lg"
               )}>
-                <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+                <CardHeader className="bg-brand text-white">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
                       <Apple className="w-7 h-7" />
                     </div>
                     <div>
                       <CardTitle className="text-white">iPhone & iPad</CardTitle>
-                      <CardDescription className="text-white/70">Installation via Safari</CardDescription>
+                      <CardDescription className="text-white/70">{t("ux.install.viaSafari")}</CardDescription>
                     </div>
                     {isIOS && (
-                      <span className="ml-auto bg-primary px-3 py-1 rounded-full text-xs font-medium">
-                        Votre appareil
+                      <span className="ml-auto bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                        {t("ux.install.yourDevice")}
                       </span>
                     )}
                   </div>
@@ -175,8 +178,8 @@ const Install = () => {
                         <span className="font-bold text-primary">1</span>
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium">Ouvrez dans Safari</p>
-                        <p className="text-sm text-muted-foreground">Assurez-vous d'utiliser le navigateur Safari</p>
+                        <p className="font-medium">{t("ux.install.openSafari")}</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.useSafari")}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
@@ -185,10 +188,10 @@ const Install = () => {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium flex items-center gap-2">
-                          Appuyez sur Partager
+                          {t("ux.install.tapShare")}
                           <Share2 className="w-4 h-4 text-primary" />
                         </p>
-                        <p className="text-sm text-muted-foreground">L'icône carrée avec une flèche vers le haut</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.shareIcon")}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
@@ -197,19 +200,19 @@ const Install = () => {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium flex items-center gap-2">
-                          Sur l'écran d'accueil
+                          {t("ux.install.addHome")}
                           <Plus className="w-4 h-4 text-primary" />
                         </p>
-                        <p className="text-sm text-muted-foreground">Faites défiler et sélectionnez cette option</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.scrollSelect")}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                        <Check className="w-5 h-5 text-green-600" />
+                      <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-5 h-5 text-success" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium">Confirmez avec "Ajouter"</p>
-                        <p className="text-sm text-muted-foreground">L'application apparaîtra sur votre écran d'accueil</p>
+                        <p className="font-medium">{t("ux.install.confirmAdd")}</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.appears")}</p>
                       </div>
                     </div>
                   </div>
@@ -218,21 +221,21 @@ const Install = () => {
 
               {/* Android Instructions */}
               <Card className={cn(
-                "overflow-hidden transition-all duration-300",
+                "overflow-hidden transition-all duration-slow ease-standard",
                 isAndroid && "ring-2 ring-primary shadow-lg"
               )}>
-                <CardHeader className="bg-gradient-to-r from-green-600 to-green-500 text-white">
+                <CardHeader className="bg-gradient-to-r from-success to-success/80 text-success-foreground">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
                       <Chrome className="w-7 h-7" />
                     </div>
                     <div>
                       <CardTitle className="text-white">Android</CardTitle>
-                      <CardDescription className="text-white/70">Installation via Chrome</CardDescription>
+                      <CardDescription className="text-white/70">{t("ux.install.viaChrome")}</CardDescription>
                     </div>
                     {isAndroid && (
                       <span className="ml-auto bg-white/20 px-3 py-1 rounded-full text-xs font-medium">
-                        Votre appareil
+                        {t("ux.install.yourDevice")}
                       </span>
                     )}
                   </div>
@@ -240,45 +243,45 @@ const Install = () => {
                 <CardContent className="pt-6">
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                        <span className="font-bold text-green-600">1</span>
+                      <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                        <span className="font-bold text-success">1</span>
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium">Ouvrez dans Chrome</p>
-                        <p className="text-sm text-muted-foreground">Utilisez le navigateur Google Chrome</p>
+                        <p className="font-medium">{t("ux.install.openChrome")}</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.useChrome")}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                        <span className="font-bold text-green-600">2</span>
+                      <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                        <span className="font-bold text-success">2</span>
                       </div>
                       <div className="flex-1">
                         <p className="font-medium flex items-center gap-2">
-                          Ouvrez le menu
-                          <MoreVertical className="w-4 h-4 text-green-600" />
+                          {t("ux.install.openMenu")}
+                          <MoreVertical className="w-4 h-4 text-success" />
                         </p>
-                        <p className="text-sm text-muted-foreground">Les trois points en haut à droite</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.threeDots")}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                        <span className="font-bold text-green-600">3</span>
+                      <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                        <span className="font-bold text-success">3</span>
                       </div>
                       <div className="flex-1">
                         <p className="font-medium flex items-center gap-2">
-                          Installer l'application
-                          <Download className="w-4 h-4 text-green-600" />
+                          {t("ux.install.installApp")}
+                          <Download className="w-4 h-4 text-success" />
                         </p>
-                        <p className="text-sm text-muted-foreground">Ou "Ajouter à l'écran d'accueil"</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.orAddHome")}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                        <Check className="w-5 h-5 text-green-600" />
+                      <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-5 h-5 text-success" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium">Confirmez l'installation</p>
-                        <p className="text-sm text-muted-foreground">L'application sera ajoutée automatiquement</p>
+                        <p className="font-medium">{t("ux.install.confirmInstall")}</p>
+                        <p className="text-sm text-muted-foreground">{t("ux.install.autoAdded")}</p>
                       </div>
                     </div>
                   </div>
@@ -294,7 +297,7 @@ const Install = () => {
             transition={{ delay: 0.3 }}
             className="mb-12"
           >
-            <h2 className="text-2xl font-bold text-center mb-8">Pourquoi installer Bossiz+ ?</h2>
+            <h2 className="text-2xl font-bold text-center mb-8">{t("ux.install.why")}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {features.map((feature, index) => (
                 <motion.div
@@ -325,44 +328,44 @@ const Install = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Bell className="w-5 h-5 text-primary" />
-                    Notifications push
+                    {t("ux.install.push")}
                   </CardTitle>
                   <CardDescription>
-                    Restez informé de vos réservations et offres spéciales
+                    {t("ux.install.pushDesc")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {permission === 'granted' ? (
-                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                    <div className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-lg">
                       <Check className="w-5 h-5" />
-                      <span className="font-medium">Notifications activées</span>
+                      <span className="font-medium">{t("ux.install.notifOn")}</span>
                     </div>
                   ) : permission === 'denied' ? (
                     <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
-                      Les notifications ont été refusées. Vous pouvez les réactiver dans les paramètres de votre navigateur.
+                      {t("ux.install.denied")}
                     </div>
                   ) : (
                     <>
                       <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="text-sm mb-3">Recevez des alertes pour :</p>
+                        <p className="text-sm mb-3">{t("ux.install.alertsFor")}</p>
                         <ul className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                           <li className="flex items-center gap-2">
                             <Check className="w-4 h-4 text-primary" />
-                            Confirmations
+                            {t("ux.install.confirmations")}
                           </li>
                           <li className="flex items-center gap-2">
                             <Check className="w-4 h-4 text-primary" />
-                            Rappels de voyage
+                            {t("ux.install.reminders")}
                           </li>
                           <li className="flex items-center gap-2">
                             <Check className="w-4 h-4 text-primary" />
-                            Offres exclusives
+                            {t("ux.install.offers")}
                           </li>
                         </ul>
                       </div>
                       <Button onClick={handleEnableNotifications} className="w-full" size="lg">
                         <Bell className="mr-2 h-5 w-5" />
-                        Activer les notifications
+                        {t("ux.install.enableNotif")}
                       </Button>
                     </>
                   )}
