@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Building2, CreditCard, FileText, Users, Loader2 } from "lucide-react";
+import { CreditCard, FileText, Users, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCompany } from "@/hooks/useCompany";
 import { toast } from "sonner";
@@ -123,7 +123,6 @@ const Companies = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <Building2 className="w-12 h-12 text-white mx-auto mb-4" />
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
             {t("ux.companies.title")}
           </h1>

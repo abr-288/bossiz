@@ -51,7 +51,6 @@ const Restaurants = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <UtensilsCrossed className="w-12 h-12 text-white mx-auto mb-4" />
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
             {t("ux.restaurants.title")}
           </h1>

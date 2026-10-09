@@ -1,8 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
-import { Shield, Lock, Eye, Database, UserCheck, Globe, Bell, Trash2, Mail, Handshake } from "lucide-react";
+import { Lock, Eye, Database, UserCheck, Globe, Bell, Trash2, Mail, Handshake } from "lucide-react";
 import { currentLocaleTag } from "@/lib/dateLocale";
+import { PageHero } from "@/components/PageHero";
+import heroImage from "@/assets/hero-slide-2.jpg";
 
 const PrivacyPolicy = () => {
   const { config } = useSiteConfigContext();
@@ -141,42 +143,31 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       <Navbar />
-      <main className="pt-32 pb-16">
+      <PageHero
+        image={heroImage}
+        title={<>Politique de Confidentialité</>}
+        subtitle={<>Chez {siteName}, la protection de vos données personnelles est une priorité absolue. 
+              Cette politique détaille comment nous collectons, utilisons et protégeons vos informations.</>}
+      />
+      <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Shield className="w-8 h-8 text-primary" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Politique de Confidentialité
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Chez {siteName}, la protection de vos données personnelles est une priorité absolue. 
-              Cette politique détaille comment nous collectons, utilisons et protégeons vos informations.
-            </p>
-          </div>
 
           {/* Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => {
-              const Icon = section.icon;
               return (
                 <section
                   key={index}
                   className="bg-card border border-border rounded-xl p-6 md:p-8"
                 >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-foreground pt-1.5">
+                  <div className="mb-4">
+                    <h2 className="text-xl font-bold text-foreground">
                       {section.title}
                     </h2>
                   </div>
-                  <div className="pl-14 space-y-2">
+                  <div className="space-y-2">
                     {section.content.map((line, i) => (
                       <p
                         key={i}

@@ -21,6 +21,8 @@ import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { currentDateFnsLocale } from "@/lib/dateLocale";
+import { PageHero } from "@/components/PageHero";
+import bannerFlights from "@/assets/banner-flights.jpg";
 
 interface FlightData {
   airline: string;
@@ -227,20 +229,11 @@ const FlightComparison = () => {
     <div className="min-h-screen flex flex-col pt-16">
       <Navbar />
       
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 py-10 md:py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {t("ux.compare.title")}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {t("ux.compare.subtitle")}
-            </p>
-          </div>
+      <PageHero image={bannerFlights} title={t("ux.compare.title")} subtitle={t("ux.compare.subtitle")}>
+        <div className="mx-auto max-w-5xl text-left">
           <FlightSearchForm />
         </div>
-      </div>
+      </PageHero>
 
       {/* Results Section */}
       <div className="flex-1 bg-background py-12">

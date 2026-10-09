@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
-import { Check, Car } from "lucide-react";
+import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerCars from "@/assets/banner-cars.jpg";
@@ -130,20 +130,15 @@ const CarPartnerPlans = () => {
       <Navbar />
 
       {/* Hero */}
-      <div className="relative min-h-[42vh] md:min-h-[48vh] flex items-center justify-center overflow-hidden">
+      <div className="relative overflow-hidden bg-brand py-16 md:py-24">
         <LazyImage
           src={bannerCars}
           alt={t("ux.carPlans.bannerAlt")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/75 via-primary/55 to-background" />
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }} />
-        <div className="relative z-10 container mx-auto px-4 py-12 text-center">
-          <div className="inline-flex items-center gap-2 text-white/90 text-sm font-medium mb-3">
-            <Car className="w-4 h-4" />
-            {t("ux.carPlans.eyebrow")}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
             {t("ux.carPlans.title")}
           </h1>
           <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">

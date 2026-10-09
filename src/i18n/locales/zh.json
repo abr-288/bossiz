@@ -3015,7 +3015,8 @@
       "lite": "试用简化移动版",
       "backHome": "返回首页",
       "reload": "重新加载页面",
-      "connection": "网络连接"
+      "connection": "网络连接",
+      "subtitle": "正在检查您的设备是否兼容 Bossiz+"
     },
     "calendar": {
       "hotel": "酒店",

@@ -82,7 +82,7 @@ const Help = () => {
         </div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg tracking-tighter">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
               {t("help.title", "Centre d'aide")}
             </h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto font-medium">

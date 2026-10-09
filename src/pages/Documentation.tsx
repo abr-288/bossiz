@@ -715,20 +715,15 @@ const Documentation = () => {
   return (
     <div className="min-h-screen bg-muted">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary via-primary/80 to-primary/80 text-primary-foreground overflow-hidden">
+      <div className="relative bg-brand text-white overflow-hidden">
         <img src={heroImage} alt="Master Traversee Connect" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-br from-brand/85 via-brand/70 to-brand/85" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                <Rocket className="w-16 h-16 text-white" />
-              </div>
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-card">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
               Master Traversee Connect
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-white/95 mb-8 max-w-2xl mx-auto">
               {t("ux.bo.exploreOurPlatformThroughImmersive")}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">

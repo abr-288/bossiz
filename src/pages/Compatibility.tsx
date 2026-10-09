@@ -24,6 +24,8 @@ import {
   Info
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { PageHero } from "@/components/PageHero";
+import heroImage from "@/assets/hero-slide-1.jpg";
 
 const Compatibility = () => {
   const { t } = useTranslation();
@@ -202,25 +204,9 @@ const Compatibility = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-muted/40 py-8">
-      <div className="container max-w-4xl mx-auto px-4">
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
-            {compatibility.isCompatible ? (
-              <CheckCircle2 className="w-8 h-8 text-success" />
-            ) : (
-              <AlertTriangle className="w-8 h-8 text-warning-foreground" />
-            )}
-            <h1 className="text-3xl font-bold text-foreground">
-              {t("ux.compat.title")}
-            </h1>
-          </div>
-          <p className="text-lg text-muted-foreground">
-            Vérification de la compatibilité de votre appareil avec Bossiz+
-          </p>
-        </div>
+    <div className="min-h-screen bg-muted/40">
+      <PageHero image={heroImage} title={t("ux.compat.title")} subtitle={t("ux.compat.subtitle")} />
+      <div className="container max-w-4xl mx-auto px-4 py-8">
 
         {/* Compatibility Status */}
         <Card className={`mb-8 ${compatibility.isCompatible ? 'border-success/30 bg-success/10' : 'border-warning-foreground/20 bg-warning'}`}>

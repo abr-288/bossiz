@@ -111,7 +111,7 @@ const Contact = () => {
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
             {t("pages.contact.title", "Contactez-nous")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">

@@ -3016,7 +3016,8 @@
       "lite": "Essayer notre version mobile simplifiée",
       "backHome": "Retour à l'accueil",
       "reload": "Recharger la page",
-      "connection": "Connexion"
+      "connection": "Connexion",
+      "subtitle": "Vérification de la compatibilité de votre appareil avec Bossiz+"
     },
     "calendar": {
       "hotel": "Hôtel",

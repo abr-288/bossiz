@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { LazyImage } from "@/components/ui/lazy-image";
 import {
-  Handshake,
   Hotel,
   UtensilsCrossed,
   Compass,
@@ -231,11 +230,7 @@ const Partnership = () => {
         />
         <div className="absolute inset-0 bg-brand/70" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 text-white/90 text-sm font-medium mb-3">
-            <Handshake className="w-4 h-4" />
-            {t("ux.partnership.eyebrow")}
-          </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter drop-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
             {t("ux.partnership.title")}
           </h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium mb-8">
