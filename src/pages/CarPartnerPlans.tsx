@@ -14,6 +14,7 @@ import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
+import { useLocalizedRows } from "@/lib/translatableContent";
 
 interface CarPartnerPlan {
   plan_id: string;
@@ -35,6 +36,7 @@ const CarPartnerPlans = () => {
   const [yearly, setYearly] = useState(false);
   const [agencyId, setAgencyId] = useState<string | null>(null);
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
+  const localizedPlans = useLocalizedRows(plans);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -178,7 +180,7 @@ const CarPartnerPlans = () => {
           <CardGridSkeleton count={3} imageClassName="h-24" />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
-            {plans.map((plan) => {
+            {localizedPlans.map((plan) => {
               const featured = plan.plan_id === "pro";
               const price = yearly ? plan.yearly_price : plan.monthly_price;
               return (

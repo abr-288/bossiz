@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Price } from "@/components/ui/price";
 import { BookingDialog } from "@/components/BookingDialog";
 import { cn } from "@/lib/utils";
+import { useLocalizedRows } from "@/lib/translatableContent";
 
 interface Advertisement {
   id: string;
@@ -89,6 +90,9 @@ const OffersCarousel = () => {
     };
   }, []);
 
+  const localizedAds = useLocalizedRows(ads);
+  const localizedPromotions = useLocalizedRows(promotions);
+
   const scrollBy = (direction: 1 | -1) => {
     const track = trackRef.current;
     if (!track) return;
@@ -134,7 +138,7 @@ const OffersCarousel = () => {
             ))}
 
           {/* Publicités saisies dans l'admin (couleurs choisies par l'annonceur) */}
-          {ads.map((ad) => (
+          {localizedAds.map((ad) => (
             <li
               key={`ad-${ad.id}`}
               className={SLIDE_CLASS}
@@ -160,7 +164,7 @@ const OffersCarousel = () => {
           ))}
 
           {/* Promotions */}
-          {promotions.map((promo) => {
+          {localizedPromotions.map((promo) => {
             const discounted = Number(promo.original_price) * (1 - promo.discount / 100);
             return (
               <li key={`promo-${promo.id}`} className={SLIDE_CLASS}>

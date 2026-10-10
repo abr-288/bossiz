@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { getProfilePhotoUrl, getUserPhotoFromMetadata } from "@/lib/profilePhoto";
 import { useTranslation } from "react-i18next";
+import { useBackgroundTranslation } from "@/lib/translatableContent";
 
 interface AgencyLayoutProps {
   children: ReactNode;
@@ -107,6 +108,9 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
     : pathname.startsWith("/agency/promotions") ? "promotions"
     : null;
   const featureDisabled = !!featureForPath && enabledFeatures[featureForPath] === false;
+
+  // Traduction automatique des contenus enregistrés pendant la session
+  useBackgroundTranslation(!loading);
 
   if (loading) {
     return (

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { localizeRow } from "@/lib/translatableContent";
 
 // Plans qui nécessitent une demande de contact au lieu d'un paiement direct
 const REQUEST_ONLY_PLANS = ["visa", "billets", "events"];
@@ -84,7 +85,7 @@ const isRequestOnlyPlan = (planId: string): boolean => {
 };
 
 const FeaturedSubscriptions = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const trackRef = useRef<HTMLUListElement>(null);
@@ -111,7 +112,7 @@ const FeaturedSubscriptions = () => {
 
         if (error) throw error;
         
-        const formattedPlans: DisplayPlan[] = (data || []).map((p: SubscriptionPlanDB) => ({
+        const formattedPlans: DisplayPlan[] = (data || []).map((row) => localizeRow(row as SubscriptionPlanDB, i18n.language)).map((p: SubscriptionPlanDB) => ({
           id: p.id,
           plan_id: p.plan_id,
           name: p.name,
@@ -133,7 +134,7 @@ const FeaturedSubscriptions = () => {
     };
 
     fetchPlans();
-  }, []);
+  }, [i18n.language]);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

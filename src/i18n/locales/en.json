@@ -5079,6 +5079,38 @@
       "desktopTitle": "Computer (Chrome, Edge)",
       "desktopStep1": "Click the install icon on the right of the address bar.",
       "desktopStep2": "Confirm with \"Install\"."
+    },
+    "translations": {
+      "title": "Translations",
+      "subtitle": "Content entered in French is translated into English and Chinese automatically. Review and correct it here if needed.",
+      "contentType": "Content type",
+      "runNow": "Translate now",
+      "running": "Translating...",
+      "runDone_one": "{{count}} item translated",
+      "runDone_other": "{{count}} items translated",
+      "runPending_one": "{{count}} item left to translate: run again in a moment.",
+      "runPending_other": "{{count}} items left to translate: run again in a moment.",
+      "runError": "Translation could not be started. Try again in a moment.",
+      "missingColumn": "The database is not ready for translations yet: migration 20261010000000_content_translations.sql must be applied.",
+      "progress": "{{done}} of {{total}} items translated",
+      "empty": "No content of this type yet",
+      "notYet": "Not translated yet: translation happens automatically within a few minutes.",
+      "manual": "Edited",
+      "save": "Save corrections",
+      "saved": "Corrections saved",
+      "saveError": "Unable to save the corrections",
+      "menu": "Translations",
+      "table_advertisements": "Advertisements",
+      "table_promotions": "Promotions",
+      "table_subscriptionPlans": "Subscription plans",
+      "table_carPlans": "Car plans",
+      "table_reassurance": "Homepage reassurance",
+      "table_services": "Services and tours",
+      "table_activities": "Activities",
+      "table_stays": "Stays",
+      "table_restaurants": "Restaurants",
+      "table_artisans": "Artisans",
+      "table_wellness": "Wellness & beauty"
     }
   }
 }

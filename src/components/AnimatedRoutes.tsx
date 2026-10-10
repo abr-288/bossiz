@@ -62,6 +62,7 @@ const AdminAdvertisements = lazy(() => import("@/pages/admin/AdminAdvertisements
 const AdminPayments = lazy(() => import("@/pages/admin/AdminPayments"));
 const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
 const AdminNewsletter = lazy(() => import("@/pages/admin/AdminNewsletter"));
+const AdminTranslations = lazy(() => import("@/pages/admin/AdminTranslations"));
 const AdminIntegrations = lazy(() => import("@/pages/admin/AdminIntegrations"));
 const AdminDestinations = lazy(() => import("@/pages/admin/AdminDestinations"));
 const AdminContentManager = lazy(() => import("@/pages/AdminContentManager"));
@@ -190,6 +191,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/payments" element={<PageTransition><AdminPayments /></PageTransition>} />
           <Route path="/admin/reviews" element={<PageTransition><AdminReviews /></PageTransition>} />
           <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
+          <Route path="/admin/translations" element={<PageTransition><AdminTranslations /></PageTransition>} />
           <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
           <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
           <Route path="/admin/bossiz-sites" element={<Navigate to="/admin/bossiz-microsites" replace />} />

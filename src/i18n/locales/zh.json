@@ -5078,6 +5078,38 @@
       "desktopTitle": "电脑（Chrome、Edge）",
       "desktopStep1": "点击地址栏右侧的安装图标。",
       "desktopStep2": "点击“安装”确认。"
+    },
+    "translations": {
+      "title": "翻译",
+      "subtitle": "以法语输入的内容会自动翻译成英语和中文。如有需要，可在此审阅和修改。",
+      "contentType": "内容类型",
+      "runNow": "立即翻译",
+      "running": "正在翻译……",
+      "runDone_one": "已翻译 {{count}} 项内容",
+      "runDone_other": "已翻译 {{count}} 项内容",
+      "runPending_one": "还有 {{count}} 项待翻译，请稍后再次运行。",
+      "runPending_other": "还有 {{count}} 项待翻译，请稍后再次运行。",
+      "runError": "无法启动翻译，请稍后再试。",
+      "missingColumn": "数据库尚未准备好翻译：需要应用迁移 20261010000000_content_translations.sql。",
+      "progress": "已翻译 {{done}}/{{total}} 项内容",
+      "empty": "暂无此类内容",
+      "notYet": "尚未翻译：几分钟内会自动完成翻译。",
+      "manual": "已修改",
+      "save": "保存修改",
+      "saved": "修改已保存",
+      "saveError": "无法保存修改",
+      "menu": "翻译",
+      "table_advertisements": "广告",
+      "table_promotions": "促销",
+      "table_subscriptionPlans": "订阅方案",
+      "table_carPlans": "汽车套餐",
+      "table_reassurance": "首页保障说明",
+      "table_services": "服务与线路",
+      "table_activities": "活动",
+      "table_stays": "住宿",
+      "table_restaurants": "餐厅",
+      "table_artisans": "手工艺人",
+      "table_wellness": "健康与美容"
     }
   }
 }

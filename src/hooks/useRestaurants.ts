@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocalizedRows } from "@/lib/translatableContent";
 
 export const useRestaurants = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
@@ -30,5 +31,6 @@ export const useRestaurants = () => {
     fetchRestaurants();
   }, [fetchRestaurants]);
 
-  return { restaurants, loading, error, refetch: fetchRestaurants };
+  const localized = useLocalizedRows(restaurants);
+  return { restaurants: localized, loading, error, refetch: fetchRestaurants };
 };

@@ -5079,6 +5079,38 @@
       "desktopTitle": "Ordinateur (Chrome, Edge)",
       "desktopStep1": "Cliquez sur l'icône d'installation à droite de la barre d'adresse.",
       "desktopStep2": "Confirmez avec « Installer »."
+    },
+    "translations": {
+      "title": "Traductions",
+      "subtitle": "Les contenus saisis en français sont traduits automatiquement en anglais et en chinois. Relisez et corrigez ici si besoin.",
+      "contentType": "Type de contenu",
+      "runNow": "Traduire maintenant",
+      "running": "Traduction en cours...",
+      "runDone_one": "{{count}} contenu traduit",
+      "runDone_other": "{{count}} contenus traduits",
+      "runPending_one": "{{count}} contenu reste à traduire : relancez dans un instant.",
+      "runPending_other": "{{count}} contenus restent à traduire : relancez dans un instant.",
+      "runError": "La traduction n'a pas pu être lancée. Réessayez dans un instant.",
+      "missingColumn": "La base de données n'est pas encore prête pour les traductions : la migration 20261010000000_content_translations.sql doit être appliquée.",
+      "progress": "{{done}} sur {{total}} contenus traduits",
+      "empty": "Aucun contenu de ce type pour le moment",
+      "notYet": "Pas encore traduit : la traduction se fait automatiquement en quelques minutes.",
+      "manual": "Corrigé",
+      "save": "Enregistrer les corrections",
+      "saved": "Corrections enregistrées",
+      "saveError": "Impossible d'enregistrer les corrections",
+      "menu": "Traductions",
+      "table_advertisements": "Publicités",
+      "table_promotions": "Promotions",
+      "table_subscriptionPlans": "Abonnements",
+      "table_carPlans": "Forfaits voiture",
+      "table_reassurance": "Réassurance de l'accueil",
+      "table_services": "Services et circuits",
+      "table_activities": "Activités",
+      "table_stays": "Séjours",
+      "table_restaurants": "Restaurants",
+      "table_artisans": "Artisans",
+      "table_wellness": "Bien-être & beauté"
     }
   }
 }

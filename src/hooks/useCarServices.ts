@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
+import { localizeRow } from "@/lib/translatableContent";
 
 export const useCarServices = () => {
+  const { i18n } = useTranslation();
   const [cars, setCars] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCarServices();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
 
   const fetchCarServices = async () => {
     try {
@@ -23,7 +27,7 @@ export const useCarServices = () => {
       if (fetchError) throw fetchError;
 
       // Transform database services to match car display format
-      const transformedCars = (data || []).map((service) => {
+      const transformedCars = (data || []).map((row) => localizeRow(row, i18n.language)).map((service) => {
         const specs = service.specifications as any || {};
         return {
           id: service.id,

@@ -1,6 +1,7 @@
 import { Shield, Award, Headphones, Smartphone, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useHomepageConfigContext } from "@/contexts/HomepageConfigContext";
+import { localizeRow } from "@/lib/translatableContent";
 
 // Les avantages en base ont des identifiants UUID : on retrouve la clé de
 // traduction à partir des titres par défaut. Un titre personnalisé s'affiche tel quel.
@@ -64,9 +65,12 @@ const FeaturesSection = () => {
           {features.map((feature, index) => {
             const IconComponent = getIconComponent(feature.icon);
             // Français : texte saisi dans l'admin ; autres langues : traduction intégrée
+            // Autres langues : traduction automatique du texte saisi, sinon traduction intégrée
             const text = FEATURE_TEXT[featureKey(feature)];
-            const title = isFrench || !text ? feature.title : t(text.title);
-            const description = isFrench || !text ? feature.description : t(text.description);
+            const auto = localizeRow(feature, i18n.language);
+            const hasAuto = auto !== feature;
+            const title = isFrench || hasAuto || !text ? auto.title : t(text.title);
+            const description = isFrench || hasAuto || !text ? auto.description : t(text.description);
             return (
               <div
                 key={feature.id}

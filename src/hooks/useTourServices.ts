@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
+import { localizeRow } from "@/lib/translatableContent";
 
 export const useTourServices = () => {
+  const { i18n } = useTranslation();
   const [tours, setTours] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +21,7 @@ export const useTourServices = () => {
 
       if (fetchError) throw fetchError;
 
-      const transformedTours = (data || []).map((service) => {
+      const transformedTours = (data || []).map((row) => localizeRow(row, i18n.language)).map((service) => {
         const specs = (service.specifications as any) || {};
         return {
           id: service.id,
@@ -53,7 +56,7 @@ export const useTourServices = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     fetchTourServices();

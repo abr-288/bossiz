@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound, FileText, Car } from "lucide-react";
+import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound, FileText, Car, Languages } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { SidebarBrandHeader, sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 import {
@@ -37,6 +37,7 @@ const menuItems = [
   { get title() { return i18n.t("ux.bo.integrationsEmailSmsPayment"); }, url: "/admin/integrations", icon: KeyRound },
   { get title() { return i18n.t("ux.bo.users"); }, url: "/admin/users", icon: Users },
   { get title() { return i18n.t("ux.bo.emailTemplates"); }, url: "/admin/email-templates", icon: Mail },
+  { get title() { return i18n.t("ux.translations.menu"); }, url: "/admin/translations", icon: Languages },
   { title: "Configuration", url: "/admin/configuration", icon: Cog },
 ];
 

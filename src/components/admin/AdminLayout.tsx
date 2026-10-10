@@ -8,6 +8,7 @@ import { LogOut, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useBackgroundTranslation } from "@/lib/translatableContent";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -56,6 +57,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     await supabase.auth.signOut();
     navigate("/");
   };
+
+  // Traduction automatique des contenus enregistrés pendant la session
+  useBackgroundTranslation(!loading);
 
   if (loading) {
     return (

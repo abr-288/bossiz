@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocalizedRows } from "@/lib/translatableContent";
 
 export const useWellnessServices = () => {
   const [wellnessServices, setWellnessServices] = useState<any[]>([]);
@@ -30,5 +31,6 @@ export const useWellnessServices = () => {
     fetchWellnessServices();
   }, [fetchWellnessServices]);
 
-  return { wellnessServices, loading, error, refetch: fetchWellnessServices };
+  const localized = useLocalizedRows(wellnessServices);
+  return { wellnessServices: localized, loading, error, refetch: fetchWellnessServices };
 };

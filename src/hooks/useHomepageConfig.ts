@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import type { ContentTranslations } from "@/lib/translatableContent";
 
 export interface HomepageFeature {
   id: string;
   /** Identifiant stable (colonne feature_id), sert aux traductions */
   key?: string;
+  /** Traductions automatiques (colonne translations) */
+  translations?: ContentTranslations;
   icon: string;
   title: string;
   description: string;
@@ -168,6 +171,7 @@ export const useHomepageConfig = () => {
         newConfig.features = featuresData.map(feature => ({
           id: feature.id,
           key: feature.feature_id,
+          translations: (feature as { translations?: ContentTranslations }).translations,
           icon: feature.icon,
           title: feature.title,
           description: feature.description,
