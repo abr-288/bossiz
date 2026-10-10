@@ -81,7 +81,8 @@ const AdminTranslations = () => {
     const result = await requestContentTranslation(table);
     setRunning(false);
     if (result?.errors?.length && !result.translated) {
-      toast.error(t("ux.translations.runError"));
+      // Message exact (ex. « Claude 401 : invalid x-api-key ») pour savoir quoi corriger
+      toast.error(t("ux.translations.runError"), { description: String(result.errors[0]).slice(0, 200), duration: 15000 });
     } else {
       toast.success(t("ux.translations.runDone", { count: result?.translated ?? 0 }));
       if (result?.pending) toast.info(t("ux.translations.runPending", { count: result.pending }));

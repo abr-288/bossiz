@@ -154,6 +154,11 @@ serve(async (req) => {
       try {
         result = await translate(client, changed);
       } catch (e) {
+        // Erreur de l'API Claude (clé invalide, crédit épuisé…) : inutile d'insister
+        if (e instanceof Anthropic.APIError) {
+          const detail = (e.error as { error?: { message?: string } } | undefined)?.error?.message ?? e.message;
+          return json({ translated, pending, errors: [`Claude ${e.status ?? ""} : ${detail}`] });
+        }
         errors.push(`${table}/${row.id}: ${e instanceof Error ? e.message : "erreur"}`);
         continue;
       }
