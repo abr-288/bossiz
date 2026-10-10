@@ -11,12 +11,6 @@ import { Star, MapPin, Users, Wifi, UtensilsCrossed, Car, Globe, GitCompare, Sli
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import hotelIvoire from "@/assets/hotel-ivoire.jpg";
-import hotelSofitel from "@/assets/hotel-sofitel.jpg";
-import hotelAzalai from "@/assets/hotel-azalai.jpg";
-import hotelPullman from "@/assets/hotel-pullman.jpg";
-import hotelSeen from "@/assets/hotel-seen.jpg";
-import hotelOnomo from "@/assets/hotel-onomo.jpg";
 import { HotelBookingDialog } from "@/components/HotelBookingDialog";
 import { HotelSearchForm } from "@/components/HotelSearchForm";
 import { HotelComparisonDialog } from "@/components/HotelComparisonDialog";
@@ -262,72 +256,10 @@ const Hotels = () => {
     }
   };
 
-  const hotels = [
-    {
-      id: 1,
-      name: "Hôtel Ivoire",
-      location: "Abidjan, Cocody",
-      price: 45000,
-      rating: 4.8,
-      reviews: 234,
-      image: hotelIvoire,
-      amenities: ["Wifi", "Restaurant", "Parking", "Piscine"]
-    },
-    {
-      id: 2,
-      name: "Sofitel Abidjan",
-      location: "Abidjan, Plateau",
-      price: 85000,
-      rating: 4.9,
-      reviews: 189,
-      image: hotelSofitel,
-      amenities: ["Wifi", "Restaurant", "Parking", "Spa"]
-    },
-    {
-      id: 3,
-      name: "Azalaï Hôtel",
-      location: "Abidjan, Marcory",
-      price: 35000,
-      rating: 4.5,
-      reviews: 156,
-      image: hotelAzalai,
-      amenities: ["Wifi", "Restaurant", "Bar"]
-    },
-    {
-      id: 4,
-      name: "Pullman Abidjan",
-      location: "Abidjan, Plateau",
-      price: 75000,
-      rating: 4.7,
-      reviews: 203,
-      image: hotelPullman,
-      amenities: ["Wifi", "Restaurant", "Parking", "Gym"]
-    },
-    {
-      id: 5,
-      name: "Seen Hotel",
-      location: "Abidjan, Zone 4",
-      price: 55000,
-      rating: 4.6,
-      reviews: 142,
-      image: hotelSeen,
-      amenities: ["Wifi", "Restaurant", "Piscine"]
-    },
-    {
-      id: 6,
-      name: "Onomo Hotel",
-      location: "Abidjan, Aéroport",
-      price: 28000,
-      rating: 4.3,
-      reviews: 98,
-      image: hotelOnomo,
-      amenities: ["Wifi", "Restaurant", "Navette"]
-    }
-  ];
 
   // Get unique amenities from hotels for filter
   const availableAmenities = useMemo(() => {
-    const displayHotels = apiHotels.length > 0 ? apiHotels : (hasSearched ? [] : hotels);
+    const displayHotels = apiHotels;
     const amenitiesSet = new Set<string>();
     displayHotels.forEach(hotel => {
       hotel.amenities.forEach((amenity: string) => amenitiesSet.add(amenity));
@@ -339,7 +271,7 @@ const Hotels = () => {
   const filteredAndSortedHotels = useMemo(() => {
     // If search was performed, ONLY show API results (never fallback to static data)
     // If no search, show static hotels as suggestions
-    let result = apiHotels.length > 0 ? [...apiHotels] : (hasSearched ? [] : [...hotels]);
+    let result = [...apiHotels];
 
     // Apply destination filter
     if (filterDestination) {

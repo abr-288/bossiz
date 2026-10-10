@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { AlertCircle, TrendingDown } from "lucide-react";
-import { motion } from "framer-motion";
+import { AlertCircle } from "lucide-react";
 import { 
   UnifiedForm, 
   UnifiedAutocomplete,
@@ -16,8 +15,6 @@ import { hotelSearchSchema, type HotelSearchInput } from "@/lib/validationSchema
 import { safeValidate } from "@/lib/formHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { HotelPriceCalendar } from "@/components/hotels/HotelPriceCalendar";
 
 /**
  * HotelSearchForm - Recherche d'hôtels avec validation Zod
@@ -36,7 +33,6 @@ export const HotelSearchForm = () => {
     rooms: 1,
     infants: 0
   });
-  const [showPriceCalendar, setShowPriceCalendar] = useState(false);
 
   // Validation pour que la date de départ soit au minimum le lendemain de la date d'arrivée
   const getMinCheckOutDate = () => {
@@ -266,42 +262,7 @@ export const HotelSearchForm = () => {
         </div>
       </div>
 
-      {/* Comparateur de prix - Affichage conditionnel */}
-      {checkIn && (
-        <div className="mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPriceCalendar(!showPriceCalendar)}
-            className="w-full md:w-auto"
-          >
-            <TrendingDown className="h-4 w-4 mr-2" />
-            {showPriceCalendar ? "Masquer" : "Comparer"} les prix par date
-          </Button>
-        </div>
-      )}
 
-      {/* Calendrier de comparaison des prix pour hôtels */}
-      {showPriceCalendar && checkIn && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="mt-4 overflow-hidden"
-        >
-          <HotelPriceCalendar
-            checkInDate={format(checkIn, "yyyy-MM-dd")}
-            onDateSelect={(dateStr) => {
-              setCheckIn(new Date(dateStr));
-              handleBlur("checkIn");
-            }}
-            basePrice={120}
-            viewMode="week"
-            currency="EUR"
-          />
-        </motion.div>
-      )}
 
       {/* Submit Button */}
       <div className="mt-4 md:mt-6">

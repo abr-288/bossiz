@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight, Star, Phone, Mail, MapPin, Loader2 } from "lucide-react";
+import { ChevronRight, Phone, Mail, MapPin, Loader2 } from "lucide-react";
 import { BossizSiteLayout } from "@/components/bossiz/BossizSiteLayout";
 import { useBossizMicrositeContent } from "@/hooks/useBossizMicrositeContent";
 import heroImage from "@/assets/hotel-ivoire.jpg";
@@ -40,15 +39,6 @@ const BossizCIAccueil = () => {
             {content.hero.subtitle}
           </p>
 
-          <div className="grid grid-cols-3 gap-6 max-w-xl mx-auto mb-14">
-            {[content.hero.stats.clients, content.hero.stats.partners, content.hero.stats.availability].map((stat) => (
-              <div key={stat.label}>
-                <div className="font-extrabold text-3xl md:text-4xl text-bossiz-gold-light mb-1">{stat.value}</div>
-                <div className="text-white/70 text-[11px] uppercase tracking-wider">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
@@ -76,36 +66,6 @@ const BossizCIAccueil = () => {
           <p className="text-xl md:text-2xl text-bossiz-navy-dark/80 italic leading-relaxed">
             « {content.philosophy} »
           </p>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-24 bg-bossiz-ci-green-pale">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10">
-          <div className="text-center mb-16">
-            <h2 className="font-extrabold text-3xl md:text-4xl text-bossiz-navy-dark mb-4">
-              {content.testimonialsTitle}
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {content.testimonialsList.map((testimonial) => (
-              <Card key={testimonial.name} className="rounded-xl border-0 bg-white shadow-md">
-                <CardContent className="p-8">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-bossiz-gold fill-bossiz-gold" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-bossiz-navy-dark/80 italic leading-relaxed mb-6">
-                    "{testimonial.content}"
-                  </p>
-                  <div className="font-semibold text-bossiz-navy-dark">{testimonial.name}</div>
-                  <div className="text-xs text-bossiz-navy-dark/50">{testimonial.role}</div>
-                  <div className="text-xs text-bossiz-gold-dark">{testimonial.location}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 

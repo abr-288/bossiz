@@ -52,7 +52,7 @@ const HotelsPartners = () => {
               location: hotel.location || 'Abidjan',
               price: Math.round(hotel.price?.grandTotal ?? hotel.price ?? 0),
               currency: hotel.currency || 'FCFA',
-              rating: hotel.rating ?? 4.5,
+              rating: hotel.rating ?? 0,
               image: hotel.image,
             }))
           );

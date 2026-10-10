@@ -196,21 +196,6 @@ const BossizPortal = () => {
             {t("bossizPortal.hero.description", globalConfig.hero.description)}
           </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto mb-16">
-            {globalConfig.globalStats.map((stat, index) => {
-              const Icon = ICON_MAP[stat.icon] || Crown;
-              return (
-                <div key={index}>
-                  <Icon className="w-5 h-5 text-bossiz-gold-light mx-auto mb-3" strokeWidth={1.25} />
-                  <div className="font-serif text-2xl md:text-3xl text-bossiz-gold-light mb-1">{stat.value}</div>
-                  <div className="text-white/50 text-xs uppercase tracking-[0.2em]">
-                    {t(`bossizPortal.stats.${index}`, stat.label)}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
@@ -271,21 +256,6 @@ const BossizPortal = () => {
                         {t(`bossizPortal.sites.${site.id}.features.${idx}`, feature)}
                       </div>
                     ))}
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-3 mb-8 pt-6 border-t border-bossiz-taupe/20">
-                    {site.stats.map((stat, index) => {
-                      const Icon = ICON_MAP[stat.icon] || Crown;
-                      return (
-                        <div key={index} className="text-center">
-                          <Icon className="w-4 h-4 text-bossiz-teal mx-auto mb-1" strokeWidth={1.5} />
-                          <div className="font-serif text-lg text-bossiz-navy-dark">{stat.value}</div>
-                          <div className="text-xs text-bossiz-navy-dark/50 uppercase tracking-wide">
-                            {t(`bossizPortal.sites.${site.id}.stats.${index}`, stat.label)}
-                          </div>
-                        </div>
-                      );
-                    })}
                   </div>
 
                   <Button

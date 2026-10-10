@@ -433,7 +433,7 @@ const FlightHotel = () => {
                             <h3 className="font-semibold text-lg line-clamp-1">{hotel.name}</h3>
                             <div className="flex items-center gap-2 mt-1">
                               <div className="flex items-center">
-                                {[...Array(hotel.rating || 4)].map((_, i) => (
+                                {[...Array(Math.round(hotel.rating || 0))].map((_, i) => (
                                   <Star key={i} className="h-3 w-3 fill-gold text-gold" />
                                 ))}
                               </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { ArrowRightLeft, AlertCircle, TrendingDown } from "lucide-react";
+import { ArrowRightLeft, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,7 +17,6 @@ import { flightSearchSchema, type FlightSearchInput } from "@/lib/validationSche
 import { safeValidate } from "@/lib/formHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { PriceCalendar } from "@/components/flights/PriceCalendar";
 import { UnifiedPassengerSelector } from "@/components/forms/UnifiedPassengerSelector";
 import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 
@@ -46,7 +45,6 @@ export const FlightSearchForm = () => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [travelClass, setTravelClass] = useState<"economy" | "premium_economy" | "business" | "first">("economy");
-  const [showPriceCalendar, setShowPriceCalendar] = useState(false);
   
   // État des erreurs de validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -349,39 +347,7 @@ export const FlightSearchForm = () => {
         </div>
       </div>
 
-      {/* Comparateur de prix */}
-      {departureDate && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setShowPriceCalendar(!showPriceCalendar)}
-          className="w-full sm:w-auto h-10"
-        >
-          <TrendingDown className="h-4 w-4 mr-2" />
-          {showPriceCalendar ? "Masquer" : "Comparer"} les prix
-        </Button>
-      )}
 
-      {/* Calendrier de comparaison des prix */}
-      {showPriceCalendar && departureDate && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="overflow-hidden"
-        >
-          <PriceCalendar
-            departureDate={format(departureDate, "yyyy-MM-dd")}
-            onDateSelect={(dateStr) => {
-              setDepartureDate(new Date(dateStr));
-              handleBlur("departureDate");
-            }}
-            lowestPrice={250}
-            viewMode="week"
-          />
-        </motion.div>
-      )}
 
       {/* Submit Button */}
       <UnifiedSubmitButton 

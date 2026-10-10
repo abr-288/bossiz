@@ -10,7 +10,6 @@ import { FlightBookingDialog } from "@/components/FlightBookingDialog";
 import { getAirlineName } from "@/utils/airlineNames";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlightCardSkeleton } from "@/components/ui/search-result-skeletons";
-import { PriceCalendar } from "@/components/flights/PriceCalendar";
 import { FlightFilters } from "@/components/flights/FlightFilters";
 import { FlightCard } from "@/components/flights/FlightCard";
 import { Price } from "@/components/ui/price";
@@ -48,7 +47,7 @@ interface MappedFlight {
 
 const Flights = () => {
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { searchFlights, loading, error } = useFlightSearch();
   const [flights, setFlights] = useState<MappedFlight[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -62,7 +61,6 @@ const Flights = () => {
   const [stopsFilter, setStopsFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("best");
 
-  const departureDate = searchParams.get("date") || "";
 
   // Use live trending destinations
   const { data: trendingDestinations, isLoading: loadingTrends } = useDestinations();
@@ -223,11 +221,6 @@ const Flights = () => {
     setDialogOpen(true);
   };
 
-  const handleDateSelect = (newDate: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("date", newDate);
-    setSearchParams(params);
-  };
 
   const parseDuration = (duration: string): number => {
     const match = duration.match(/PT(\d+)H(\d+)M/);
@@ -329,17 +322,6 @@ const Flights = () => {
         </div>
       </div>
 
-      {/* Price Calendar with nicer margin */}
-      {hasSearched && departureDate && flights.length > 0 && (
-        <div className="bg-background py-8 border-b border-border/50">
-          <PriceCalendar
-            departureDate={departureDate}
-            onDateSelect={handleDateSelect}
-            currency="EUR"
-            lowestPrice={Math.min(...flights.map(f => f.price))}
-          />
-        </div>
-      )}
 
       {/* Main Content */}
       <div className="flex-1 bg-muted/20">

@@ -22,8 +22,8 @@ interface HotelRoomDetailsDialogProps {
 
 export const HotelRoomDetailsDialog = ({ open, onOpenChange, hotel, onBookNow }: HotelRoomDetailsDialogProps) => {
   const amenities = hotel.amenities || ["Wi-Fi", "Petit-déjeuner", "Parking"];
-  const hotelRating = hotel.rating || 4.7;
-  const hotelReviews = hotel.reviews || 180;
+  const hotelRating = hotel.rating || 0;
+  const hotelReviews = hotel.reviews || 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

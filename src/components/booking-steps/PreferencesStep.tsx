@@ -59,7 +59,8 @@ export const PreferencesStep = ({
           price = 10000;
         }
         
-        const available = Math.random() > 0.3;
+        // Disponibilité réelle inconnue : préférence transmise à la compagnie
+        const available = true;
         
         seats.push({
           id: `${row}${letter}`,

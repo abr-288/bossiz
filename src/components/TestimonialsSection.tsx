@@ -19,14 +19,7 @@ interface Testimonial {
 
 // Shown only as filler while real customer reviews are still accumulating -
 // dropped from the carousel entirely once enough real ones exist (see
-// fetchTestimonials below).
-const FALLBACK_TESTIMONIALS: Testimonial[] = [
-  { id: "fallback-1", name: "Kouadio Marie", role: "testimonials.traveler", rating: 5, comment: "testimonials.comment1", avatar: "KM" },
-  { id: "fallback-2", name: "Jean-Baptiste Koffi", role: "testimonials.entrepreneur", rating: 5, comment: "testimonials.comment2", avatar: "JK" },
-  { id: "fallback-3", name: "Aminata Traoré", role: "testimonials.guide", rating: 5, comment: "testimonials.comment3", avatar: "AT" },
-];
 
-const MIN_REAL_TESTIMONIALS = 3;
 
 const getInitials = (name: string) =>
   name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || "").join("") || "?";
@@ -34,7 +27,7 @@ const getInitials = (name: string) =>
 const TestimonialsSection = () => {
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(FALLBACK_TESTIMONIALS);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
   useEffect(() => {
     const fetchTestimonials = async () => {
@@ -73,11 +66,7 @@ const TestimonialsSection = () => {
         })
         .filter(t => t.name);
 
-      if (real.length >= MIN_REAL_TESTIMONIALS) {
-        setTestimonials(real);
-      } else if (real.length > 0) {
-        setTestimonials([...real, ...FALLBACK_TESTIMONIALS.slice(0, MIN_REAL_TESTIMONIALS - real.length)]);
-      }
+      setTestimonials(real);
     };
 
     fetchTestimonials();
@@ -123,6 +112,9 @@ const TestimonialsSection = () => {
       emblaApi.off("reInit", onSelect);
     };
   }, [emblaApi, onSelect]);
+
+  // Section masquée tant qu'aucun avis réel n'est publié
+  if (testimonials.length === 0) return null;
 
   return (
     <section className="py-12 md:py-20 lg:py-28 bg-gradient-to-b from-muted/30 via-accent/10 to-background relative overflow-hidden w-full">
@@ -207,7 +199,7 @@ const TestimonialsSection = () => {
 
                       {/* Comment with enhanced typography */}
                       <p className="text-muted-foreground group-hover:text-foreground mb-4 md:mb-8 italic text-sm md:text-base lg:text-lg leading-relaxed transition-colors flex-1">
-                        "{testimonial.id.startsWith("fallback-") ? t(testimonial.comment) : testimonial.comment}"
+                        "{testimonial.comment}"
                       </p>
 
                       {/* Author info with enhanced styling */}

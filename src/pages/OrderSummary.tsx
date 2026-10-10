@@ -50,7 +50,6 @@ const OrderSummary = () => {
 
   const orderId = searchParams.get('orderId');
   const planId = searchParams.get('planId');
-  const billingCycle = searchParams.get('billingCycle') as 'monthly' | 'yearly' || 'monthly';
 
   useEffect(() => {
     const fetchOrderData = async () => {
@@ -62,12 +61,9 @@ const OrderSummary = () => {
             const order = JSON.parse(storedOrder);
             setOrderData(order);
           } else {
-            // Générer des données de démonstration
-            generateDemoOrder();
+            // Aucune commande enregistrée : jamais de commande inventée
+            throw new Error(t("ux.order.notFoundToast"));
           }
-        } else if (planId) {
-          // Générer des données basées sur le planId
-          generateDemoOrder();
         } else {
           throw new Error(t("ux.order.notFoundToast"));
         }
@@ -86,99 +82,6 @@ const OrderSummary = () => {
 
     fetchOrderData();
   }, [orderId, planId, navigate, toast]);
-
-  const generateDemoOrder = () => {
-    const plans: Record<string, OrderItem> = {
-      'basic': {
-        id: 'basic',
-        name: 'Basic',
-        description: 'Accès essentiel aux services Bossiz',
-        price: 15000,
-        currency: 'XOF',
-        billingCycle,
-        trialDays: billingCycle === 'yearly' ? 7 : 0,
-        features: [
-          'Assistance voyage 24/7',
-          'Réservations vols/hôtels',
-          'Support client dédié'
-        ],
-        discount: billingCycle === 'yearly' ? 17 : 0
-      },
-      'premium': {
-        id: 'premium',
-        name: 'Premium VIP',
-        description: 'Services avancés et priorité',
-        price: 25000,
-        currency: 'XOF',
-        billingCycle,
-        trialDays: billingCycle === 'yearly' ? 14 : 0,
-        features: [
-          'Tout Basic +',
-          'Accès lounges VIP',
-          'Transferts premium',
-          'Assurance voyage'
-        ],
-        discount: billingCycle === 'yearly' ? 17 : 0
-      },
-      'business': {
-        id: 'business',
-        name: 'Business',
-        description: 'Solutions complètes pour voyageurs d\'affaires',
-        price: 50000,
-        currency: 'XOF',
-        billingCycle,
-        trialDays: billingCycle === 'yearly' ? 30 : 0,
-        features: [
-          'Tout Premium +',
-          'Réservations espaces meeting',
-          'Gestion dépenses',
-          'Support business 24/7'
-        ],
-        discount: billingCycle === 'yearly' ? 17 : 0
-      },
-      'corporate': {
-        id: 'corporate',
-        name: 'Corporate',
-        description: 'Solutions sur mesure pour entreprises',
-        price: 100000,
-        currency: 'XOF',
-        billingCycle,
-        trialDays: billingCycle === 'yearly' ? 60 : 0,
-        features: [
-          'Tout Business +',
-          'Gestion multi-utilisateurs',
-          'Reporting avancé',
-          'Support dédié'
-        ],
-        discount: billingCycle === 'yearly' ? 17 : 0
-      },
-    };
-
-    const selectedPlan = plans[planId || 'premium'] || plans['premium'];
-    
-    const monthlyPrice = selectedPlan.price;
-    const yearlyPrice = monthlyPrice * 12 * 0.83; // 17% de réduction annuelle
-    const price = billingCycle === 'yearly' ? yearlyPrice : monthlyPrice;
-    const discount = selectedPlan.discount || 0;
-
-    const order: OrderSummary = {
-      items: [selectedPlan],
-      subtotal: price,
-      discount: discount > 0 ? (price / (1 - discount/100)) - price : 0,
-      total: price,
-      currency: 'XOF',
-      customerInfo: {
-        name: 'Client Bossiz',
-        email: 'client@bossiz.com',
-        phone: '+225000000000'
-      },
-      paymentMethod: 'Jèko',
-      orderDate: new Date().toISOString(),
-      orderId: orderId || `BOSSIZ_${Date.now()}`
-    };
-
-    setOrderData(order);
-  };
 
   const handlePrint = () => {
     if (!orderData) return;
@@ -466,7 +369,7 @@ ${p('thanks')}
                           {autoConvertAndFormat(item.price, item.currency)}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {item.billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}
+                          {item.billingCycle === 'monthly' ? t('ux.print.monthly') : t('ux.print.annual')}
                         </p>
                       </div>
                     </div>

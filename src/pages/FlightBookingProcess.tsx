@@ -51,9 +51,7 @@ const FlightBookingProcess = () => {
   // Generate flight number display
   const displayFlightNumber = flightNumber 
     ? `${airlineCode}${flightNumber}`.trim() 
-    : airlineCode 
-      ? `${airlineCode}${Math.floor(100 + Math.random() * 900)}`
-      : "";
+    : airlineCode;
 
   // Validate and correct flight times
   const flightTimes = useMemo(() => {
