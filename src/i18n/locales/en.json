@@ -2235,7 +2235,8 @@
       "personalMode": "Personal mode",
       "businessMode": "Business mode",
       "menu": "Menu",
-      "ourServices": "Our services"
+      "ourServices": "Our services",
+      "language": "Language"
     },
     "booking": {
       "stepParticipants": "Travellers",

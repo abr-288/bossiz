@@ -11,10 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Menu, User, LogOut, LayoutDashboard, Plane, Hotel, PlaneTakeoff,
-  Train, Calendar, Car, HelpCircle, UserCircle2,
-  MapPin, Map, Compass, ChevronDown, Search, UtensilsCrossed, Hammer, Briefcase, ArrowLeftRight, Sparkles
+import {
+  Menu,
+  User,
+  LayoutDashboard,
+  HelpCircle,
+  UserCircle2,
+  ChevronDown,
+  Search,
+  Briefcase,
+  ArrowLeftRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -71,18 +77,18 @@ const Navbar = () => {
 
   // Liens vers les services de l'application
   const serviceLinks = [
-    { to: "https://vols.bossiz.com/", icon: Plane, label: t("nav.flights") },
-    { to: "/hotels-partenaires", icon: Hotel, label: t("nav.hotels") },
-    { to: "/flight-hotel", icon: PlaneTakeoff, label: t("nav.flightHotel") },
-    { to: "/cars", icon: Car, label: t("nav.carRental") },
-    { to: "/trains", icon: Train, label: t("nav.trains") },
-    { to: "/events", icon: Calendar, label: t("nav.events") },
-    { to: "/tours", icon: Map, label: t("nav.tours") },
-    { to: "/destinations", icon: MapPin, label: t("nav.destinations") },
-    { to: "/stays", icon: Compass, label: t("nav.stays") },
-    { to: "/restaurants", icon: UtensilsCrossed, label: t("nav.restaurants") },
-    { to: "/artisans", icon: Hammer, label: t("nav.artisans") },
-    { to: "/bien-etre-beaute", icon: Sparkles, label: t("nav.wellness") },
+    { to: "https://vols.bossiz.com/", label: t("nav.flights") },
+    { to: "/hotels-partenaires", label: t("nav.hotels") },
+    { to: "/flight-hotel", label: t("nav.flightHotel") },
+    { to: "/cars", label: t("nav.carRental") },
+    { to: "/trains", label: t("nav.trains") },
+    { to: "/events", label: t("nav.events") },
+    { to: "/tours", label: t("nav.tours") },
+    { to: "/destinations", label: t("nav.destinations") },
+    { to: "/stays", label: t("nav.stays") },
+    { to: "/restaurants", label: t("nav.restaurants") },
+    { to: "/artisans", label: t("nav.artisans") },
+    { to: "/bien-etre-beaute", label: t("nav.wellness") },
   ];
 
   // Verticaux principaux affichés directement, le reste regroupé sous "Autres"
@@ -241,7 +247,6 @@ const Navbar = () => {
                       onClick={handleLogout}
                       className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
                     >
-                      <LogOut className="w-4 h-4" />
                       {t("nav.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -288,18 +293,15 @@ const Navbar = () => {
                         </p>
                         <Link to="/account" onClick={() => setIsMenuOpen(false)}
                           className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                          <UserCircle2 className="w-5 h-5 text-muted-foreground" />
                           <span className="font-medium">{t("nav.profile")}</span>
                         </Link>
                         <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}
                           className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                          <LayoutDashboard className="w-5 h-5 text-muted-foreground" />
                           <span className="font-medium">{t("nav.dashboard")}</span>
                         </Link>
                         {isAdmin && (
                           <Link to="/admin" onClick={() => setIsMenuOpen(false)}
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                            <LayoutDashboard className="w-5 h-5 text-primary" />
                             <span className="font-medium text-primary">{t("nav.admin")}</span>
                           </Link>
                         )}
@@ -309,7 +311,6 @@ const Navbar = () => {
                             onClick={() => setIsMenuOpen(false)}
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
                           >
-                            {isBusinessMode ? <ArrowLeftRight className="w-5 h-5 text-secondary" /> : <Briefcase className="w-5 h-5 text-secondary" />}
                             <span className="font-medium text-secondary">{isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}</span>
                           </Link>
                         )}
@@ -317,7 +318,6 @@ const Navbar = () => {
                     ) : (
                       <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                         <Button className="w-full">
-                          <User className="w-4 h-4" />
                           {t("nav.login")} / {t("nav.register")}
                         </Button>
                       </Link>
@@ -327,7 +327,7 @@ const Navbar = () => {
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                         {t("ux.nav.ourServices")}
                       </p>
-                      {serviceLinks.map(({ to, icon: Icon, label }) => (
+                      {serviceLinks.map(({ to, label }) => (
                         <ServiceLink
                           key={to}
                           to={to}
@@ -339,7 +339,6 @@ const Navbar = () => {
                               : "hover:bg-muted text-foreground"
                           )}
                         >
-                          <Icon className="w-5 h-5" />
                           <span>{label}</span>
                         </ServiceLink>
                       ))}
@@ -347,22 +346,20 @@ const Navbar = () => {
 
                     <Link to="/support" onClick={() => setIsMenuOpen(false)}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                      <HelpCircle className="w-5 h-5 text-muted-foreground" />
                       <span className="font-medium">{t("nav.support")}</span>
                     </Link>
 
                     <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <span className="text-sm font-medium">Langue</span>
+                      <span className="text-sm font-medium">{t("ux.nav.language")}</span>
                       <LanguageSwitcher />
                     </div>
 
                     {isLoggedIn && (
                       <Button
                         variant="outline"
-                        className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 rounded-lg"
+                        className="w-full text-destructive border-destructive/30 hover:bg-destructive/10 rounded-lg"
                         onClick={handleLogout}
                       >
-                        <LogOut className="w-4 h-4" />
                         {t("nav.logout")}
                       </Button>
                     )}
@@ -378,7 +375,7 @@ const Navbar = () => {
       <div className="hidden lg:block bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="site-container">
           <div className="flex items-center gap-0.5 h-10 overflow-x-auto">
-            {primaryServiceLinks.map(({ to, icon: Icon, label }) => (
+            {primaryServiceLinks.map(({ to, label }) => (
               <ServiceLink
                 key={to}
                 to={to}
@@ -389,7 +386,6 @@ const Navbar = () => {
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
-                <Icon className="w-4 h-4" />
                 {label}
               </ServiceLink>
             ))}
@@ -409,11 +405,10 @@ const Navbar = () => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="z-50">
-                {moreServiceLinks.map(({ to, icon: Icon, label }) => (
+                {moreServiceLinks.map(({ to, label }) => (
                   <DropdownMenuItem key={to} asChild>
                     <ServiceLink to={to} className="flex items-center gap-2 cursor-pointer">
-                      <Icon className="w-4 h-4" />
-                      {label}
+                            {label}
                     </ServiceLink>
                   </DropdownMenuItem>
                 ))}

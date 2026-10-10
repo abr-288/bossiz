@@ -2234,7 +2234,8 @@
       "personalMode": "个人模式",
       "businessMode": "企业模式",
       "menu": "菜单",
-      "ourServices": "我们的服务"
+      "ourServices": "我们的服务",
+      "language": "语言"
     },
     "booking": {
       "stepParticipants": "参与者",
