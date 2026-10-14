@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, X, Send, Paperclip, Smile,
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useTravelChatbot } from "@/hooks/useTravelChatbot";
 import { toast } from "sonner";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
 
 interface Message {
@@ -19,6 +19,28 @@ interface Message {
   text: string;
   sender: 'user' | 'agent';
   timestamp: Date;
+}
+
+// L'assistant cite les pages du site par leur chemin (/devenir-partenaire…) :
+// on les rend cliquables dans la bulle.
+const INTERNAL_PATH = /(^|[\s(«"'])(\/[a-z][a-z0-9-]*(?:\/[a-z0-9-]+)*)/g;
+
+function withPageLinks(text: string, onNavigate: () => void): ReactNode[] {
+  const parts: ReactNode[] = [];
+  let last = 0;
+  for (const match of text.matchAll(INTERNAL_PATH)) {
+    const start = (match.index ?? 0) + match[1].length;
+    const path = match[2];
+    parts.push(text.slice(last, start));
+    parts.push(
+      <Link key={start} to={path} onClick={onNavigate} className="font-medium text-primary underline underline-offset-2">
+        {path}
+      </Link>
+    );
+    last = start + path.length;
+  }
+  parts.push(text.slice(last));
+  return parts;
 }
 
 const ChatWidget = () => {
@@ -255,13 +277,13 @@ const ChatWidget = () => {
                 >
                   <div 
                     className={cn(
-                      "max-w-full break-words rounded-3xl px-4 py-3 text-sm leading-[1.6] shadow-sm transition-all duration-slow ease-standard sm:px-5 sm:py-3.5",
+                      "max-w-full whitespace-pre-line break-words rounded-3xl px-4 py-3 text-sm leading-[1.6] shadow-sm transition-all duration-slow ease-standard sm:px-5 sm:py-3.5",
                       m.sender === 'user' 
                         ? "bg-primary text-primary-foreground rounded-tr-none"
                         : "bg-muted text-foreground border border-border rounded-tl-none"
                     )}
                   >
-                    {m.text}
+                    {m.sender === 'agent' ? withPageLinks(m.text, () => setIsOpen(false)) : m.text}
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5 px-1 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
                     <span className="text-xs text-muted-foreground tabular-nums">
