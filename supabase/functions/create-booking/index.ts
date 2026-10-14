@@ -365,9 +365,28 @@ serve(async (req) => {
       ? Math.ceil(verifiedTotalPrice * depositPercent / 100)
       : verifiedTotalPrice;
 
+    // Les insertions directes dans bookings sont refusées aux utilisateurs
+    // (le prix n'y serait pas vérifié) : la réservation est créée ici avec
+    // la clé service-role, après les vérifications ci-dessus. La policy
+    // RLS qui contrôlait l'appartenance à l'entreprise est donc refaite ici.
+    const adminSupabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    if (requestData.company_id) {
+      const { data: isMember } = await adminSupabase.rpc('is_company_member', {
+        _user_id: user.id,
+        _company_id: requestData.company_id,
+      });
+      if (!isMember) {
+        throw new Error('Unauthorized company');
+      }
+    }
+
     // Create booking
     console.log('Creating booking...');
-    const { data: booking, error: bookingError } = await supabase
+    const { data: booking, error: bookingError } = await adminSupabase
       .from('bookings')
       .insert({
         user_id: user.id,

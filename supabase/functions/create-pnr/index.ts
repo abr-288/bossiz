@@ -155,16 +155,7 @@ serve(async (req) => {
         );
       }
 
-      const { error: commissionCancelError } = await supabase
-        .from('commissions')
-        .update({ status: 'cancelled' })
-        .eq('booking_id', booking_id)
-        .eq('payout_status', 'not_scheduled')
-        .eq('status', 'pending');
-      if (commissionCancelError) {
-        console.error('Could not cancel partner share after flight refund:', commissionCancelError.message);
-      }
-
+      // La part partenaire est annulée par refundBookingPayment.
       return new Response(
         JSON.stringify({
           success: false,

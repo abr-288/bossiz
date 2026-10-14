@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
 import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
+import { getCaller, canAccessBooking, isStaff } from "../_shared/auth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,6 +30,14 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    const caller = await getCaller(req, supabase);
+    if (!caller) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
     // Fetch booking details
     const { data: booking, error: bookingError } = await supabase
       .from('bookings')
@@ -44,6 +53,22 @@ serve(async (req) => {
       );
     }
 
+    // Seul le titulaire de la réservation (ou un admin / appel interne)
+    // peut se faire envoyer le billet, et seulement une fois payé : un
+    // billet émis pour une réservation impayée serait un faux document.
+    if (!canAccessBooking(caller, booking)) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Booking not found' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
+      );
+    }
+    if (!isStaff(caller) && booking.payment_status !== 'paid') {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Payment not completed' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
     // Fetch passengers
     const { data: passengers } = await supabase
       .from('passengers')
@@ -55,7 +80,7 @@ serve(async (req) => {
       body: { bookingId }
     });
 
-    if (ticketError || !ticketData?.ticketUrl) {
+    if (ticketError || !ticketData?.ticketBase64) {
       console.error('Failed to generate ticket:', ticketError);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to generate ticket' }),
@@ -86,8 +111,8 @@ serve(async (req) => {
       html: emailHtml,
       attachments: [
         {
-          filename: `ticket-${booking.id}.pdf`,
-          content: ticketData.ticketBase64, // Assuming the ticket function returns base64
+          filename: `ticket-${booking.id}.html`,
+          content: ticketData.ticketBase64, // billet HTML encodé en base64 par generate-flight-ticket
         },
       ],
     });

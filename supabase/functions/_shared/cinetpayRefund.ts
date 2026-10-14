@@ -122,5 +122,18 @@ export async function refundBookingPayment(
     return { success: false, refunded: true, amount: payment.amount, currency: payment.currency, error: 'Remboursé mais mise à jour de la réservation échouée' };
   }
 
+  // Réservation remboursée : la part du partenaire ne doit plus être
+  // versée (process-agency-payouts ne relit pas le statut de la
+  // réservation). Un virement déjà parti ou en cours reste à traiter à la main.
+  const { error: commissionCancelError } = await supabase
+    .from('commissions')
+    .update({ status: 'cancelled' })
+    .eq('booking_id', bookingId)
+    .eq('status', 'pending')
+    .in('payout_status', ['not_scheduled', 'awaiting_details', 'ready', 'failed']);
+  if (commissionCancelError) {
+    console.error('❌ refundBookingPayment: part partenaire non annulée après remboursement:', commissionCancelError.message);
+  }
+
   return { success: true, refunded: true, amount: payment.amount, currency: payment.currency };
 }

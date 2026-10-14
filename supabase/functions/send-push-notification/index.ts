@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCaller, isStaff } from "../_shared/auth.ts";
 import webpush from "npm:web-push@3.6.7";
 
 const corsHeaders = {
@@ -10,6 +11,20 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Réservé aux appels serveur internes (clé service-role) et aux admins :
+  // cette fonction envoie des messages à des destinataires fournis ou
+  // résolus côté serveur, elle ne doit pas être un relais public.
+  const caller = await getCaller(
+    req,
+    createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+  );
+  if (!isStaff(caller)) {
+    return new Response(
+      JSON.stringify({ success: false, error: caller ? 'Forbidden' : 'Unauthorized' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: caller ? 403 : 401 }
+    );
   }
 
   // Body parsed once — reused in the catch handler too, since a Request

@@ -84,7 +84,7 @@ serve(async (req) => {
 
     const bookingQuery = adminSupabase
       .from('bookings')
-      .select('id, user_id')
+      .select('id, user_id, external_ref, start_date')
       .eq('id', bookingId);
 
     if (!isAdmin) {
@@ -95,6 +95,20 @@ serve(async (req) => {
 
     if (bookingError || !booking) {
       return errorResponse('Réservation introuvable', 404);
+    }
+
+    // Remboursement en libre-service uniquement avant exécution : une fois
+    // la réservation émise chez le fournisseur (billet / PNR, external_ref)
+    // ou la date de prestation arrivée, le fournisseur est déjà payé. Le
+    // client garderait le billet ET l'argent : ces cas passent par un admin.
+    if (!isAdmin) {
+      const today = new Date().toISOString().slice(0, 10);
+      if (booking.external_ref || (booking.start_date && booking.start_date <= today)) {
+        return errorResponse(
+          'Cette réservation est déjà émise ou en cours : contactez le support pour une annulation.',
+          409
+        );
+      }
     }
 
     const reason = isAdmin && booking.user_id !== user.id

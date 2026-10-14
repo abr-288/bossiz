@@ -551,7 +551,9 @@ serve(async (req) => {
 
       console.log('✅ Lien de paiement Jèko créé:', result.id);
 
-      const { data: jekoPayment, error: jekoPaymentError } = await supabase
+      // Service-role : les utilisateurs n'ont plus le droit d'insérer dans
+      // payments (un client pouvait y créer un paiement « completed »).
+      const { data: jekoPayment, error: jekoPaymentError } = await adminSupabase!
         .from('payments')
         .insert({
           booking_id: targetType === 'booking' ? targetId : null,

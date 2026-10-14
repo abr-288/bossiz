@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
 import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
+import { getCaller, canAccessBooking } from "../_shared/auth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,6 +30,14 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    const caller = await getCaller(req, supabase);
+    if (!caller) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
     // Fetch booking details
     const { data: booking, error: bookingError } = await supabase
       .from('bookings')
@@ -36,7 +45,7 @@ serve(async (req) => {
       .eq('id', bookingId)
       .single();
 
-    if (bookingError || !booking) {
+    if (bookingError || !booking || !canAccessBooking(caller, booking)) {
       console.error('Booking not found:', bookingError);
       return new Response(
         JSON.stringify({ success: false, error: 'Booking not found' }),

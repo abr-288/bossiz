@@ -15,7 +15,7 @@ import { TARGET_LANGS, TRANSLATABLE_FIELDS } from "../_shared/translatableFields
 //   tant que rien n'a changé.
 // - Une correction faite à la main dans l'admin est conservée tant que le
 //   texte français du champ ne change pas.
-// - Réservée aux utilisateurs connectés ; plafonnée par appel et par IP.
+// - Réservée aux admins et aux partenaires ; plafonnée par appel et par IP.
 // ============================================================
 
 const corsHeaders = {
@@ -108,6 +108,15 @@ serve(async (req) => {
   const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   const { data: userData } = await admin.auth.getUser(token);
   if (!userData?.user) return json({ error: "Connexion requise" }, 401);
+
+  // Seuls l'admin et l'espace partenaire déclenchent des traductions
+  // (chaque appel consomme l'API Claude) : un client connecté ne le peut pas.
+  const { data: staffRoles } = await admin
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .in("role", ["admin", "sub_agency"]);
+  if (!staffRoles?.length) return json({ error: "Accès refusé" }, 403);
 
   const body = await req.json().catch(() => ({}));
   const tables = typeof body.table === "string"

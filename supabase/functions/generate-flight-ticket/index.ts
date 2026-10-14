@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { encode } from "https://deno.land/std@0.208.0/encoding/base64.ts";
+import { getCaller, canAccessBooking, isStaff } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,19 +18,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      throw new Error("No authorization header");
-    }
-
+    // Service-role : appelé aussi par generate-ticket (serveur-à-serveur),
+    // l'accès à la réservation est vérifié explicitement ci-dessous.
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    const caller = await getCaller(req, supabase);
+    if (!caller) {
       throw new Error("User not authenticated");
     }
 
@@ -49,11 +46,15 @@ const handler = async (req: Request): Promise<Response> => {
         )
       `)
       .eq("id", bookingId)
-      .eq("user_id", user.id)
       .single();
 
-    if (bookingError || !booking) {
+    if (bookingError || !booking || !canAccessBooking(caller, booking)) {
       throw new Error("Booking not found or unauthorized");
+    }
+
+    // Pas de billet pour une réservation impayée (faux document).
+    if (!isStaff(caller) && booking.payment_status !== "paid") {
+      throw new Error("Payment not completed");
     }
 
     // Generate QR code data

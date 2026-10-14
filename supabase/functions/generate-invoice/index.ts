@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCaller, canAccessBooking } from "../_shared/auth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,19 +13,16 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('Missing authorization header');
-    }
-
+    // Service-role : appelée surtout par postPaymentSuccess / create-pnr
+    // (clé service-role, sans utilisateur), et la table invoices n'a pas de
+    // policy INSERT pour les utilisateurs. L'accès est vérifié ci-dessous.
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
+    const caller = await getCaller(req, supabase);
+    if (!caller) {
       throw new Error('Unauthorized');
     }
 
@@ -45,8 +43,28 @@ serve(async (req) => {
     }
 
     // Vérifier que la réservation appartient à l'utilisateur
-    if (booking.user_id !== user.id) {
+    if (!canAccessBooking(caller, booking)) {
       throw new Error('Unauthorized access to booking');
+    }
+
+    // La facture est marquée « payée » : jamais pour une réservation qui
+    // ne l'est pas réellement.
+    if (booking.payment_status !== 'paid') {
+      throw new Error('Payment not completed');
+    }
+
+    // Une seule facture par réservation (appels répétés / relances).
+    const { data: existingInvoice } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('booking_id', bookingId)
+      .limit(1)
+      .maybeSingle();
+    if (existingInvoice) {
+      return new Response(
+        JSON.stringify({ success: true, invoice: existingInvoice }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Générer un numéro de facture unique
@@ -87,7 +105,7 @@ serve(async (req) => {
       .from('invoices')
       .insert({
         booking_id: bookingId,
-        user_id: user.id,
+        user_id: booking.user_id,
         invoice_number: invoiceNumber,
         amount: totalAmount,
         currency: booking.currency,
