@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,6 +11,14 @@ const ANTHROPIC_MODEL = 'claude-sonnet-5';
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Fonction publique qui consomme l'API Claude : plafond par IP pour
+  // qu'un script muni de la clé anon ne puisse pas faire exploser la facture.
+  const rateLimit = { windowMs: 60 * 60 * 1000, maxRequests: 60, keyPrefix: 'travel-chatbot' };
+  const rate = checkRateLimit(getClientIP(req), rateLimit);
+  if (!rate.allowed) {
+    return createRateLimitResponse(rate, rateLimit, corsHeaders);
   }
 
   try {
@@ -38,7 +47,10 @@ serve(async (req) => {
     // Anthropic requires the conversation to start with a 'user' message -
     // the widget's stored greeting is an 'assistant' message, so drop any
     // leading assistant turn(s) before sending the history along.
-    let history = messages as Array<{ role: string; content: string }>;
+    // Historique borné : seuls les derniers échanges, chacun tronqué.
+    let history = (messages as Array<{ role: string; content: string }>)
+      .slice(-20)
+      .map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content ?? '').slice(0, 2000) }));
     while (history.length > 0 && history[0].role !== 'user') {
       history = history.slice(1);
     }
@@ -61,8 +73,11 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
-        max_tokens: 500,
-        system: 'Tu es un assistant de voyage serviable pour Bossiz+. Donne des conseils de voyage concis et utiles, de l\'aide pour les réservations et des recommandations de destinations. Sois amical et professionnel. Réponds en français sauf si on te parle dans une autre langue.',
+        max_tokens: 800,
+        // Pas de réflexion préalable : elle pouvait consommer tout max_tokens
+        // avant le premier mot, et la réponse arrivait vide.
+        thinking: { type: 'disabled' },
+        system: 'Tu es un assistant de voyage serviable pour Bossiz+. Donne des conseils de voyage concis et utiles, de l\'aide pour les réservations et des recommandations de destinations. Sois amical et professionnel, et vouvoie toujours le client. Réponds en français sauf si on te parle dans une autre langue. Tu n\'as accès ni au catalogue, ni aux prix, ni aux disponibilités de Bossiz+ : ne cite aucun établissement comme étant proposé ou disponible sur Bossiz+, ne promets jamais de disponibilité, de réservation ou de prix précis, et ne propose pas de faire une recherche toi-même. Les prix que tu donnes sont des ordres de grandeur, présentés comme tels. Pour les offres réelles, invite le client à utiliser la recherche du site (vols, hôtels, voitures, activités) ou à contacter le support. Tes réponses s\'affichent dans une petite bulle de discussion qui n\'interprète pas le Markdown : écris en texte simple (pas de #, pas de **, pas de tableaux), en 8 lignes au plus, avec des tirets pour les listes.',
         messages: history.map((m) => ({ role: m.role, content: m.content })),
       }),
     });
@@ -77,7 +92,13 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const reply = data.content?.[0]?.text;
+    // La réponse peut contenir plusieurs blocs (réflexion, texte…) : on
+    // assemble tous les blocs de texte au lieu de ne lire que le premier.
+    const reply = (data.content ?? [])
+      .filter((b: { type: string }) => b.type === 'text')
+      .map((b: { text: string }) => b.text)
+      .join('')
+      .trim();
 
     if (!reply) {
       console.error('Anthropic API returned no text content:', JSON.stringify(data).substring(0, 500));

@@ -20,13 +20,16 @@ export const useTravelChatbot = () => {
       });
 
       if (functionError) throw functionError;
-      
-      return data?.reply || null;
+      if (!data?.reply) throw new Error(data?.error || 'Empty chatbot reply');
+
+      return data.reply as string;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
       setError(errorMessage);
       console.error('Travel chatbot error:', err);
-      return null;
+      // Une panne n'est pas une question mal posée : on laisse le widget
+      // afficher son message d'indisponibilité au lieu de « reformulez ».
+      throw err;
     } finally {
       setLoading(false);
     }

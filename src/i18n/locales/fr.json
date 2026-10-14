@@ -2183,7 +2183,7 @@
       "welcome": "Bonjour ! Je suis votre assistant Bossiz+ boosté à l'IA. Comment puis-je vous aider aujourd'hui ? 🌍",
       "noAnswer": "Je suis désolé, je n'ai pas pu générer de réponse. Pouvez-vous reformuler ?",
       "unavailable": "Le service d'assistance IA est temporairement indisponible.",
-      "technicalIssue": "Désolé, je rencontre une petite difficulté technique. Vous pouvez nous contacter par téléphone au +225 27 00 00 00 si c'est urgent !",
+      "technicalIssue": "Désolé, je rencontre une petite difficulté technique. Réessayez dans un instant, ou écrivez-nous depuis la page Contact si c'est urgent.",
       "quickHelp": "Aide IA",
       "quickHelpPrompt": "J'ai besoin d'aide pour organiser mon voyage",
       "quickDestinations": "Destinations",

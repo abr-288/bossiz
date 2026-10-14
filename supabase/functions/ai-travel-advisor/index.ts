@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,6 +11,14 @@ const ANTHROPIC_MODEL = 'claude-sonnet-5';
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Fonction publique qui consomme l'API Claude : plafond par IP pour
+  // qu'un script muni de la clé anon ne puisse pas faire exploser la facture.
+  const rateLimit = { windowMs: 60 * 60 * 1000, maxRequests: 20, keyPrefix: 'ai-travel-advisor' };
+  const rate = checkRateLimit(getClientIP(req), rateLimit);
+  if (!rate.allowed) {
+    return createRateLimitResponse(rate, rateLimit, corsHeaders);
   }
 
   try {
@@ -35,12 +44,13 @@ serve(async (req) => {
       );
     }
 
-    const userPrompt = `Destination : ${destination}
-Centres d'intérêt : ${interests || 'non précisé'}
-Budget : ${budget || 'non précisé'}
-Durée du séjour : ${duration || 'non précisée'}
+    const field = (v: unknown) => String(v ?? '').slice(0, 300);
+    const userPrompt = `Destination : ${field(destination)}
+Centres d'intérêt : ${field(interests) || 'non précisé'}
+Budget : ${field(budget) || 'non précisé'}
+Durée du séjour : ${field(duration) || 'non précisée'}
 
-Rédige des recommandations de voyage personnalisées pour cette destination, structurées avec des sections claires (attractions incontournables, gastronomie locale, conseils d'hébergement, meilleure période pour visiter, budget quotidien estimé, astuces d'initié). Réponds en français, en texte simple et lisible (pas de JSON), avec des titres de section et des listes à puces.`;
+Rédige des recommandations de voyage personnalisées pour cette destination, structurées avec des sections claires (attractions incontournables, gastronomie locale, conseils d'hébergement, meilleure période pour visiter, budget quotidien estimé, astuces d'initié). Réponds en français, en texte simple et lisible (pas de JSON, pas de Markdown : ni #, ni **), avec des titres de section sur leur propre ligne et des listes à tirets.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -51,7 +61,10 @@ Rédige des recommandations de voyage personnalisées pour cette destination, st
       },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
-        max_tokens: 1200,
+        max_tokens: 1500,
+        // Pas de réflexion préalable : elle pouvait consommer tout max_tokens
+        // avant le premier mot, et la réponse arrivait vide.
+        thinking: { type: 'disabled' },
         system: 'Tu es un conseiller de voyage expert et chaleureux pour Bossiz+, une agence de voyage. Tu donnes des recommandations concrètes, honnêtes et utiles, jamais génériques ou inventées au hasard.',
         messages: [{ role: 'user', content: userPrompt }],
       }),
@@ -67,7 +80,13 @@ Rédige des recommandations de voyage personnalisées pour cette destination, st
     }
 
     const data = await response.json();
-    const recommendations = data.content?.[0]?.text;
+    // La réponse peut contenir plusieurs blocs (réflexion, texte…) : on
+    // assemble tous les blocs de texte au lieu de ne lire que le premier.
+    const recommendations = (data.content ?? [])
+      .filter((b: { type: string }) => b.type === 'text')
+      .map((b: { text: string }) => b.text)
+      .join('')
+      .trim();
 
     if (!recommendations) {
       console.error('Anthropic API returned no text content:', JSON.stringify(data).substring(0, 500));
