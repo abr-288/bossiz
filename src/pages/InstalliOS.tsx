@@ -17,9 +17,13 @@ import {
   Apple
 } from 'lucide-react';
 import { useTranslation } from "react-i18next";
+import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
+import { whatsAppLink } from "@/lib/contactNumbers";
 
 const InstalliOS = () => {
   const { t } = useTranslation();
+  // WhatsApp de Admin > Configuration > Contact ; sans vrai numéro, page Contact.
+  const supportWhatsApp = whatsAppLink(useSiteConfigContext().config.contact.whatsapp);
   const navigate = useNavigate();
   const location = useLocation();
   const [isiOS, setIsiOS] = useState(false);
@@ -287,11 +291,11 @@ const InstalliOS = () => {
             </p>
             <Button
               variant="outline"
-              onClick={() => window.open('https://wa.me/2250700000000', '_blank')}
+              onClick={() => (supportWhatsApp ? window.open(supportWhatsApp, '_blank') : navigate('/contact'))}
               className="border-info text-info hover:bg-info/10"
             >
               <ExternalLink className="w-4 h-4 mr-2" />
-              {t("ux.installIos.whatsapp")}
+              {supportWhatsApp ? t("ux.installIos.whatsapp") : t("ux.chat.pages.contact")}
             </Button>
           </div>
         </div>

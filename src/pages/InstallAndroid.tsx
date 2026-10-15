@@ -18,11 +18,15 @@ import {
   Settings
 } from 'lucide-react';
 import { useTranslation } from "react-i18next";
+import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
+import { whatsAppLink } from "@/lib/contactNumbers";
 
 const APK_DOWNLOAD_URL = '/downloads/bossiz.apk';
 
 const InstallAndroid = () => {
   const { t } = useTranslation();
+  // WhatsApp de Admin > Configuration > Contact ; sans vrai numéro, page Contact.
+  const supportWhatsApp = whatsAppLink(useSiteConfigContext().config.contact.whatsapp);
   const navigate = useNavigate();
   const location = useLocation();
   const { isInstallable, isInstalled, install } = usePWA();
@@ -323,11 +327,11 @@ const InstallAndroid = () => {
             </p>
             <Button
               variant="outline"
-              onClick={() => window.open('https://wa.me/2250700000000', '_blank')}
+              onClick={() => (supportWhatsApp ? window.open(supportWhatsApp, '_blank') : navigate('/contact'))}
               className="border-success text-success hover:bg-success/10"
             >
               <ExternalLink className="w-4 h-4 mr-2" />
-              {t("ux.installAndroid.whatsapp")}
+              {supportWhatsApp ? t("ux.installAndroid.whatsapp") : t("ux.chat.pages.contact")}
             </Button>
           </div>
         </div>
