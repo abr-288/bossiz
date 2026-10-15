@@ -2180,6 +2180,10 @@
   },
   "ux": {
     "memberCard": {
+      "validity": "Validité",
+      "flipHint": "Touchez la carte pour la retourner",
+      "scanToVerify": "Scanner pour vérifier",
+      "backNotice": "Carte personnelle et non cessible. Elle atteste d'un abonnement Bossiz+ en cours de validité ; une pièce d'identité peut être demandée.",
       "title": "Carte membre",
       "holder": "Titulaire",
       "plan": "Formule",

@@ -2180,6 +2180,10 @@
   },
   "ux": {
     "memberCard": {
+      "validity": "Valid thru",
+      "flipHint": "Tap the card to flip it",
+      "scanToVerify": "Scan to verify",
+      "backNotice": "Personal, non-transferable card. It certifies a valid Bossiz+ subscription; ID may be requested.",
       "title": "Member card",
       "holder": "Holder",
       "plan": "Plan",

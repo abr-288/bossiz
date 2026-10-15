@@ -2179,6 +2179,10 @@
   },
   "ux": {
     "memberCard": {
+      "validity": "有效期",
+      "flipHint": "轻触卡片即可翻面",
+      "scanToVerify": "扫码验证",
+      "backNotice": "本卡仅限本人使用，不得转让。用于证明有效的 Bossiz+ 订阅，可能需要出示身份证件。",
       "title": "会员卡",
       "holder": "持卡人",
       "plan": "方案",
