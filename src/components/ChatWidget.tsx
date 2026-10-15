@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, X, Send, Paperclip, Smile,
   MoreHorizontal, User, ShieldCheck, CheckCheck,
-  Headphones, Info, Settings
+  Headphones, Info, Settings, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,26 +21,57 @@ interface Message {
   timestamp: Date;
 }
 
-// L'assistant cite les pages du site par leur chemin (/devenir-partenaire…) :
-// on les rend cliquables dans la bulle.
+// L'assistant cite les pages du site par leur chemin (/devenir-partenaire…).
+// Dans la bulle, le chemin est remplacé par le nom de la page et un bouton
+// sous le message y mène directement. Seules les pages connues ci-dessous
+// sont reconnues : un chemin inventé reste du texte, jamais un lien cassé.
+const CHAT_PAGES: Record<string, string> = {
+  "/flights": "flights",
+  "/hotels": "hotels",
+  "/flight-hotel": "flightHotel",
+  "/cars": "cars",
+  "/trains": "trains",
+  "/activities": "activities",
+  "/tours": "tours",
+  "/stays": "stays",
+  "/events": "events",
+  "/destinations": "destinations",
+  "/restaurants": "restaurants",
+  "/artisans": "artisans",
+  "/bien-etre-beaute": "wellness",
+  "/entreprises": "companies",
+  "/bossiz-conciergerie-ci": "conciergerieCi",
+  "/bossiz-conciergerie-sn": "conciergerieSn",
+  "/devenir-partenaire": "becomePartner",
+  "/partenaires/voitures": "carPartners",
+  "/partenariat": "partnerships",
+  "/auth": "auth",
+  "/account": "account",
+  "/booking-history": "bookings",
+  "/price-alerts": "priceAlerts",
+  "/help": "help",
+  "/support": "support",
+  "/contact": "contact",
+  "/install": "install",
+};
+
 const INTERNAL_PATH = /(^|[\s(«"'])(\/[a-z][a-z0-9-]*(?:\/[a-z0-9-]+)*)/g;
 
-function withPageLinks(text: string, onNavigate: () => void): ReactNode[] {
-  const parts: ReactNode[] = [];
+function splitPageLinks(text: string, pageLabel: (path: string) => string) {
+  const nodes: ReactNode[] = [];
+  const pages: string[] = [];
   let last = 0;
   for (const match of text.matchAll(INTERNAL_PATH)) {
-    const start = (match.index ?? 0) + match[1].length;
     const path = match[2];
-    parts.push(text.slice(last, start));
-    parts.push(
-      <Link key={start} to={path} onClick={onNavigate} className="font-medium text-primary underline underline-offset-2">
-        {path}
-      </Link>
-    );
+    if (!(path in CHAT_PAGES)) continue;
+    const start = (match.index ?? 0) + match[1].length;
+    nodes.push(text.slice(last, start));
+    nodes.push(<strong key={start} className="font-semibold">{pageLabel(path)}</strong>);
+    if (!pages.includes(path)) pages.push(path);
     last = start + path.length;
   }
-  parts.push(text.slice(last));
-  return parts;
+  nodes.push(text.slice(last));
+  return { nodes, pages };
 }
 
 const ChatWidget = () => {
@@ -267,9 +298,13 @@ const ChatWidget = () => {
 
             {/* Message List */}
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 pt-5 scrollbar-thin scrollbar-thumb-primary/5 sm:space-y-6 sm:p-6 sm:pt-8">
-              {messages.map((m) => (
-                <div 
-                  key={m.id} 
+              {messages.map((m) => {
+                const { nodes, pages } = m.sender === 'agent'
+                  ? splitPageLinks(m.text, (path) => t(`ux.chat.pages.${CHAT_PAGES[path]}`))
+                  : { nodes: [m.text], pages: [] as string[] };
+                return (
+                <div
+                  key={m.id}
                   className={cn(
                     "flex flex-col max-w-[85%] group",
                     m.sender === 'user' ? "ml-auto items-end" : "mr-auto items-start"
@@ -283,8 +318,27 @@ const ChatWidget = () => {
                         : "bg-muted text-foreground border border-border rounded-tl-none"
                     )}
                   >
-                    {m.sender === 'agent' ? withPageLinks(m.text, () => setIsOpen(false)) : m.text}
+                    {nodes}
                   </div>
+                  {pages.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {pages.map((path) => {
+                        const label = t(`ux.chat.pages.${CHAT_PAGES[path]}`);
+                        return (
+                          <Link
+                            key={path}
+                            to={path}
+                            onClick={() => setIsOpen(false)}
+                            aria-label={t("ux.chat.openPage", { page: label })}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-card px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {label}
+                            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5 mt-1.5 px-1 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
                     <span className="text-xs text-muted-foreground tabular-nums">
                       {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -294,8 +348,9 @@ const ChatWidget = () => {
                     )}
                   </div>
                 </div>
-              ))}
-              
+                );
+              })}
+
               {aiLoading && (
                 <div className="flex items-center gap-2 bg-muted border border-border px-5 py-3.5 rounded-3xl rounded-tl-none w-fit shadow-sm">
                   <div className="flex gap-1.5">
