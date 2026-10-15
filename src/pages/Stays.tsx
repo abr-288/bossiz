@@ -16,7 +16,7 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import bannerStays from "@/assets/banner-stays.jpg";
+import bannerStays from "@/assets/banner-stays.webp";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";

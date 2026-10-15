@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useDestinations } from "@/hooks/useDestinations";
 import { getIataByCity, getCountryFlag } from "@/utils/airportNames";
-import bannerFlights from "@/assets/banner-flights.jpg";
+import bannerFlights from "@/assets/banner-flights.webp";
 import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 import { EmptyState } from "@/components/ui/empty-state";
 

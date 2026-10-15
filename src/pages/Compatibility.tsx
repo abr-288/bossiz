@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PageHero } from "@/components/PageHero";
-import heroImage from "@/assets/hero-slide-1.jpg";
+import heroImage from "@/assets/hero-slide-1.webp";
 
 const Compatibility = () => {
   const { t } = useTranslation();

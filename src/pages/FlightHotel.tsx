@@ -14,7 +14,7 @@ import { FlightHotelSearchForm } from "@/components/FlightHotelSearchForm";
 import { useFlightHotelSearch } from "@/hooks/useFlightHotelSearch";
 import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerFlightHotel from "@/assets/banner-flight-hotel.jpg";
+import bannerFlightHotel from "@/assets/banner-flight-hotel.webp";
 import { Price } from "@/components/ui/price";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

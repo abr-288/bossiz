@@ -15,7 +15,7 @@ import { useCarRental } from "@/hooks/useCarRental";
 import { toast } from "sonner";
 import { CarCardSkeleton } from "@/components/ui/search-result-skeletons";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerCars from "@/assets/banner-cars.jpg";
+import bannerCars from "@/assets/banner-cars.webp";
 import { useTranslation } from "react-i18next";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";

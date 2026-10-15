@@ -25,7 +25,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import bannerTours from "@/assets/banner-tours.jpg";
+import bannerTours from "@/assets/banner-tours.webp";
 import { useTranslation } from "react-i18next";
 import { MOTION } from "@/lib/motion";
 

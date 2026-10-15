@@ -4,7 +4,7 @@ import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { Lock, Eye, Database, UserCheck, Globe, Bell, Trash2, Mail, Handshake } from "lucide-react";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { PageHero } from "@/components/PageHero";
-import heroImage from "@/assets/hero-slide-2.jpg";
+import heroImage from "@/assets/hero-slide-2.webp";
 
 const PrivacyPolicy = () => {
   const { config } = useSiteConfigContext();

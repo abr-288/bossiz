@@ -17,7 +17,7 @@ import { BookingDialog } from "@/components/BookingDialog";
 import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
-import bannerTrains from "@/assets/banner-trains.jpg";
+import bannerTrains from "@/assets/banner-trains.webp";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { BossizSiteLayout } from "@/components/bossiz/BossizSiteLayout";
 import { useBossizMicrositeContent } from "@/hooks/useBossizMicrositeContent";
-import bannerImage from "@/assets/hero-slide-5.jpg";
+import bannerImage from "@/assets/hero-slide-5.webp";
 
 const BossizCIFormules = () => {
   const { t } = useTranslation();

@@ -10,7 +10,7 @@ import { MFAVerification } from "@/components/MFAVerification";
 import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import bannerHotels from "@/assets/ordinateur.jpg";
+import bannerHotels from "@/assets/ordinateur.webp";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import AnimatedFormField from "@/components/forms/AnimatedFormField";

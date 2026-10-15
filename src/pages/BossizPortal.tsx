@@ -41,7 +41,7 @@ const usePlayfairFont = () => {
     document.head.appendChild(link);
   }, []);
 };
-import heroLuxuryLobby from "@/assets/hero-slide-3.jpg";
+import heroLuxuryLobby from "@/assets/hero-slide-3.webp";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Award,

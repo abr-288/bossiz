@@ -10,7 +10,7 @@ import { MapPin, Star, Sparkles, Phone } from "lucide-react";
 import { useWellnessServices } from "@/hooks/useWellnessServices";
 import { WellnessBookingDialog } from "@/components/wellness/WellnessBookingDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerWellness from "@/assets/banner-wellness.jpg";
+import bannerWellness from "@/assets/banner-wellness.webp";
 import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Mail, MapPin, Loader2 } from "lucide-react";
 import { BossizSiteLayout } from "@/components/bossiz/BossizSiteLayout";
 import { useBossizMicrositeContent } from "@/hooks/useBossizMicrositeContent";
-import heroImage from "@/assets/banner-stays.jpg";
+import heroImage from "@/assets/banner-stays.webp";
 
 const BossizSNAccueil = () => {
   const navigate = useNavigate();

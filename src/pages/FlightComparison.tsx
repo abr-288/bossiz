@@ -22,7 +22,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { currentDateFnsLocale } from "@/lib/dateLocale";
 import { PageHero } from "@/components/PageHero";
-import bannerFlights from "@/assets/banner-flights.jpg";
+import bannerFlights from "@/assets/banner-flights.webp";
 
 interface FlightData {
   airline: string;

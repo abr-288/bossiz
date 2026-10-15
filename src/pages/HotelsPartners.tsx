@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, Star, MapPin } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useHotelSearch } from "@/hooks/useHotelSearch";
-import bannerHotels from "@/assets/banner-hotels.jpg";
+import bannerHotels from "@/assets/banner-hotels.webp";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 interface PartnerHotel {

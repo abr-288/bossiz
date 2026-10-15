@@ -39,7 +39,7 @@ import { JEKO_PAYOUT_METHODS, type JekoPayoutMethod } from "@/constants/jekoPayo
 import { partnerApplicationSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerBecomePartner from "@/assets/hero-slide-1.jpg";
+import bannerBecomePartner from "@/assets/hero-slide-1.webp";
 
 const partnerTypeOptions = [
   { value: "hotel", label: "ux.partnerForm.typeHotel", icon: Hotel },

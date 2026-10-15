@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Handshake } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import bannerHotels from "@/assets/banner-hotels.jpg";
+import bannerHotels from "@/assets/banner-hotels.webp";
 
 const BecomePartnerBanner = () => {
   const { t } = useTranslation();

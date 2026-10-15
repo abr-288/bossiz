@@ -12,7 +12,7 @@ import { HELP_DOMAINS as HELP_DOMAINS_FR, HELP_FAQ as HELP_FAQ_FR } from "@/data
 import { HELP_DOMAINS_EN, HELP_FAQ_EN } from "@/data/helpFaqData.en";
 import { HELP_DOMAINS_ZH, HELP_FAQ_ZH } from "@/data/helpFaqData.zh";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerHelp from "@/assets/hero-beach.jpg";
+import bannerHelp from "@/assets/hero-beach.webp";
 
 const Help = () => {
   const { t, i18n } = useTranslation();

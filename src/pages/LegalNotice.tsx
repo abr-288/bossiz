@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { Building2, Server, Copyright, Gavel, Mail, AlertCircle } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
-import heroImage from "@/assets/hero-slide-5.jpg";
+import heroImage from "@/assets/hero-slide-5.webp";
 
 const LegalNotice = () => {
   const { config } = useSiteConfigContext();

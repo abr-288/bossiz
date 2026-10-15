@@ -8,7 +8,7 @@ import { Price } from "@/components/ui/price";
 import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerCars from "@/assets/banner-cars.jpg";
+import bannerCars from "@/assets/banner-cars.webp";
 import { cn } from "@/lib/utils";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { toast } from "sonner";

@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Music, Trophy, Theater, PartyPopper, Star, Users, TrendingUp } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
-import bannerEvents from "@/assets/banner-events.jpg";
+import bannerEvents from "@/assets/banner-events.webp";
 
 const CATEGORY_ICONS = [
   { id: "concert", icon: Music, color: "bg-pink-500" },

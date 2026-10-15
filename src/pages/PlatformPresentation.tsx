@@ -28,18 +28,18 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import shotHome from "@/assets/presentation/shot-home.png";
-import shotHotels from "@/assets/presentation/shot-hotels.png";
-import shotCars from "@/assets/presentation/shot-cars.png";
-import shotFlights from "@/assets/presentation/shot-flights.png";
-import shotFlightHotel from "@/assets/presentation/shot-flight-hotel.png";
-import shotStays from "@/assets/presentation/shot-stays.png";
-import shotTours from "@/assets/presentation/shot-tours.png";
-import shotDestinations from "@/assets/presentation/shot-destinations.png";
-import shotActivities from "@/assets/presentation/shot-activities.png";
-import shotEvents from "@/assets/presentation/shot-events.png";
-import shotTrains from "@/assets/presentation/shot-trains.png";
-import bannerPresentation from "@/assets/hero-slide-2.jpg";
+import shotHome from "@/assets/presentation/shot-home.webp";
+import shotHotels from "@/assets/presentation/shot-hotels.webp";
+import shotCars from "@/assets/presentation/shot-cars.webp";
+import shotFlights from "@/assets/presentation/shot-flights.webp";
+import shotFlightHotel from "@/assets/presentation/shot-flight-hotel.webp";
+import shotStays from "@/assets/presentation/shot-stays.webp";
+import shotTours from "@/assets/presentation/shot-tours.webp";
+import shotDestinations from "@/assets/presentation/shot-destinations.webp";
+import shotActivities from "@/assets/presentation/shot-activities.webp";
+import shotEvents from "@/assets/presentation/shot-events.webp";
+import shotTrains from "@/assets/presentation/shot-trains.webp";
+import bannerPresentation from "@/assets/hero-slide-2.webp";
 import { useTranslation } from "react-i18next";
 
 const modules = [

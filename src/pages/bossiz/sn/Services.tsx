@@ -5,7 +5,7 @@ import { ChevronRight, CheckCircle, Loader2 } from "lucide-react";
 import { BossizSiteLayout } from "@/components/bossiz/BossizSiteLayout";
 import { useBossizMicrositeContent } from "@/hooks/useBossizMicrositeContent";
 import { getBossizIcon } from "@/data/bossizIconMap";
-import bannerImage from "@/assets/hero-slide-4.jpg";
+import bannerImage from "@/assets/hero-slide-4.webp";
 
 const BossizSNServices = () => {
   const { t } = useTranslation();

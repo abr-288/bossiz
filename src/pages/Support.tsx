@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom";
 import { SUPPORT_CATEGORIES } from "@/data/supportCategories";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerSupport from "@/assets/ordinateur.jpg";
+import bannerSupport from "@/assets/ordinateur.webp";
 
 const Support = () => {
   const { t } = useTranslation();

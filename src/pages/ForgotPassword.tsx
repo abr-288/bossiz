@@ -8,7 +8,7 @@ import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { toast } from "sonner";
 import { Car, Mail, ArrowLeft } from "lucide-react";
 import { z } from "zod";
-import authBg from "@/assets/hero-slide-1.jpg";
+import authBg from "@/assets/hero-slide-1.webp";
 import { useTranslation } from "react-i18next";
 
 const emailSchema = z.object({

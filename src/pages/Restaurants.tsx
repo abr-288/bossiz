@@ -9,7 +9,7 @@ import { MapPin, Star, UtensilsCrossed, Phone } from "lucide-react";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { RestaurantReservationDialog } from "@/components/restaurants/RestaurantReservationDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerRestaurants from "@/assets/banner-restaurants.jpg";
+import bannerRestaurants from "@/assets/banner-restaurants.webp";
 import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";

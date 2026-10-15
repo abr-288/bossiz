@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Cookie, ShieldCheck, Settings, BarChart3, Clock, Mail } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
-import heroImage from "@/assets/hero-slide-4.jpg";
+import heroImage from "@/assets/hero-slide-4.webp";
 
 const CookiePolicy = () => {
   const { config } = useSiteConfigContext();

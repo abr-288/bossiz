@@ -13,7 +13,7 @@ import { Pagination } from "@/components/Pagination";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
 import { useTourServices } from "@/hooks/useTourServices";
-import bannerTours from "@/assets/banner-tours.jpg";
+import bannerTours from "@/assets/banner-tours.webp";
 import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";

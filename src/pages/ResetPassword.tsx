@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Car, Lock, CheckCircle, Loader2, LinkIcon } from "lucide-react";
 import { z } from "zod";
-import authBg from "@/assets/hero-slide-1.jpg";
+import authBg from "@/assets/hero-slide-1.webp";
 import { updatePasswordSchema } from "@/lib/authValidation";
 import { classifyPasswordError, passwordErrorMessage } from "@/lib/passwordErrors";
 

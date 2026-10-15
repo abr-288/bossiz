@@ -9,7 +9,7 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
-import heroImage from "@/assets/ordinateur.jpg";
+import heroImage from "@/assets/ordinateur.webp";
 import { useTranslation } from "react-i18next";
 import { MOTION } from "@/lib/motion";
 

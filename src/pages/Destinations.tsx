@@ -9,7 +9,7 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { useDestinations, useDestinationSearch } from "@/hooks/useDestinations";
 import { DestinationGrid } from "@/components/destinations/DestinationGrid";
-import destinationsHero from "@/assets/destination-hotel.jpg";
+import destinationsHero from "@/assets/destination-hotel.webp";
 import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
 import { toast } from "sonner";
 

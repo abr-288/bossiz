@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Phone, Mail, MapPin, Loader2 } from "lucide-react";
 import { BossizSiteLayout } from "@/components/bossiz/BossizSiteLayout";
 import { useBossizMicrositeContent } from "@/hooks/useBossizMicrositeContent";
-import heroImage from "@/assets/hotel-ivoire.jpg";
+import heroImage from "@/assets/hotel-ivoire.webp";
 
 const BossizCIAccueil = () => {
   const navigate = useNavigate();

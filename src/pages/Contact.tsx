@@ -14,7 +14,7 @@ import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { realPhoneNumber, whatsAppLink } from "@/lib/contactNumbers";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerContact from "@/assets/destination-city.jpg";
+import bannerContact from "@/assets/destination-city.webp";
 
 const Contact = () => {
   const { t } = useTranslation();

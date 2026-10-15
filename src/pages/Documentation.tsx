@@ -184,7 +184,7 @@ import {
   Octagon,
   Pentagon
 } from "lucide-react";
-import heroImage from "@/assets/destination-safari.jpg";
+import heroImage from "@/assets/destination-safari.webp";
 import { useTranslation } from "react-i18next";
 
 const Documentation = () => {

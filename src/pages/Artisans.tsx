@@ -11,7 +11,7 @@ import { useArtisans } from "@/hooks/useArtisans";
 import { Price } from "@/components/ui/price";
 import { ArtisanOrderDialog } from "@/components/artisans/ArtisanOrderDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerArtisans from "@/assets/banner-artisans.jpg";
+import bannerArtisans from "@/assets/banner-artisans.webp";
 import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";

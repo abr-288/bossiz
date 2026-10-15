@@ -19,7 +19,7 @@ import { useHotelSearch } from "@/hooks/useHotelSearch";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerHotels from "@/assets/banner-hotels.jpg";
+import bannerHotels from "@/assets/banner-hotels.webp";
 import { EmptyState } from "@/components/ui/empty-state";
 import { HotelCardSkeleton } from "@/components/ui/search-result-skeletons";
 const Hotels = () => {

@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCompany } from "@/hooks/useCompany";
 import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerBusiness from "@/assets/banner-business.jpg";
+import bannerBusiness from "@/assets/banner-business.webp";
 import { useTranslation } from "react-i18next";
 
 const benefits = [

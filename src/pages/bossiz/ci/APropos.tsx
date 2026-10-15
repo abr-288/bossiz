@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Shield, Clock, Star, Loader2 } from "lucide-react";
 import { BossizSiteLayout } from "@/components/bossiz/BossizSiteLayout";
 import { useBossizMicrositeContent } from "@/hooks/useBossizMicrositeContent";
-import aboutImage from "@/assets/destination-city.jpg";
+import aboutImage from "@/assets/destination-city.webp";
 
 const BossizCIAPropos = () => {
   const navigate = useNavigate();

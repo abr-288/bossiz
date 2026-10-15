@@ -9,7 +9,7 @@ import { ActivitySearchForm } from "@/components/ActivitySearchForm";
 import { Price } from "@/components/ui/price";
 import { useActivitySearch } from "@/hooks/useActivitySearch";
 import { LazyImage } from "@/components/ui/lazy-image";
-import bannerActivities from "@/assets/banner-activities.jpg";
+import bannerActivities from "@/assets/banner-activities.webp";
 import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
