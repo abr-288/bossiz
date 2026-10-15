@@ -283,14 +283,17 @@ const ModernSubscriptionPayment = () => {
         throw new Error(t("ux.subPayment.notSignedIn"));
       }
 
-      // Créer l'abonnement en attente de paiement. Le montant et la devise
-      // enregistrés ici font foi côté serveur (process-payment les relit,
-      // il ne fait jamais confiance à un montant envoyé depuis le navigateur).
+      // Créer l'abonnement en attente de paiement. Le montant envoyé ici est
+      // ignoré : la base le remet à 0 et process-payment fixe le prix dû à
+      // partir de subscription_pricing (formule + cycle de facturation).
       const { data: subscription, error: subscriptionError } = await supabase
         .from('user_subscriptions' as any)
         .insert({
           user_id: user.id,
           plan_id: planData.plan.plan_id,
+          // plan_name et price sont NOT NULL dans le schéma en production
+          plan_name: planData.plan.name,
+          price: planData.pricing.price,
           subscription_type: planData.plan.subscription_type,
           billing_cycle: billingCycle,
           status: 'pending',

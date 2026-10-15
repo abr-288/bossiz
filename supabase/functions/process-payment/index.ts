@@ -63,7 +63,7 @@ const EXCHANGE_RATES_TO_XOF: Record<string, number> = {
 };
 
 // Calcule le montant XOF réellement dû à partir d'une source de vérité serveur
-// (bookings.total_price ou user_subscriptions.amount_paid), jamais depuis le body client.
+// (bookings.total_price ou subscription_pricing.price), jamais depuis le body client.
 function computeAuthoritativeAmount(amount: unknown, currency: unknown): { valid: boolean; value: number; error?: string } {
   const numAmount = Number(amount);
 
@@ -298,7 +298,7 @@ serve(async (req) => {
 
       const { data: subscription, error: subscriptionError } = await supabase
         .from('user_subscriptions')
-        .select('id, user_id, plan_id, amount_paid, currency, status')
+        .select('id, user_id, plan_id, billing_cycle, status')
         .eq('id', targetId)
         .eq('user_id', user.id)
         .single();
@@ -312,8 +312,47 @@ serve(async (req) => {
         return errorResponse('Cet abonnement n\'est pas en attente de paiement', 409);
       }
 
-      sourceAmount = Number(subscription.amount_paid);
-      sourceCurrency = subscription.currency || 'XOF';
+      if (!adminSupabase) {
+        return errorResponse('Configuration serveur incomplète', 500);
+      }
+
+      // Le trigger enforce_user_subscription_status remet amount_paid à 0 pour
+      // toute ligne insérée par un client (anti-falsification) : le prix dû
+      // est donc relu ici dans la grille tarifaire de la formule.
+      const billingCycle = subscription.billing_cycle === 'yearly' ? 'yearly' : 'monthly';
+      const { data: plan } = await adminSupabase
+        .from('subscription_plans')
+        .select('is_active')
+        .eq('plan_id', subscription.plan_id)
+        .maybeSingle();
+      const { data: pricing } = await adminSupabase
+        .from('subscription_pricing')
+        .select('price, currency, is_active')
+        .eq('plan_id', subscription.plan_id)
+        .eq('billing_cycle', billingCycle)
+        .maybeSingle();
+
+      if (!plan?.is_active || !pricing || pricing.is_active === false || Number(pricing.price) <= 0) {
+        return errorResponse(
+          'Cette formule n’est pas disponible à la souscription pour le moment.',
+          409,
+        );
+      }
+
+      // Service-role (auth.uid() nul) : seul chemin autorisé par le trigger
+      // à poser le montant, repris ensuite dans l'email et le reçu.
+      const { error: amountError } = await adminSupabase
+        .from('user_subscriptions')
+        .update({ amount_paid: pricing.price, price: pricing.price, currency: pricing.currency })
+        .eq('id', targetId)
+        .eq('status', 'pending');
+      if (amountError) {
+        console.error('❌ Enregistrement du montant de l\'abonnement:', amountError.message);
+        return errorResponse('Impossible de préparer le paiement de l’abonnement', 500);
+      }
+
+      sourceAmount = Number(pricing.price);
+      sourceCurrency = pricing.currency || 'XOF';
       paymentDescription = `Abonnement ${subscription.plan_id}`;
     } else if (hasCarPartnerSubscription) {
       targetType = 'car_partner_subscription';
