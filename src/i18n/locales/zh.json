@@ -3739,7 +3739,10 @@
       "learnMore": "了解更多"
     },
     "common": {
-      "removeImage": "移除图片"
+      "removeImage": "移除图片",
+      "loadFailedTitle": "网络缓慢或已中断",
+      "loadFailedDesc": "加载时间比预期更长。请检查网络连接后重试。",
+      "retry": "重试"
     },
     "features": {
       "mobileMoneyTitle": "移动支付",

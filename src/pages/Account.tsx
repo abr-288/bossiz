@@ -33,6 +33,8 @@ import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { MOTION } from "@/lib/motion";
 import { passwordErrorMessage } from "@/lib/passwordErrors";
+import { withTimeout } from "@/lib/withTimeout";
+import { LoadErrorRetry } from "@/components/LoadErrorRetry";
 
 // Validation schemas (messages traduits : construits avec la fonction t courante)
 const createProfileSchema = (t: TFunction) => z.object({
@@ -64,6 +66,7 @@ const Account = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState({
@@ -88,29 +91,37 @@ const Account = () => {
   const [activeTab, setActiveTab] = useState("profile");
 
   const checkUser = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-      return;
+    setLoadFailed(false);
+    setLoading(true);
+    try {
+      const { data: { session } } = await withTimeout(supabase.auth.getSession());
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+
+      setUser(session.user);
+
+      const { data: profileData } = await withTimeout(
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single()
+      );
+
+      if (profileData) {
+        setProfile({
+          full_name: profileData.full_name || "",
+          phone: profileData.phone || "",
+          avatar_url: profileData.avatar_url || getUserPhotoFromMetadata(session.user) || "",
+        });
+      }
+
+      setLoading(false);
+    } catch {
+      setLoadFailed(true);
     }
-
-    setUser(session.user);
-
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", session.user.id)
-      .single();
-
-    if (profileData) {
-      setProfile({
-        full_name: profileData.full_name || "",
-        phone: profileData.phone || "",
-        avatar_url: profileData.avatar_url || getUserPhotoFromMetadata(session.user) || "",
-      });
-    }
-
-    setLoading(false);
   }, [navigate]);
 
   useEffect(() => {
@@ -235,6 +246,14 @@ const Account = () => {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  if (loadFailed) {
+    return (
+      <UserDashboardLayout>
+        <LoadErrorRetry onRetry={checkUser} />
+      </UserDashboardLayout>
+    );
+  }
 
   if (loading) {
     return (

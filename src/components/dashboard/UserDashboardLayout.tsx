@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { UserSidebar } from "./UserSidebar";
@@ -10,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getProfilePhotoUrl, getUserPhotoFromMetadata, PROFILE_UPDATED_EVENT } from "@/lib/profilePhoto";
+import { withTimeout } from "@/lib/withTimeout";
+import { LoadErrorRetry } from "@/components/LoadErrorRetry";
 
 interface UserDashboardLayoutProps {
   children: ReactNode;
@@ -28,19 +31,30 @@ interface UserProfile {
 export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayoutProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/auth");
-        return;
-      }
+      setLoadFailed(false);
+      try {
+        const { data: { user }, error } = await withTimeout(supabase.auth.getUser());
 
-      await refreshProfile(user.id, user.email || "", getUserPhotoFromMetadata(user));
-      setLoading(false);
+        // Une coupure réseau ne veut pas dire « déconnecté » : on propose de
+        // réessayer au lieu de renvoyer vers la page de connexion.
+        if (error && isAuthRetryableFetchError(error)) throw error;
+
+        if (!user) {
+          navigate("/auth");
+          return;
+        }
+
+        await withTimeout(refreshProfile(user.id, user.email || "", getUserPhotoFromMetadata(user)));
+        setLoading(false);
+      } catch {
+        setLoadFailed(true);
+      }
     };
 
     const refreshProfile = async (userId: string, email: string, metadataPhoto?: string) => {
@@ -66,7 +80,15 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
     };
     window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
     return () => window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
-  }, [navigate]);
+  }, [navigate, attempt]);
+
+  if (loadFailed) {
+    return (
+      <div className="min-h-screen flex bg-background">
+        <LoadErrorRetry onRetry={() => setAttempt((n) => n + 1)} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (

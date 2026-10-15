@@ -3740,7 +3740,10 @@
       "learnMore": "En savoir plus"
     },
     "common": {
-      "removeImage": "Retirer l'image"
+      "removeImage": "Retirer l'image",
+      "loadFailedTitle": "Connexion lente ou interrompue",
+      "loadFailedDesc": "Le chargement prend plus de temps que prévu. Vérifiez votre connexion internet puis réessayez.",
+      "retry": "Réessayer"
     },
     "features": {
       "mobileMoneyTitle": "Paiement Mobile Money",
