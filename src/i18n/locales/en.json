@@ -2840,6 +2840,10 @@
       "reviews": "Customer reviews"
     },
     "account": {
+      "subExpiresSoon_one": "Expires in {{count}} day",
+      "subExpiresSoon_other": "Expires in {{count}} days",
+      "subReceipt": "Receipt",
+      "subAdvantages": "Your benefits",
       "subTitle": "My subscription",
       "subNone": "You don't have a current subscription.",
       "subDiscover": "Discover our plans",
@@ -3377,6 +3381,8 @@
       "cta": "Ready to show your hotel to new travellers?"
     },
     "subPayment": {
+      "perMonth": "/ month",
+      "perYear": "or {{price}} / year",
       "waitingTitle": "Complete your payment on Jèko",
       "waitingDesc": "The Jèko payment page opens in a new tab. Once you have paid, come back here: this page updates automatically.",
       "openJeko": "Open the Jèko payment page",

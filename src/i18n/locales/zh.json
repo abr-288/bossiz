@@ -2839,6 +2839,10 @@
       "reviews": "客户评价"
     },
     "account": {
+      "subExpiresSoon_one": "{{count}} 天后到期",
+      "subExpiresSoon_other": "{{count}} 天后到期",
+      "subReceipt": "收据",
+      "subAdvantages": "您的权益",
       "subTitle": "我的订阅",
       "subNone": "您目前没有订阅。",
       "subDiscover": "了解订阅方案",
@@ -3376,6 +3380,8 @@
       "cta": "准备好让新旅客了解您的酒店了吗？"
     },
     "subPayment": {
+      "perMonth": "/ 月",
+      "perYear": "或 {{price}} / 年",
       "waitingTitle": "在 Jèko 上完成支付",
       "waitingDesc": "Jèko 支付页面将在新标签页中打开。付款完成后请返回此处，本页面会自动更新。",
       "openJeko": "打开 Jèko 支付页面",

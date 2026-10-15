@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { localizeRow } from "@/lib/translatableContent";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { whatsAppLink } from "@/lib/contactNumbers";
+import { autoConvertAndFormat } from "@/utils/currencyConverter";
 
 // Plans qui nécessitent une demande de contact au lieu d'un paiement direct
 const REQUEST_ONLY_PLANS = ["visa", "billets", "events"];
@@ -76,6 +77,10 @@ interface DisplayPlan {
   icon: React.ReactNode;
   price: string;
   priceNote: string | null;
+  // Tarifs réellement facturés (subscription_pricing), affichés à la place
+  // du texte libre « price » pour que la carte annonce le prix payé.
+  billedMonthly: string | null;
+  billedYearly: string | null;
   features: string[];
   popular: boolean;
   color: string;
@@ -123,11 +128,29 @@ const FeaturedSubscriptions = () => {
           icon: ICON_MAP[p.icon] || <Building2 className="h-6 w-6" />,
           price: p.price,
           priceNote: p.price_note,
+          billedMonthly: null,
+          billedYearly: null,
           features: p.features || [],
           popular: p.popular,
           color: p.color,
         }));
         
+        const payableIds = formattedPlans.map((p) => p.plan_id).filter((id) => !isRequestOnlyPlan(id));
+        if (payableIds.length > 0) {
+          const { data: pricing } = await supabase
+            .from("subscription_pricing")
+            .select("plan_id, billing_cycle, price, currency")
+            .in("plan_id", payableIds);
+          const billed = (planId: string, cycle: string) => {
+            const row = (pricing || []).find((r) => r.plan_id === planId && r.billing_cycle === cycle);
+            return row && Number(row.price) > 0 ? autoConvertAndFormat(Number(row.price), row.currency || "XOF") : null;
+          };
+          formattedPlans.forEach((plan) => {
+            plan.billedMonthly = billed(plan.plan_id, "monthly");
+            plan.billedYearly = billed(plan.plan_id, "yearly");
+          });
+        }
+
         setPlans(formattedPlans);
       } catch (error) {
         console.error("Error fetching subscription plans:", error);
@@ -262,10 +285,24 @@ const FeaturedSubscriptions = () => {
                 </div>
                 <h3 className="text-lg font-bold text-foreground">{plan.name}</h3>
                 {plan.subtitle && <p className="mt-1 text-sm text-muted-foreground">{plan.subtitle}</p>}
-                <p className="mt-3">
-                  <span className="t-price text-xl text-foreground">{plan.price}</span>
-                  {plan.priceNote && <span className="ml-1 text-sm text-muted-foreground">{plan.priceNote}</span>}
-                </p>
+                {plan.billedMonthly ? (
+                  <div className="mt-3">
+                    <p>
+                      <span className="t-price text-xl text-foreground">{plan.billedMonthly}</span>
+                      <span className="ml-1 text-sm text-muted-foreground">{t("ux.subPayment.perMonth")}</span>
+                    </p>
+                    {plan.billedYearly && (
+                      <p className="text-sm text-muted-foreground">
+                        {t("ux.subPayment.perYear", { price: plan.billedYearly })}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-3">
+                    <span className="t-price text-xl text-foreground">{plan.price}</span>
+                    {plan.priceNote && <span className="ml-1 text-sm text-muted-foreground">{plan.priceNote}</span>}
+                  </p>
+                )}
                 <ul className="mt-4 space-y-2">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">

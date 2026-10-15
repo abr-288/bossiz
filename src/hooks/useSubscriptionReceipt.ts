@@ -2,12 +2,22 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+// "request" : demande d'abonnement sur devis (subscription_requests) ;
+// "paid" : abonnement payé en ligne (user_subscriptions).
+type ReceiptKind = "request" | "paid";
+
+const receiptBody = (id: string, kind: ReceiptKind) =>
+  kind === "paid" ? { userSubscriptionId: id } : { subscriptionRequestId: id };
+
 export const useSubscriptionReceipt = () => {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const generateReceipt = async (subscriptionRequestId: string) => {
+  const generateReceipt = async (subscriptionRequestId: string, kind: ReceiptKind = "request") => {
     setIsGenerating(true);
+    // Ouverte avant tout appel réseau : sinon le navigateur bloque la fenêtre
+    // (elle n'est plus rattachée au clic de l'utilisateur).
+    const receiptWindow = window.open("", "_blank");
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -15,7 +25,7 @@ export const useSubscriptionReceipt = () => {
       }
 
       const { data, error } = await supabase.functions.invoke("generate-subscription-receipt", {
-        body: { subscriptionRequestId },
+        body: receiptBody(subscriptionRequestId, kind),
       });
 
       if (error) throw error;
@@ -24,8 +34,6 @@ export const useSubscriptionReceipt = () => {
         throw new Error("No receipt data received");
       }
 
-      // Create a new window with the receipt HTML
-      const receiptWindow = window.open("", "_blank");
       if (!receiptWindow) {
         throw new Error("Popup blocked. Please allow popups for this site.");
       }
@@ -45,6 +53,7 @@ export const useSubscriptionReceipt = () => {
 
       return true;
     } catch (error: any) {
+      receiptWindow?.close();
       console.error("Error generating receipt:", error);
       toast({
         title: "Erreur",
@@ -57,7 +66,7 @@ export const useSubscriptionReceipt = () => {
     }
   };
 
-  const downloadReceipt = async (subscriptionRequestId: string) => {
+  const downloadReceipt = async (subscriptionRequestId: string, kind: ReceiptKind = "request") => {
     setIsGenerating(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -66,7 +75,7 @@ export const useSubscriptionReceipt = () => {
       }
 
       const { data, error } = await supabase.functions.invoke("generate-subscription-receipt", {
-        body: { subscriptionRequestId },
+        body: receiptBody(subscriptionRequestId, kind),
       });
 
       if (error) throw error;

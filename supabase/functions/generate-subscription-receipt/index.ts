@@ -7,8 +7,23 @@ const corsHeaders = {
 };
 
 interface SubscriptionReceiptRequest {
-  subscriptionRequestId: string;
+  // Demande d'abonnement « sur demande » (subscription_requests)
+  subscriptionRequestId?: string;
+  // Abonnement payé en ligne (user_subscriptions)
+  userSubscriptionId?: string;
 }
+
+interface ReceiptOverrides {
+  amountXof: number;
+  priceLabel: string;
+  paidAt: string;
+  status: string;
+}
+
+// Les champs client (nom, société...) sont saisis librement : on les échappe
+// avant de les insérer dans le HTML du reçu.
+const esc = (value: unknown): string =>
+  String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
 const generateQRCodeSVG = async (data: string): Promise<string> => {
   const QRCode = await import("https://esm.sh/qrcode@1.5.3");
@@ -25,13 +40,14 @@ const formatDate = (date: Date): string => {
   });
 };
 
-const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string): string => {
+const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string, overrides?: ReceiptOverrides): string => {
   const receiptNumber = `REC-${subscription.id.substring(0, 8).toUpperCase()}`;
-  const paymentDate = formatDate(new Date(subscription.updated_at));
+  const paymentDate = formatDate(new Date(overrides?.paidAt ?? subscription.updated_at));
   
-  // Extraire le montant du prix du plan
+  // Extraire le montant du prix du plan (demande sur devis) ; un abonnement
+  // payé en ligne fournit le montant réellement encaissé.
   const priceMatch = plan?.price?.replace(/\s/g, '').match(/(\d+)/);
-  const amount = priceMatch ? parseInt(priceMatch[1], 10) : 0;
+  const amount = overrides?.amountXof ?? (priceMatch ? parseInt(priceMatch[1], 10) : 0);
   
   return `
     <!DOCTYPE html>
@@ -292,31 +308,31 @@ const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string): s
               <div class="section-title">Informations client</div>
               <div class="customer-row">
                 <div class="customer-label">Nom</div>
-                <div class="customer-value">${subscription.name}</div>
+                <div class="customer-value">${esc(subscription.name)}</div>
               </div>
               <div class="customer-row">
                 <div class="customer-label">Email</div>
-                <div class="customer-value">${subscription.email}</div>
+                <div class="customer-value">${esc(subscription.email)}</div>
               </div>
               <div class="customer-row">
                 <div class="customer-label">Téléphone</div>
-                <div class="customer-value">${subscription.phone}</div>
+                <div class="customer-value">${esc(subscription.phone || '-')}</div>
               </div>
               ${subscription.company ? `
               <div class="customer-row">
                 <div class="customer-label">Entreprise</div>
-                <div class="customer-value">${subscription.company}</div>
+                <div class="customer-value">${esc(subscription.company)}</div>
               </div>
               ` : ''}
             </div>
 
             <div class="plan-section">
               <div class="plan-header">
-                <div class="plan-name">${plan?.name || subscription.plan_name}</div>
-                <div class="plan-status">ACTIF</div>
+                <div class="plan-name">${esc(plan?.name || subscription.plan_name)}</div>
+                <div class="plan-status">${esc(overrides?.status ?? 'ACTIF')}</div>
               </div>
-              <div class="plan-price">${plan?.price || 'N/A'}</div>
-              ${plan?.subtitle ? `<p style="color: #666; font-size: 14px;">${plan.subtitle}</p>` : ''}
+              <div class="plan-price">${esc(overrides?.priceLabel ?? (plan?.price || 'N/A'))}</div>
+              ${plan?.subtitle ? `<p style="color: #666; font-size: 14px;">${esc(plan.subtitle)}</p>` : ''}
               
               ${plan?.features && plan.features.length > 0 ? `
               <div class="plan-features">
@@ -324,7 +340,7 @@ const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string): s
                 ${plan.features.slice(0, 6).map((feature: string) => `
                   <div class="feature-item">
                     <span class="feature-icon">✓</span>
-                    <span>${feature}</span>
+                    <span>${esc(feature)}</span>
                   </div>
                 `).join('')}
                 ${plan.features.length > 6 ? `
@@ -338,7 +354,7 @@ const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string): s
 
             <div class="totals-section">
               <div class="total-row">
-                <span>Abonnement ${plan?.name || subscription.plan_name}</span>
+                <span>Abonnement ${esc(plan?.name || subscription.plan_name)}</span>
                 <span>${amount.toLocaleString('fr-FR')} FCFA</span>
               </div>
               <div class="total-row">
@@ -369,7 +385,7 @@ const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string): s
               Merci de votre confiance !
             </div>
             <div class="footer-contact">
-              📧 support@bossiz.com | 📱 +225 XX XX XX XX
+              📧 support@bossiz.com
             </div>
           </div>
         </div>
@@ -395,7 +411,11 @@ const handler = async (req: Request): Promise<Response> => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { subscriptionRequestId }: SubscriptionReceiptRequest = await req.json();
+    const { subscriptionRequestId, userSubscriptionId }: SubscriptionReceiptRequest = await req.json();
+
+    if (userSubscriptionId) {
+      return await paidSubscriptionReceipt(supabase, userSubscriptionId);
+    }
 
     console.log("Generating receipt for subscription:", subscriptionRequestId);
 
@@ -454,5 +474,65 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+// Reçu d'un abonnement payé en ligne. Client scopé au JWT de l'appelant :
+// la RLS de user_subscriptions limite la lecture au titulaire (ou à un admin).
+async function paidSubscriptionReceipt(supabase: any, userSubscriptionId: string): Promise<Response> {
+  const json = (body: object, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...corsHeaders } });
+
+  const { data: sub } = await supabase
+    .from("user_subscriptions")
+    .select("id, user_id, plan_id, plan_name, status, billing_cycle, start_date, end_date, last_payment_date, amount_paid, currency")
+    .eq("id", userSubscriptionId)
+    .maybeSingle();
+
+  if (!sub || !["active", "expired", "cancelled"].includes(sub.status) || !sub.last_payment_date) {
+    return json({ error: "Aucun abonnement payé correspondant" }, 404);
+  }
+
+  const [{ data: plan }, { data: profile }, { data: payment }, { data: { user } }] = await Promise.all([
+    supabase.from("subscription_plans").select("*").eq("plan_id", sub.plan_id).maybeSingle(),
+    supabase.from("profiles").select("full_name, phone").eq("id", sub.user_id).maybeSingle(),
+    supabase.from("payments").select("amount, transaction_id").eq("subscription_id", sub.id)
+      .eq("status", "completed").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.auth.getUser(),
+  ]);
+
+  // Montant réellement encaissé en XOF (process-payment convertit les autres devises)
+  const amountXof = payment?.amount != null
+    ? Number(payment.amount)
+    : (sub.currency || "XOF") === "XOF" ? Number(sub.amount_paid) : 0;
+
+  const fmt = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }) : "-");
+  const cycle = sub.billing_cycle === "yearly" ? "Annuel" : "Mensuel";
+  const receiptSubject = {
+    id: sub.id,
+    name: profile?.full_name || (user?.id === sub.user_id ? user.email : "") || "Client",
+    email: user?.id === sub.user_id ? user.email : "-",
+    phone: profile?.phone || "",
+    company: null,
+    plan_id: sub.plan_id,
+    plan_name: sub.plan_name || sub.plan_id,
+  };
+  const statusLabel: Record<string, string> = { active: "ACTIF", expired: "EXPIRÉ", cancelled: "ANNULÉ" };
+
+  const qrCodeSvg = await generateQRCodeSVG(JSON.stringify({
+    id: sub.id,
+    plan: receiptSubject.plan_name,
+    paid: sub.last_payment_date,
+    ref: sub.id.substring(0, 8).toUpperCase(),
+    tx: payment?.transaction_id ?? null,
+  }));
+
+  const html = generateReceiptHTML(receiptSubject, plan, qrCodeSvg, {
+    amountXof,
+    priceLabel: `${cycle} · du ${fmt(sub.start_date)} au ${fmt(sub.end_date)}`,
+    paidAt: sub.last_payment_date,
+    status: statusLabel[sub.status] ?? sub.status,
+  });
+
+  return json({ success: true, html, receiptRef: sub.id.substring(0, 8).toUpperCase() });
+}
 
 serve(handler);

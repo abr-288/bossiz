@@ -161,10 +161,25 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     // qui peut dater de plusieurs jours si le client a payé plus tard).
     const { data: pending } = await supabase
       .from('user_subscriptions')
-      .select('billing_cycle')
+      .select('billing_cycle, user_id')
       .eq('id', subscriptionId)
       .single();
-    const startDate = new Date();
+
+    // Renouvellement anticipé : la nouvelle période prend le relais à la fin
+    // de l'abonnement encore actif, le client ne perd aucun jour déjà payé.
+    const { data: current } = await supabase
+      .from('user_subscriptions')
+      .select('end_date')
+      .eq('user_id', pending?.user_id)
+      .eq('status', 'active')
+      .neq('id', subscriptionId)
+      .gt('end_date', new Date().toISOString())
+      .order('end_date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const paidAt = new Date();
+    const startDate = current?.end_date ? new Date(current.end_date) : new Date(paidAt);
     const endDate = new Date(startDate);
     if (pending?.billing_cycle === 'yearly') {
       endDate.setFullYear(endDate.getFullYear() + 1);
@@ -172,12 +187,12 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       endDate.setMonth(endDate.getMonth() + 1);
     }
 
-    const now = startDate.toISOString();
+    const now = paidAt.toISOString();
     const { data: subscription, error: subscriptionUpdateError } = await supabase
       .from('user_subscriptions')
       .update({
         status: 'active',
-        start_date: now,
+        start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
         last_payment_date: now,
         updated_at: now,
