@@ -50,7 +50,9 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'pwa-icons/*.png'],
+      // Les icônes du manifeste sont déjà précachées (includeManifestIcons) ;
+      // inutile d'y ajouter tout le dossier pwa-icons (écrans de démarrage iOS...).
+      includeAssets: ['favicon.ico', 'robots.txt'],
       devOptions: {
         enabled: true,
         type: 'module'
@@ -176,7 +178,11 @@ export default defineConfig(({ mode }) => ({
         handle_links: 'preferred'
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff,woff2,webp}'],
+        // Seul le code de l'application est précaché. Les images (~30 Mo) ne
+        // le sont plus : le précache les téléchargeait toutes dès la première
+        // visite, ce qui saturait les connexions lentes. Elles restent mises
+        // en cache à la demande par la règle « local-images-cache » ci-dessous.
+        globPatterns: ['**/*.{js,css,html,ico,woff,woff2}'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/supabase/, /^\/auth\/callback/, /^\/~oauth/],
         cleanupOutdatedCaches: true,

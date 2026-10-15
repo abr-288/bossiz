@@ -1,8 +1,30 @@
-import i18n from 'i18next';
+import i18n, { type BackendModule } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import fr from './locales/fr.json';
-import en from './locales/en.json';
-import zh from './locales/zh.json';
+
+// Seul le français (langue par défaut et de secours) est embarqué dans le
+// bundle principal. Les autres langues (~220 Ko chacune) sont téléchargées
+// à la demande, uniquement par les visiteurs qui les utilisent.
+const lazyLocales: Record<string, () => Promise<{ default: Record<string, unknown> }>> = {
+  en: () => import('./locales/en.json'),
+  zh: () => import('./locales/zh.json'),
+};
+
+const lazyLocaleBackend: BackendModule = {
+  type: 'backend',
+  init() {},
+  read(language, _namespace, callback) {
+    const load = lazyLocales[language];
+    if (!load) {
+      callback(null, {});
+      return;
+    }
+    load().then(
+      (module) => callback(null, module.default),
+      (error) => callback(error, false),
+    );
+  },
+};
 
 // Fonction pour détecter la langue du navigateur
 const detectBrowserLanguage = (): string => {
@@ -34,14 +56,17 @@ export const applyDefaultLanguage = (defaultLanguage: string) => {
   i18n.changeLanguage(defaultLanguage);
 };
 
-i18n
+// Résolue quand la langue initiale est prête : main.tsx attend cette
+// promesse avant le premier rendu pour éviter un flash de texte en français
+// chez un visiteur anglophone ou sinophone.
+export const i18nReady = i18n
+  .use(lazyLocaleBackend)
   .use(initReactI18next)
   .init({
     resources: {
       fr: { translation: fr },
-      en: { translation: en },
-      zh: { translation: zh }
     },
+    partialBundledLanguages: true,
     lng: getInitialLanguage(),
     fallbackLng: 'fr',
     interpolation: {

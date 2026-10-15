@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
-import "./i18n/config";
+import { i18nReady } from "./i18n/config";
 
 // Une île de code (route lazy-loaded) référencée par un onglet resté ouvert
 // depuis avant un déploiement n'existe plus une fois le build suivant publié
@@ -32,9 +32,12 @@ setTimeout(() => sessionStorage.removeItem('vite-preload-reload-attempted'), 100
 // certaines navigations ; on force une vérification périodique et au retour
 // sur l'onglet pour que la mise à jour soit détectée rapidement après un
 // déploiement, même sur un onglet resté ouvert longtemps.
+// immediate: false -> l'enregistrement attend l'événement « load » : le
+// précache (tout le code de l'appli) ne concurrence pas le premier affichage
+// sur une connexion lente.
 if ('serviceWorker' in navigator) {
   registerSW({
-    immediate: true,
+    immediate: false,
     onRegisteredSW(_swUrl, registration) {
       if (!registration) return;
       setInterval(() => registration.update(), 60 * 60 * 1000);
@@ -50,8 +53,12 @@ if ('serviceWorker' in navigator) {
 
 // Rendu de l'application React dans l'élément root du DOM
 // React.StrictMode active des vérifications supplémentaires en développement
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// On attend que la langue initiale soit chargée (immédiat en français) ; en
+// cas d'échec, i18next retombe sur le français et le rendu a lieu quand même.
+const renderApp = () =>
+  createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+i18nReady.then(renderApp, renderApp);
