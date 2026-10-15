@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { PaidSubscriptionsTable } from "@/components/admin/PaidSubscriptionsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -80,6 +81,7 @@ export default function AdminSubscriptions() {
   const [selectedRequest, setSelectedRequest] = useState<SubscriptionRequest | null>(null);
   const [notes, setNotes] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchRequests = async () => {
     setIsLoading(true);
@@ -162,11 +164,20 @@ export default function AdminSubscriptions() {
             <h1 className="text-2xl font-bold text-foreground">{t("ux.bo.subscriptionRequests2")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.manageBossizConciergeSubscriptionRequests")}</p>
           </div>
-          <Button onClick={fetchRequests} variant="outline" className="gap-2">
+          <Button
+            onClick={() => {
+              fetchRequests();
+              setRefreshKey((key) => key + 1);
+            }}
+            variant="outline"
+            className="gap-2"
+          >
             <RefreshCw className="w-4 h-4" />
             {t("ux.bo.refresh")}
           </Button>
         </div>
+
+        <PaidSubscriptionsTable refreshKey={refreshKey} />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

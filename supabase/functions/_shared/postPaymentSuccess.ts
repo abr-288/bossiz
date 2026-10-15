@@ -157,11 +157,28 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     // Flux réel: activer l'abonnement créé par /subscription-payment
     console.log('   - Traitement abonnement (user_subscriptions)...');
 
-    const now = new Date().toISOString();
+    // La période payée démarre au paiement (pas à la création de la ligne,
+    // qui peut dater de plusieurs jours si le client a payé plus tard).
+    const { data: pending } = await supabase
+      .from('user_subscriptions')
+      .select('billing_cycle')
+      .eq('id', subscriptionId)
+      .single();
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    if (pending?.billing_cycle === 'yearly') {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    } else {
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
+
+    const now = startDate.toISOString();
     const { data: subscription, error: subscriptionUpdateError } = await supabase
       .from('user_subscriptions')
       .update({
         status: 'active',
+        start_date: now,
+        end_date: endDate.toISOString(),
         last_payment_date: now,
         updated_at: now,
       })

@@ -33,7 +33,9 @@ import {
   CreditCard,
   Database,
   Percent,
-  Lock
+  Lock,
+  Loader2,
+  ExternalLink
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { autoConvertAndFormat } from "@/utils/currencyConverter";
@@ -101,6 +103,33 @@ const ModernSubscriptionPayment = () => {
   const [processing, setProcessing] = useState(false);
   const [planData, setPlanData] = useState<PaymentData | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  // Tarifs mensuel et annuel de la formule (subscription_pricing)
+  const [pricingOptions, setPricingOptions] = useState<Partial<Record<'monthly' | 'yearly', PricingOption>>>({});
+  // Paiement Jèko en cours : Jèko ne renvoie pas le client sur le site après
+  // paiement, on l'ouvre donc dans un nouvel onglet et cette page attend
+  // l'activation de l'abonnement (faite par le webhook jeko-webhook).
+  const [checkout, setCheckout] = useState<{ subscriptionId: string; paymentUrl: string } | null>(null);
+  const [activated, setActivated] = useState(false);
+  const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
+
+  // Coordonnées réelles du client connecté pour la facture affichée
+  useEffect(() => {
+    const loadCustomer = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, phone')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      setCustomer({
+        name: profile?.full_name || session.user.email?.split('@')[0] || '',
+        email: session.user.email || '',
+        phone: profile?.phone || '',
+      });
+    };
+    void loadCustomer();
+  }, []);
 
   const planId = searchParams.get('planId');
 
@@ -197,6 +226,10 @@ const ModernSubscriptionPayment = () => {
 
         // Get default pricing (monthly)
         const defaultPricing = (pricing as any[]).find((p: any) => p.billing_cycle === 'monthly') || (pricing as any[])[0];
+        setPricingOptions({
+          monthly: (pricing as any[]).find((p: any) => p.billing_cycle === 'monthly'),
+          yearly: (pricing as any[]).find((p: any) => p.billing_cycle === 'yearly'),
+        });
 
         setPlanData({
           plan: plan as any,
@@ -219,6 +252,29 @@ const ModernSubscriptionPayment = () => {
 
     fetchPlanData();
   }, [planId, navigate, toast]);
+
+  useEffect(() => {
+    if (!checkout || activated) return;
+
+    const checkStatus = async () => {
+      const { data } = await supabase
+        .from('user_subscriptions' as any)
+        .select('status')
+        .eq('id', checkout.subscriptionId)
+        .maybeSingle();
+      if ((data as any)?.status === 'active') setActivated(true);
+    };
+
+    const interval = setInterval(checkStatus, 5000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') checkStatus();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [checkout, activated]);
 
   const handleBillingCycleChange = async (cycle: 'monthly' | 'yearly') => {
     if (!planData) return;
@@ -333,14 +389,10 @@ const ModernSubscriptionPayment = () => {
           : data?.error || 'Impossible d\'initier le paiement Jèko.');
       }
 
-      toast({
-        title: t("ux.subPayment.redirecting"),
-        description: t("ux.subPayment.redirectingDesc"),
-      });
-
-      setTimeout(() => {
-        window.location.href = data.payment_url;
-      }, 1000);
+      setCheckout({ subscriptionId: (subscription as any).id, paymentUrl: data.payment_url });
+      // Peut être bloqué par le navigateur (appel après une requête réseau) :
+      // l'écran d'attente propose aussi un bouton pour ouvrir le paiement.
+      window.open(data.payment_url, '_blank', 'noopener');
 
     } catch (error: any) {
       console.error('Payment error:', error);
@@ -381,14 +433,62 @@ const ModernSubscriptionPayment = () => {
     );
   }
 
-  const yearlyPricing = planData.pricing.billing_cycle === 'yearly';
-  const monthlyPrice = planData.pricing.price;
-  const yearlyPrice = planData.pricing.price;
-  const savings = yearlyPricing ? planData.pricing.discount_percentage || 0 : 0;
+  if (checkout) {
+    return (
+      <div className="min-h-screen bg-muted/40 flex items-center justify-center px-4">
+        <Card className="w-full max-w-md text-center">
+          <CardContent className="pt-8 pb-8 space-y-5">
+            {activated ? (
+              <>
+                <CheckCircle2 className="h-14 w-14 text-success mx-auto" />
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold">{t("ux.subPayment.successTitle")}</h2>
+                  <p className="text-muted-foreground">{t("ux.subPayment.successDesc")}</p>
+                </div>
+                <Button className="w-full" onClick={() => navigate('/account')}>
+                  {t("ux.subPayment.viewAccount")}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Wallet className="h-14 w-14 text-primary mx-auto" />
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold">{t("ux.subPayment.waitingTitle")}</h2>
+                  <p className="text-muted-foreground">{t("ux.subPayment.waitingDesc")}</p>
+                </div>
+                <Button asChild className="w-full">
+                  <a href={checkout.paymentUrl} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {t("ux.subPayment.openJeko")}
+                  </a>
+                </Button>
+                <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("ux.subPayment.checking")}
+                </p>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const monthlyOption = pricingOptions.monthly;
+  const yearlyOption = pricingOptions.yearly;
+  // L'option annuelle n'est proposée que si la formule a un tarif annuel
+  const yearlyPricing = !!yearlyOption;
+  const monthlyPrice = monthlyOption?.price ?? planData.pricing.price;
+  const yearlyPrice = yearlyOption?.price ?? planData.pricing.price;
+  const savings = yearlyOption?.discount_percentage || 0;
+  const currency = planData.pricing.currency;
+  // Sur l'annuel, la réduction est l'écart avec 12 mois au tarif mensuel
+  const fullYearPrice = monthlyPrice * 12;
+  const showYearlyDiscount = billingCycle === 'yearly' && fullYearPrice > yearlyPrice;
 
   // Convertir automatiquement les prix en XOF pour l'affichage
-  const displayMonthlyPrice = autoConvertAndFormat(monthlyPrice, planData.pricing.currency);
-  const displayYearlyPrice = autoConvertAndFormat(yearlyPrice, planData.pricing.currency);
+  const displayMonthlyPrice = autoConvertAndFormat(monthlyPrice, monthlyOption?.currency ?? currency);
+  const displayYearlyPrice = autoConvertAndFormat(yearlyPrice, yearlyOption?.currency ?? currency);
 
   return (
     <div className="min-h-screen bg-muted/40 overflow-hidden relative">
@@ -503,7 +603,12 @@ const ModernSubscriptionPayment = () => {
               <CardContent className="pt-0">
                 <RadioGroup 
                   value={billingCycle} 
-                  onValueChange={(value: 'monthly' | 'yearly') => setBillingCycle(value)}
+                  onValueChange={(value: 'monthly' | 'yearly') => {
+                    const option = pricingOptions[value];
+                    if (!option) return;
+                    setBillingCycle(value);
+                    setPlanData({ ...planData, pricing: option, billingCycle: value });
+                  }}
                   className="space-y-4"
                 >
                   <div className="flex items-center space-x-3 p-4 rounded-lg border border-border border-primary/20 transition-colors">
@@ -654,18 +759,15 @@ const ModernSubscriptionPayment = () => {
                             <div className="flex justify-between text-lg">
                               <span>Sous-total:</span>
                               <span className="font-medium">
-                                {autoConvertAndFormat(planData.pricing.price, planData.pricing.currency)}
+                                {autoConvertAndFormat(showYearlyDiscount ? fullYearPrice : planData.pricing.price, currency)}
                               </span>
                             </div>
                             
-                            {planData.pricing.discount_percentage > 0 && (
+                            {showYearlyDiscount && (
                               <div className="flex justify-between text-lg text-success">
                                 <span>{t("ux.subPayment.discount")}</span>
                                 <span className="font-medium">
-                                  -{autoConvertAndFormat(
-                                    (planData.pricing.price / (1 - planData.pricing.discount_percentage/100)) - planData.pricing.price, 
-                                    planData.pricing.currency
-                                  )}
+                                  -{autoConvertAndFormat(fullYearPrice - yearlyPrice, currency)}
                                 </span>
                               </div>
                             )}
@@ -688,15 +790,15 @@ const ModernSubscriptionPayment = () => {
                         <div className="grid md:grid-cols-3 gap-4 text-sm">
                           <div>
                             <label className="text-xs font-medium text-foreground">{t("ux.subPayment.fullName")}</label>
-                            <p className="mt-1 font-semibold">Client Bossiz</p>
+                            <p className="mt-1 font-semibold">{customer.name || '-'}</p>
                           </div>
                           <div>
                             <label className="text-xs font-medium text-foreground">Email</label>
-                            <p className="mt-1">client@bossiz.com</p>
+                            <p className="mt-1 break-all">{customer.email || '-'}</p>
                           </div>
                           <div>
                             <label className="text-xs font-medium text-foreground">{t("ux.subPayment.phone")}</label>
-                            <p className="mt-1">+225000000000</p>
+                            <p className="mt-1">{customer.phone || '-'}</p>
                           </div>
                         </div>
                       </div>
@@ -734,7 +836,7 @@ const ModernSubscriptionPayment = () => {
                     <div className="flex justify-between text-foreground">
                       <span>{planData.plan.name} - {billingCycle === 'monthly' ? 'Mensuel' : 'Annuel'}</span>
                       <span className="font-semibold text-foreground">
-                        {billingCycle === 'monthly' ? monthlyPrice : yearlyPrice} EUR
+                        {autoConvertAndFormat(planData.pricing.price, currency)}
                       </span>
                     </div>
                     
@@ -742,16 +844,16 @@ const ModernSubscriptionPayment = () => {
                       <div className="flex justify-between text-foreground">
                         <span>{t("ux.subPayment.setupFee")}</span>
                         <span className="font-semibold text-foreground">
-                          {planData.pricing.setup_fee} EUR
+                          {autoConvertAndFormat(planData.pricing.setup_fee, currency)}
                         </span>
                       </div>
                     )}
                     
-                    {yearlyPricing && savings > 0 && (
+                    {showYearlyDiscount && (
                       <div className="flex justify-between text-success">
                         <span>{t("ux.subPayment.yearlySavings")}</span>
                         <span className="font-medium">
-                          -{Math.round(monthlyPrice * 12 * savings / 100)} EUR
+                          -{autoConvertAndFormat(fullYearPrice - yearlyPrice, currency)}
                         </span>
                       </div>
                     )}
@@ -762,7 +864,7 @@ const ModernSubscriptionPayment = () => {
                   <div className="flex justify-between text-xl font-bold text-foreground">
                     <span>Total</span>
                     <span className="text-primary">
-                      {(billingCycle === 'monthly' ? monthlyPrice : yearlyPrice) + planData.pricing.setup_fee} EUR
+                      {autoConvertAndFormat(planData.pricing.price + planData.pricing.setup_fee, currency)}
                     </span>
                   </div>
                 </div>

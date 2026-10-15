@@ -35,6 +35,7 @@ import { MOTION } from "@/lib/motion";
 import { passwordErrorMessage } from "@/lib/passwordErrors";
 import { withTimeout } from "@/lib/withTimeout";
 import { LoadErrorRetry } from "@/components/LoadErrorRetry";
+import { MySubscriptionCard } from "@/components/MySubscriptionCard";
 
 // Validation schemas (messages traduits : construits avec la fonction t courante)
 const createProfileSchema = (t: TFunction) => z.object({
@@ -342,6 +343,7 @@ const Account = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
+              {user && <MySubscriptionCard userId={user.id} />}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-background/50 backdrop-blur-sm p-1">
                   {[
