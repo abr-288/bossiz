@@ -236,9 +236,8 @@ const Footer = () => {
             >
               📱 {t("common.install")}
             </button>
-            <Link to="/bossiz-portal" className="text-white/80 hover:text-secondary transition-smooth">
-              {t("footer.bossizGroup")}
-            </Link>
+            {/* Lien « Bossiz Groupe » (/bossiz-portal) masqué pour l'instant :
+                la page reste accessible par son URL. */}
           </div>
         </div>
       </div>
