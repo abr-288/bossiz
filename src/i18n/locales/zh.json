@@ -2178,6 +2178,23 @@
     }
   },
   "ux": {
+    "memberCard": {
+      "title": "会员卡",
+      "holder": "持卡人",
+      "plan": "方案",
+      "validUntil": "有效期至",
+      "endedOn": "到期日",
+      "expired": "已过期",
+      "showFullscreen": "显示我的会员卡",
+      "fullscreenHint": "请向工作人员或合作伙伴出示此卡，扫描二维码即可验证您的订阅。",
+      "noActive": "您没有有效订阅，因此没有会员卡。",
+      "back": "返回我的账户",
+      "verifyTitle": "会员卡验证",
+      "valid": "会员有效",
+      "invalid": "订阅无效",
+      "unknown": "未知卡片",
+      "unknownDesc": "此二维码与任何 Bossiz+ 会员都不匹配。"
+    },
     "chat": {
       "welcome": "您好，我是 Bozi，Bossiz+ 智能助手 👋 有什么可以帮您？",
       "noAnswer": "抱歉，我无法生成回答。您能换个说法吗？",

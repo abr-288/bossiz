@@ -22,6 +22,9 @@ const HIDDEN_PREFIXES = [
   "/auth",
   "/forgot-password",
   "/reset-password",
+  // Cartes de membre : affichage plein écran à présenter / à contrôler
+  "/ma-carte",
+  "/verifier-membre",
 ];
 
 const BOTTOM_NAV_HEIGHT = "4rem";

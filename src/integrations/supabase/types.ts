@@ -2481,6 +2481,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          member_code: string
           phone: string | null
           updated_at: string
         }
@@ -2489,6 +2490,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          member_code?: string
           phone?: string | null
           updated_at?: string
         }
@@ -2497,6 +2499,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          member_code?: string
           phone?: string | null
           updated_at?: string
         }
@@ -3378,6 +3381,16 @@ export type Database = {
       }
     }
     Functions: {
+      verify_member_card: {
+        Args: { p_code: string }
+        Returns: {
+          holder_name: string
+          is_valid: boolean
+          plan_id: string | null
+          plan_name: string | null
+          valid_until: string | null
+        }[]
+      }
       calculate_next_billing_date: {
         Args: { billing_cycle: string; p_current_date: string }
         Returns: string

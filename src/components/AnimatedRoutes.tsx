@@ -36,6 +36,8 @@ const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const Dashboard = lazy(() => import("@/pages/UserDashboard"));
 const BookingHistory = lazy(() => import("@/pages/BookingHistory"));
 const Account = lazy(() => import("@/pages/Account"));
+const MyMemberCard = lazy(() => import("@/pages/MyMemberCard"));
+const VerifyMember = lazy(() => import("@/pages/VerifyMember"));
 const Payment = lazy(() => import("@/pages/Payment"));
 const Confirmation = lazy(() => import("@/pages/Confirmation"));
 const FlightComparison = lazy(() => import("@/pages/FlightComparison"));
@@ -165,6 +167,8 @@ const AnimatedRoutes = () => {
           <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
           <Route path="/booking-history" element={<PageTransition><BookingHistory /></PageTransition>} />
           <Route path="/account" element={<PageTransition><Account /></PageTransition>} />
+          <Route path="/ma-carte" element={<PageTransition><MyMemberCard /></PageTransition>} />
+          <Route path="/verifier-membre/:code" element={<PageTransition><VerifyMember /></PageTransition>} />
           <Route path="/price-alerts" element={<PageTransition><PriceAlerts /></PageTransition>} />
           <Route path="/payment" element={<PageTransition><Payment /></PageTransition>} />
           <Route path="/confirmation" element={<PageTransition><Confirmation /></PageTransition>} />

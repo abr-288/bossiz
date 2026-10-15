@@ -2179,6 +2179,23 @@
     }
   },
   "ux": {
+    "memberCard": {
+      "title": "Carte membre",
+      "holder": "Titulaire",
+      "plan": "Formule",
+      "validUntil": "Valable jusqu'au",
+      "endedOn": "Expiré le",
+      "expired": "EXPIRÉE",
+      "showFullscreen": "Afficher ma carte",
+      "fullscreenHint": "Présentez cette carte au personnel ou au partenaire. Le QR code permet de vérifier votre abonnement.",
+      "noActive": "Vous n'avez pas d'abonnement actif, donc pas de carte membre.",
+      "back": "Retour à mon compte",
+      "verifyTitle": "Vérification de carte membre",
+      "valid": "Membre valide",
+      "invalid": "Abonnement non valide",
+      "unknown": "Carte inconnue",
+      "unknownDesc": "Ce QR code ne correspond à aucun membre Bossiz+."
+    },
     "chat": {
       "welcome": "Bonjour, je suis Bozi, l'assistante Bossiz+ 👋 Comment puis-je vous aider ?",
       "noAnswer": "Je suis désolé, je n'ai pas pu générer de réponse. Pouvez-vous reformuler ?",

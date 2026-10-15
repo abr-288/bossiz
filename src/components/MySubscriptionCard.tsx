@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Crown, FileText, Loader2 } from "lucide-react";
+import { Check, Crown, FileText, Loader2, Maximize2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { autoConvertAndFormat } from "@/utils/currencyConverter";
 import { useSubscriptionReceipt } from "@/hooks/useSubscriptionReceipt";
+import { MemberCard } from "@/components/MemberCard";
 
 interface UserSubscription {
   id: string;
@@ -44,6 +45,7 @@ export function MySubscriptionCard({ userId }: { userId: string }) {
   const { generateReceipt, isGenerating } = useSubscriptionReceipt();
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [features, setFeatures] = useState<string[]>([]);
+  const [holder, setHolder] = useState<{ name: string; memberCode: string } | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -60,6 +62,17 @@ export function MySubscriptionCard({ userId }: { userId: string }) {
         .sort((a, b) => (b.end_date ?? "").localeCompare(a.end_date ?? ""))[0];
       const shown = active || rows[0] || null;
       setSubscription(shown);
+
+      if (shown && shown.status !== "pending") {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, member_code")
+          .eq("id", userId)
+          .maybeSingle();
+        if (profile?.member_code) {
+          setHolder({ name: profile.full_name || "", memberCode: profile.member_code });
+        }
+      }
 
       if (shown?.status === "active") {
         const { data: plan } = await supabase
@@ -112,6 +125,24 @@ export function MySubscriptionCard({ userId }: { userId: string }) {
           </div>
         ) : (
           <div className="space-y-4">
+            {holder && subscription.status !== "pending" && (
+              <div className="flex flex-col items-center gap-3 sm:items-start">
+                <MemberCard
+                  planId={subscription.plan_id}
+                  planName={subscription.plan_name || subscription.plan_id}
+                  holderName={holder.name}
+                  memberCode={holder.memberCode}
+                  validUntil={subscription.end_date}
+                  expired={subscription.status !== "active"}
+                />
+                {subscription.status === "active" && (
+                  <Button variant="outline" size="sm" onClick={() => navigate("/ma-carte")}>
+                    <Maximize2 className="mr-2 h-4 w-4" />
+                    {t("ux.memberCard.showFullscreen")}
+                  </Button>
+                )}
+              </div>
+            )}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
