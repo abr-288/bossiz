@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
+import { maskCardNumbers } from "../_shared/sensitive.ts";
+import { buildContext } from "./context.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,37 +10,23 @@ const corsHeaders = {
 };
 
 const ANTHROPIC_MODEL = 'claude-sonnet-5';
+const API_TIMEOUT_MS = 25_000;
+const HANDOFF_MARKER = /\s*\[\[CONSEILLER\]\]\s*/g;
+const LOCALES = ['fr', 'en', 'zh'];
 
-// Le widget n'interprète pas le Markdown et s'affiche dans une petite bulle :
-// l'assistant doit converser comme un conseiller en agence, pas remplir la
-// bulle d'un questionnaire dès le premier message.
-const SYSTEM_PROMPT = `Tu t'appelles Bozi, l'assistant en ligne de Bossiz+, une plateforme de réservation de voyages et de services basée en Côte d'Ivoire et au Sénégal. Tu discutes avec le client comme le ferait un conseiller chaleureux en agence.
+// Le comportement et la connaissance stable de l'assistante sont dans
+// prompt-systeme.md, modifiable sans toucher au code (redéployer la
+// fonction ensuite). Le contexte vivant est ajouté par context.ts.
+let basePrompt: string | null = null;
+async function loadBasePrompt(): Promise<string> {
+  if (basePrompt === null) {
+    basePrompt = await Deno.readTextFile(new URL('./prompt-systeme.md', import.meta.url));
+  }
+  return basePrompt;
+}
 
-Façon de converser :
-- Messages courts : une à trois phrases en général.
-- Une seule question à la fois. Tu découvres le besoin au fil de l'échange, jamais sous forme de questionnaire ou de liste de questions.
-- Si une information utile manque (ville de départ, dates, budget…), demande-la simplement au lieu de la supposer.
-- À une simple salutation, présente-toi en une phrase (Bozi, l'assistant Bossiz+) et demande ce qui amène le client. Rien de plus. Tu es un assistant, ne te fais jamais passer pour un humain.
-- Quand tu as assez d'informations, donne un conseil concret. Une courte liste à tirets est permise seulement à ce moment-là, en 6 lignes au plus.
-- Vouvoie toujours le client. Réponds en français, sauf s'il t'écrit dans une autre langue.
-- Texte simple : ni #, ni **, ni tableaux. Un emoji de temps en temps au plus.
-
-Tu es affiché sur le site Bossiz+ lui-même. Pour orienter le client vers une page, écris son chemin exact une seule fois (par exemple /devenir-partenaire) : la discussion l'affiche sous le nom de la page, avec un bouton qui y mène directement. Formule-le de façon professionnelle, comme une proposition, par exemple « Vous pouvez inscrire votre établissement depuis la page /devenir-partenaire, je vous y redirige d'un clic. » N'écris jamais d'adresse complète (https://…) et n'utilise que les pages ci-dessous, sans jamais en inventer :
-- /flights : vols ; /hotels : hôtels ; /flight-hotel : vol + hôtel ; /cars : location de voitures ; /trains : trains
-- /activities : activités ; /tours : circuits avec guides locaux ; /stays : séjours ; /events : événements ; /destinations : idées de destinations
-- /restaurants : restaurants ; /artisans : artisans ; /bien-etre-beaute : bien-être et beauté
-- /entreprises : Espace Entreprises, voyages d'affaires d'une équipe
-- /bossiz-conciergerie-ci et /bossiz-conciergerie-sn : conciergerie Bossiz en Côte d'Ivoire et au Sénégal
-- /devenir-partenaire : inscrire son activité sur Bossiz+ (hôtel, restaurant, activité, artisan, location de voitures…)
-- /partenaires/voitures : formules pour les loueurs de voitures ; /partenariat : tous nos partenariats
-- /auth : se connecter ou créer un compte ; /account : mon compte ; /booking-history : mes réservations ; /price-alerts : alertes de prix
-- /help : centre d'aide et questions fréquentes ; /support : support ; /contact : nous contacter
-- /install : installer l'application Bossiz+
-
-Limites :
-- Tu n'as accès ni au catalogue, ni aux prix, ni aux disponibilités de Bossiz+. Ne présente aucun établissement comme proposé ou disponible sur Bossiz+, ne promets jamais de disponibilité, de réservation ou de prix précis, et ne propose pas de faire une recherche toi-même.
-- Les prix que tu donnes sont des ordres de grandeur en FCFA, présentés comme tels.
-- Quand le client est prêt à réserver ou demande une offre réelle, donne-lui la page de recherche qui correspond (par exemple /hotels) ou /support. Ne le répète pas à chaque message.`;
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -53,101 +42,100 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, locale } = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'messages requis' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ success: false, error: 'messages requis' }, 400);
     }
 
     const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
-
     if (!anthropicApiKey) {
-      // No fictitious fallback: without a real API key there is no real
-      // assistant to answer, so this returns an honest error instead of a
-      // hardcoded keyword-matched reply pretending to be AI.
-      console.log('ANTHROPIC_API_KEY not configured, returning error (no fictitious fallback)');
-      return new Response(
-        JSON.stringify({ success: false, error: "L'assistant IA n'est pas configuré pour le moment." }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      // Pas de réponse inventée : sans clé, il n'y a pas d'assistante.
+      console.log('ANTHROPIC_API_KEY not configured');
+      return json({ success: false, error: "L'assistante n'est pas disponible pour le moment." }, 503);
     }
 
-    // Anthropic requires the conversation to start with a 'user' message -
-    // the widget's stored greeting is an 'assistant' message, so drop any
-    // leading assistant turn(s) before sending the history along.
-    // Historique borné : seuls les derniers échanges, chacun tronqué.
+    // Historique borné : seuls les derniers échanges, chacun tronqué, et les
+    // numéros de carte masqués avant de quitter nos serveurs. Anthropic exige
+    // que la conversation commence par un message du client : le message
+    // d'accueil du widget (assistant) est retiré.
     let history = (messages as Array<{ role: string; content: string }>)
       .slice(-20)
-      .map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content ?? '').slice(0, 2000) }));
+      .map((m) => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: maskCardNumbers(String(m.content ?? '').slice(0, 2000)),
+      }));
     while (history.length > 0 && history[0].role !== 'user') {
       history = history.slice(1);
     }
-
     if (history.length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Aucun message utilisateur à traiter' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ success: false, error: 'Aucun message utilisateur à traiter' }, 400);
     }
 
-    console.log('Processing travel chatbot request with', history.length, 'messages');
+    const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
+    const [prompt, context] = await Promise.all([
+      loadBasePrompt(),
+      buildContext(admin, token, LOCALES.includes(locale) ? locale : 'fr'),
+    ]);
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': anthropicApiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
-        max_tokens: 800,
-        // Pas de réflexion préalable : elle pouvait consommer tout max_tokens
-        // avant le premier mot, et la réponse arrivait vide.
-        thinking: { type: 'disabled' },
-        system: SYSTEM_PROMPT,
-        messages: history.map((m) => ({ role: m.role, content: m.content })),
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+    let response: Response;
+    try {
+      response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': anthropicApiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: ANTHROPIC_MODEL,
+          max_tokens: 800,
+          // Pas de réflexion préalable : elle pouvait consommer tout max_tokens
+          // avant le premier mot, et la réponse arrivait vide.
+          thinking: { type: 'disabled' },
+          system: `${prompt}\n\n${context.text}`,
+          messages: history,
+        }),
+      });
+    } catch (error) {
+      const timedOut = error instanceof DOMException && error.name === 'AbortError';
+      console.error(timedOut ? 'Anthropic API timeout' : 'Anthropic API unreachable:', error);
+      return json({ success: false, error: "L'assistante met trop de temps à répondre." }, 504);
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Anthropic API error:', response.status, errorText);
-      return new Response(
-        JSON.stringify({ success: false, error: "L'assistant IA est temporairement indisponible." }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.error('Anthropic API error:', response.status, await response.text());
+      return json({ success: false, error: "L'assistante est temporairement indisponible." }, 502);
     }
 
     const data = await response.json();
-    // La réponse peut contenir plusieurs blocs (réflexion, texte…) : on
-    // assemble tous les blocs de texte au lieu de ne lire que le premier.
-    const reply = (data.content ?? [])
+    // La réponse peut contenir plusieurs blocs : on assemble tous les blocs
+    // de texte au lieu de ne lire que le premier.
+    const raw = (data.content ?? [])
       .filter((b: { type: string }) => b.type === 'text')
       .map((b: { text: string }) => b.text)
       .join('')
       .trim();
 
+    // Le marqueur [[CONSEILLER]] signale que l'assistante propose de passer
+    // la main : le widget affiche alors le bouton de transmission.
+    const handoff = raw.includes('[[CONSEILLER]]');
+    const reply = raw.replace(HANDOFF_MARKER, ' ').trim();
+
     if (!reply) {
       console.error('Anthropic API returned no text content:', JSON.stringify(data).substring(0, 500));
-      return new Response(
-        JSON.stringify({ success: false, error: "L'assistant IA n'a pas pu générer de réponse." }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ success: false, error: "L'assistante n'a pas pu générer de réponse." }, 502);
     }
 
-    return new Response(
-      JSON.stringify({ success: true, reply }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return json({ success: true, reply, handoff });
   } catch (error) {
     console.error('Error in travel-chatbot:', error);
-    return new Response(
-      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return json({ success: false, error: 'Erreur interne' }, 500);
   }
 });

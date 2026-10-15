@@ -12,6 +12,11 @@ verify_jwt = false
 [functions.send-password-reset]
 verify_jwt = false
 
+# Le prompt système de l'assistante est un fichier Markdown à part, déployé
+# avec la fonction et modifiable sans toucher au code.
+[functions.travel-chatbot]
+static_files = ["./functions/travel-chatbot/prompt-systeme.md"]
+
 [api]
 enabled = true
 # Port to use for the API URL.

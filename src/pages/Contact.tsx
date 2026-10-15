@@ -12,6 +12,7 @@ import {
 import { useSupportMessage } from "@/hooks/useSupportMessage";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
+import { realPhoneNumber, whatsAppLink } from "@/lib/contactNumbers";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerContact from "@/assets/destination-city.jpg";
 
@@ -39,21 +40,26 @@ const Contact = () => {
     window.dispatchEvent(new CustomEvent("open-live-chat"));
   };
 
+  // Téléphone et WhatsApp viennent de Admin > Configuration > Contact ; tant
+  // que ce sont des numéros de démonstration, le canal n'est pas affiché.
+  const supportPhone = realPhoneNumber(config.contact.phone);
+  const supportWhatsApp = whatsAppLink(config.contact.whatsapp);
+
   const directChannels = [
-    {
+    ...(supportPhone ? [{
       icon: Phone,
       title: t("pages.contact.channels.phone.title", "Téléphone"),
       description: t("pages.contact.channels.phone.description", "Support disponible 24h/24 et 7j/7"),
-      value: "+225 27 20 00 00 00",
-      href: "tel:+22527200000000",
-    },
-    {
+      value: supportPhone,
+      href: `tel:${supportPhone.replace(/[^\d+]/g, "")}`,
+    }] : []),
+    ...(supportWhatsApp ? [{
       icon: MessageCircle,
       title: t("pages.contact.channels.whatsapp.title", "WhatsApp"),
       description: t("pages.contact.channels.whatsapp.description", "Réponse rapide, du lundi au dimanche"),
-      value: "+225 07 00 00 00 00",
-      href: "https://wa.me/2250700000000",
-    },
+      value: config.contact.whatsapp,
+      href: supportWhatsApp,
+    }] : []),
     {
       icon: Mail,
       title: t("pages.contact.channels.email.title", "Email"),

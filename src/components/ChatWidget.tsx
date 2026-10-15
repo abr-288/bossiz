@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, X, Send, Paperclip, Smile,
   MoreHorizontal, User, ShieldCheck, CheckCheck,
-  Headphones, Info, Settings, ArrowRight
+  Headphones, ArrowRight, RotateCcw, CalendarCheck, CreditCard, ConciergeBell, UserRound
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { maskCardNumbers } from "@/lib/sensitiveText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
@@ -19,7 +21,20 @@ interface Message {
   text: string;
   sender: 'user' | 'agent';
   timestamp: Date;
+  /** L'assistante propose de transmettre la demande à un conseiller. */
+  handoff?: boolean;
 }
+
+const CHAT_STORAGE_KEY = "b_reserve_chat_messages";
+
+interface HandoffForm {
+  name: string;
+  email: string;
+  phone: string;
+  note: string;
+}
+
+const EMPTY_HANDOFF: HandoffForm = { name: "", email: "", phone: "", note: "" };
 
 // L'assistant cite les pages du site par leur chemin (/devenir-partenaire…).
 // Dans la bulle, le chemin est remplacé par le nom de la page et un bouton
@@ -75,22 +90,24 @@ function splitPageLinks(text: string, pageLabel: (path: string) => string) {
 }
 
 const ChatWidget = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   // Le chat n'apparaît qu'une fois le bandeau cookies traité : sur mobile, son
   // bouton flottant recouvrait sinon les boutons du bandeau.
   const { hasResponded: cookieChoiceMade } = useCookieConsent();
+  // Masqué pendant un paiement ou une saisie de réservation (le bouton
+  // recouvrirait l'action principale sur mobile), mais pas sur « Mes
+  // réservations », où le client a souvent besoin d'aide.
   const isTransactionalPage = [
     "/payment",
-    "/booking-history",
     "/booking-process",
     "/flight-hotel/booking",
   ].includes(pathname) || pathname.startsWith("/booking/") || pathname.startsWith("/admin");
   const { sendMessage, loading: aiLoading } = useTravelChatbot();
   
   const [messages, setMessages] = useState<Message[]>(() => {
-    const saved = localStorage.getItem("b_reserve_chat_messages");
+    const saved = localStorage.getItem(CHAT_STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -105,15 +122,37 @@ const ChatWidget = () => {
     return [];
   });
   
+  const welcomeMessage = (): Message => ({
+    id: '1',
+    text: t("ux.chat.welcome"),
+    sender: 'agent',
+    timestamp: new Date(),
+  });
+
   useEffect(() => {
     if (messages.length === 0) {
-      setMessages([{
-        id: '1',
-        text: t("ux.chat.welcome"),
-        sender: 'agent',
-        timestamp: new Date(),
-      }]);
+      setMessages([welcomeMessage()]);
     }
+  }, []);
+
+  const [handoffOpen, setHandoffOpen] = useState(false);
+  const [handoffSending, setHandoffSending] = useState(false);
+  const [handoffForm, setHandoffForm] = useState<HandoffForm>(EMPTY_HANDOFF);
+
+  const resetConversation = () => {
+    localStorage.removeItem(CHAT_STORAGE_KEY);
+    setMessages([welcomeMessage()]);
+    setHandoffOpen(false);
+    setHandoffForm(EMPTY_HANDOFF);
+  };
+
+  // La conversation reste dans le navigateur : on l'efface à la déconnexion
+  // pour qu'une autre personne sur le même appareil ne la retrouve pas.
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") resetConversation();
+    });
+    return () => data.subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -132,7 +171,7 @@ const ChatWidget = () => {
   }, [isOpen]);
 
   const [unreadCount, setUnreadCount] = useState(() => {
-    const saved = localStorage.getItem("b_reserve_chat_messages");
+    const saved = localStorage.getItem(CHAT_STORAGE_KEY);
     return (!isOpen && !saved) ? 1 : 0;
   });
 
@@ -153,7 +192,7 @@ const ChatWidget = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem("b_reserve_chat_messages", JSON.stringify(messages));
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
     }
   }, [messages]);
 
@@ -173,11 +212,20 @@ const ChatWidget = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSendMessage = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputValue.trim() || aiLoading) return;
+  const toHistory = (list: Message[]) => list.map(m => ({
+    role: m.sender === 'user' ? 'user' : 'assistant' as "user" | "assistant",
+    content: m.text
+  }));
 
-    const userText = inputValue.trim();
+  const addAgentMessage = (text: string) => {
+    setMessages(prev => [...prev, { id: `${Date.now()}-agent`, text, sender: 'agent', timestamp: new Date() }]);
+  };
+
+  const sendText = async (rawText: string) => {
+    if (!rawText.trim() || aiLoading) return;
+
+    // Un numéro de carte n'est ni gardé dans le navigateur ni envoyé.
+    const userText = maskCardNumbers(rawText.trim(), t("ux.chat.cardMasked"));
     const newUserMessage: Message = {
       id: Date.now().toString(),
       text: userText,
@@ -187,21 +235,17 @@ const ChatWidget = () => {
 
     setMessages(prev => [...prev, newUserMessage]);
     setInputValue("");
-    
-    // Convert history for AI API
-    const history = messages.concat(newUserMessage).map(m => ({
-      role: m.sender === 'user' ? 'user' : 'assistant' as "user" | "assistant",
-      content: m.text
-    }));
+    setHandoffOpen(false);
 
     try {
-      const reply = await sendMessage(history);
-      
+      const { reply, handoff } = await sendMessage(toHistory(messages.concat(newUserMessage)), i18n.language?.slice(0, 2));
+
       const agentResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: reply || t("ux.chat.noAnswer"),
+        text: reply,
         sender: 'agent',
         timestamp: new Date(),
+        handoff,
       };
       setMessages(prev => [...prev, agentResponse]);
     } catch (err) {
@@ -218,12 +262,71 @@ const ChatWidget = () => {
     }
   };
 
+  const handleSendMessage = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    void sendText(inputValue);
+  };
+
+  // Formulaire « Transmettre à un conseiller », pré-rempli si le client est
+  // connecté. Le support reçoit ses coordonnées et un résumé de la conversation.
+  const openHandoff = async () => {
+    setHandoffOpen(true);
+    if (handoffForm.email) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, phone")
+      .eq("id", user.id)
+      .maybeSingle();
+    setHandoffForm((form) => ({
+      ...form,
+      name: form.name || profile?.full_name || "",
+      email: form.email || user.email || "",
+      phone: form.phone || profile?.phone || "",
+    }));
+  };
+
+  const submitHandoff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = handoffForm.name.trim();
+    const email = handoffForm.email.trim();
+    if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      toast.error(t("ux.chat.handoff.invalid"));
+      return;
+    }
+    setHandoffSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("chat-handoff", {
+        body: {
+          name,
+          email,
+          phone: handoffForm.phone.trim(),
+          note: maskCardNumbers(handoffForm.note.trim(), t("ux.chat.cardMasked")),
+          messages: toHistory(messages),
+          locale: i18n.language?.slice(0, 2),
+        },
+      });
+      if (error || !data?.success) throw error || new Error(data?.error);
+      setHandoffOpen(false);
+      setHandoffForm((form) => ({ ...form, note: "" }));
+      addAgentMessage(t("ux.chat.handoff.sent", { email }));
+    } catch (err) {
+      console.error("Chat handoff error:", err);
+      setHandoffOpen(false);
+      addAgentMessage(t("ux.chat.handoff.failed"));
+    } finally {
+      setHandoffSending(false);
+    }
+  };
+
   if (isTransactionalPage || !cookieChoiceMade) return null;
 
   const quickActions = [
-    { label: t("ux.chat.quickHelp"), prompt: t("ux.chat.quickHelpPrompt"), icon: null },
-    { label: t("ux.chat.quickDestinations"), prompt: t("ux.chat.quickDestinationsPrompt"), icon: Info },
-    { label: t("ux.chat.quickAccount"), prompt: t("ux.chat.quickAccountPrompt"), icon: Settings },
+    { label: t("ux.chat.quickBooking"), prompt: t("ux.chat.quickBookingPrompt"), icon: CalendarCheck },
+    { label: t("ux.chat.quickPayment"), prompt: t("ux.chat.quickPaymentPrompt"), icon: CreditCard },
+    { label: t("ux.chat.quickConcierge"), prompt: t("ux.chat.quickConciergePrompt"), icon: ConciergeBell },
+    { label: t("ux.chat.quickAdvisor"), prompt: null, icon: UserRound },
   ];
 
   return (
@@ -269,25 +372,38 @@ const ChatWidget = () => {
                     </div>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  aria-label={t("ux.chat.close")}
-                  className="h-11 w-11 shrink-0 rounded-2xl border border-primary-foreground/15 text-primary-foreground transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={resetConversation}
+                    aria-label={t("ux.chat.newConversation")}
+                    title={t("ux.chat.newConversation")}
+                    className="h-11 w-11 rounded-2xl border border-primary-foreground/15 text-primary-foreground transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                  >
+                    <RotateCcw className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                    aria-label={t("ux.chat.close")}
+                    className="h-11 w-11 rounded-2xl border border-primary-foreground/15 text-primary-foreground transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* Actions rapides : pré-remplissent la question (avant : puces sans action) */}
+            {/* Actions rapides : envoient la question, ou ouvrent la transmission à un conseiller */}
             <div className="relative z-20 -mt-3 flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mt-4 sm:px-6">
               {quickActions.map(({ label, prompt, icon: Icon }) => (
                 <button
                   key={label}
                   type="button"
-                  onClick={() => setInputValue(prompt)}
+                  disabled={aiLoading}
+                  onClick={() => (prompt ? void sendText(prompt) : void openHandoff())}
                   className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {Icon && <Icon className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -339,6 +455,16 @@ const ChatWidget = () => {
                       })}
                     </div>
                   )}
+                  {m.handoff && (
+                    <button
+                      type="button"
+                      onClick={() => void openHandoff()}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t("ux.chat.handoff.button")}
+                    </button>
+                  )}
                   <div className="flex items-center gap-1.5 mt-1.5 px-1 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
                     <span className="text-xs text-muted-foreground tabular-nums">
                       {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -365,6 +491,60 @@ const ChatWidget = () => {
 
             {/* Input Area */}
             <div className="border-t border-border bg-card p-4 sm:p-6">
+              {handoffOpen ? (
+                <form onSubmit={submitHandoff} className="space-y-2.5" aria-label={t("ux.chat.handoff.title")}>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{t("ux.chat.handoff.title")}</p>
+                    <p className="text-xs text-muted-foreground">{t("ux.chat.handoff.intro")}</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Input
+                      value={handoffForm.name}
+                      onChange={(e) => setHandoffForm({ ...handoffForm, name: e.target.value })}
+                      placeholder={t("ux.chat.handoff.name")}
+                      aria-label={t("ux.chat.handoff.name")}
+                      autoComplete="name"
+                      required
+                      className="h-11 rounded-xl text-base sm:text-sm"
+                    />
+                    <Input
+                      type="email"
+                      value={handoffForm.email}
+                      onChange={(e) => setHandoffForm({ ...handoffForm, email: e.target.value })}
+                      placeholder={t("ux.chat.handoff.email")}
+                      aria-label={t("ux.chat.handoff.email")}
+                      autoComplete="email"
+                      required
+                      className="h-11 rounded-xl text-base sm:text-sm"
+                    />
+                  </div>
+                  <Input
+                    type="tel"
+                    value={handoffForm.phone}
+                    onChange={(e) => setHandoffForm({ ...handoffForm, phone: e.target.value })}
+                    placeholder={t("ux.chat.handoff.phone")}
+                    aria-label={t("ux.chat.handoff.phone")}
+                    autoComplete="tel"
+                    className="h-11 rounded-xl text-base sm:text-sm"
+                  />
+                  <Input
+                    value={handoffForm.note}
+                    onChange={(e) => setHandoffForm({ ...handoffForm, note: e.target.value })}
+                    placeholder={t("ux.chat.handoff.note")}
+                    aria-label={t("ux.chat.handoff.note")}
+                    maxLength={1000}
+                    className="h-11 rounded-xl text-base sm:text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={() => setHandoffOpen(false)} disabled={handoffSending}>
+                      {t("ux.chat.handoff.cancel")}
+                    </Button>
+                    <Button type="submit" className="flex-1 rounded-xl" disabled={handoffSending}>
+                      {handoffSending ? t("ux.chat.handoff.sending") : t("ux.chat.handoff.submit")}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
               <form onSubmit={handleSendMessage} className="flex items-center gap-2 sm:gap-3">
                 <div className="flex-1 relative group">
                   <Input 
@@ -400,6 +580,7 @@ const ChatWidget = () => {
                   )}
                 </Button>
               </form>
+              )}
               <div className="mt-2 text-center sm:mt-3">
                 <p className="text-xs text-muted-foreground">{t("ux.chat.footer")}</p>
               </div>

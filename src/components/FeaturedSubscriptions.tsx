@@ -30,6 +30,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { localizeRow } from "@/lib/translatableContent";
+import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
+import { whatsAppLink } from "@/lib/contactNumbers";
 
 // Plans qui nécessitent une demande de contact au lieu d'un paiement direct
 const REQUEST_ONLY_PLANS = ["visa", "billets", "events"];
@@ -86,6 +88,7 @@ const isRequestOnlyPlan = (planId: string): boolean => {
 
 const FeaturedSubscriptions = () => {
   const { t, i18n } = useTranslation();
+  const { config: siteConfig } = useSiteConfigContext();
   const { toast } = useToast();
   const navigate = useNavigate();
   const trackRef = useRef<HTMLUListElement>(null);
@@ -190,10 +193,12 @@ const FeaturedSubscriptions = () => {
     }
   };
 
-  const openWhatsApp = (planName: string) => {
-    const message = encodeURIComponent(`Bonjour, je suis intéressé(e) par l'offre "${planName}" de Bossiz Conciergerie. Pouvez-vous me donner plus d'informations ?`);
-    window.open(`https://wa.me/2250700000000?text=${message}`, "_blank");
-  };
+  // Numéro WhatsApp de Admin > Configuration > Contact ; le bouton n'apparaît
+  // qu'avec un vrai numéro (pas de numéro de démonstration).
+  const whatsAppFor = (planName: string) => whatsAppLink(
+    siteConfig.contact.whatsapp,
+    `Bonjour, je suis intéressé(e) par l'offre "${planName}" de Bossiz Conciergerie. Pouvez-vous me donner plus d'informations ?`
+  );
 
   const scrollBy = (direction: 1 | -1) => {
     const track = trackRef.current;
@@ -274,10 +279,12 @@ const FeaturedSubscriptions = () => {
                     {isRequestOnlyPlan(plan.plan_id) ? t("subscriptions.requestInfo") : t("subscriptions.subscribeDirect")}
                     <ArrowRight />
                   </Button>
-                  <Button variant="outline" className="w-full" onClick={() => openWhatsApp(plan.name)}>
-                    <MessageCircle />
-                    WhatsApp
-                  </Button>
+                  {whatsAppFor(plan.name) && (
+                    <Button variant="outline" className="w-full" onClick={() => window.open(whatsAppFor(plan.name)!, "_blank")}>
+                      <MessageCircle />
+                      WhatsApp
+                    </Button>
+                  )}
                 </div>
               </div>
             </li>
