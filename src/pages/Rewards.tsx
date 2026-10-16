@@ -9,6 +9,7 @@ import {
   Flame,
   Gift,
   History,
+  Hourglass,
   Loader2,
   Send,
   Settings2,
@@ -44,6 +45,7 @@ const KIND_ICONS: Record<string, ComponentType<{ className?: string }>> = {
   streak: Flame,
   redeem: Ticket,
   adjustment: Settings2,
+  expiry: Hourglass,
 };
 
 // Portail du programme de fidélité « Smiles Bossiz+ »
@@ -120,7 +122,11 @@ const Rewards = () => {
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString(currentLocaleTag(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
-  const kindLabel = (row: LoyaltyTransaction) => t(`ux.smiles.kind_${row.kind}`, row.description ?? row.kind);
+  // Ajustement manuel : le motif saisi par l'équipe est montré au client
+  const kindLabel = (row: LoyaltyTransaction) =>
+    row.kind === "adjustment" && row.description
+      ? row.description
+      : t(`ux.smiles.kind_${row.kind}`, row.description ?? row.kind);
 
   // Carte de parrainage : rendue dans la colonne principale sur mobile
   // (juste après la série), dans la colonne latérale sur ordinateur.
@@ -218,6 +224,15 @@ const Rewards = () => {
                   {t("ux.smiles.worth", { amount: fmt(summary.balance * s.point_value_xof) })}
                   {summary.pending > 0 && ` · ${t("ux.smiles.pendingNote", { points: fmt(summary.pending) })}`}
                 </p>
+                {summary.expiring_soon > 0 && (
+                  <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium">
+                    <Hourglass className="h-3.5 w-3.5" />
+                    {t("ux.smiles.expiringSoon", {
+                      points: fmt(summary.expiring_soon),
+                      date: new Date(summary.expiring_by).toLocaleDateString(currentLocaleTag(), { day: "numeric", month: "long" }),
+                    })}
+                  </p>
+                )}
               </div>
 
               <div className="relative mt-6">
@@ -392,6 +407,12 @@ const Rewards = () => {
                   <Users className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                   <span>{t("ux.smiles.earnReferral", { points: fmt(s.referral_referrer_points) })}</span>
                 </li>
+                {s.points_validity_months > 0 && (
+                  <li className="flex gap-3 border-t border-border pt-3">
+                    <Hourglass className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>{t("ux.smiles.validityRule", { months: s.points_validity_months })}</span>
+                  </li>
+                )}
                 <li className="flex gap-3 border-t border-border pt-3">
                   <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <span>

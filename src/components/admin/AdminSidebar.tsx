@@ -1,4 +1,29 @@
-import { LayoutDashboard, Package, Activity, Home, Calendar, Users, Crown, Mail, Cog, Percent, Tags, Building2, DollarSign, Megaphone, CreditCard, Star, MapPin, Newspaper, Globe, KeyRound, FileText, Car, Languages } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  Activity,
+  Home,
+  Calendar,
+  Users,
+  Crown,
+  Mail,
+  Cog,
+  Percent,
+  Tags,
+  Building2,
+  DollarSign,
+  Megaphone,
+  CreditCard,
+  Star,
+  MapPin,
+  Newspaper,
+  Globe,
+  KeyRound,
+  FileText,
+  Car,
+  Languages,
+  Smile
+} from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { SidebarBrandHeader, sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 import {
@@ -27,6 +52,7 @@ const menuItems = [
   { get title() { return i18n.t("ux.bo.carPlans"); }, url: "/admin/car-partner-plans", icon: Car },
   { get title() { return i18n.t("ux.bo.subscriptionRequests"); }, url: "/admin/subscriptions", icon: Crown },
   { get title() { return i18n.t("ux.bo.subscriptionPlans"); }, url: "/admin/subscription-plans", icon: Tags },
+  { get title() { return i18n.t("ux.smilesAdmin.menu"); }, url: "/admin/smiles", icon: Smile },
   { title: "Promotions", url: "/admin/promotions", icon: Percent },
   { get title() { return i18n.t("ux.bo.advertisements"); }, url: "/admin/advertisements", icon: Megaphone },
   { get title() { return i18n.t("ux.bo.payments"); }, url: "/admin/payments", icon: CreditCard },

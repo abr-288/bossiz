@@ -21,6 +21,8 @@ export interface LoyaltySettings {
   referral_referee_points: number;
   min_redeem_points: number;
   max_redeem_ratio: number;
+  // Durée de validité d'un Smile après son gain (0 = sans expiration)
+  points_validity_months: number;
 }
 
 export interface LoyaltySummary {
@@ -34,6 +36,9 @@ export interface LoyaltySummary {
   referrals: number;
   streak: number;
   checked_in_today: boolean;
+  // Smiles qui expireront d'ici expiring_by (30 jours)
+  expiring_soon: number;
+  expiring_by: string;
   settings: LoyaltySettings;
 }
 

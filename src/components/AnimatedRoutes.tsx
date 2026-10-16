@@ -54,6 +54,7 @@ const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
 const AdminUsersList = lazy(() => import("@/pages/AdminUsers"));
 const AdminSubscriptions = lazy(() => import("@/pages/admin/AdminSubscriptions"));
 const AdminSubscriptionPlans = lazy(() => import("@/pages/admin/AdminSubscriptionPlans"));
+const AdminSmiles = lazy(() => import("@/pages/admin/AdminSmiles"));
 const AdminPromotions = lazy(() => import("@/pages/admin/AdminPromotions"));
 const AdminEmailTemplates = lazy(() => import("@/pages/AdminEmailTemplates"));
 const AdminConfiguration = lazy(() => import("@/pages/admin/AdminConfiguration"));
@@ -186,6 +187,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/users-list" element={<PageTransition><AdminUsersList /></PageTransition>} />
           <Route path="/admin/subscriptions" element={<PageTransition><AdminSubscriptions /></PageTransition>} />
           <Route path="/admin/subscription-plans" element={<PageTransition><AdminSubscriptionPlans /></PageTransition>} />
+          <Route path="/admin/smiles" element={<PageTransition><AdminSmiles /></PageTransition>} />
           <Route path="/admin/promotions" element={<PageTransition><AdminPromotions /></PageTransition>} />
           <Route path="/admin/email-templates" element={<PageTransition><AdminEmailTemplates /></PageTransition>} />
           <Route path="/admin/configuration" element={<PageTransition><AdminConfiguration /></PageTransition>} />

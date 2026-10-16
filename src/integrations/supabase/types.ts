@@ -2475,6 +2475,72 @@ export type Database = {
         }
         Relationships: []
       }
+      loyalty_settings: {
+        Row: {
+          daily_checkin_points: number
+          id: boolean
+          max_redeem_ratio: number
+          min_redeem_points: number
+          point_value_xof: number
+          points_per_100_xof: number
+          points_validity_months: number
+          referral_referee_points: number
+          referral_referrer_points: number
+          streak_bonus_points: number
+          streak_days: number
+          updated_at: string
+        }
+        Insert: {
+          daily_checkin_points?: number
+          id?: boolean
+          max_redeem_ratio?: number
+          min_redeem_points?: number
+          point_value_xof?: number
+          points_per_100_xof?: number
+          points_validity_months?: number
+          referral_referee_points?: number
+          referral_referrer_points?: number
+          streak_bonus_points?: number
+          streak_days?: number
+          updated_at?: string
+        }
+        Update: {
+          daily_checkin_points?: number
+          id?: boolean
+          max_redeem_ratio?: number
+          min_redeem_points?: number
+          point_value_xof?: number
+          points_per_100_xof?: number
+          points_validity_months?: number
+          referral_referee_points?: number
+          referral_referrer_points?: number
+          streak_bonus_points?: number
+          streak_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      loyalty_tiers: {
+        Row: {
+          code: string
+          min_points: number
+          multiplier: number
+          name: string
+        }
+        Insert: {
+          code?: string
+          min_points?: number
+          multiplier?: number
+          name?: string
+        }
+        Update: {
+          code?: string
+          min_points?: number
+          multiplier?: number
+          name?: string
+        }
+        Relationships: []
+      }
       loyalty_transactions: {
         Row: {
           created_at: string
@@ -3414,6 +3480,23 @@ export type Database = {
       }
     }
     Functions: {
+      loyalty_admin_adjust: {
+        Args: { p_points: number; p_reason: string; p_user: string }
+        Returns: Json
+      }
+      loyalty_admin_members: {
+        Args: { p_limit?: number; p_search?: string }
+        Returns: {
+          balance: number
+          email: string
+          full_name: string | null
+          last_activity: string | null
+          lifetime: number
+          referral_code: string | null
+          user_id: string
+        }[]
+      }
+      loyalty_admin_stats: { Args: never; Returns: Json }
       loyalty_apply_referral: {
         Args: { p_code: string }
         Returns: Json
