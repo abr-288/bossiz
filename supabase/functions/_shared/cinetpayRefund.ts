@@ -1,5 +1,6 @@
 // ============================================================
-// Shared helper: refund a booking's completed CinetPay payment.
+// Shared helper: refund a booking's completed payment - via Jèko (current
+// gateway, see jekoRefund.ts) or CinetPay (older payments).
 // Used both by the user-triggered `refund-payment` function (cancellation)
 // and by `create-pnr` (automatic refund when a flight can't actually be
 // ticketed with the supplier after the customer has already been charged).
@@ -9,6 +10,8 @@
 // against CinetPay's current refund API docs in a sandbox before relying on
 // this in production.
 // ============================================================
+
+import { sendJekoRefund } from "./jekoRefund.ts";
 
 // deno-lint-ignore no-explicit-any
 type SupabaseClient = any;
@@ -40,8 +43,9 @@ export async function refundBookingPayment(
     return { success: true, refunded: false, error: 'Déjà annulée/remboursée' };
   }
 
-  if (booking.payment_status !== 'paid') {
-    // Nothing was actually charged - just cancel.
+  if (booking.payment_status !== 'paid' && booking.payment_status !== 'partially_paid') {
+    // Nothing was actually charged - just cancel. (A deposit - partially_paid -
+    // was charged and goes through the refund below.)
     await supabase
       .from('bookings')
       .update({ status: 'cancelled', updated_at: new Date().toISOString() })
@@ -51,7 +55,7 @@ export async function refundBookingPayment(
 
   const { data: payment, error: paymentError } = await supabase
     .from('payments')
-    .select('id, transaction_id, amount, currency, payment_data')
+    .select('id, transaction_id, amount, currency, payment_data, payment_provider')
     .eq('booking_id', bookingId)
     .eq('status', 'completed')
     .order('created_at', { ascending: false })
@@ -61,6 +65,18 @@ export async function refundBookingPayment(
   if (paymentError || !payment) {
     console.error('❌ refundBookingPayment: aucun paiement complété trouvé pour', bookingId);
     return { success: false, refunded: false, error: 'Paiement introuvable' };
+  }
+
+  if (payment.payment_provider === 'jeko') {
+    const outcome = await sendJekoRefund(supabase, payment, reason);
+    if (!outcome.ok) {
+      return { success: false, refunded: false, error: outcome.error };
+    }
+    // payment_data.refund (virement, statut) a déjà été enregistré par
+    // sendJekoRefund : on ne change que le statut du paiement.
+    const nowIso = new Date().toISOString();
+    await supabase.from('payments').update({ status: 'refunded', updated_at: nowIso }).eq('id', payment.id);
+    return await finalizeRefund(supabase, bookingId, payment, nowIso);
   }
 
   const cinetpayApiKey = Deno.env.get('CINETPAY_API_KEY');
@@ -112,13 +128,23 @@ export async function refundBookingPayment(
     })
     .eq('id', payment.id);
 
+  return await finalizeRefund(supabase, bookingId, payment, nowIso);
+}
+
+// Réservation annulée et remboursée, part partenaire non versée
+async function finalizeRefund(
+  supabase: SupabaseClient,
+  bookingId: string,
+  payment: { amount: number; currency?: string },
+  nowIso: string,
+): Promise<RefundResult> {
   const { error: bookingUpdateError } = await supabase
     .from('bookings')
     .update({ status: 'cancelled', payment_status: 'refunded', updated_at: nowIso })
     .eq('id', bookingId);
 
   if (bookingUpdateError) {
-    console.error('❌ refundBookingPayment: remboursement CinetPay confirmé mais échec MAJ bookings:', bookingUpdateError.message);
+    console.error('❌ refundBookingPayment: remboursement confirmé mais échec MAJ bookings:', bookingUpdateError.message);
     return { success: false, refunded: true, amount: payment.amount, currency: payment.currency, error: 'Remboursé mais mise à jour de la réservation échouée' };
   }
 

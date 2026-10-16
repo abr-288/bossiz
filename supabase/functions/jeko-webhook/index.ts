@@ -172,7 +172,7 @@ serve(async (req) => {
 
     const { data: existingPayment, error: fetchError } = await supabase
       .from('payments')
-      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method')
+      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method, payment_data')
       .eq('transaction_id', paymentLinkId)
       .eq('payment_provider', 'jeko')
       .maybeSingle();
@@ -220,11 +220,18 @@ serve(async (req) => {
       .from('payments')
       .update({
         status: newStatus,
+        // Fusion : on garde ce que process-payment a enregistré (lien, montant
+        // avant Smiles…) et on ajoute le résultat de Jèko.
         payment_data: {
+          ...((existingPayment.payment_data as Record<string, unknown> | null) ?? {}),
           jeko_payment_link_id: paymentLinkId,
           jeko_transaction_id: jekoTransaction.id,
           jeko_status: jekoTransaction.status,
           payment_method: jekoTransaction.paymentMethod,
+          // Compte qui a payé : sert à rembourser par virement Jèko vers le
+          // même numéro Mobile Money (voir _shared/jekoRefund.ts).
+          counterpart_label: jekoTransaction.counterpartLabel ?? null,
+          counterpart_identifier: jekoTransaction.counterpartIdentifier ?? null,
           verified_at: new Date().toISOString(),
         },
         updated_at: new Date().toISOString(),
