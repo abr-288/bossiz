@@ -51,7 +51,7 @@ function describeMicrosite(label: string, content: MicrositeContent | undefined)
 // Formules d'abonnement actives avec leur prix réellement facturé
 async function plansContext(admin: SupabaseClient): Promise<string> {
   const [{ data: plans, error }, { data: pricing }] = await Promise.all([
-    admin.from("subscription_plans").select("plan_id, name, subtitle, features").eq("is_active", true).order("sort_order"),
+    admin.from("subscription_plans").select("plan_id, name, subtitle, features").eq("is_active", true).eq("is_public", true).order("sort_order"),
     admin.from("subscription_pricing").select("plan_id, billing_cycle, price, currency"),
   ]);
   if (error) {

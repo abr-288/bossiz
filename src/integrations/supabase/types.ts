@@ -3017,6 +3017,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_public: boolean
           name: string
           plan_id: string
           popular: boolean | null
@@ -3043,6 +3044,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_public?: boolean
           name: string
           plan_id: string
           popular?: boolean | null
@@ -3069,6 +3071,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_public?: boolean
           name?: string
           plan_id?: string
           popular?: boolean | null

@@ -116,6 +116,7 @@ const FeaturedSubscriptions = () => {
           .from("subscription_plans")
           .select("*")
           .eq("is_active", true)
+          .eq("is_public", true)
           .order("sort_order", { ascending: true });
 
         if (error) throw error;

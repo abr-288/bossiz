@@ -325,9 +325,18 @@ serve(async (req) => {
       const billingCycle = subscription.billing_cycle === 'yearly' ? 'yearly' : 'monthly';
       const { data: plan } = await adminSupabase
         .from('subscription_plans')
-        .select('is_active')
+        .select('is_active, is_public')
         .eq('plan_id', subscription.plan_id)
         .maybeSingle();
+
+      // Formule non publique (ex. formule de test à 100 FCFA) : accessible par
+      // lien direct, mais seul un administrateur peut la payer.
+      if (plan && plan.is_public === false) {
+        const { data: isAdmin } = await adminSupabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
+        if (!isAdmin) {
+          return errorResponse('Cette formule n’est pas disponible à la souscription pour le moment.', 409);
+        }
+      }
       const { data: pricing } = await adminSupabase
         .from('subscription_pricing')
         .select('price, currency, is_active')
