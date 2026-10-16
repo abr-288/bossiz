@@ -2475,6 +2475,39 @@ export type Database = {
         }
         Relationships: []
       }
+      loyalty_transactions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          points: number
+          reference_id: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          points: number
+          reference_id?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          points?: number
+          reference_id?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -3381,6 +3414,12 @@ export type Database = {
       }
     }
     Functions: {
+      loyalty_apply_referral: {
+        Args: { p_code: string }
+        Returns: Json
+      }
+      loyalty_daily_checkin: { Args: never; Returns: Json }
+      loyalty_get_summary: { Args: never; Returns: Json }
       verify_member_card: {
         Args: { p_code: string }
         Returns: {

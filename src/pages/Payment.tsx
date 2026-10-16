@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import ErrorBoundary, { ErrorFallback } from "@/components/ErrorBoundary";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
+import { RedeemSmiles } from "@/components/RedeemSmiles";
 
 interface PaymentBooking {
   id: string;
@@ -44,6 +45,12 @@ export default function Payment() {
   const [processing, setProcessing] = useState(false);
   const [booking, setBooking] = useState<PaymentBooking | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  // Smiles (fidélité) utilisés sur ce paiement
+  const [smiles, setSmiles] = useState({ points: 0, discountXof: 0 });
+  const handleSmilesChange = useCallback(
+    (points: number, discountXof: number) => setSmiles({ points, discountXof }),
+    [],
+  );
   const amountToPay = booking?.payment_plan === "deposit" && Number(booking.balance_due) > 0
     ? Number(booking.amount_due_now)
     : Number(booking?.total_price || 0);
@@ -197,6 +204,7 @@ export default function Payment() {
           amount: amountToPay,
           currency: "XOF",
           paymentMethod: "jeko",
+          redeemPoints: smiles.points,
           customerInfo: {
             name: booking.customer_name,
             email: booking.customer_email,
@@ -405,6 +413,18 @@ export default function Payment() {
                     </div>
                     <CreditCard className="h-8 w-8 text-primary/70" />
                   </div>
+                  {smiles.points > 0 && (
+                    <div className="mt-4 space-y-1 border-t pt-3 text-sm">
+                      <div className="flex justify-between text-success">
+                        <span>{t("ux.smiles.discountLine", { points: smiles.points })}</span>
+                        <span className="font-medium">−<Price amount={smiles.discountXof} fromCurrency="XOF" /></span>
+                      </div>
+                      <div className="flex justify-between text-base font-semibold">
+                        <span>{t("ux.smiles.toPay")}</span>
+                        <span><Price amount={amountToPay - smiles.discountXof} fromCurrency="XOF" /></span>
+                      </div>
+                    </div>
+                  )}
                   {booking.payment_plan === "deposit" && Number(booking.balance_due) > 0 && (
                     <div className="mt-4 flex justify-between border-t pt-3 text-sm">
                       <span className="text-muted-foreground">{t("ux.payment.balanceDue")}</span>
@@ -414,6 +434,10 @@ export default function Payment() {
                     </div>
                   )}
                 </div>
+
+                {(booking.currency || "XOF") === "XOF" && (
+                  <RedeemSmiles amountXof={amountToPay} onChange={handleSmilesChange} />
+                )}
 
                 {booking.notes && (
                   <div className="rounded-xl border p-4">

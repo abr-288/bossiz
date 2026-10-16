@@ -21,6 +21,8 @@ import BottomNav from "@/components/BottomNav";
 // Le chat n'apparaît qu'après la réponse au bandeau cookies : son code est
 // chargé à part pour alléger le bundle du premier affichage.
 const ChatWidget = lazy(() => import("@/components/ChatWidget"));
+// Visite du jour et parrainage (programme Smiles) : sans interface
+const LoyaltyAutoCheckin = lazy(() => import("@/components/LoyaltyAutoCheckin"));
 
 // Client React Query pour la gestion des requêtes API et du cache
 const queryClient = new QueryClient();
@@ -46,6 +48,7 @@ const App = () => (
                       <CookieConsentBanner />
                       <Suspense fallback={null}>
                         <ChatWidget />
+                        <LoyaltyAutoCheckin />
                       </Suspense>
                       <NotificationPrompt />
                     </BrowserRouter>

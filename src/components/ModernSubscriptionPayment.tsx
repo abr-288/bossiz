@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
@@ -42,6 +42,7 @@ import { autoConvertAndFormat } from "@/utils/currencyConverter";
 import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { MOTION } from "@/lib/motion";
+import { RedeemSmiles } from "@/components/RedeemSmiles";
 
 // Fonctions utilitaires pour les prix par défaut (en XOF/FCFA pour le marché africain)
 const getDefaultPrice = (planId: string): number => {
@@ -111,6 +112,12 @@ const ModernSubscriptionPayment = () => {
   const [checkout, setCheckout] = useState<{ subscriptionId: string; paymentUrl: string } | null>(null);
   const [activated, setActivated] = useState(false);
   const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
+  // Smiles (fidélité) utilisés sur ce paiement
+  const [smiles, setSmiles] = useState({ points: 0, discountXof: 0 });
+  const handleSmilesChange = useCallback(
+    (points: number, discountXof: number) => setSmiles({ points, discountXof }),
+    [],
+  );
 
   // Coordonnées réelles du client connecté pour la facture affichée
   useEffect(() => {
@@ -375,6 +382,7 @@ const ModernSubscriptionPayment = () => {
         body: {
           subscriptionId: (subscription as any).id,
           paymentMethod: 'jeko',
+          redeemPoints: smiles.points,
           customerInfo: {
             name: (profile as any)?.full_name || user.email?.split('@')[0] || 'Client',
             email: user.email || '',
@@ -867,7 +875,25 @@ const ModernSubscriptionPayment = () => {
                       {autoConvertAndFormat(planData.pricing.price + planData.pricing.setup_fee, currency)}
                     </span>
                   </div>
+                  {smiles.points > 0 && (
+                    <div className="mt-3 space-y-1 text-sm">
+                      <div className="flex justify-between text-success">
+                        <span>{t("ux.smiles.discountLine", { points: smiles.points })}</span>
+                        <span className="font-medium">-{autoConvertAndFormat(smiles.discountXof, "XOF")}</span>
+                      </div>
+                      <div className="flex justify-between text-base font-semibold text-foreground">
+                        <span>{t("ux.smiles.toPay")}</span>
+                        <span>{autoConvertAndFormat(planData.pricing.price - smiles.discountXof, "XOF")}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
+                {currency === 'XOF' && (
+                  <div className="mt-6">
+                    <RedeemSmiles amountXof={planData.pricing.price} onChange={handleSmilesChange} />
+                  </div>
+                )}
 
                 {/* Payment Button */}
                 <div className="mt-8">

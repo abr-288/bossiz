@@ -10,7 +10,8 @@ import {
   Plane,
   HelpCircle,
   LogOut,
-  Building2
+  Building2,
+  Smile
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -76,6 +77,11 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       title: t('dashboardPage.sidebar.bookings', 'Mes réservations'),
       url: "/booking-history", 
       icon: Calendar 
+    },
+    {
+      title: t('ux.smiles.navLabel', 'Mes Smiles'),
+      url: "/smiles",
+      icon: Smile
     },
     { 
       title: t('dashboardPage.sidebar.priceAlerts', 'Alertes prix'), 

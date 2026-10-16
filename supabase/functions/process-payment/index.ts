@@ -21,6 +21,9 @@ interface PaymentRequestBody {
   carPartnerSubscriptionId?: string;
   agencyBrandingSubscriptionId?: string;
   paymentMethod?: string;
+  // Smiles (fidélité) que le client souhaite utiliser sur ce paiement.
+  // Seule une demande : le serveur plafonne et vérifie le solde.
+  redeemPoints?: number;
   customerInfo?: {
     email?: string;
     name?: string;
@@ -575,16 +578,71 @@ serve(async (req) => {
     // ÉTAPE 4: Création du lien de paiement Jèko
     // ================================================================
     {
+      // Smiles (programme de fidélité) : réservés sur le compte du client
+      // avant de créer le lien, confirmés par le trigger
+      // loyalty_payment_status quand le paiement aboutit, rendus s'il échoue
+      // (ou au bout de 24 h s'il est abandonné).
+      const paymentId = crypto.randomUUID();
+      const loyaltyRef = `payment:${paymentId}`;
+      let chargeXof = amountValidation.value;
+      let loyaltyPoints = 0;
+      let loyaltyDiscountXof = 0;
+      const requestedPoints = Math.floor(Number(body.redeemPoints) || 0);
+
+      if (requestedPoints > 0 && (targetType === 'booking' || targetType === 'subscription')) {
+        const { data: settings } = await adminSupabase!
+          .from('loyalty_settings')
+          .select('point_value_xof, min_redeem_points, max_redeem_ratio')
+          .maybeSingle();
+        const pointValue = Number(settings?.point_value_xof) || 0;
+        const minPoints = Number(settings?.min_redeem_points ?? 0);
+        const maxRatio = Number(settings?.max_redeem_ratio ?? 0);
+        // Plafond : une part du montant, et au moins 100 XOF restant à payer (minimum Jèko)
+        const maxByRatio = pointValue > 0 ? Math.floor((chargeXof * maxRatio) / pointValue) : 0;
+        const maxByMinimum = pointValue > 0 ? Math.floor((chargeXof - 100) / pointValue) : 0;
+        const points = Math.min(requestedPoints, maxByRatio, maxByMinimum);
+
+        if (points <= 0 || points < minPoints) {
+          await revertClaim();
+          return errorResponse(
+            `Smiles non utilisables sur ce paiement : minimum ${minPoints} Smiles, dans la limite de ${Math.round(maxRatio * 100)} % du montant.`,
+            400,
+          );
+        }
+
+        const { data: reserved, error: reserveError } = await adminSupabase!.rpc('loyalty_reserve_redemption', {
+          p_user: user.id,
+          p_points: points,
+          p_reference: loyaltyRef,
+        });
+        if (reserveError || reserved !== true) {
+          await revertClaim();
+          return errorResponse('Solde de Smiles insuffisant', 409);
+        }
+
+        loyaltyPoints = points;
+        loyaltyDiscountXof = Math.round(points * pointValue);
+        chargeXof -= loyaltyDiscountXof;
+        console.log('   - Smiles utilisés:', loyaltyPoints, '→ réduction', loyaltyDiscountXof, 'XOF');
+      }
+
+      const releaseLoyalty = async () => {
+        if (loyaltyPoints > 0) {
+          await adminSupabase!.rpc('loyalty_release_redemption', { p_user: user.id, p_reference: loyaltyRef });
+        }
+      };
+
       console.log('\n📋 Étape 4 (Jèko): Création du lien de paiement...');
 
       const result = await createJekoPaymentLink(jekoCredentials, {
         title: paymentDescription,
-        amountXof: amountValidation.value,
+        amountXof: chargeXof,
       });
 
       if (!result.ok) {
         console.error('❌ Erreur Jèko:', result.error);
         await revertClaim();
+        await releaseLoyalty();
         return errorResponse(result.error || 'La création du paiement a échoué', 502);
       }
 
@@ -595,14 +653,17 @@ serve(async (req) => {
       const { data: jekoPayment, error: jekoPaymentError } = await adminSupabase!
         .from('payments')
         .insert({
+          id: paymentId,
           booking_id: targetType === 'booking' ? targetId : null,
           subscription_id: targetType === 'subscription' ? targetId : null,
           car_partner_subscription_id: targetType === 'car_partner_subscription' ? targetId : null,
           agency_branding_subscription_id: targetType === 'agency_branding_subscription' ? targetId : null,
           user_id: user.id,
           ip_address: clientIP,
-          amount: amountValidation.value,
+          amount: chargeXof,
           currency: 'XOF',
+          loyalty_points_used: loyaltyPoints,
+          loyalty_discount_xof: loyaltyDiscountXof,
           payment_method: 'jeko',
           payment_provider: 'jeko',
           // Le transaction_id est l'ID du payment_link Jèko lui-même : c'est
@@ -613,6 +674,7 @@ serve(async (req) => {
           payment_data: {
             jeko_payment_link_id: result.id,
             payment_url: result.link,
+            gross_amount_xof: amountValidation.value,
             created_at: new Date().toISOString(),
           },
         })
@@ -622,6 +684,7 @@ serve(async (req) => {
       if (jekoPaymentError) {
         console.error('❌ Erreur d\'enregistrement:', jekoPaymentError.message);
         await revertClaim();
+        await releaseLoyalty();
         return errorResponse("Impossible d'enregistrer le paiement. Aucun lien n'a été communiqué; réessayez.", 500);
       } else {
         console.log('✅ Paiement enregistré avec succès');
@@ -637,6 +700,9 @@ serve(async (req) => {
         payment_url: result.link,
         transaction_id: result.id,
         payment_id: jekoPayment?.id || null,
+        amount_xof: chargeXof,
+        loyalty_points_used: loyaltyPoints,
+        loyalty_discount_xof: loyaltyDiscountXof,
       }, 200);
     }
 

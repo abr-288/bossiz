@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bell, Compass, Home, Luggage, UserCircle2 } from "lucide-react";
+import { Compass, Home, Luggage, Smile, UserCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -60,7 +60,7 @@ const BottomNav = () => {
     { to: "/", label: t("bottomNav.home", "Accueil"), icon: Home, end: true },
     { to: "/destinations", label: t("bottomNav.explore", "Explorer"), icon: Compass },
     { to: isLoggedIn ? "/booking-history" : "/auth", label: t("bottomNav.trips", "Voyages"), icon: Luggage },
-    { to: isLoggedIn ? "/price-alerts" : "/auth", label: t("bottomNav.alerts", "Alertes"), icon: Bell },
+    { to: isLoggedIn ? "/smiles" : "/auth", label: t("ux.smiles.navShort", "Smiles"), icon: Smile },
     { to: isLoggedIn ? "/account" : "/auth", label: t("bottomNav.account", "Compte"), icon: UserCircle2 },
   ];
 
