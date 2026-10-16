@@ -1,43 +1,19 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard, Package, TrendingUp, Plane, Hotel } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { NotificationCenter, Notification } from "@/components/dashboard/NotificationCenter";
 import { BookingCard } from "@/components/dashboard/BookingCard";
-import { UpcomingReminders } from "@/components/dashboard/UpcomingReminders";
+import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { BookingCalendar } from "@/components/dashboard/BookingCalendar";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { useOfflineBookings } from "@/hooks/useOfflineBookings";
-import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { UserDashboardLayout } from "@/components/dashboard/UserDashboardLayout";
-import { currentLocaleTag } from "@/lib/dateLocale";
-
-interface Booking {
-  id: string;
-  service_id: string;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
-  start_date: string;
-  end_date: string | null;
-  guests: number;
-  total_price: number;
-  currency: string;
-  status: string;
-  payment_status: string;
-  external_ref: string | null;
-  created_at: string;
-  services: {
-    name: string;
-    type: string;
-    location: string;
-  };
-}
 
 const UserDashboard = () => {
   const { t } = useTranslation();
@@ -248,16 +224,6 @@ const UserDashboard = () => {
     }
   };
 
-  const handleViewDetails = (id: string) => {
-    const booking = bookings.find((b) => b.id === id);
-    if (booking?.services) {
-      toast({
-        title: booking.services.name,
-        description: `Départ le ${new Date(booking.start_date).toLocaleDateString(currentLocaleTag())}`,
-      });
-    }
-  };
-
   if (bookingsLoading) {
     return (
       <UserDashboardLayout>
@@ -274,18 +240,22 @@ const UserDashboard = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">{t('dashboardPage.title')}</h1>
-            {userProfile && (
-              <p className="text-muted-foreground">
-                {t('dashboardPage.welcome')}, <span className="text-primary font-medium">{userProfile.full_name}</span> 👋
-              </p>
-            )}
+            <h1 className="text-2xl md:text-3xl font-bold">
+              {t("ux.dash.hello", { name: (userProfile?.full_name || "").split(" ")[0] || t("ux.dash.traveller") })} 👋
+            </h1>
+            <p className="text-muted-foreground">{t("ux.dash.subtitle")}</p>
           </div>
-          <NotificationCenter
-            notifications={notifications}
-            onMarkAsRead={markNotificationAsRead}
-            onClearAll={clearAllNotifications}
-          />
+          <div className="flex items-center gap-2">
+            <NotificationCenter
+              notifications={notifications}
+              onMarkAsRead={markNotificationAsRead}
+              onClearAll={clearAllNotifications}
+            />
+            <Button onClick={() => navigate("/")} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t("ux.dash.bookTrip")}
+            </Button>
+          </div>
         </div>
 
         <OfflineIndicator 
@@ -295,88 +265,12 @@ const UserDashboard = () => {
           onSync={syncPendingChanges}
         />
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 px-4 pt-4">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                {t('dashboardPage.totalBookings')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold">{stats.total}</div>
-            </CardContent>
-          </Card>
+        {userProfile && <DashboardOverview userId={userProfile.id} bookings={bookings} />}
 
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 px-4 pt-4">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {t('dashboardPage.pending')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-warning-foreground">{stats.pending}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 px-4 pt-4">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                {t('dashboardPage.confirmed')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-success">{stats.confirmed}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 px-4 pt-4">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                {t('dashboardPage.totalSpent')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-xl font-bold"><Price amount={stats.totalSpent} showLoader /></div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 px-4 pt-4">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <Plane className="w-4 h-4" />
-                Vols
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-info">{stats.flightCount}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 px-4 pt-4">
-              <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                <Hotel className="w-4 h-4" />
-                Hôtels
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-bold text-primary">{stats.hotelCount}</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Upcoming Reminders */}
-        <UpcomingReminders
-          bookings={bookings.filter((b) => b.status === "confirmed")}
-          onViewDetails={handleViewDetails}
-        />
-
-        {/* Bookings Tabs */}
+        {/* Gestion des réservations (annulation, paiement, calendrier) :
+            masquée tant qu'il n'y en a aucune (la vue d'ensemble invite déjà à réserver) */}
+        {bookings.length > 0 && (<>
+        <h2 className="pt-2 text-lg font-semibold">{t("ux.dash.manageBookings")}</h2>
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="mb-4 flex-wrap h-auto gap-1">
             <TabsTrigger value="all" className="text-xs md:text-sm">
@@ -477,6 +371,7 @@ const UserDashboard = () => {
             <BookingCalendar bookings={bookings} />
           </TabsContent>
         </Tabs>
+        </>)}
       </div>
     </UserDashboardLayout>
   );
