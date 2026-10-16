@@ -3880,6 +3880,7 @@
       "planFleet": "Flotte — 60 000 XOF/mois, véhicules illimités",
       "common1": "Chaque candidature est étudiée manuellement par notre équipe avant toute activation.",
       "common2": "Bossiz+ peut refuser ou suspendre un partenariat en cas de non-respect de ces conditions.",
+      "common3": "Une fois votre candidature acceptée, Bossiz+ peut afficher votre nom et votre logo comme partenaire sur son site, ses réseaux sociaux et ses supports de communication. Vous pouvez retirer cette autorisation à tout moment.",
       "signup": "Inscription gratuite, sans engagement.",
       "hotel2": "Vos tarifs restent les vôtres : aucune commission n'est ajoutée à l'affichage pour le client.",
       "share24": "Bossiz conserve 10% et vous reverse 90% des réservations réglées en ligne via Jèko sous 24 heures.",
@@ -3908,7 +3909,9 @@
       "fullDetails": "Détails complets sur la",
       "carPlansPage": "page des forfaits voiture",
       "conditionsFor": "Conditions — {{type}}",
-      "accept": "J'ai lu et j'accepte les conditions de ce partenariat."
+      "accept": "J'ai lu et j'accepte les conditions de ce partenariat ainsi que les",
+      "termsLink": "Conditions Générales d'Utilisation",
+      "acceptEnd": "."
     },
     "companiesData": {
       "b1": "Paiement centralisé",

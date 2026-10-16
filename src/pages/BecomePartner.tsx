@@ -65,6 +65,7 @@ const carPlanLabels: Record<string, string> = {
 const commonConditions = [
   "ux.partnerForm.common1",
   "ux.partnerForm.common2",
+  "ux.partnerForm.common3",
 ];
 
 const conditionsByType: Record<PartnerTypeValue, string[]> = {
@@ -591,6 +592,16 @@ const BecomePartner = () => {
                                 />
                                 <label htmlFor="accept-conditions" className="text-sm cursor-pointer">
                                   {t("ux.partnerForm.accept")}
+                                  {i18n.language.startsWith("zh") ? "" : " "}
+                                  <Link
+                                    to="/terms"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary underline underline-offset-2 hover:no-underline"
+                                  >
+                                    {t("ux.partnerForm.termsLink")}
+                                  </Link>
+                                  {t("ux.partnerForm.acceptEnd")}
                                 </label>
                               </div>
                             </motion.div>
