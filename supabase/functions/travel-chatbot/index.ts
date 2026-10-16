@@ -1,20 +1,26 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import Anthropic from "npm:@anthropic-ai/sdk";
 import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
 import { maskCardNumbers } from "../_shared/sensitive.ts";
 import { buildContext } from "./context.ts";
+import { CATALOG_TOOL, runCatalogSearch } from "./catalog.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const ANTHROPIC_MODEL = 'claude-sonnet-5';
-const API_TIMEOUT_MS = 25_000;
+const MODEL = 'claude-opus-5-5';
+// Discussion en direct : réflexion légère, le conseiller doit répondre vite.
+const EFFORT = 'low';
+const REQUEST_TIMEOUT_MS = 30_000;
+// Au plus trois recherches dans le catalogue par message du client
+const MAX_TOOL_ROUNDS = 3;
 const HANDOFF_MARKER = /\s*\[\[CONSEILLER\]\]\s*/g;
 const LOCALES = ['fr', 'en', 'zh'];
 
-// Le comportement et la connaissance stable de l'assistante sont dans
+// Le comportement et la connaissance stable du conseiller sont dans
 // prompt-systeme.md, modifiable sans toucher au code (redéployer la
 // fonction ensuite). Le contexte vivant est ajouté par context.ts.
 let basePrompt: string | null = null;
@@ -50,19 +56,19 @@ serve(async (req) => {
 
     const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
     if (!anthropicApiKey) {
-      // Pas de réponse inventée : sans clé, il n'y a pas d'assistante.
+      // Pas de réponse inventée : sans clé, il n'y a pas de conseiller.
       console.log('ANTHROPIC_API_KEY not configured');
       return json({ success: false, error: "L'assistante n'est pas disponible pour le moment." }, 503);
     }
 
     // Historique borné : seuls les derniers échanges, chacun tronqué, et les
-    // numéros de carte masqués avant de quitter nos serveurs. Anthropic exige
-    // que la conversation commence par un message du client : le message
-    // d'accueil du widget (assistant) est retiré.
-    let history = (messages as Array<{ role: string; content: string }>)
+    // numéros de carte masqués avant de quitter nos serveurs. La conversation
+    // doit commencer par un message du client : le message d'accueil du
+    // widget (assistant) est retiré.
+    let history: Anthropic.Beta.BetaMessageParam[] = (messages as Array<{ role: string; content: string }>)
       .slice(-20)
       .map((m) => ({
-        role: m.role === 'assistant' ? 'assistant' : 'user',
+        role: m.role === 'assistant' ? 'assistant' as const : 'user' as const,
         content: maskCardNumbers(String(m.content ?? '').slice(0, 2000)),
       }));
     while (history.length > 0 && history[0].role !== 'user') {
@@ -79,57 +85,94 @@ serve(async (req) => {
       buildContext(admin, token, LOCALES.includes(locale) ? locale : 'fr'),
     ]);
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
-    let response: Response;
+    const client = new Anthropic({ apiKey: anthropicApiKey, timeout: REQUEST_TIMEOUT_MS, maxRetries: 1 });
+
+    // Le prompt stable est mis en cache ; le contexte (date, client) varie
+    // et vient après.
+    const system = [
+      { type: 'text' as const, text: prompt, cache_control: { type: 'ephemeral' as const } },
+      { type: 'text' as const, text: context.text },
+    ];
+
+    let response: Anthropic.Beta.BetaMessage;
     try {
-      response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': anthropicApiKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: ANTHROPIC_MODEL,
-          max_tokens: 800,
-          // Pas de réflexion préalable : elle pouvait consommer tout max_tokens
-          // avant le premier mot, et la réponse arrivait vide.
-          thinking: { type: 'disabled' },
-          system: `${prompt}\n\n${context.text}`,
+      for (let round = 0; ; round++) {
+        // `fallbacks: "default"` : si le modèle décline une demande, l'API la
+        // rejoue sur le modèle de repli recommandé, dans le même appel.
+        const params = {
+          model: MODEL,
+          max_tokens: 4000,
+          betas: ['server-side-fallback-2026-07-01'],
+          fallbacks: 'default',
+          output_config: { effort: EFFORT },
+          system,
+          tools: [CATALOG_TOOL],
           messages: history,
-        }),
-      });
+        };
+        response = await client.beta.messages.create(
+          params as unknown as Anthropic.Beta.MessageCreateParamsNonStreaming,
+        );
+
+        if (response.stop_reason !== 'tool_use' || round >= MAX_TOOL_ROUNDS) break;
+
+        // Le tour complet (blocs de réflexion compris) est renvoyé tel quel.
+        history = [...history, { role: 'assistant', content: response.content }];
+        const toolUses = response.content.filter(
+          (b): b is Anthropic.Beta.BetaToolUseBlock => b.type === 'tool_use',
+        );
+        const results: Anthropic.Beta.BetaToolResultBlockParam[] = await Promise.all(
+          toolUses.map(async (tool) => {
+            if (tool.name !== CATALOG_TOOL.name) {
+              return { type: 'tool_result' as const, tool_use_id: tool.id, content: 'Outil inconnu.', is_error: true };
+            }
+            try {
+              return { type: 'tool_result' as const, tool_use_id: tool.id, content: await runCatalogSearch(admin, tool.input) };
+            } catch (error) {
+              console.error('Recherche catalogue impossible:', error);
+              return { type: 'tool_result' as const, tool_use_id: tool.id, content: 'Catalogue indisponible pour le moment.', is_error: true };
+            }
+          }),
+        );
+        history = [...history, { role: 'user', content: results }];
+      }
     } catch (error) {
-      const timedOut = error instanceof DOMException && error.name === 'AbortError';
-      console.error(timedOut ? 'Anthropic API timeout' : 'Anthropic API unreachable:', error);
-      return json({ success: false, error: "L'assistante met trop de temps à répondre." }, 504);
-    } finally {
-      clearTimeout(timeout);
+      if (error instanceof Anthropic.APIConnectionTimeoutError) {
+        console.error('Anthropic API timeout');
+        return json({ success: false, error: "L'assistante met trop de temps à répondre." }, 504);
+      }
+      if (error instanceof Anthropic.APIError) {
+        console.error('Anthropic API error:', error.status, error.message);
+        return json({ success: false, error: "L'assistante est temporairement indisponible." }, 502);
+      }
+      throw error;
     }
 
-    if (!response.ok) {
-      console.error('Anthropic API error:', response.status, await response.text());
-      return json({ success: false, error: "L'assistante est temporairement indisponible." }, 502);
+    // Toute la chaîne (modèle principal et repli) a décliné : on propose un
+    // conseiller humain plutôt qu'une réponse vide.
+    if (response!.stop_reason === 'refusal') {
+      console.warn('Refus du modèle:', JSON.stringify(response!.stop_details ?? null));
+      return json({
+        success: true,
+        reply: "Je préfère qu'un conseiller prenne le relais sur cette demande : il vous suffit de cliquer sur le bouton ci-dessous.",
+        handoff: true,
+      });
     }
 
-    const data = await response.json();
     // La réponse peut contenir plusieurs blocs : on assemble tous les blocs
-    // de texte au lieu de ne lire que le premier.
-    const raw = (data.content ?? [])
-      .filter((b: { type: string }) => b.type === 'text')
-      .map((b: { text: string }) => b.text)
+    // de texte (les blocs de réflexion ne sont pas montrés au client).
+    const raw = response!.content
+      .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === 'text')
+      .map((b) => b.text)
       .join('')
       .trim();
 
-    // Le marqueur [[CONSEILLER]] signale que l'assistante propose de passer
+    // Le marqueur [[CONSEILLER]] signale que le conseiller propose de passer
     // la main : le widget affiche alors le bouton de transmission.
     const handoff = raw.includes('[[CONSEILLER]]');
     const reply = raw.replace(HANDOFF_MARKER, ' ').trim();
 
     if (!reply) {
-      console.error('Anthropic API returned no text content:', JSON.stringify(data).substring(0, 500));
+      console.error('Réponse sans texte:', response!.stop_reason, JSON.stringify(response!.content).substring(0, 500));
       return json({ success: false, error: "L'assistante n'a pas pu générer de réponse." }, 502);
     }
 
