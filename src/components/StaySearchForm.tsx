@@ -140,8 +140,8 @@ export const StaySearchForm = () => {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-        <div className="md:col-span-12 lg:col-span-4 min-w-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4 items-end">
+        <div className="sm:col-span-2 lg:col-span-6 min-w-0">
           <UnifiedAutocomplete
             label={t("search.destination")}
             type="location"
@@ -161,7 +161,7 @@ export const StaySearchForm = () => {
           )}
         </div>
 
-        <div className="md:col-span-6 lg:col-span-2 min-w-0">
+        <div className="lg:col-span-3 min-w-0">
           <UnifiedDatePicker
             label={t("search.checkIn")}
             value={checkIn}
@@ -179,7 +179,7 @@ export const StaySearchForm = () => {
           )}
         </div>
 
-        <div className="md:col-span-6 lg:col-span-2 min-w-0">
+        <div className="lg:col-span-3 min-w-0">
           <UnifiedDatePicker
             label={t("search.checkOut")}
             value={checkOut}
@@ -197,7 +197,7 @@ export const StaySearchForm = () => {
           )}
         </div>
 
-        <div className="md:col-span-6 lg:col-span-2 min-w-0">
+        <div className="lg:col-span-6 min-w-0">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Building2 className="w-4 h-4 text-primary" />
@@ -224,7 +224,7 @@ export const StaySearchForm = () => {
           </div>
         </div>
 
-        <div className="md:col-span-3 lg:col-span-1 min-w-0 text-left">
+        <div className="lg:col-span-3 min-w-0 text-left">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Users className="w-4 h-4 text-primary" />
@@ -251,7 +251,7 @@ export const StaySearchForm = () => {
           </div>
         </div>
 
-        <div className="md:col-span-3 lg:col-span-1 min-w-0">
+        <div className="sm:col-span-2 lg:col-span-3 min-w-0">
           <UnifiedSubmitButton 
             fullWidth
             disabled={hasErrors}
