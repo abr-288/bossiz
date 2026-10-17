@@ -109,7 +109,7 @@ async function publicContext(admin: SupabaseClient): Promise<string> {
   const { data, error } = await admin
     .from("site_config")
     .select("config_key, config_value")
-    .in("config_key", ["bossiz_ci_content", "bossiz_sn_content", "contact"]);
+    .in("config_key", ["bossiz_ci_content", "bossiz_sn_content", "contact", "car_partner_plans"]);
   if (error) {
     console.error("Contexte public indisponible:", error.message);
     return publicCache?.text ?? "";
@@ -125,6 +125,11 @@ async function publicContext(admin: SupabaseClient): Promise<string> {
     "### Conciergerie Bossiz (contenu publié sur le site)",
     describeMicrosite("Côte d'Ivoire, Abidjan (/bossiz-conciergerie-ci)", byKey.bossiz_ci_content as MicrositeContent),
     describeMicrosite("Sénégal, Dakar (/bossiz-conciergerie-sn)", byKey.bossiz_sn_content as MicrositeContent),
+    "",
+    "### Loueurs de voitures partenaires (réglage en vigueur)",
+    (byKey.car_partner_plans as { paymentsEnabled?: boolean } | undefined)?.paymentsEnabled === true
+      ? "- Forfaits payants Pro et Flotte obligatoires pour publier des véhicules ; tarifs et limites sur /partenaires/voitures."
+      : "- Publication de véhicules gratuite et sans limite, sans forfait à souscrire ; 90% des locations payées en ligne reversées au loueur. Détails sur /partenaires/voitures.",
     "",
     "### Coordonnées du support",
     "- Email : support@bossiz.com (formulaire sur /support)",

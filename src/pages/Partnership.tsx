@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import bannerTours from "@/assets/banner-tours.webp";
 import { useTranslation } from "react-i18next";
 import { MOTION } from "@/lib/motion";
-import { CAR_PLAN_PAYMENTS_ENABLED } from "@/constants/carPartnerPlans";
+import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
 
 interface PartnershipType {
   id: string;
@@ -121,28 +121,29 @@ const partnershipTypes: PartnershipType[] = [
     icon: Car,
     title: "ux.partnershipData.carsTitle",
     tagline: "ux.partnershipData.carsTagline",
-    ...(CAR_PLAN_PAYMENTS_ENABLED
-      ? {
-          facts: ["ux.partnershipData.carsFrom", "ux.partnershipData.carsCommission"],
-          conditions: [
-            "ux.partnershipData.carsC1",
-            "ux.partnershipData.carsC2",
-            "ux.partnershipData.carsC3",
-          ],
-          highlight: "ux.partnershipData.paidPlans",
-        }
-      : {
-          facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
-          conditions: [
-            "ux.partnershipData.signup",
-            "ux.partnershipData.carsFreeC1",
-            "ux.partnershipData.carsFreeC2",
-          ],
-        }),
+    facts: ["ux.partnershipData.carsFrom", "ux.partnershipData.carsCommission"],
+    conditions: [
+      "ux.partnershipData.carsC1",
+      "ux.partnershipData.carsC2",
+      "ux.partnershipData.carsC3",
+    ],
     ctaLabel: "ux.partnershipData.carsCta",
     ctaTo: "/devenir-partenaire?type=cars",
+    highlight: "ux.partnershipData.paidPlans",
   },
 ];
+
+// Location de voitures quand le paiement des forfaits est désactivé depuis
+// l'admin : publication gratuite, sans mention des forfaits payants.
+const freeCarsPartnership: Pick<PartnershipType, "facts" | "conditions" | "highlight"> = {
+  facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
+  conditions: [
+    "ux.partnershipData.signup",
+    "ux.partnershipData.carsFreeC1",
+    "ux.partnershipData.carsFreeC2",
+  ],
+  highlight: undefined,
+};
 
 const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number }) => {
   const { t } = useTranslation();
@@ -229,6 +230,10 @@ const steps = [
 
 const Partnership = () => {
   const { t } = useTranslation();
+  const { paymentsEnabled: carPlanPaymentsEnabled } = useCarPlanPayments();
+  const visibleTypes = carPlanPaymentsEnabled
+    ? partnershipTypes
+    : partnershipTypes.map((type) => (type.id === "cars" ? { ...type, ...freeCarsPartnership } : type));
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
@@ -268,7 +273,7 @@ const Partnership = () => {
       <main className="flex-1 container mx-auto px-4 py-12 md:py-16">
         {/* Partnership types */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
-          {partnershipTypes.map((type, index) => (
+          {visibleTypes.map((type, index) => (
             <PartnershipCard key={type.id} type={type} index={index} />
           ))}
         </div>

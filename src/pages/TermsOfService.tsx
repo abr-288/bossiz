@@ -166,7 +166,7 @@ const TermsOfService = () => {
         `• L'acceptation d'une candidature nécessite que le candidat dispose déjà d'un compte utilisateur ${siteName} enregistré avec la même adresse e-mail que celle indiquée dans sa candidature, ce compte étant ensuite rattaché à l'espace agence créé.`,
         "",
         "**9.2 Conditions spécifiques par catégorie**",
-        "• Le partage standard des paiements en ligne encaissés par Bossiz via Jèko est de 90% pour le partenaire et 10% pour Bossiz. La publication de véhicules par les loueurs de voitures est actuellement gratuite et sans limite de nombre ; si des forfaits payants venaient à être proposés, ils ne s'appliqueraient qu'après information préalable des partenaires concernés.",
+        "• Le partage standard des paiements en ligne encaissés par Bossiz via Jèko est de 90% pour le partenaire et 10% pour Bossiz. Les conditions de publication des véhicules pour les loueurs de voitures (publication gratuite ou forfait payant) sont présentées sur la page dédiée aux loueurs de voitures ; la mise en place d'un forfait payant ne s'applique aux partenaires concernés qu'après les en avoir préalablement informés.",
         "• Ces conditions peuvent évoluer ; les partenaires déjà actifs seront informés de toute modification substantielle affectant leur taux de commission ou leur forfait.",
         "",
         "**9.3 Commission et paiement des partenaires**",

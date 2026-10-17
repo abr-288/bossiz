@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { useLocalizedRows } from "@/lib/translatableContent";
-import { CAR_PLAN_PAYMENTS_ENABLED } from "@/constants/carPartnerPlans";
+import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
 
 interface CarPartnerPlan {
   plan_id: string;
@@ -32,6 +32,7 @@ interface CarPartnerPlan {
 
 const CarPartnerPlans = () => {
   const { t } = useTranslation();
+  const { paymentsEnabled: carPlanPaymentsEnabled, loading: carPlanSettingLoading } = useCarPlanPayments();
   const [plans, setPlans] = useState<CarPartnerPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [yearly, setYearly] = useState(false);
@@ -142,12 +143,12 @@ const CarPartnerPlans = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t(CAR_PLAN_PAYMENTS_ENABLED ? "ux.carPlans.title" : "ux.carPlans.freeTitle")}
+            {t(carPlanPaymentsEnabled ? "ux.carPlans.title" : "ux.carPlans.freeTitle")}
           </h1>
           <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">
             {t("ux.carPlans.intro")}
           </p>
-          {CAR_PLAN_PAYMENTS_ENABLED && (
+          {carPlanPaymentsEnabled && (
             <p className="text-sm text-white/85 mt-3">
               {t("ux.carPlans.requiredNote")}
             </p>
@@ -156,7 +157,9 @@ const CarPartnerPlans = () => {
       </div>
 
       <main className="flex-1 container mx-auto px-4 py-12 md:py-16">
-        {!CAR_PLAN_PAYMENTS_ENABLED ? (
+        {carPlanSettingLoading ? (
+          <CardGridSkeleton count={3} imageClassName="h-24" />
+        ) : !carPlanPaymentsEnabled ? (
           <Card className="max-w-xl mx-auto border-primary shadow-lg">
             <CardHeader className="pb-2">
               <h2 className="text-2xl font-bold">{t("ux.carPlans.freeHeading")}</h2>

@@ -40,7 +40,7 @@ import { partnerApplicationSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerBecomePartner from "@/assets/hero-slide-1.webp";
-import { CAR_PLAN_PAYMENTS_ENABLED } from "@/constants/carPartnerPlans";
+import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
 
 const partnerTypeOptions = [
   { value: "hotel", label: "ux.partnerForm.typeHotel", icon: Hotel },
@@ -99,10 +99,20 @@ const conditionsByType: Record<PartnerTypeValue, string[]> = {
     "ux.partnerForm.wellness4",
     "ux.partnerForm.wellness5",
   ],
-  cars: CAR_PLAN_PAYMENTS_ENABLED
-    ? ["ux.partnerForm.cars1", "ux.partnerForm.cars2", "ux.partnerForm.cars3"]
-    : ["ux.partnerForm.signup", "ux.partnerForm.carsFree1", "ux.partnerForm.carsFree2"],
+  cars: [
+    "ux.partnerForm.cars1",
+    "ux.partnerForm.cars2",
+    "ux.partnerForm.cars3",
+  ],
 };
+
+// Conditions affichées aux loueurs quand le paiement des forfaits voiture est
+// désactivé depuis l'admin (publication gratuite).
+const freeCarConditions = [
+  "ux.partnerForm.signup",
+  "ux.partnerForm.carsFree1",
+  "ux.partnerForm.carsFree2",
+];
 
 const benefits = [
   {
@@ -130,6 +140,7 @@ const isPartnerType = (value: string | null): value is PartnerTypeValue =>
 
 const BecomePartner = () => {
   const { t, i18n } = useTranslation();
+  const { paymentsEnabled: carPlanPaymentsEnabled } = useCarPlanPayments();
   // La candidature est lue en français dans le back-office : libellés enregistrés en français.
   const tFr = i18n.getFixedT("fr");
   const [searchParams] = useSearchParams();
@@ -227,7 +238,7 @@ const BecomePartner = () => {
     const typeLabel = typeKey ? tFr(typeKey) : undefined;
     const finalDescription = [
       typeLabel ? `Type de partenariat : ${typeLabel}` : null,
-      CAR_PLAN_PAYMENTS_ENABLED && partnerType === "cars" ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}` : null,
+      carPlanPaymentsEnabled && partnerType === "cars" ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}` : null,
       formData.description || null,
     ]
       .filter(Boolean)
@@ -247,7 +258,7 @@ const BecomePartner = () => {
       contact_phone: formData.contactPhone || null,
       description: finalDescription || null,
       logo_url: logoUrl || null,
-      requested_car_plan_id: CAR_PLAN_PAYMENTS_ENABLED && partnerType === "cars" ? carPlan : null,
+      requested_car_plan_id: carPlanPaymentsEnabled && partnerType === "cars" ? carPlan : null,
       preferred_payout_method: preferredPayoutMethod,
     });
     setLoading(false);
@@ -277,7 +288,10 @@ const BecomePartner = () => {
     setSubmitted(false);
   };
 
-  const activeConditions = partnerType ? [...conditionsByType[partnerType], ...commonConditions] : [];
+  const typeConditions = partnerType === "cars" && !carPlanPaymentsEnabled
+    ? freeCarConditions
+    : partnerType ? conditionsByType[partnerType] : [];
+  const activeConditions = partnerType ? [...typeConditions, ...commonConditions] : [];
   const selectedTypeMeta = partnerTypeOptions.find((o) => o.value === partnerType);
 
   return (
@@ -400,7 +414,7 @@ const BecomePartner = () => {
                         </div>
 
                         <AnimatePresence>
-                          {CAR_PLAN_PAYMENTS_ENABLED && partnerType === "cars" && (
+                          {carPlanPaymentsEnabled && partnerType === "cars" && (
                             <motion.div
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: "auto" }}

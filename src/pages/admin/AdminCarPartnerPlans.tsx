@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Loader2, RefreshCw, Car } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCarPlanPayments, CAR_PLAN_PAYMENTS_QUERY_KEY } from "@/hooks/useCarPlanPayments";
 
 interface CarPartnerPlan {
   id: string;
@@ -58,6 +60,38 @@ export default function AdminCarPartnerPlans() {
   const [formData, setFormData] = useState(emptyPlan);
   const [featuresText, setFeaturesText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
+  const { paymentsEnabled, loading: paymentsSettingLoading } = useCarPlanPayments();
+  const [isTogglingPayments, setIsTogglingPayments] = useState(false);
+
+  // Active ou coupe le paiement des forfaits voiture pour tout le site : la
+  // base (car_plan_payments_enabled) et les pages publiques lisent ce réglage.
+  const togglePayments = async (enabled: boolean) => {
+    setIsTogglingPayments(true);
+    try {
+      const { error } = await supabase
+        .from("site_config")
+        .upsert(
+          {
+            config_key: "car_partner_plans",
+            config_value: { paymentsEnabled: enabled },
+            category: "partners",
+            description: "Paiement des forfaits voiture : désactivé = publication de véhicules gratuite pour les loueurs",
+          },
+          { onConflict: "config_key" },
+        );
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: CAR_PLAN_PAYMENTS_QUERY_KEY });
+      toast({
+        title: t("ux.bo.success"),
+        description: t(enabled ? "ux.bo.carPlanPaymentsOn" : "ux.bo.carPlanPaymentsOff"),
+      });
+    } catch (error: unknown) {
+      toast({ title: t("ux.bo.error"), description: error instanceof Error ? error.message : t("ux.bo.unableEditPlan"), variant: "destructive" });
+    } finally {
+      setIsTogglingPayments(false);
+    }
+  };
 
   const fetchPlans = useCallback(async () => {
     setIsLoading(true);
@@ -171,6 +205,30 @@ export default function AdminCarPartnerPlans() {
             </Button>
           </div>
         </div>
+
+        <Card>
+          <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6">
+            <div className="space-y-1">
+              <Label htmlFor="car-plan-payments" className="text-base font-semibold">
+                {t("ux.bo.carPlanPaymentsTitle")}
+              </Label>
+              <p className="text-sm text-muted-foreground max-w-2xl">
+                {t(paymentsEnabled ? "ux.bo.carPlanPaymentsOnDesc" : "ux.bo.carPlanPaymentsOffDesc")}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant={paymentsEnabled ? "default" : "secondary"}>
+                {t(paymentsEnabled ? "ux.bo.carPlanPaymentsActive" : "ux.bo.carPlanPaymentsInactive")}
+              </Badge>
+              <Switch
+                id="car-plan-payments"
+                checked={paymentsEnabled}
+                disabled={paymentsSettingLoading || isTogglingPayments}
+                onCheckedChange={(checked) => void togglePayments(checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
