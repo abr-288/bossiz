@@ -38,6 +38,7 @@ import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
 import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { CAR_PLAN_PAYMENTS_ENABLED } from "@/constants/carPartnerPlans";
 
 interface Service {
   id: string;
@@ -195,7 +196,7 @@ export default function AgencyServices() {
 
     const isCarType = formData.type === "car";
     if (isCarType) {
-      if (!carPlan && (!editingService || editingService.type !== "car" || !editingService.available && formData.available)) {
+      if (CAR_PLAN_PAYMENTS_ENABLED && !carPlan && (!editingService || editingService.type !== "car" || !editingService.available && formData.available)) {
         toast({
           title: t("ux.bo.paidPlanRequired"),
           description: t("ux.bo.subscribePaidCarPlanWait"),
@@ -214,7 +215,7 @@ export default function AgencyServices() {
         return;
       }
 
-      if (!editingService && carPlan?.max_vehicles != null) {
+      if (CAR_PLAN_PAYMENTS_ENABLED && !editingService && carPlan?.max_vehicles != null) {
         const currentCarCount = services.filter((s) => s.type === "car").length;
         if (currentCarCount >= carPlan.max_vehicles) {
           toast({
@@ -425,13 +426,13 @@ export default function AgencyServices() {
           <div>
             <h1 className="text-2xl font-bold">{typeFilter === "tour" ? t("ux.bo.myTours") : "Mes Services"}</h1>
             <p className="text-muted-foreground">{typeFilter === "tour" ? t("ux.bo.manageTours") : t("ux.bo.manageTravelServices")}</p>
-            {!carPlan && (
+            {CAR_PLAN_PAYMENTS_ENABLED && !carPlan && (
               <p className="mt-2 text-sm text-warning-foreground">
                 Aucun forfait voiture payant actif. Les nouvelles annonces de véhicules sont bloquées jusqu'à confirmation du paiement.{" "}
                 <a href="/partenaires/voitures" className="font-medium underline">{t("ux.bo.seePlans")}</a>
               </p>
             )}
-            {carPlan && (
+            {CAR_PLAN_PAYMENTS_ENABLED && carPlan && (
               <Badge variant="outline" className="mt-2 gap-1.5">
                 Forfait {carPlan.name} ·{" "}
                 {carPlan.max_vehicles

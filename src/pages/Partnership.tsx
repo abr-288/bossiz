@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import bannerTours from "@/assets/banner-tours.webp";
 import { useTranslation } from "react-i18next";
 import { MOTION } from "@/lib/motion";
+import { CAR_PLAN_PAYMENTS_ENABLED } from "@/constants/carPartnerPlans";
 
 interface PartnershipType {
   id: string;
@@ -120,15 +121,26 @@ const partnershipTypes: PartnershipType[] = [
     icon: Car,
     title: "ux.partnershipData.carsTitle",
     tagline: "ux.partnershipData.carsTagline",
-    facts: ["ux.partnershipData.carsFrom", "ux.partnershipData.carsCommission"],
-    conditions: [
-      "ux.partnershipData.carsC1",
-      "ux.partnershipData.carsC2",
-      "ux.partnershipData.carsC3",
-    ],
+    ...(CAR_PLAN_PAYMENTS_ENABLED
+      ? {
+          facts: ["ux.partnershipData.carsFrom", "ux.partnershipData.carsCommission"],
+          conditions: [
+            "ux.partnershipData.carsC1",
+            "ux.partnershipData.carsC2",
+            "ux.partnershipData.carsC3",
+          ],
+          highlight: "ux.partnershipData.paidPlans",
+        }
+      : {
+          facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
+          conditions: [
+            "ux.partnershipData.signup",
+            "ux.partnershipData.carsFreeC1",
+            "ux.partnershipData.carsFreeC2",
+          ],
+        }),
     ctaLabel: "ux.partnershipData.carsCta",
     ctaTo: "/devenir-partenaire?type=cars",
-    highlight: "ux.partnershipData.paidPlans",
   },
 ];
 

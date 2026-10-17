@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { useLocalizedRows } from "@/lib/translatableContent";
+import { CAR_PLAN_PAYMENTS_ENABLED } from "@/constants/carPartnerPlans";
 
 interface CarPartnerPlan {
   plan_id: string;
@@ -141,18 +142,44 @@ const CarPartnerPlans = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t("ux.carPlans.title")}
+            {t(CAR_PLAN_PAYMENTS_ENABLED ? "ux.carPlans.title" : "ux.carPlans.freeTitle")}
           </h1>
           <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">
             {t("ux.carPlans.intro")}
           </p>
-          <p className="text-sm text-white/85 mt-3">
-            {t("ux.carPlans.requiredNote")}
-          </p>
+          {CAR_PLAN_PAYMENTS_ENABLED && (
+            <p className="text-sm text-white/85 mt-3">
+              {t("ux.carPlans.requiredNote")}
+            </p>
+          )}
         </div>
       </div>
 
       <main className="flex-1 container mx-auto px-4 py-12 md:py-16">
+        {!CAR_PLAN_PAYMENTS_ENABLED ? (
+          <Card className="max-w-xl mx-auto border-primary shadow-lg">
+            <CardHeader className="pb-2">
+              <h2 className="text-2xl font-bold">{t("ux.carPlans.freeHeading")}</h2>
+              <p className="text-sm text-muted-foreground">{t("ux.carPlans.freeTagline")}</p>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2.5 mb-6">
+                {["ux.carPlans.freePoint1", "ux.carPlans.freePoint2", "ux.carPlans.freePoint3"].map((key) => (
+                  <li key={key} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{t(key)}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button asChild size="lg" className="w-full">
+                <Link to={agencyId ? "/agency/services" : "/devenir-partenaire?type=cars"}>
+                  {t(agencyId ? "ux.carPlans.freeCtaAgency" : "ux.carPlans.freeCta")}
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+        <>
         {/* Billing toggle */}
         <div className="flex items-center justify-center gap-3 mb-10">
           <span className={cn("text-sm font-medium", !yearly ? "text-foreground" : "text-muted-foreground")}>Mensuel</span>
@@ -247,6 +274,8 @@ const CarPartnerPlans = () => {
               );
             })}
           </div>
+        )}
+        </>
         )}
 
         <p className="text-center text-sm text-muted-foreground mt-10">

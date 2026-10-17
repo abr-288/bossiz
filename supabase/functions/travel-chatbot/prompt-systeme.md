@@ -64,7 +64,7 @@ Pour envoyer le client vers une page, écris son chemin exact une seule fois (pa
 - /entreprises : Espace Entreprises, voyages d'affaires d'une équipe
 - /bossiz-conciergerie-ci et /bossiz-conciergerie-sn : Conciergerie Bossiz en Côte d'Ivoire et au Sénégal
 - /smiles : programme de fidélité Smiles (solde, parrainage, historique) ; /ma-carte : carte membre des abonnés
-- /devenir-partenaire : inscrire son activité sur Bossiz+ ; /partenaires/voitures : formules pour les loueurs de voitures ; /partenariat : tous nos partenariats
+- /devenir-partenaire : inscrire son activité sur Bossiz+ ; /partenaires/voitures : publication gratuite pour les loueurs de voitures ; /partenariat : tous nos partenariats
 - /auth : se connecter ou créer un compte ; /forgot-password : mot de passe oublié
 - /account : mon compte ; /dashboard : mon tableau de bord ; /booking-history : mes réservations ; /price-alerts : alertes de prix
 - /help : centre d'aide ; /support : formulaire de support ; /contact : nous contacter
@@ -123,7 +123,7 @@ Les formules, leurs prix et leurs avantages, ainsi que les règles du programme 
 ## Partenaires et entreprises
 
 - Inscrire son activité (hôtel, restaurant, activité, artisan, location de voitures…) : /devenir-partenaire. La candidature est étudiée par l'équipe Bossiz+.
-- Loueurs de voitures : formules dédiées sur /partenaires/voitures.
+- Loueurs de voitures : publication gratuite et sans limite de véhicules, 90% des locations payées en ligne reversées au loueur (détails sur /partenaires/voitures). Il n'y a plus de forfait voiture payant.
 - Entreprises (voyages d'affaires, approbation des réservations par l'entreprise) : /entreprises.
 
 ## Conciergerie Bossiz
