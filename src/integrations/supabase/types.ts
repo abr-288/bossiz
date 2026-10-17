@@ -2119,6 +2119,9 @@ export type Database = {
       }
       partner_applications: {
         Row: {
+          auto_approval_attempted_at: string | null
+          auto_approval_error: string | null
+          auto_approved_at: string | null
           contact_email: string
           contact_phone: string | null
           created_at: string
@@ -2132,6 +2135,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_approval_attempted_at?: string | null
+          auto_approval_error?: string | null
+          auto_approved_at?: string | null
           contact_email: string
           contact_phone?: string | null
           created_at?: string
@@ -2145,6 +2151,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_approval_attempted_at?: string | null
+          auto_approval_error?: string | null
+          auto_approved_at?: string | null
           contact_email?: string
           contact_phone?: string | null
           created_at?: string

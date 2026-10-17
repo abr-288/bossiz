@@ -41,6 +41,7 @@ import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerBecomePartner from "@/assets/hero-slide-1.webp";
 import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
+import { usePartnerAutoApproval } from "@/hooks/usePartnerAutoApproval";
 
 const partnerTypeOptions = [
   { value: "hotel", label: "ux.partnerForm.typeHotel", icon: Hotel },
@@ -141,6 +142,7 @@ const isPartnerType = (value: string | null): value is PartnerTypeValue =>
 const BecomePartner = () => {
   const { t, i18n } = useTranslation();
   const { paymentsEnabled: carPlanPaymentsEnabled } = useCarPlanPayments();
+  const { autoApprove } = usePartnerAutoApproval();
   // La candidature est lue en français dans le back-office : libellés enregistrés en français.
   const tFr = i18n.getFixedT("fr");
   const [searchParams] = useSearchParams();
@@ -346,7 +348,7 @@ const BecomePartner = () => {
               })}
             </div>
             <p className="text-sm text-muted-foreground mt-6">
-              {t("ux.becomePartner.manualReview")}
+              {t(autoApprove ? "ux.becomePartner.autoReview" : "ux.becomePartner.manualReview")}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
               <Link to="/partenariat" className="text-primary font-medium hover:underline">
@@ -376,7 +378,7 @@ const BecomePartner = () => {
                       </div>
                       <h3 className="text-xl font-bold mb-2">{t("ux.becomePartner.sent")}</h3>
                       <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
-                        {t("ux.partnerForm.thanks")}
+                        {t(autoApprove ? "ux.partnerForm.thanksAuto" : "ux.partnerForm.thanks")}
                       </p>
                       <Button variant="outline" onClick={resetForm}>
                         {t("ux.becomePartner.sendAnother")}

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -15,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { JEKO_PAYOUT_METHOD_LABELS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { useToast } from "@/hooks/use-toast";
+import { PARTNER_AUTO_APPROVAL_QUERY_KEY, usePartnerAutoApproval } from "@/hooks/usePartnerAutoApproval";
 import { FileText, Search, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -32,6 +37,8 @@ interface PartnerApplication {
   created_at: string;
   requested_car_plan_id: string | null;
   preferred_payout_method: JekoPayoutMethod | null;
+  auto_approved_at: string | null;
+  auto_approval_error: string | null;
 }
 
 const carPlanLabels: Record<string, string> = {
@@ -47,10 +54,48 @@ export default function AdminPartnerApplications() {
   const [applications, setApplications] = useState<PartnerApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const queryClient = useQueryClient();
+  const { autoApprove, delayMinutes, loading: autoApproveLoading } = usePartnerAutoApproval();
+  const [isTogglingAutoApprove, setIsTogglingAutoApprove] = useState(false);
 
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  // Validation automatique (fonction auto-approve-partner-applications) ou
+  // manuelle : désactivée, les candidatures attendent un admin. enabledSince
+  // évite qu'une réactivation valide d'un coup les candidatures reçues
+  // pendant la validation manuelle.
+  const toggleAutoApprove = async (enabled: boolean) => {
+    setIsTogglingAutoApprove(true);
+    try {
+      const { error } = await supabase
+        .from("site_config")
+        .upsert(
+          {
+            config_key: "partner_applications",
+            config_value: { autoApprove: enabled, delayMinutes, enabledSince: enabled ? new Date().toISOString() : null },
+            category: "partners",
+            description: "Validation des candidatures partenaires : activé = validation automatique après delayMinutes",
+          },
+          { onConflict: "config_key" },
+        );
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: PARTNER_AUTO_APPROVAL_QUERY_KEY });
+      toast({
+        title: t("ux.bo.success"),
+        description: t(enabled ? "ux.bo.partnerAutoApproveOn" : "ux.bo.partnerAutoApproveOff", { minutes: delayMinutes }),
+      });
+    } catch (error: unknown) {
+      toast({
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.errorWhileSaving"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsTogglingAutoApprove(false);
+    }
+  };
 
   const fetchApplications = async () => {
     try {
@@ -119,10 +164,23 @@ export default function AdminPartnerApplications() {
     });
   };
 
-  const statusBadge = (status: string) => {
-    if (status === "approved") return <Badge>{t("ux.bo.approved")}</Badge>;
-    if (status === "rejected") return <Badge variant="destructive">{t("ux.bo.rejected")}</Badge>;
-    return <Badge variant="secondary">{t("ux.bo.pending2")}</Badge>;
+  const statusBadge = (application: PartnerApplication) => {
+    if (application.status === "approved") {
+      return (
+        <Badge>{t(application.auto_approved_at ? "ux.bo.partnerAutoApproved" : "ux.bo.approved")}</Badge>
+      );
+    }
+    if (application.status === "rejected") return <Badge variant="destructive">{t("ux.bo.rejected")}</Badge>;
+    return (
+      <div className="space-y-1">
+        <Badge variant="secondary">{t("ux.bo.pending2")}</Badge>
+        {application.auto_approval_error && (
+          <p className="text-xs text-destructive max-w-[12rem]">
+            {t("ux.bo.partnerAutoApproveFailed", { reason: application.auto_approval_error })}
+          </p>
+        )}
+      </div>
+    );
   };
 
   const filteredApplications = applications.filter(
@@ -140,6 +198,30 @@ export default function AdminPartnerApplications() {
             {t("ux.bo.applicationsReceivedThroughPublicBecome")}
           </p>
         </div>
+
+        <Card>
+          <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6">
+            <div className="space-y-1">
+              <Label htmlFor="partner-auto-approve" className="text-base font-semibold">
+                {t("ux.bo.partnerAutoApproveTitle")}
+              </Label>
+              <p className="text-sm text-muted-foreground max-w-2xl">
+                {t(autoApprove ? "ux.bo.partnerAutoApproveOnDesc" : "ux.bo.partnerAutoApproveOffDesc", { minutes: delayMinutes })}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant={autoApprove ? "default" : "secondary"}>
+                {t(autoApprove ? "ux.bo.partnerAutoApproveActive" : "ux.bo.partnerAutoApproveInactive")}
+              </Badge>
+              <Switch
+                id="partner-auto-approve"
+                checked={autoApprove}
+                disabled={autoApproveLoading || isTogglingAutoApprove}
+                onCheckedChange={(checked) => void toggleAutoApprove(checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
@@ -212,7 +294,7 @@ export default function AdminPartnerApplications() {
                         ? JEKO_PAYOUT_METHOD_LABELS[application.preferred_payout_method]
                         : "—"}
                     </TableCell>
-                    <TableCell>{statusBadge(application.status)}</TableCell>
+                    <TableCell>{statusBadge(application)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {format(new Date(application.created_at), "dd MMM yyyy", { locale: fr })}
                     </TableCell>
