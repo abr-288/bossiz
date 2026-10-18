@@ -1314,12 +1314,17 @@ export type Database = {
           content: string | null
           created_at: string
           featured: boolean
+          gallery: Json
           id: string
+          image_caption: string | null
+          image_credit: string | null
+          image_source_url: string | null
           image_url: string | null
           link_url: string | null
           location: string | null
           period: string | null
           published: boolean
+          slug: string | null
           sort_order: number
           summary: string
           title: string
@@ -1330,12 +1335,17 @@ export type Database = {
           content?: string | null
           created_at?: string
           featured?: boolean
+          gallery?: Json
           id?: string
+          image_caption?: string | null
+          image_credit?: string | null
+          image_source_url?: string | null
           image_url?: string | null
           link_url?: string | null
           location?: string | null
           period?: string | null
           published?: boolean
+          slug?: string | null
           sort_order?: number
           summary: string
           title: string
@@ -1346,12 +1356,17 @@ export type Database = {
           content?: string | null
           created_at?: string
           featured?: boolean
+          gallery?: Json
           id?: string
+          image_caption?: string | null
+          image_credit?: string | null
+          image_source_url?: string | null
           image_url?: string | null
           link_url?: string | null
           location?: string | null
           period?: string | null
           published?: boolean
+          slug?: string | null
           sort_order?: number
           summary?: string
           title?: string

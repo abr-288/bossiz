@@ -19,8 +19,17 @@ export type CultureCategory = "patrimoine" | "festivals" | "musees" | "arts" | "
 export const cultureCategory = (value: string) =>
   CULTURE_CATEGORIES.find((c) => c.value === value) ?? CULTURE_CATEGORIES[0];
 
+// Photo de la galerie d'un article, toujours créditée (licence libre).
+export interface CulturePhoto {
+  url: string;
+  caption?: string;
+  credit?: string;
+  sourceUrl?: string;
+}
+
 export interface CultureEntry {
   id: string;
+  slug: string | null;
   title: string;
   category: CultureCategory;
   location: string | null;
@@ -28,6 +37,10 @@ export interface CultureEntry {
   summary: string;
   content: string | null;
   image_url: string | null;
+  image_caption: string | null;
+  image_credit: string | null;
+  image_source_url: string | null;
+  gallery: CulturePhoto[] | null;
   link_url: string | null;
   featured: boolean;
   published: boolean;
@@ -47,6 +60,54 @@ export const DEFAULT_CULTURE_PAGE: CulturePageSettings = {
   intro: "",
   heroImage: "",
 };
+
+// Adresse de page lisible à partir d'un titre (« Le Zaouli » -> « le-zaouli »).
+export function slugify(title: string): string {
+  return title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/['’]/g, " ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+export const cultureEntryPath = (entry: Pick<CultureEntry, "slug">) => (entry.slug ? `/culture/${entry.slug}` : null);
+
+// Contenu d'article : paragraphes séparés par une ligne vide, intertitres
+// « ## », listes « - ».
+export type ArticleBlock =
+  | { kind: "heading"; text: string }
+  | { kind: "list"; items: string[] }
+  | { kind: "paragraph"; text: string };
+
+export function parseArticle(content: string | null): ArticleBlock[] {
+  if (!content) return [];
+  return content
+    .replace(/\r\n/g, "\n")
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .flatMap((block): ArticleBlock[] => {
+      if (block.startsWith("## ")) {
+        const [heading, ...rest] = block.split("\n");
+        const blocks: ArticleBlock[] = [{ kind: "heading", text: heading.slice(3).trim() }];
+        if (rest.length) blocks.push(...parseArticle(rest.join("\n")));
+        return blocks;
+      }
+      const lines = block.split("\n");
+      if (lines.every((line) => line.trim().startsWith("- "))) {
+        return [{ kind: "list", items: lines.map((line) => line.trim().slice(2)) }];
+      }
+      return [{ kind: "paragraph", text: block }];
+    });
+}
+
+export function readingMinutes(entry: Pick<CultureEntry, "summary" | "content">): number {
+  const words = `${entry.summary} ${entry.content ?? ""}`.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
 
 export const CULTURE_PAGE_QUERY_KEY = ["site_config", "culture_page"] as const;
 export const CULTURE_ENTRIES_QUERY_KEY = ["culture_entries"] as const;
@@ -84,7 +145,10 @@ export function useCultureEntries() {
         .order("sort_order")
         .order("created_at");
       if (error) throw error;
-      return (data || []) as CultureEntry[];
+      return (data || []).map((row) => ({
+        ...row,
+        gallery: Array.isArray(row.gallery) ? (row.gallery as unknown as CulturePhoto[]) : [],
+      })) as CultureEntry[];
     },
     staleTime: 5 * 60_000,
   });

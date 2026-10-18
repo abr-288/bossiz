@@ -5,19 +5,18 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
-import { CultureEntryCard, CultureEntryDialog, CultureEntryVisual } from "@/components/culture/CultureEntryCard";
-import { CULTURE_CATEGORIES, cultureCategory, useCultureEntries, useCulturePage, type CultureCategory, type CultureEntry } from "@/lib/culture";
+import { CultureEntryCard, CultureEntryVisual } from "@/components/culture/CultureEntryCard";
+import { CULTURE_CATEGORIES, cultureCategory, cultureEntryPath, useCultureEntries, useCulturePage, type CultureCategory } from "@/lib/culture";
 import bannerFallback from "@/assets/hero-slide-1.webp";
 import { Compass, MapPin } from "lucide-react";
 
 // Page éditoriale « Culture » : en-tête, introduction, sélection à la une,
-// puis toutes les entrées publiées filtrables par catégorie. Contenu géré
-// dans /admin/culture.
+// puis tous les articles publiés filtrables par catégorie. Chaque carte
+// ouvre son article (/culture/:slug). Contenu géré dans /admin/culture.
 export default function Culture() {
   const { data: settings } = useCulturePage();
   const { data: allEntries, isLoading } = useCultureEntries();
   const [category, setCategory] = useState<CultureCategory | "all">("all");
-  const [openEntry, setOpenEntry] = useState<CultureEntry | null>(null);
 
   // L'admin voit aussi les brouillons (RLS) : la page publique ne montre que le publié.
   const entries = useMemo(() => (allEntries ?? []).filter((e) => e.published), [allEntries]);
@@ -62,10 +61,9 @@ export default function Culture() {
                 <h2 className="text-2xl md:text-3xl font-bold">À ne pas manquer</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                   {featured.map((entry, index) => (
-                    <button
+                    <Link
                       key={entry.id}
-                      type="button"
-                      onClick={() => setOpenEntry(entry)}
+                      to={cultureEntryPath(entry) ?? "/culture"}
                       className={`group relative overflow-hidden rounded-2xl text-left min-h-[16rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                         index === 0 ? "md:col-span-2 md:row-span-2 md:min-h-[26rem]" : ""
                       }`}
@@ -84,7 +82,7 @@ export default function Culture() {
                         )}
                         {index === 0 && <p className="hidden md:block text-sm text-white/90 max-w-xl">{entry.summary}</p>}
                       </div>
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </section>
@@ -125,7 +123,7 @@ export default function Culture() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {visible.map((entry) => (
-                  <CultureEntryCard key={entry.id} entry={entry} onOpen={setOpenEntry} />
+                  <CultureEntryCard key={entry.id} entry={entry} />
                 ))}
               </div>
             </section>
@@ -146,7 +144,6 @@ export default function Culture() {
         </section>
       </main>
 
-      <CultureEntryDialog entry={openEntry} onClose={() => setOpenEntry(null)} />
       <Footer />
     </div>
   );

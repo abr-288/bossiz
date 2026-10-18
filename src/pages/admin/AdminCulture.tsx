@@ -38,22 +38,31 @@ import {
   CULTURE_PAGE_QUERY_KEY,
   DEFAULT_CULTURE_PAGE,
   cultureCategory,
+  slugify,
   useCultureEntries,
   useCulturePage,
   type CultureCategory,
   type CultureEntry,
   type CulturePageSettings,
+  type CulturePhoto,
 } from "@/lib/culture";
-import { ExternalLink, Landmark, Pencil, Plus, Star, Trash2 } from "lucide-react";
+import { ExternalLink, Landmark, Pencil, Plus, Star, Trash2, X } from "lucide-react";
+
+const isHttpUrl = (value: string) => /^https?:\/\//.test(value);
 
 const emptyEntry = {
   title: "",
+  slug: "",
   category: "patrimoine" as CultureCategory,
   location: "",
   period: "",
   summary: "",
   content: "",
   image_url: "",
+  image_caption: "",
+  image_credit: "",
+  image_source_url: "",
+  gallery: [] as CulturePhoto[],
   link_url: "",
   featured: false,
   published: true,
@@ -111,12 +120,17 @@ export default function AdminCulture() {
       entry
         ? {
             title: entry.title,
+            slug: entry.slug || "",
             category: entry.category,
             location: entry.location || "",
             period: entry.period || "",
             summary: entry.summary,
             content: entry.content || "",
             image_url: entry.image_url || "",
+            image_caption: entry.image_caption || "",
+            image_credit: entry.image_credit || "",
+            image_source_url: entry.image_source_url || "",
+            gallery: entry.gallery ?? [],
             link_url: entry.link_url || "",
             featured: entry.featured,
             published: entry.published,
@@ -130,18 +144,37 @@ export default function AdminCulture() {
   const saveEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     const link = form.link_url.trim();
-    if (link && !/^https?:\/\//.test(link)) {
-      toast({ title: "Lien invalide", description: "Le lien doit commencer par https://", variant: "destructive" });
+    const sourceUrl = form.image_source_url.trim();
+    if ((link && !isHttpUrl(link)) || (sourceUrl && !isHttpUrl(sourceUrl))) {
+      toast({ title: "Lien invalide", description: "Les liens doivent commencer par https://", variant: "destructive" });
       return;
     }
+    const slug = slugify(form.slug.trim() || form.title);
+    if (!slug) {
+      toast({ title: "Adresse invalide", description: "Indiquez un titre ou une adresse de page.", variant: "destructive" });
+      return;
+    }
+    const gallery = form.gallery
+      .map((photo) => ({
+        url: photo.url.trim(),
+        caption: photo.caption?.trim() || undefined,
+        credit: photo.credit?.trim() || undefined,
+        sourceUrl: photo.sourceUrl?.trim() && isHttpUrl(photo.sourceUrl.trim()) ? photo.sourceUrl.trim() : undefined,
+      }))
+      .filter((photo) => isHttpUrl(photo.url));
     const payload = {
       title: form.title.trim(),
+      slug,
       category: form.category,
       location: form.location.trim() || null,
       period: form.period.trim() || null,
       summary: form.summary.trim(),
       content: form.content.trim() || null,
-      image_url: form.image_url || null,
+      image_url: form.image_url.trim() || null,
+      image_caption: form.image_caption.trim() || null,
+      image_credit: form.image_credit.trim() || null,
+      image_source_url: sourceUrl || null,
+      gallery,
       link_url: link || null,
       featured: form.featured,
       published: form.published,
@@ -152,7 +185,13 @@ export default function AdminCulture() {
       ? await supabase.from("culture_entries").update(payload).eq("id", editing.id)
       : await supabase.from("culture_entries").insert(payload);
     setSaving(false);
-    if (error) return showError(error);
+    if (error) {
+      if ((error as { code?: string }).code === "23505") {
+        toast({ title: "Adresse déjà utilisée", description: `Un autre article utilise déjà l'adresse /culture/${slug}.`, variant: "destructive" });
+        return;
+      }
+      return showError(error);
+    }
     setDialogOpen(false);
     await refreshEntries();
     toast({ title: "Enregistré", description: editing ? "Entrée mise à jour." : "Entrée ajoutée." });
@@ -305,6 +344,18 @@ export default function AdminCulture() {
               <Label>Titre</Label>
               <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} maxLength={160} required />
             </div>
+            <div className="space-y-2">
+              <Label>Adresse de la page</Label>
+              <div className="flex items-center gap-1 text-sm">
+                <span className="text-muted-foreground">/culture/</span>
+                <Input
+                  placeholder={slugify(form.title) || "titre-de-l-article"}
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Laissez vide pour la créer à partir du titre.</p>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Catégorie</Label>
@@ -336,10 +387,76 @@ export default function AdminCulture() {
               <p className="text-xs text-muted-foreground">{form.summary.length}/400</p>
             </div>
             <div className="space-y-2">
-              <Label>Texte complet (optionnel)</Label>
-              <Textarea rows={6} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
+              <Label>Article</Label>
+              <Textarea rows={12} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
+              <p className="text-xs text-muted-foreground">
+                Séparez les paragraphes par une ligne vide. « ## Titre » crée un intertitre, « - » une liste.
+              </p>
             </div>
-            <ImageUpload label="Photo" folder="culture" value={form.image_url} onChange={(image_url) => setForm({ ...form, image_url })} />
+
+            <div className="space-y-3 rounded-md border p-3">
+              <p className="text-sm font-medium">Photo principale</p>
+              <ImageUpload label="Envoyer une photo" folder="culture" value={form.image_url} onChange={(image_url) => setForm({ ...form, image_url })} />
+              <div className="space-y-2">
+                <Label className="text-xs">ou adresse de la photo (ex. Wikimedia Commons)</Label>
+                <Input type="url" placeholder="https://..." value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Légende</Label>
+                  <Input value={form.image_caption} onChange={(e) => setForm({ ...form, image_caption: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Crédit (auteur, licence)</Label>
+                  <Input placeholder="Photo : Nom – CC BY-SA 4.0" value={form.image_credit} onChange={(e) => setForm({ ...form, image_credit: e.target.value })} />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Page source de la photo</Label>
+                <Input type="url" placeholder="https://commons.wikimedia.org/wiki/File:..." value={form.image_source_url} onChange={(e) => setForm({ ...form, image_source_url: e.target.value })} />
+              </div>
+            </div>
+
+            <div className="space-y-3 rounded-md border p-3">
+              <p className="text-sm font-medium">Galerie ({form.gallery.length})</p>
+              {form.gallery.map((photo, i) => {
+                const update = (patch: Partial<CulturePhoto>) =>
+                  setForm({ ...form, gallery: form.gallery.map((p, j) => (j === i ? { ...p, ...patch } : p)) });
+                return (
+                  <div key={i} className="flex gap-3 rounded-md bg-muted/40 p-2">
+                    {photo.url && <img src={photo.url} alt="" className="h-16 w-20 rounded object-cover flex-shrink-0" />}
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <Input className="sm:col-span-2" type="url" placeholder="Adresse de la photo" value={photo.url} onChange={(e) => update({ url: e.target.value })} />
+                      <Input placeholder="Légende" value={photo.caption ?? ""} onChange={(e) => update({ caption: e.target.value })} />
+                      <Input placeholder="Crédit" value={photo.credit ?? ""} onChange={(e) => update({ credit: e.target.value })} />
+                      <Input className="sm:col-span-2" type="url" placeholder="Page source" value={photo.sourceUrl ?? ""} onChange={(e) => update({ sourceUrl: e.target.value })} />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Retirer la photo"
+                      onClick={() => setForm({ ...form, gallery: form.gallery.filter((_, j) => j !== i) })}
+                    >
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                );
+              })}
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setForm({ ...form, gallery: [...form.gallery, { url: "" }] })}>
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  Ajouter par adresse
+                </Button>
+              </div>
+              <ImageUpload
+                key={form.gallery.length}
+                label="ou envoyer une photo dans la galerie"
+                folder="culture"
+                value=""
+                onChange={(url) => url && setForm({ ...form, gallery: [...form.gallery, { url }] })}
+              />
+            </div>
             <div className="space-y-2">
               <Label>Lien « En savoir plus » (optionnel)</Label>
               <Input type="url" placeholder="https://..." value={form.link_url} onChange={(e) => setForm({ ...form, link_url: e.target.value })} />

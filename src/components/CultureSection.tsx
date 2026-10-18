@@ -1,15 +1,13 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CultureEntryCard, CultureEntryDialog } from "@/components/culture/CultureEntryCard";
-import { useCultureEntries, useCulturePage, type CultureEntry } from "@/lib/culture";
+import { CultureEntryCard } from "@/components/culture/CultureEntryCard";
+import { useCultureEntries, useCulturePage } from "@/lib/culture";
 
 // Section « Culture » de l'accueil : 4 entrées publiées (à la une d'abord) et
 // un lien vers la page /culture. Masquée tant que rien n'est publié.
 const CultureSection = () => {
   const { data: settings } = useCulturePage();
   const { data: entries } = useCultureEntries();
-  const [openEntry, setOpenEntry] = useState<CultureEntry | null>(null);
 
   const published = (entries ?? []).filter((e) => e.published);
   if (published.length === 0) return null;
@@ -29,11 +27,10 @@ const CultureSection = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {picks.map((entry) => (
-            <CultureEntryCard key={entry.id} entry={entry} onOpen={setOpenEntry} />
+            <CultureEntryCard key={entry.id} entry={entry} />
           ))}
         </div>
       </div>
-      <CultureEntryDialog entry={openEntry} onClose={() => setOpenEntry(null)} />
     </section>
   );
 };

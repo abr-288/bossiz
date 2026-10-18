@@ -23,6 +23,7 @@ const Hotels = lazy(() => import("@/pages/Hotels"));
 const HotelsPartners = lazy(() => import("@/pages/HotelsPartners"));
 const HotelDetail = lazy(() => import("@/pages/HotelDetail"));
 const Culture = lazy(() => import("@/pages/Culture"));
+const CultureArticle = lazy(() => import("@/pages/CultureArticle"));
 const AdminCulture = lazy(() => import("@/pages/admin/AdminCulture"));
 const AdminHotelCommissions = lazy(() => import("@/pages/admin/AdminHotelCommissions"));
 const Cars = lazy(() => import("@/pages/Cars"));
@@ -162,6 +163,7 @@ const AnimatedRoutes = () => {
           <Route path="/entreprises" element={<PageTransition><Companies /></PageTransition>} />
           <Route path="/company/dashboard" element={<PageTransition><CompanyDashboard /></PageTransition>} />
           <Route path="/culture" element={<PageTransition><Culture /></PageTransition>} />
+          <Route path="/culture/:slug" element={<PageTransition><CultureArticle /></PageTransition>} />
           <Route path="/destinations" element={<PageTransition><Destinations /></PageTransition>} />
           <Route path="/destinations/:id" element={<PageTransition><DestinationDetail /></PageTransition>} />
           <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
