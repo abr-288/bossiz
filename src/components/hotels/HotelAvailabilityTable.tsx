@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BedDouble, Check, Coffee, Maximize, User, Wallet } from "lucide-react";
-import { cancellationLabel, formatFcfa, type HotelRate, type HotelRoomType } from "@/lib/hotels";
+import { cancellationLabel, formatFcfa, lateCancellationLabel, type HotelRate, type HotelRoomType } from "@/lib/hotels";
 
 export interface RoomSelection {
   rate: HotelRate;
@@ -33,6 +33,8 @@ interface HotelAvailabilityTableProps {
   guests: number;
   onReserve: (selections: RoomSelection[]) => void;
   reserving?: boolean;
+  // Sélection restaurée (ex. retour de la page de connexion), par tarif.
+  initialQuantities?: Record<string, number>;
 }
 
 const MAX_PER_RATE = 10;
@@ -58,7 +60,12 @@ function RateOptions({ rate }: { rate: HotelRate }) {
       )}
       <li className={`flex items-start gap-1.5 ${rate.free_cancellation ? "text-success font-medium" : "text-muted-foreground"}`}>
         <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
-        {cancellationLabel(rate)}
+        <span>
+          {cancellationLabel(rate)}
+          {rate.free_cancellation && (
+            <span className="block text-xs font-normal text-muted-foreground">{lateCancellationLabel(rate)}</span>
+          )}
+        </span>
       </li>
       <li className={`flex items-start gap-1.5 ${rate.pay_at_property ? "text-success" : "text-muted-foreground"}`}>
         <Wallet className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -79,8 +86,9 @@ export function HotelAvailabilityTable({
   guests,
   onReserve,
   reserving,
+  initialQuantities,
 }: HotelAvailabilityTableProps) {
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [quantities, setQuantities] = useState<Record<string, number>>(() => initialQuantities ?? {});
   const [detailRoom, setDetailRoom] = useState<HotelRoomType | null>(null);
 
   const rows = useMemo(

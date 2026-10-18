@@ -130,6 +130,7 @@ export interface HotelRate {
   breakfast_included: boolean;
   free_cancellation: boolean;
   free_cancellation_days: number;
+  late_cancellation_fee_percent: number;
   pay_at_property: boolean;
   sort_order: number;
   is_active: boolean;
@@ -150,10 +151,27 @@ export interface HotelRoomType {
   is_active: boolean;
 }
 
-export function cancellationLabel(rate: Pick<HotelRate, "free_cancellation" | "free_cancellation_days">): string {
+// Conditions du contrat de partenariat hébergement (art. 7) : annulation
+// gratuite jusqu'à 23 h 59 du jour J-N (N ≥ 1), puis frais d'annulation
+// tardive du tarif ; non remboursable = 100 % ; non-présentation = 100 %.
+export const DEFAULT_LATE_CANCELLATION_FEE = 20;
+export const NO_SHOW_TERMS = "Non-présentation sans annulation : 100 % du séjour dû.";
+
+export function cancellationLabel(
+  rate: Pick<HotelRate, "free_cancellation" | "free_cancellation_days"> & { late_cancellation_fee_percent?: number },
+): string {
   if (!rate.free_cancellation) return "Non remboursable";
-  if (rate.free_cancellation_days <= 0) return "Annulation gratuite jusqu'au jour d'arrivée";
-  return rate.free_cancellation_days === 1
+  const days = Math.max(rate.free_cancellation_days, 1);
+  return days === 1
     ? "Annulation gratuite jusqu'à la veille de l'arrivée"
-    : `Annulation gratuite jusqu'à ${rate.free_cancellation_days} jours avant l'arrivée`;
+    : `Annulation gratuite jusqu'à ${days} jours avant l'arrivée`;
+}
+
+// Ce qui s'applique après le délai d'annulation gratuite.
+export function lateCancellationLabel(
+  rate: Pick<HotelRate, "free_cancellation"> & { late_cancellation_fee_percent?: number },
+): string {
+  if (!rate.free_cancellation) return "Frais de 100 % en cas d'annulation";
+  const fee = rate.late_cancellation_fee_percent ?? DEFAULT_LATE_CANCELLATION_FEE;
+  return fee > 0 ? `Ensuite : ${fee} % de frais` : "Ensuite : annulation sans frais jusqu'à la veille";
 }

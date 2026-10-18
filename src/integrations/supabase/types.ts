@@ -1401,6 +1401,63 @@ export type Database = {
         }
         Relationships: []
       }
+      hotel_onsite_commission_invoices: {
+        Row: {
+          agency_id: string
+          booking_ids: string[]
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          currency: string
+          due_at: string
+          id: string
+          issued_at: string
+          issued_by: string | null
+          paid_at: string | null
+          period: string
+          status: string
+          stays_amount: number
+          stays_count: number
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          booking_ids: string[]
+          commission_amount: number
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          due_at: string
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          paid_at?: string | null
+          period: string
+          status?: string
+          stays_amount: number
+          stays_count: number
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          booking_ids?: string[]
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          due_at?: string
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          paid_at?: string | null
+          period?: string
+          status?: string
+          stays_amount?: number
+          stays_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hotel_rates: {
         Row: {
           breakfast_included: boolean
@@ -1409,6 +1466,7 @@ export type Database = {
           free_cancellation_days: number
           id: string
           is_active: boolean
+          late_cancellation_fee_percent: number
           occupancy: number
           pay_at_property: boolean
           price_per_night: number
@@ -1423,6 +1481,7 @@ export type Database = {
           free_cancellation_days?: number
           id?: string
           is_active?: boolean
+          late_cancellation_fee_percent?: number
           occupancy: number
           pay_at_property?: boolean
           price_per_night: number
@@ -1437,6 +1496,7 @@ export type Database = {
           free_cancellation_days?: number
           id?: string
           is_active?: boolean
+          late_cancellation_fee_percent?: number
           occupancy?: number
           pay_at_property?: boolean
           price_per_night?: number
@@ -3740,6 +3800,55 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      agency_hotel_bookings: {
+        Args: never
+        Returns: {
+          booking_id: string
+          check_in: string
+          check_out: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          guests: number
+          cancellation: Json | null
+          hotel_name: string
+          no_show: boolean
+          notes: string | null
+          pay_at_property: boolean
+          payment_status: string
+          rooms: Json
+          status: string
+          total_price: number
+        }[]
+      }
+      agency_mark_hotel_no_show: {
+        Args: { p_booking_id: string }
+        Returns: undefined
+      }
+      admin_hotel_onsite_commissions: {
+        Args: { p_period: string }
+        Returns: {
+          agency_id: string
+          agency_name: string
+          bookings: Json
+          commission_amount: number
+          invoice_due_at: string | null
+          invoice_id: string | null
+          invoice_status: string | null
+          invoiced_amount: number | null
+          stays_amount: number
+          stays_count: number
+        }[]
+      }
+      admin_issue_hotel_onsite_invoice: {
+        Args: { p_agency_id: string; p_period: string }
+        Returns: string
+      }
+      admin_set_hotel_onsite_invoice_status: {
+        Args: { p_invoice_id: string; p_status: string }
+        Returns: undefined
       }
       hotel_room_availability: {
         Args: { p_check_in: string; p_check_out: string; p_service_id: string }

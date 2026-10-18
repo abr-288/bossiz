@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { HotelAvailabilityTable, type RoomSelection } from "@/components/hotels/HotelAvailabilityTable";
+import { HotelCheckoutDialog, type CheckoutContact } from "@/components/hotels/HotelCheckoutDialog";
+import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import {
   addDays,
   isoDate,
@@ -71,6 +73,16 @@ const amenityIcon = (label: string): LucideIcon => {
   return AMENITY_ICONS.find(([key]) => lower.includes(key))?.[1] ?? Check;
 };
 
+// Sélection gardée le temps de se connecter (la page de connexion ramène ici).
+const selectionStorageKey = (hotelId: string) => `hotel-selection:${hotelId}`;
+
+interface StoredSelection {
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  quantities: Record<string, number>;
+}
+
 interface HotelService {
   id: string;
   name: string;
@@ -90,6 +102,8 @@ interface HotelService {
 // voyageurs, tarif du séjour, options, sélection).
 export default function HotelDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const tomorrow = addDays(isoDate(new Date()), 1);
   const initialCheckIn = searchParams.get("checkin") || tomorrow;
@@ -100,6 +114,10 @@ export default function HotelDetail() {
   });
   const [guests, setGuests] = useState(() => Math.min(Math.max(Number(searchParams.get("adults")) || 2, 1), 30));
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [checkoutSelections, setCheckoutSelections] = useState<RoomSelection[]>([]);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [restoredQuantities, setRestoredQuantities] = useState<Record<string, number> | undefined>();
   const nights = nightsBetween(checkIn, checkOut);
 
   useEffect(() => {
@@ -165,10 +183,92 @@ export default function HotelDetail() {
     return list.filter(Boolean);
   }, [hotel]);
 
-  const handleReserve = (selections: RoomSelection[]) => {
-    // Étape 2 : création de la réservation multi-logements et paiement.
-    console.info("Sélection", selections);
-    toast.info("La réservation en ligne de ces logements arrive très bientôt. Contactez-nous pour réserver dès maintenant.");
+  // Retour de la connexion : restaure la sélection et rouvre la finalisation.
+  useEffect(() => {
+    const data = hotelQuery.data;
+    if (!id || !data) return;
+    let stored: StoredSelection | null = null;
+    try {
+      const raw = sessionStorage.getItem(selectionStorageKey(id));
+      stored = raw ? (JSON.parse(raw) as StoredSelection) : null;
+      sessionStorage.removeItem(selectionStorageKey(id));
+    } catch {
+      stored = null;
+    }
+    if (!stored || stored.checkIn !== checkIn || stored.checkOut !== checkOut) return;
+    const selections = Object.entries(stored.quantities).flatMap(([rateId, quantity]) => {
+      const rate = data.rates.find((r) => r.id === rateId);
+      const roomType = rate && data.roomTypes.find((rt) => rt.id === rate.room_type_id);
+      return rate && roomType && quantity > 0 ? [{ rate, roomType, quantity }] : [];
+    });
+    if (selections.length === 0) return;
+    setRestoredQuantities(stored.quantities);
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      setCheckoutSelections(selections);
+      setCheckoutOpen(true);
+    });
+    // Une seule fois, au chargement de l'hôtel.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hotelQuery.data, id]);
+
+  const handleReserve = async (selections: RoomSelection[]) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      try {
+        const stored: StoredSelection = {
+          checkIn,
+          checkOut,
+          guests,
+          quantities: Object.fromEntries(selections.map((s) => [s.rate.id, s.quantity])),
+        };
+        sessionStorage.setItem(selectionStorageKey(id!), JSON.stringify(stored));
+      } catch {
+        // Stockage indisponible : la sélection sera à refaire après connexion.
+      }
+      toast.info("Connectez-vous ou créez un compte pour finaliser votre réservation.");
+      navigate(`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+      return;
+    }
+    setCheckoutSelections(selections);
+    setCheckoutOpen(true);
+  };
+
+  const confirmBooking = async (contact: CheckoutContact) => {
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-hotel-booking", {
+        body: {
+          service_id: id,
+          check_in: checkIn,
+          check_out: checkOut,
+          guests,
+          items: checkoutSelections.map((s) => ({ rate_id: s.rate.id, quantity: s.quantity })),
+          customer_name: contact.name,
+          customer_email: contact.email,
+          customer_phone: contact.phone,
+          notes: contact.notes,
+        },
+      });
+      if (error || !data?.success) {
+        const message = error
+          ? await getEdgeFunctionErrorMessage(error, "La réservation n'a pas pu être créée.")
+          : data?.error || "La réservation n'a pas pu être créée.";
+        toast.error(message);
+        // Le stock a pu changer : on recalcule les disponibilités.
+        void availabilityQuery.refetch();
+        return;
+      }
+      setCheckoutOpen(false);
+      if (data.pay_at_property) {
+        toast.success("Réservation confirmée !");
+        navigate(`/confirmation?bookingId=${data.booking_id}`);
+      } else {
+        navigate(`/payment?bookingId=${data.booking_id}`);
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const scrollToAvailability = () =>
@@ -385,7 +485,9 @@ export default function HotelDetail() {
             <p className="text-sm text-destructive">Impossible de vérifier les disponibilités. Réessayez dans un instant.</p>
           ) : (
             <HotelAvailabilityTable
-              key={`${checkIn}_${checkOut}`}
+              key={`${checkIn}_${checkOut}_${restoredQuantities ? "restored" : "new"}`}
+              initialQuantities={restoredQuantities}
+              reserving={submitting}
               roomTypes={hotelQuery.data?.roomTypes ?? []}
               rates={hotelQuery.data?.rates ?? []}
               availability={availabilityQuery.data}
@@ -417,6 +519,19 @@ export default function HotelDetail() {
           </div>
         </section>
       </main>
+
+      <HotelCheckoutDialog
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
+        hotelName={hotel.name}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        nights={nights}
+        guests={guests}
+        selections={checkoutSelections}
+        submitting={submitting}
+        onConfirm={confirmBooking}
+      />
 
       <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">

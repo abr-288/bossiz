@@ -84,7 +84,7 @@ serve(async (req) => {
 
     const bookingQuery = adminSupabase
       .from('bookings')
-      .select('id, user_id, external_ref, start_date')
+      .select('id, user_id, external_ref, start_date, booking_details')
       .eq('id', bookingId);
 
     if (!isAdmin) {
@@ -101,6 +101,13 @@ serve(async (req) => {
     // la réservation émise chez le fournisseur (billet / PNR, external_ref)
     // ou la date de prestation arrivée, le fournisseur est déjà payé. Le
     // client garderait le billet ET l'argent : ces cas passent par un admin.
+    if (!isAdmin && (booking.booking_details as { kind?: string } | null)?.kind === 'partner_hotel') {
+      return errorResponse(
+        'Pour cette réservation d’hôtel, utilisez « Annuler ma réservation » depuis sa page : les conditions d’annulation du tarif s’appliquent.',
+        409
+      );
+    }
+
     if (!isAdmin) {
       const today = new Date().toISOString().slice(0, 10);
       if (booking.external_ref || (booking.start_date && booking.start_date <= today)) {

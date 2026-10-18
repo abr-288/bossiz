@@ -159,6 +159,12 @@ const UserDashboard = () => {
     try {
       const booking = bookings.find((b) => b.id === id);
       if (!booking) throw new Error(t('dashboardPage.errors.notFound'));
+      // Hôtel partenaire : annulation depuis sa page, selon les conditions du
+      // tarif (cancel-hotel-booking), jamais le remboursement intégral générique.
+      if ((booking as { booking_details?: { kind?: string } | null }).booking_details?.kind === 'partner_hotel') {
+        navigate(`/confirmation?bookingId=${id}`);
+        return;
+      }
 
       // Delegates to the refund-payment edge function, which actually calls
       // CinetPay to refund the charge (not just flipping a status flag) when

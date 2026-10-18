@@ -263,13 +263,38 @@ serve(async (req) => {
       // the row to this caller, .single() below simply finds nothing.
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
-        .select('id, user_id, company_id, total_price, amount_due_now, currency, payment_status, approval_status')
+        .select('id, user_id, company_id, service_id, total_price, amount_due_now, currency, payment_status, approval_status, start_date, end_date, created_at, booking_details')
         .eq('id', targetId)
         .single();
 
       if (bookingError || !booking) {
         console.error('❌ Réservation introuvable ou non autorisée:', bookingError?.message);
         return errorResponse('Réservation introuvable', 404);
+      }
+
+      // Hôtel partenaire : le stock n'est retenu que 30 minutes pour une
+      // réservation non payée (hotel_room_availability). Passé ce délai, on
+      // revérifie que les logements sont encore libres avant d'encaisser.
+      const isPartnerHotel = (booking.booking_details as { kind?: string } | null)?.kind === 'partner_hotel';
+      const holdExpired = Date.now() - new Date(booking.created_at).getTime() > 30 * 60 * 1000;
+      if (isPartnerHotel && holdExpired && booking.payment_status === 'pending' && adminSupabase) {
+        const [{ data: bookedRooms }, { data: availability }] = await Promise.all([
+          adminSupabase.from('hotel_booking_rooms').select('room_type_id, quantity').eq('booking_id', booking.id),
+          adminSupabase.rpc('hotel_room_availability', {
+            p_service_id: booking.service_id,
+            p_check_in: booking.start_date,
+            p_check_out: booking.end_date,
+          }),
+        ]);
+        const free = new Map((availability || []).map((row: { room_type_id: string; available_units: number }) => [row.room_type_id, row.available_units]));
+        const wanted = new Map<string, number>();
+        for (const room of bookedRooms || []) {
+          wanted.set(room.room_type_id, (wanted.get(room.room_type_id) || 0) + room.quantity);
+        }
+        const stillAvailable = [...wanted].every(([roomTypeId, quantity]) => (free.get(roomTypeId) ?? 0) >= quantity);
+        if (!stillAvailable) {
+          return errorResponse('Ces logements ne sont plus disponibles sur vos dates. Refaites votre sélection sur la page de l’hôtel.', 409);
+        }
       }
 
       if (booking.payment_status === 'paid') {

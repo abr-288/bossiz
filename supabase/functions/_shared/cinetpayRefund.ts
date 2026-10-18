@@ -27,7 +27,10 @@ export interface RefundResult {
 export async function refundBookingPayment(
   supabase: SupabaseClient,
   bookingId: string,
-  reason: string
+  reason: string,
+  // Remboursement partiel (ex. annulation d'hôtel avec frais retenus) :
+  // montant à rendre au client, plafonné au montant payé.
+  options: { amount?: number } = {}
 ): Promise<RefundResult> {
   const { data: booking, error: bookingError } = await supabase
     .from('bookings')
@@ -67,8 +70,13 @@ export async function refundBookingPayment(
     return { success: false, refunded: false, error: 'Paiement introuvable' };
   }
 
+  const refundAmount = options.amount !== undefined
+    ? Math.min(Math.max(Math.round(options.amount), 0), Number(payment.amount))
+    : Number(payment.amount);
+  const refundPayment = { ...payment, amount: refundAmount };
+
   if (payment.payment_provider === 'jeko') {
-    const outcome = await sendJekoRefund(supabase, payment, reason);
+    const outcome = await sendJekoRefund(supabase, refundPayment, reason);
     if (!outcome.ok) {
       return { success: false, refunded: false, error: outcome.error };
     }
@@ -76,7 +84,7 @@ export async function refundBookingPayment(
     // sendJekoRefund : on ne change que le statut du paiement.
     const nowIso = new Date().toISOString();
     await supabase.from('payments').update({ status: 'refunded', updated_at: nowIso }).eq('id', payment.id);
-    return await finalizeRefund(supabase, bookingId, payment, nowIso);
+    return await finalizeRefund(supabase, bookingId, refundPayment, nowIso);
   }
 
   const cinetpayApiKey = Deno.env.get('CINETPAY_API_KEY');
@@ -95,7 +103,7 @@ export async function refundBookingPayment(
         apikey: cinetpayApiKey,
         site_id: cinetpaySiteId,
         transaction_id: payment.transaction_id,
-        amount: payment.amount,
+        amount: refundAmount,
         currency: payment.currency || 'XOF',
       }),
     });
@@ -123,12 +131,12 @@ export async function refundBookingPayment(
     .from('payments')
     .update({
       status: 'refunded',
-      payment_data: { ...(payment.payment_data || {}), refund_response: refundData, refund_reason: reason, refunded_at: nowIso },
+      payment_data: { ...(payment.payment_data || {}), refund_response: refundData, refund_reason: reason, refunded_at: nowIso, refunded_amount: refundAmount },
       updated_at: nowIso,
     })
     .eq('id', payment.id);
 
-  return await finalizeRefund(supabase, bookingId, payment, nowIso);
+  return await finalizeRefund(supabase, bookingId, refundPayment, nowIso);
 }
 
 // Réservation annulée et remboursée, part partenaire non versée

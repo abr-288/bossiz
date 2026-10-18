@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
+import { HotelBookingCancelCard } from "@/components/hotels/HotelBookingCancelCard";
 import { MOTION } from "@/lib/motion";
 
 const Confirmation = () => {
@@ -547,6 +548,18 @@ const Confirmation = () => {
               </div>
             </div>
           </div>
+
+          {/* Hôtel partenaire : annulation en ligne selon les conditions du tarif */}
+          {booking?.booking_details?.kind === "partner_hotel" && (
+            <div className="mb-6">
+              <HotelBookingCancelCard
+                bookingId={booking.id}
+                cancelled={booking.status === "cancelled"}
+                cancellation={booking.booking_details?.cancellation}
+                onCancelled={loadBooking}
+              />
+            </div>
+          )}
 
           {/* Important Info */}
           <Card className="border-warning-foreground/20 bg-warning">

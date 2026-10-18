@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
@@ -26,6 +26,11 @@ import { passwordErrorMessage } from "@/lib/passwordErrors";
 const Auth = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Retour à la page d'origine après connexion (ex. fiche hôtel en cours de
+  // réservation). Chemin interne uniquement, jamais une URL externe.
+  const redirectParam = searchParams.get("redirect");
+  const afterLogin = redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//") ? redirectParam : "/";
   const [loading, setLoading] = useState(false);
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const [showMFAVerification, setShowMFAVerification] = useState(false);
@@ -58,7 +63,7 @@ const Auth = () => {
           // User has MFA enabled but hasn't verified yet
           setShowMFAVerification(true);
         } else {
-          navigate("/");
+          navigate(afterLogin);
         }
       }
     });
@@ -148,7 +153,7 @@ const Auth = () => {
         title: t('auth.success.login'),
         description: t('auth.success.loginDesc'),
       });
-      navigate("/");
+      navigate(afterLogin);
     }
   };
 
@@ -220,7 +225,7 @@ const Auth = () => {
             title: t('auth.mfaVerificationSuccess'),
             description: t('auth.success.loginDesc'),
           });
-          navigate("/");
+          navigate(afterLogin);
         }}
         onBack={() => {
           setShowMFAVerification(false);

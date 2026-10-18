@@ -22,7 +22,7 @@ import {
   FileText,
   Car,
   Languages,
-  Smile, Landmark } from "lucide-react";
+  Smile, Landmark, Receipt } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { SidebarBrandHeader, sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 import {
@@ -48,6 +48,7 @@ const menuItems = [
   { get title() { return i18n.t("ux.bo.subAgencies"); }, url: "/admin/agencies", icon: Building2 },
   { get title() { return i18n.t("ux.bo.partnerApplications"); }, url: "/admin/partner-applications", icon: FileText },
   { title: "Commissions", url: "/admin/commissions", icon: DollarSign },
+  { title: "Commissions hôtels sur place", url: "/admin/hotel-commissions", icon: Receipt },
   { get title() { return i18n.t("ux.bo.carPlans"); }, url: "/admin/car-partner-plans", icon: Car },
   { get title() { return i18n.t("ux.bo.subscriptionRequests"); }, url: "/admin/subscriptions", icon: Crown },
   { get title() { return i18n.t("ux.bo.subscriptionPlans"); }, url: "/admin/subscription-plans", icon: Tags },

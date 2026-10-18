@@ -64,6 +64,7 @@ const emptyRateForm = {
   breakfast_included: false,
   free_cancellation: true,
   free_cancellation_days: "1",
+  late_cancellation_fee_percent: "20",
   pay_at_property: false,
   is_active: true,
 };
@@ -234,7 +235,8 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
             price_per_night: String(rate.price_per_night),
             breakfast_included: rate.breakfast_included,
             free_cancellation: rate.free_cancellation,
-            free_cancellation_days: String(rate.free_cancellation_days),
+            free_cancellation_days: String(Math.max(rate.free_cancellation_days, 1)),
+            late_cancellation_fee_percent: String(rate.late_cancellation_fee_percent ?? 20),
             pay_at_property: rate.pay_at_property,
             is_active: rate.is_active,
           }
@@ -256,7 +258,8 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
       price_per_night: price,
       breakfast_included: rateForm.breakfast_included,
       free_cancellation: rateForm.free_cancellation,
-      free_cancellation_days: Math.min(Math.max(parseInt(rateForm.free_cancellation_days) || 0, 0), 60),
+      free_cancellation_days: Math.min(Math.max(parseInt(rateForm.free_cancellation_days) || 1, 1), 60),
+      late_cancellation_fee_percent: Math.min(Math.max(parseInt(rateForm.late_cancellation_fee_percent) || 0, 0), 100),
       pay_at_property: rateForm.pay_at_property,
       is_active: rateForm.is_active,
     };
@@ -354,7 +357,9 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                           <span className="flex-1 text-xs text-muted-foreground">
                             {[
                               rate.breakfast_included ? "Petit-déjeuner inclus" : null,
-                              cancellationLabel(rate),
+                              rate.free_cancellation
+                                ? `${cancellationLabel(rate)}, puis ${rate.late_cancellation_fee_percent ?? 20} %`
+                                : cancellationLabel(rate),
                               rate.pay_at_property ? "Paiement sur place" : null,
                             ]
                               .filter(Boolean)
@@ -516,21 +521,36 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                 <Switch checked={rateForm.free_cancellation} onCheckedChange={(c) => setRateForm({ ...rateForm, free_cancellation: c })} />
               </label>
               {rateForm.free_cancellation ? (
-                <div className="flex items-center gap-2 text-sm pl-1">
-                  <span>jusqu'à</span>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="60"
-                    className="w-20 h-8"
-                    value={rateForm.free_cancellation_days}
-                    onChange={(e) => setRateForm({ ...rateForm, free_cancellation_days: e.target.value })}
-                  />
-                  <span>jour(s) avant l'arrivée</span>
+                <div className="space-y-2 pl-1">
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span>jusqu'à</span>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="60"
+                      className="w-20 h-8"
+                      value={rateForm.free_cancellation_days}
+                      onChange={(e) => setRateForm({ ...rateForm, free_cancellation_days: e.target.value })}
+                    />
+                    <span>jour(s) avant l'arrivée (23 h 59)</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span>puis frais d'annulation tardive de</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      className="w-20 h-8"
+                      value={rateForm.late_cancellation_fee_percent}
+                      onChange={(e) => setRateForm({ ...rateForm, late_cancellation_fee_percent: e.target.value })}
+                    />
+                    <span>% du séjour</span>
+                  </div>
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground pl-1">Tarif non remboursable.</p>
+                <p className="text-xs text-muted-foreground pl-1">Tarif non remboursable : 100 % de frais en cas d'annulation.</p>
               )}
+              <p className="text-xs text-muted-foreground pl-1">Non-présentation du client : 100 % du séjour (contrat de partenariat, art. 7).</p>
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span className="flex items-center gap-2"><Wallet className="h-4 w-4" />Paiement sur place (pas de paiement en ligne)</span>
                 <Switch checked={rateForm.pay_at_property} onCheckedChange={(c) => setRateForm({ ...rateForm, pay_at_property: c })} />

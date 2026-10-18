@@ -285,7 +285,7 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     // fournisseur équivalente : ils restent confirmés immédiatement.
     const { data: bookingRow } = await supabase
       .from('bookings')
-      .select('id, total_price, amount_due_now, balance_due, payment_plan, currency, services(type, agency_id)')
+      .select('id, total_price, amount_due_now, balance_due, payment_plan, currency, booking_details, services(type, agency_id)')
       .eq('id', bookingId)
       .single();
 
@@ -344,7 +344,26 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
 
     // Email "réservation confirmée" et facture : pour un vol, différés
     // jusqu'à ce que create-pnr confirme un vrai PNR (voir plus bas).
-    if (!isFlight) {
+    // Hôtel partenaire (create-hotel-booking) : email détaillé au client et
+    // à l'hôtel au lieu de la confirmation générique.
+    const isPartnerHotel = (bookingRow?.booking_details as { kind?: string } | null)?.kind === 'partner_hotel';
+    if (isPartnerHotel) {
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-hotel-booking-emails`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({ bookingId }),
+        });
+      } catch (e) {
+        console.warn('⚠️ Emails réservation hôtel non envoyés:', e instanceof Error ? e.message : e);
+      }
+      supabase.functions.invoke('generate-invoice', {
+        body: { bookingId },
+      }).catch(() => console.warn('⚠️ Facture non générée'));
+    } else if (!isFlight) {
       try {
         console.log('   - Déclenchement email de confirmation...');
         fetch(`${supabaseUrl}/functions/v1/send-booking-confirmation`, {

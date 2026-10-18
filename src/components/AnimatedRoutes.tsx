@@ -24,6 +24,7 @@ const HotelsPartners = lazy(() => import("@/pages/HotelsPartners"));
 const HotelDetail = lazy(() => import("@/pages/HotelDetail"));
 const Culture = lazy(() => import("@/pages/Culture"));
 const AdminCulture = lazy(() => import("@/pages/admin/AdminCulture"));
+const AdminHotelCommissions = lazy(() => import("@/pages/admin/AdminHotelCommissions"));
 const Cars = lazy(() => import("@/pages/Cars"));
 const Tours = lazy(() => import("@/pages/Tours"));
 const Destinations = lazy(() => import("@/pages/Destinations"));
@@ -77,6 +78,7 @@ const AdminBossizMicrosites = lazy(() => import("@/pages/admin/AdminBossizMicros
 const AdminHomepageConfig = lazy(() => import("@/pages/admin/AdminHomepageConfig"));
 const AgencyDashboard = lazy(() => import("@/pages/agency/AgencyDashboard"));
 const AgencyServices = lazy(() => import("@/pages/agency/AgencyServices"));
+const AgencyHotelBookings = lazy(() => import("@/pages/agency/AgencyHotelBookings"));
 const AgencyRestaurants = lazy(() => import("@/pages/agency/AgencyRestaurants"));
 const Restaurants = lazy(() => import("@/pages/Restaurants"));
 const AgencyArtisans = lazy(() => import("@/pages/agency/AgencyArtisans"));
@@ -206,6 +208,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
           <Route path="/admin/translations" element={<PageTransition><AdminTranslations /></PageTransition>} />
           <Route path="/admin/culture" element={<PageTransition><AdminCulture /></PageTransition>} />
+          <Route path="/admin/hotel-commissions" element={<PageTransition><AdminHotelCommissions /></PageTransition>} />
           <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
           <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
           <Route path="/admin/bossiz-sites" element={<Navigate to="/admin/bossiz-microsites" replace />} />
@@ -214,6 +217,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/homepage-config" element={<PageTransition><AdminHomepageConfig /></PageTransition>} />
           <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
           <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
+          <Route path="/agency/hotel-bookings" element={<PageTransition><AgencyHotelBookings /></PageTransition>} />
           <Route path="/agency/restaurants" element={<PageTransition><AgencyRestaurants /></PageTransition>} />
           <Route path="/agency/artisans" element={<PageTransition><AgencyArtisans /></PageTransition>} />
           <Route path="/agency/wellness" element={<PageTransition><AgencyWellness /></PageTransition>} />

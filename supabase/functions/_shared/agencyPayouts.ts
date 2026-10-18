@@ -6,11 +6,14 @@ export async function scheduleAgencyPayout(params: {
   supabaseUrl: string;
   supabaseServiceKey: string;
   bookingId: string;
+  // Hôtel partenaire : true seulement depuis release-hotel-payouts, une fois
+  // la date d'arrivée passée (contrat hébergement, art. 6.2).
+  releaseHotel?: boolean;
 }): Promise<void> {
   const { supabase, supabaseUrl, supabaseServiceKey, bookingId } = params;
   const { data: booking, error: bookingError } = await supabase
     .from("bookings")
-    .select("id, total_price, amount_paid, balance_due, payment_status, status, services(type, agency_id)")
+    .select("id, total_price, amount_paid, balance_due, payment_status, status, booking_details, services(type, agency_id)")
     .eq("id", bookingId)
     .maybeSingle();
 
@@ -19,15 +22,25 @@ export async function scheduleAgencyPayout(params: {
     return;
   }
   if (!booking?.services?.agency_id || !booking.total_price) return;
-  if (Number(booking.amount_paid || 0) < Number(booking.total_price) || Number(booking.balance_due || 0) > 0) return;
-  if (booking.services.type === "flight" && booking.status !== "confirmed") return;
+  if (booking.booking_details?.kind === "partner_hotel") {
+    // Versé après l'arrivée : le client peut encore annuler avant. Le
+    // montant est celui de la ligne commissions (ajusté en cas d'annulation
+    // avec frais), pas le total de la réservation.
+    if (!params.releaseHotel) return;
+  } else {
+    if (Number(booking.amount_paid || 0) < Number(booking.total_price) || Number(booking.balance_due || 0) > 0) return;
+    if (booking.services.type === "flight" && booking.status !== "confirmed") return;
+  }
 
+  // Hôtel annulé avec frais : le paiement est passé « refunded » (remboursement
+  // partiel) mais l'hôtel garde sa part des frais retenus.
+  const paidStatuses = booking.booking_details?.kind === "partner_hotel" ? ["completed", "refunded"] : ["completed"];
   const { data: jekoPayment, error: paymentError } = await supabase
     .from("payments")
     .select("id")
     .eq("booking_id", bookingId)
     .eq("payment_provider", "jeko")
-    .eq("status", "completed")
+    .in("status", paidStatuses)
     .limit(1)
     .maybeSingle();
   if (paymentError) {

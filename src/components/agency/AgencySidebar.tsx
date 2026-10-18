@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Activity, Home, Percent, Settings, LogOut, UtensilsCrossed, Hammer, Sparkles, Map } from "lucide-react";
+import { LayoutDashboard, Package, Activity, Home, Percent, Settings, LogOut, UtensilsCrossed, Hammer, Sparkles, Map, CalendarCheck } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -21,6 +21,7 @@ import i18n from "@/i18n/config";
 const menuItems = [
   { get title() { return i18n.t("ux.bo.dashboard"); }, url: "/agency", icon: LayoutDashboard },
   { get title() { return i18n.t("ux.bo.myServices"); }, url: "/agency/services", icon: Package },
+  { title: "Réservations hôtel", url: "/agency/hotel-bookings", icon: CalendarCheck },
   { get title() { return i18n.t("ux.bo.myTours"); }, url: "/agency/services?type=tour", icon: Map },
   { get title() { return i18n.t("ux.bo.myRestaurants"); }, url: "/agency/restaurants", icon: UtensilsCrossed },
   { get title() { return i18n.t("ux.bo.myArtisans"); }, url: "/agency/artisans", icon: Hammer },
