@@ -35,7 +35,10 @@ import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
-import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
+import { HotelDetailsFields } from "@/components/agency/HotelDetailsFields";
+import { HotelRoomsManager } from "@/components/agency/HotelRoomsManager";
+import { emptyHotelSpecs, formatFcfa, parseHotelSpecs, parseStringList } from "@/lib/hotels";
+import { Plus, Pencil, Trash2, Package, Search, BedDouble } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
@@ -55,6 +58,7 @@ interface Service {
   available: boolean;
   image_url: string | null;
   images: string[] | null;
+  amenities: Json | null;
   specifications: Json | null;
   created_at: string;
 }
@@ -119,6 +123,7 @@ export default function AgencyServices() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const [roomsHotel, setRoomsHotel] = useState<{ id: string; name: string } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     type: "hotel",
@@ -134,6 +139,9 @@ export default function AgencyServices() {
     carSpecs: emptyCarSpecs,
     carPhotos: emptyCarPhotos,
     tourSpecs: emptyTourSpecs,
+    hotelSpecs: emptyHotelSpecs,
+    hotelImages: [] as string[],
+    hotelAmenities: [] as string[],
   });
 
   useEffect(() => {
@@ -241,7 +249,13 @@ export default function AgencyServices() {
       ].filter(Boolean);
 
       const isTour = formData.type === "tour";
-      const specifications = isCar
+      const isHotel = formData.type === "hotel";
+      const specifications = isHotel
+        ? {
+            ...formData.hotelSpecs,
+            highlights: formData.hotelSpecs.highlights.map((h) => h.trim()).filter(Boolean),
+          }
+        : isCar
         ? {
             brand: formData.carSpecs.brand,
             model: formData.carSpecs.model,
@@ -278,15 +292,29 @@ export default function AgencyServices() {
         latitude: formData.latitude,
         longitude: formData.longitude,
         available_dates: isTour ? formData.tourSpecs.availableDates : [],
-        price_per_unit: parseFloat(formData.price_per_unit),
+        // Hôtel : prix « à partir de » tenu par la base depuis les tarifs
+        // des chambres (trigger sync_hotel_starting_price).
+        price_per_unit: isHotel
+          ? (editingService?.type === "hotel" ? editingService.price_per_unit : 0)
+          : parseFloat(formData.price_per_unit),
         currency: "XOF",
         available: formData.available,
-        image_url: isCar ? (carPhotos[0] || null) : (formData.image_url || null),
-        images: isCar && carPhotos.length > 0 ? carPhotos : null,
+        image_url: isCar
+          ? (carPhotos[0] || null)
+          : isHotel
+          ? (formData.hotelImages[0] || null)
+          : (formData.image_url || null),
+        images: isCar && carPhotos.length > 0
+          ? carPhotos
+          : isHotel && formData.hotelImages.length > 0
+          ? formData.hotelImages
+          : null,
+        amenities: isHotel ? formData.hotelAmenities : null,
         specifications,
         agency_id: agencyId,
       };
 
+      let createdHotel: { id: string; name: string } | null = null;
       if (editingService) {
         const { error } = await supabase
           .from("services")
@@ -296,17 +324,25 @@ export default function AgencyServices() {
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.serviceUpdated") });
       } else {
-        const { error } = await supabase
+        const { data: created, error } = await supabase
           .from("services")
-          .insert(serviceData);
+          .insert(serviceData)
+          .select("id, name")
+          .single();
 
         if (error) throw error;
-        toast({ title: t("ux.bo.success"), description: t("ux.bo.serviceCreated") });
+        if (isHotel && created) createdHotel = created;
+        toast({
+          title: t("ux.bo.success"),
+          description: isHotel ? "Hôtel créé. Ajoutez maintenant ses chambres et tarifs." : t("ux.bo.serviceCreated"),
+        });
       }
 
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndServices();
+      // Un hôtel sans chambre ni tarif n'est pas réservable : on enchaîne.
+      if (createdHotel) setRoomsHotel(createdHotel);
     } catch (error: unknown) {
       toast({
         title: t("ux.bo.error"),
@@ -379,6 +415,11 @@ export default function AgencyServices() {
             availableDates: service.available_dates || [],
           }
         : emptyTourSpecs,
+      hotelSpecs: service.type === "hotel" ? parseHotelSpecs(service.specifications) : emptyHotelSpecs,
+      hotelImages: service.type === "hotel"
+        ? (images.length > 0 ? images : service.image_url ? [service.image_url] : [])
+        : [],
+      hotelAmenities: service.type === "hotel" ? parseStringList(service.amenities) : [],
     });
     setIsDialogOpen(true);
   };
@@ -412,6 +453,9 @@ export default function AgencyServices() {
       carSpecs: emptyCarSpecs,
       carPhotos: emptyCarPhotos,
       tourSpecs: emptyTourSpecs,
+      hotelSpecs: emptyHotelSpecs,
+      hotelImages: [],
+      hotelAmenities: [],
     });
   };
 
@@ -485,27 +529,43 @@ export default function AgencyServices() {
                   onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
                   required
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>{t("ux.bo.price2")}</Label>
-                    <Input
-                      type="number"
-                      value={formData.price_per_unit}
-                      onChange={(e) => setFormData({ ...formData, price_per_unit: e.target.value })}
-                      required
-                    />
+                {formData.type === "hotel" ? (
+                  <p className="text-sm text-muted-foreground">
+                    Les prix se définissent par type de chambre dans « Chambres & tarifs », après l'enregistrement de l'hôtel.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>{t("ux.bo.price2")}</Label>
+                      <Input
+                        type="number"
+                        value={formData.price_per_unit}
+                        onChange={(e) => setFormData({ ...formData, price_per_unit: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
-                </div>
+                )}
                 <div className="space-y-2">
                   <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={2}
+                    rows={formData.type === "hotel" ? 6 : 2}
+                    placeholder={formData.type === "hotel" ? "Présentez l'établissement : situation, ambiance, services, à proximité..." : undefined}
                   />
                 </div>
-                {formData.type === "car" ? (
+                {formData.type === "hotel" ? (
+                  <HotelDetailsFields
+                    specs={formData.hotelSpecs}
+                    onSpecsChange={(hotelSpecs) => setFormData({ ...formData, hotelSpecs })}
+                    images={formData.hotelImages}
+                    onImagesChange={(hotelImages) => setFormData({ ...formData, hotelImages })}
+                    amenities={formData.hotelAmenities}
+                    onAmenitiesChange={(hotelAmenities) => setFormData({ ...formData, hotelAmenities })}
+                  />
+                ) : formData.type === "car" ? (
                   <div className="space-y-4 border-t pt-4">
                     <p className="text-sm font-medium">{t("ux.bo.vehicleSpecifications")}</p>
                     <div className="grid grid-cols-2 gap-4">
@@ -844,13 +904,25 @@ export default function AgencyServices() {
                       </Badge>
                     </TableCell>
                     <TableCell>{service.location}</TableCell>
-                    <TableCell>{service.price_per_unit} {service.currency}</TableCell>
+                    <TableCell>
+                      {service.type === "hotel"
+                        ? service.price_per_unit > 0
+                          ? `À partir de ${formatFcfa(service.price_per_unit)}`
+                          : <span className="text-sm text-muted-foreground">Aucun tarif</span>
+                        : `${service.price_per_unit} ${service.currency}`}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={service.available ? "default" : "secondary"}>
                         {service.available ? t("ux.bo.available") : "Indisponible"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
+                      {service.type === "hotel" && (
+                        <Button variant="outline" size="sm" className="mr-1" onClick={() => setRoomsHotel({ id: service.id, name: service.name })}>
+                          <BedDouble className="h-4 w-4 mr-1" />
+                          Chambres & tarifs
+                        </Button>
+                      )}
                       <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(service)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -865,6 +937,14 @@ export default function AgencyServices() {
           </Table>
         </div>
       </div>
+
+      <HotelRoomsManager
+        serviceId={roomsHotel?.id ?? null}
+        hotelName={roomsHotel?.name ?? ""}
+        open={!!roomsHotel}
+        onOpenChange={(open) => { if (!open) setRoomsHotel(null); }}
+        onChanged={fetchAgencyAndServices}
+      />
     </AgencyLayout>
   );
 }

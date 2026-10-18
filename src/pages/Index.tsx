@@ -9,6 +9,7 @@ import { AITravelAdvisor } from "@/components/AITravelAdvisor";
 import FeaturedSubscriptions from "@/components/FeaturedSubscriptions";
 import IOSDownloadSection from "@/components/iOSDownloadSection";
 import OffersCarousel from "@/components/OffersCarousel";
+import CultureSection from "@/components/CultureSection";
 import { usePWA } from "@/hooks/usePWA";
 import { useTranslation } from "react-i18next";
 
@@ -42,6 +43,9 @@ const Index = () => {
 
         {/* 4. Destinations populaires */}
         <DestinationsSection />
+
+        {/* 4 bis. Culture (page éditoriale /culture) */}
+        <CultureSection />
 
         {/* 5. Abonnements */}
         <FeaturedSubscriptions />

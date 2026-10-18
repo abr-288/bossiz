@@ -21,6 +21,9 @@ const Index = lazy(() => import("@/pages/Index"));
 const Flights = lazy(() => import("@/pages/Flights"));
 const Hotels = lazy(() => import("@/pages/Hotels"));
 const HotelsPartners = lazy(() => import("@/pages/HotelsPartners"));
+const HotelDetail = lazy(() => import("@/pages/HotelDetail"));
+const Culture = lazy(() => import("@/pages/Culture"));
+const AdminCulture = lazy(() => import("@/pages/admin/AdminCulture"));
 const Cars = lazy(() => import("@/pages/Cars"));
 const Tours = lazy(() => import("@/pages/Tours"));
 const Destinations = lazy(() => import("@/pages/Destinations"));
@@ -148,6 +151,7 @@ const AnimatedRoutes = () => {
           <Route path="/flights" element={<PageTransition><Flights /></PageTransition>} />
           <Route path="/hotels" element={<PageTransition><Hotels /></PageTransition>} />
           <Route path="/hotels-partenaires" element={<PageTransition><HotelsPartners /></PageTransition>} />
+          <Route path="/hotels/partenaires/:id" element={<PageTransition><HotelDetail /></PageTransition>} />
           <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
           <Route path="/tours" element={<PageTransition><Tours /></PageTransition>} />
           <Route path="/restaurants" element={<PageTransition><Restaurants /></PageTransition>} />
@@ -155,6 +159,7 @@ const AnimatedRoutes = () => {
           <Route path="/bien-etre-beaute" element={<PageTransition><WellnessBeauty /></PageTransition>} />
           <Route path="/entreprises" element={<PageTransition><Companies /></PageTransition>} />
           <Route path="/company/dashboard" element={<PageTransition><CompanyDashboard /></PageTransition>} />
+          <Route path="/culture" element={<PageTransition><Culture /></PageTransition>} />
           <Route path="/destinations" element={<PageTransition><Destinations /></PageTransition>} />
           <Route path="/destinations/:id" element={<PageTransition><DestinationDetail /></PageTransition>} />
           <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
@@ -200,6 +205,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/reviews" element={<PageTransition><AdminReviews /></PageTransition>} />
           <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
           <Route path="/admin/translations" element={<PageTransition><AdminTranslations /></PageTransition>} />
+          <Route path="/admin/culture" element={<PageTransition><AdminCulture /></PageTransition>} />
           <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
           <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
           <Route path="/admin/bossiz-sites" element={<Navigate to="/admin/bossiz-microsites" replace />} />

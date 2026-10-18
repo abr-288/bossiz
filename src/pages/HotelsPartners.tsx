@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -123,9 +124,9 @@ const HotelsPartners = () => {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {partnerHotels.map((hotel) => (
+                <Link key={hotel.id} to={`/hotels/partenaires/${hotel.id}`} className="block">
                 <Card
-                  key={hotel.id}
-                  className="overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-slow ease-standard rounded-2xl hover-lift"
+                  className="h-full overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-slow ease-standard rounded-2xl hover-lift"
                 >
                   <div className="relative h-48">
                     <LazyImage
@@ -146,13 +147,16 @@ const HotelsPartners = () => {
                     </div>
                     {hotel.price > 0 ? (
                       <p className="text-xl font-bold text-primary">
+                        <span className="text-sm font-medium text-muted-foreground">À partir de </span>
                         {hotel.price.toLocaleString()} <span className="text-sm font-medium text-muted-foreground">{hotel.currency}/nuit</span>
                       </p>
                     ) : (
                       <p className="text-sm font-medium text-muted-foreground">Prix sur demande</p>
                     )}
+                    <p className="mt-2 text-sm font-medium text-primary">Voir les disponibilités →</p>
                   </CardContent>
                 </Card>
+                </Link>
               ))}
             </div>
           </div>

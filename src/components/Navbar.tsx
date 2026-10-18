@@ -81,6 +81,7 @@ const Navbar = () => {
     { to: "/hotels-partenaires", label: t("nav.hotels") },
     { to: "/flight-hotel", label: t("nav.flightHotel") },
     { to: "/cars", label: t("nav.carRental") },
+    { to: "/culture", label: t("nav.culture") },
     { to: "/trains", label: t("nav.trains") },
     { to: "/events", label: t("nav.events") },
     { to: "/tours", label: t("nav.tours") },
@@ -93,8 +94,8 @@ const Navbar = () => {
 
   // Verticaux principaux affichés directement, le reste regroupé sous "Autres"
   // pour éviter une rangée plate de 8 items dans la barre de navigation.
-  const primaryServiceLinks = serviceLinks.slice(0, 4);
-  const moreServiceLinks = serviceLinks.slice(4);
+  const primaryServiceLinks = serviceLinks.slice(0, 5);
+  const moreServiceLinks = serviceLinks.slice(5);
 
   // Effet pour détecter le scroll et ajouter l'ombre
   useEffect(() => {

@@ -141,6 +141,8 @@ async function fetchPartnerHotels(location: string | null): Promise<any[]> {
         ? s.amenities
         : (s.amenities && typeof s.amenities === 'object' ? Object.values(s.amenities) : []);
       const ratingOn5 = Number(s.rating) || 0;
+      // Classement saisi par le partenaire (specifications.stars), sinon déduit de la note.
+      const partnerStars = Number(s.specifications?.stars) || 0;
 
       return {
         id: s.id,
@@ -150,7 +152,7 @@ async function fetchPartnerHotels(location: string | null): Promise<any[]> {
         price: { grandTotal: Number(s.price_per_unit) || 0 },
         currency: s.currency || 'EUR',
         rating: Math.min(ratingOn5 * 2, 10),
-        stars: Math.max(1, Math.min(5, Math.round(ratingOn5))),
+        stars: partnerStars > 0 ? Math.min(5, Math.round(partnerStars)) : Math.max(1, Math.min(5, Math.round(ratingOn5))),
         reviews: s.total_reviews || 0,
         image: imageUrl,
         images,

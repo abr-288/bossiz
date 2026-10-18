@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -25,6 +25,7 @@ import { HotelCardSkeleton } from "@/components/ui/search-result-skeletons";
 const Hotels = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { searchHotels, loading } = useHotelSearch();
   const [priceRange, setPriceRange] = useState([0, 500000]);
   const [selectedHotel, setSelectedHotel] = useState<any>(null);
@@ -759,6 +760,18 @@ const Hotels = () => {
                           <p className="text-xs text-muted-foreground mt-1">{t("ux.hotels.perNight")}</p>
                         </div>
                         <Button size="lg" className="font-semibold" onClick={() => {
+                          // Hôtel partenaire : fiche avec types de chambre et tarifs.
+                          if ((hotel as any).source === 'Partenaire') {
+                            const params = new URLSearchParams();
+                            const checkIn = searchParams.get("checkIn");
+                            const checkOut = searchParams.get("checkOut");
+                            const adults = searchParams.get("adults");
+                            if (checkIn) params.set("checkin", checkIn);
+                            if (checkOut) params.set("checkout", checkOut);
+                            if (adults) params.set("adults", adults);
+                            navigate(`/hotels/partenaires/${hotel.id}${params.toString() ? `?${params}` : ""}`);
+                            return;
+                          }
                           setSelectedHotel({
                             id: hotel.id.toString(),
                             name: hotel.name,

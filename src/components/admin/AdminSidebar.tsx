@@ -22,8 +22,7 @@ import {
   FileText,
   Car,
   Languages,
-  Smile
-} from "lucide-react";
+  Smile, Landmark } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { SidebarBrandHeader, sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 import {
@@ -59,6 +58,7 @@ const menuItems = [
   { get title() { return i18n.t("ux.bo.customerReviews"); }, url: "/admin/reviews", icon: Star },
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
+  { title: "Culture", url: "/admin/culture", icon: Landmark },
   { get title() { return i18n.t("ux.bo.bossizContent"); }, url: "/admin/bossiz-microsites", icon: Globe },
   { get title() { return i18n.t("ux.bo.integrationsEmailSmsPayment"); }, url: "/admin/integrations", icon: KeyRound },
   { get title() { return i18n.t("ux.bo.users"); }, url: "/admin/users", icon: Users },

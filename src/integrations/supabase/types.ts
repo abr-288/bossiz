@@ -1308,6 +1308,195 @@ export type Database = {
         }
         Relationships: []
       }
+      culture_entries: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string
+          featured: boolean
+          id: string
+          image_url: string | null
+          link_url: string | null
+          location: string | null
+          period: string | null
+          published: boolean
+          sort_order: number
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          location?: string | null
+          period?: string | null
+          published?: boolean
+          sort_order?: number
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          location?: string | null
+          period?: string | null
+          published?: boolean
+          sort_order?: number
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hotel_booking_rooms: {
+        Row: {
+          booking_id: string
+          check_in: string
+          check_out: string
+          created_at: string
+          id: string
+          occupancy: number
+          price_per_night: number
+          quantity: number
+          rate_id: string | null
+          rate_snapshot: Json
+          room_type_id: string
+        }
+        Insert: {
+          booking_id: string
+          check_in: string
+          check_out: string
+          created_at?: string
+          id?: string
+          occupancy: number
+          price_per_night: number
+          quantity: number
+          rate_id?: string | null
+          rate_snapshot?: Json
+          room_type_id: string
+        }
+        Update: {
+          booking_id?: string
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          id?: string
+          occupancy?: number
+          price_per_night?: number
+          quantity?: number
+          rate_id?: string | null
+          rate_snapshot?: Json
+          room_type_id?: string
+        }
+        Relationships: []
+      }
+      hotel_rates: {
+        Row: {
+          breakfast_included: boolean
+          created_at: string
+          free_cancellation: boolean
+          free_cancellation_days: number
+          id: string
+          is_active: boolean
+          occupancy: number
+          pay_at_property: boolean
+          price_per_night: number
+          room_type_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          breakfast_included?: boolean
+          created_at?: string
+          free_cancellation?: boolean
+          free_cancellation_days?: number
+          id?: string
+          is_active?: boolean
+          occupancy: number
+          pay_at_property?: boolean
+          price_per_night: number
+          room_type_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          breakfast_included?: boolean
+          created_at?: string
+          free_cancellation?: boolean
+          free_cancellation_days?: number
+          id?: string
+          is_active?: boolean
+          occupancy?: number
+          pay_at_property?: boolean
+          price_per_night?: number
+          room_type_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hotel_room_types: {
+        Row: {
+          amenities: string[]
+          bed_info: string | null
+          created_at: string
+          description: string | null
+          id: string
+          images: string[]
+          is_active: boolean
+          max_guests: number
+          name: string
+          service_id: string
+          size_m2: number | null
+          sort_order: number
+          total_units: number
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[]
+          bed_info?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          max_guests?: number
+          name: string
+          service_id: string
+          size_m2?: number | null
+          sort_order?: number
+          total_units?: number
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[]
+          bed_info?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          max_guests?: number
+          name?: string
+          service_id?: string
+          size_m2?: number | null
+          sort_order?: number
+          total_units?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_credentials: {
         Row: {
           category: string
@@ -3551,6 +3740,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      hotel_room_availability: {
+        Args: { p_check_in: string; p_check_out: string; p_service_id: string }
+        Returns: { available_units: number; room_type_id: string }[]
       }
       is_agency_owner: {
         Args: { _agency_id: string; _user_id: string }
