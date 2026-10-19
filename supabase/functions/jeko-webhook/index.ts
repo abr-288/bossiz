@@ -172,7 +172,7 @@ serve(async (req) => {
 
     const { data: existingPayment, error: fetchError } = await supabase
       .from('payments')
-      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method, payment_data')
+      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method, payment_data, amount')
       .eq('transaction_id', paymentLinkId)
       .eq('payment_provider', 'jeko')
       .maybeSingle();
@@ -213,7 +213,26 @@ serve(async (req) => {
       return jsonResponse({ success: true, message: 'Already processed', status: 'completed' });
     }
 
-    const isAccepted = jekoTransaction.status === 'success';
+    // Contrôle anti-falsification : le montant réellement encaissé par Jèko
+    // doit correspondre au montant attendu, posé par process-payment dans
+    // payments.amount (en XOF). Jèko exprime ses montants en centimes (×100),
+    // comme pour les reversements plus haut. On ne confirme jamais une
+    // réservation sur le seul statut « success » sans vérifier la somme.
+    const expectedCents =
+      existingPayment.amount != null ? Math.round(Number(existingPayment.amount) * 100) : null;
+    const paidCents =
+      jekoTransaction.amount?.amount != null ? Number(jekoTransaction.amount.amount) : null;
+    const amountMismatch =
+      jekoTransaction.status === 'success' &&
+      expectedCents != null &&
+      (paidCents !== expectedCents || jekoTransaction.amount?.currency !== 'XOF');
+    if (amountMismatch) {
+      console.error(
+        `❌ Montant Jèko (${paidCents} ${jekoTransaction.amount?.currency}) différent du montant attendu (${expectedCents} centimes XOF) pour ${paymentLinkId} — paiement non confirmé`,
+      );
+    }
+
+    const isAccepted = jekoTransaction.status === 'success' && !amountMismatch;
     const newStatus = isAccepted ? 'completed' : 'failed';
 
     const { error: updateError } = await supabase

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { scheduleAgencyPayout } from "../_shared/agencyPayouts.ts";
+import { rejectIfNotCron } from "../_shared/cronAuth.ts";
 
 // ============================================================
 // EDGE FUNCTION: release-hotel-payouts
@@ -21,6 +22,9 @@ const BATCH_SIZE = 50;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const denied = rejectIfNotCron(req, corsHeaders);
+  if (denied) return denied;
 
   const json = (body: object, status = 200) =>
     new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });

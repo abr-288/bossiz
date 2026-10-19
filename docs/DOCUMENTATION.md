@@ -38,15 +38,19 @@ dans `user_roles` est traité comme `user` par défaut.
 
 Créés le 2026-08-05 directement sur le projet Supabase de production via l'API
 admin (script `deploy-vps/seed-demo-accounts.mjs`, idempotent — relançable
-sans dupliquer). Mot de passe identique pour les comptes :
+sans dupliquer).
+
+**Le 2026-10-19, ces comptes ont été bloqués et le rôle admin de
+`demo.admin` retiré** : leur mot de passe commun était publié dans ce dépôt
+public. Le mot de passe n'est plus écrit nulle part dans le dépôt ; le script
+le lit dans la variable d'environnement `DEMO_PASSWORD`. Ne jamais redonner le
+rôle admin à un compte démo.
 
 | Compte | Email | Rôle | Particularité |
 |---|---|---|---|
 | Admin | `demo.admin@bossiz.com` | `admin` | Accès complet `/admin/*` |
 | Client | `demo.client@bossiz.com` | `user` | Compte client standard |
 | Agence | `demo.agence@bossiz.com` | `sub_agency` | Possède une ligne dans `agencies` ("Agence Démo Voyages"), accès `/agency/*` |
-
-**Mot de passe : `DemoBossiz#2026`**
 
 Un 4ᵉ compte démo (`demo.majestic@bossiz.com`) avait été créé pour tester le
 module Majestic Club ; son abonnement a été supprimé avec le reste des
@@ -58,6 +62,7 @@ base), relancer depuis la racine du projet :
 ```bash
 SUPABASE_URL="https://gpwlzhegvjsbgbaepfjz.supabase.co" \
 SUPABASE_SERVICE_ROLE_KEY="<service_role_key>" \
+DEMO_PASSWORD="<nouveau mot de passe fort>" \
 node deploy-vps/seed-demo-accounts.mjs
 ```
 

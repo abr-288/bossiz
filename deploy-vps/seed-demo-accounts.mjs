@@ -2,17 +2,17 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Jamais en dur : le dépôt est public, l'ancien mot de passe y a fuité.
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD;
 
-if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars');
+if (!SUPABASE_URL || !SERVICE_ROLE_KEY || !DEMO_PASSWORD) {
+  console.error('Missing SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY or DEMO_PASSWORD env vars');
   process.exit(1);
 }
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
-
-const DEMO_PASSWORD = 'DemoBossiz#2026';
 
 const accounts = [
   {
