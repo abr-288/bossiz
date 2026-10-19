@@ -1,0 +1,45 @@
+export interface CountryCode {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+export const countryCodes: CountryCode[] = [
+  { code: "+225", name: "Côte d'Ivoire", flag: "🇨🇮" },
+  { code: "+221", name: "Sénégal", flag: "🇸🇳" },
+  { code: "+223", name: "Mali", flag: "🇲🇱" },
+  { code: "+226", name: "Burkina Faso", flag: "🇧🇫" },
+  { code: "+227", name: "Niger", flag: "🇳🇪" },
+  { code: "+228", name: "Togo", flag: "🇹🇬" },
+  { code: "+229", name: "Bénin", flag: "🇧🇯" },
+  { code: "+224", name: "Guinée", flag: "🇬🇳" },
+  { code: "+237", name: "Cameroun", flag: "🇨🇲" },
+  { code: "+242", name: "Congo", flag: "🇨🇬" },
+  { code: "+243", name: "RD Congo", flag: "🇨🇩" },
+  { code: "+241", name: "Gabon", flag: "🇬🇦" },
+  { code: "+236", name: "Centrafrique", flag: "🇨🇫" },
+  { code: "+235", name: "Tchad", flag: "🇹🇩" },
+  { code: "+33", name: "France", flag: "🇫🇷" },
+  { code: "+44", name: "Royaume-Uni", flag: "🇬🇧" },
+  { code: "+49", name: "Allemagne", flag: "🇩🇪" },
+  { code: "+39", name: "Italie", flag: "🇮🇹" },
+  { code: "+34", name: "Espagne", flag: "🇪🇸" },
+  { code: "+351", name: "Portugal", flag: "🇵🇹" },
+  { code: "+32", name: "Belgique", flag: "🇧🇪" },
+  { code: "+41", name: "Suisse", flag: "🇨🇭" },
+  { code: "+212", name: "Maroc", flag: "🇲🇦" },
+  { code: "+213", name: "Algérie", flag: "🇩🇿" },
+  { code: "+216", name: "Tunisie", flag: "🇹🇳" },
+  { code: "+20", name: "Égypte", flag: "🇪🇬" },
+  { code: "+234", name: "Nigéria", flag: "🇳🇬" },
+  { code: "+233", name: "Ghana", flag: "🇬🇭" },
+  { code: "+254", name: "Kenya", flag: "🇰🇪" },
+  { code: "+27", name: "Afrique du Sud", flag: "🇿🇦" },
+  { code: "+91", name: "Inde", flag: "🇮🇳" },
+  { code: "+86", name: "Chine", flag: "🇨🇳" },
+  { code: "+81", name: "Japon", flag: "🇯🇵" },
+  { code: "+55", name: "Brésil", flag: "🇧🇷" },
+  { code: "+52", name: "Mexique", flag: "🇲🇽" },
+  { code: "+1", name: "États-Unis / Canada", flag: "🇺🇸🇨🇦" },
+  { code: "+61", name: "Australie", flag: "🇦🇺" },
+];

@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  CreditCard, 
-  User, 
-  Bell, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Calendar,
+  User,
+  Bell,
+  Settings,
   MapPin,
+  Map,
   Plane,
   HelpCircle,
   LogOut,
-  Building2
+  Building2,
+  Smile
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -30,6 +31,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getProfilePhotoUrl } from "@/lib/profilePhoto";
+import { sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
 
 interface UserSidebarProps {
   userProfile?: {
@@ -70,10 +73,15 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       url: "/dashboard", 
       icon: LayoutDashboard 
     },
-    { 
-      title: t('dashboardPage.sidebar.bookings', 'Mes réservations'), 
+    {
+      title: t('dashboardPage.sidebar.bookings', 'Mes réservations'),
       url: "/booking-history", 
       icon: Calendar 
+    },
+    {
+      title: t('ux.smiles.navLabel', 'Mes Smiles'),
+      url: "/smiles",
+      icon: Smile
     },
     { 
       title: t('dashboardPage.sidebar.priceAlerts', 'Alertes prix'), 
@@ -88,15 +96,20 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
   ];
 
   const exploreItems = [
-    { 
-      title: t('nav.flights', 'Vols'), 
-      url: "/flights", 
-      icon: Plane 
+    {
+      title: t('nav.flights', 'Vols'),
+      url: "https://vols.bossiz.com/",
+      icon: Plane
     },
     { 
       title: t('nav.destinations', 'Destinations'), 
       url: "/destinations", 
       icon: MapPin 
+    },
+    {
+      title: t('nav.tours', 'Circuits'),
+      url: "/tours",
+      icon: Map,
     },
   ];
 
@@ -114,7 +127,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
   ];
 
   const agencyItem = { 
-    title: "Espace Agence", 
+    title: "BizBossiz",
     url: "/agency", 
     icon: Building2 
   };
@@ -141,15 +154,15 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
   };
 
   return (
-    <Sidebar 
-      className={collapsed ? "w-16" : "w-64"} 
+    <Sidebar
+      className={sidebarWidthClass(collapsed)}
       collapsible="icon"
     >
-      <SidebarHeader className="border-b p-4">
+      <SidebarHeader className="bg-brand p-4 text-brand-foreground">
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
-          <Avatar className="h-10 w-10 border-2 border-primary/20">
-            <AvatarImage src={userProfile?.avatar_url} />
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+          <Avatar className="h-10 w-10 border border-white/40">
+            <AvatarImage src={getProfilePhotoUrl(userProfile?.avatar_url)} />
+            <AvatarFallback className="bg-white/20 text-white font-semibold">
               {userProfile?.full_name ? getInitials(userProfile.full_name) : "U"}
             </AvatarFallback>
           </Avatar>
@@ -158,7 +171,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               <span className="font-semibold text-sm truncate">
                 {userProfile?.full_name || t('dashboardPage.welcome')}
               </span>
-              <span className="text-xs text-muted-foreground truncate">
+              <span className="text-xs text-white/75 truncate">
                 {userProfile?.email}
               </span>
             </div>
@@ -176,15 +189,12 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
-                      className={`flex items-center gap-3 ${
-                        isActive(item.url) 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "hover:bg-muted"
-                      }`}
+                      aria-label={item.title}
+                      className={sidebarLinkClass(isActive(item.url))}
                     >
-                      <item.icon className="h-5 w-5 shrink-0" />
+                      <item.icon className={sidebarIconClass} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
@@ -203,15 +213,12 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={agencyItem.url}
-                      className={`flex items-center gap-3 ${
-                        isActive(agencyItem.url) 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "hover:bg-muted"
-                      }`}
+                      aria-label={agencyItem.title}
+                      className={sidebarLinkClass(isActive(agencyItem.url))}
                     >
-                      <agencyItem.icon className="h-5 w-5 shrink-0" />
+                      <agencyItem.icon className={sidebarIconClass} />
                       {!collapsed && <span>{agencyItem.title}</span>}
                     </Link>
                   </SidebarMenuButton>
@@ -230,17 +237,27 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               {exploreItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      to={item.url}
-                      className={`flex items-center gap-3 ${
-                        isActive(item.url) 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "hover:bg-muted"
-                      }`}
-                    >
-                      <item.icon className="h-5 w-5 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </Link>
+                    {item.url.startsWith("http") ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={item.title}
+                        className={sidebarLinkClass(false)}
+                      >
+                        <item.icon className={sidebarIconClass} />
+                        {!collapsed && <span>{item.title}</span>}
+                      </a>
+                    ) : (
+                      <Link
+                        to={item.url}
+                        aria-label={item.title}
+                        className={sidebarLinkClass(isActive(item.url))}
+                      >
+                        <item.icon className={sidebarIconClass} />
+                        {!collapsed && <span>{item.title}</span>}
+                      </Link>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -257,11 +274,12 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
               {supportItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link 
+                    <Link
                       to={item.url}
-                      className={`flex items-center gap-3 hover:bg-muted`}
+                      aria-label={item.title}
+                      className={sidebarLinkClass(false)}
                     >
-                      <item.icon className="h-5 w-5 shrink-0" />
+                      <item.icon className={sidebarIconClass} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
@@ -273,9 +291,10 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-2">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={handleLogout}
+          aria-label={t('auth.logout', 'Déconnexion')}
           className={`w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 ${
             collapsed ? "justify-center px-2" : ""
           }`}

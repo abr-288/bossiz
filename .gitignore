@@ -12,6 +12,26 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env-old
+.env.local
+.env.*.local
+.env.deploy
+*.env.bak
+
+# Artefacts PWA générés (service worker de dev)
+dev-dist/
+/playwright-report/
+/test-results/
+
+# Vite temporary files
+vite.config.ts.timestamp-*
+
+# Bun lock files (project uses npm)
+bun.lock
+bun.lockb
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +42,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local Netlify folder
+.netlify
+
+# Exports de données (peuvent contenir des données utilisateur)
+deploy-vps/backups/
+
+# Sauvegardes locales d'éditeur (ex: Hotels.tsx.20260813-233013.bak) -
+# jamais du code applicatif, ne doivent pas être versionnées
+/backups/
+*.bak
+
+# Documents (factures, guides) : usage local, pas besoin de versionner
+/documentation/

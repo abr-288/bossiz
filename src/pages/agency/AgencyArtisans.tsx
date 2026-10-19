@@ -1,0 +1,516 @@
+import { useState, useEffect } from "react";
+import { AgencyLayout } from "@/components/agency/AgencyLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
+import { Plus, Pencil, Trash2, Hammer, Search, X, Check, ShoppingBag } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
+
+interface Product {
+  name: string;
+  description: string;
+  price: string;
+  currency: string;
+  image_url: string;
+}
+
+interface Artisan {
+  id: string;
+  name: string;
+  craft_type: string;
+  bio: string | null;
+  location: string;
+  latitude: number | null;
+  longitude: number | null;
+  maps_url: string | null;
+  address: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  image_url: string | null;
+  products: Product[];
+  is_active: boolean;
+  created_at: string;
+}
+
+const CRAFT_TYPES = ["Sculpture sur bois", "Bijoux & Accessoires", "Textile & Tissage", "Poterie & Céramique", "Maroquinerie", "Peinture & Art", "Vannerie", "Autre"];
+
+interface ArtisanOrder {
+  id: string;
+  artisan_id: string;
+  product_name: string;
+  unit_price: number;
+  currency: string;
+  quantity: number;
+  total_amount: number;
+  status: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
+  message: string | null;
+  created_at: string;
+  artisan_name?: string;
+}
+
+const emptyProduct = (): Product => ({ name: "", description: "", price: "", currency: "XOF", image_url: "" });
+
+const emptyForm = {
+  name: "",
+  craft_type: CRAFT_TYPES[0],
+  bio: "",
+  location: "",
+  latitude: null as number | null,
+  longitude: null as number | null,
+  maps_url: "",
+  address: "",
+  phone: "",
+  whatsapp: "",
+  image_url: "",
+  available: true,
+  products: [] as Product[],
+};
+
+export default function AgencyArtisans() {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const [artisans, setArtisans] = useState<Artisan[]>([]);
+  const [agencyId, setAgencyId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<Artisan | null>(null);
+  const [formData, setFormData] = useState(emptyForm);
+  const [orders, setOrders] = useState<ArtisanOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAgencyAndArtisans();
+  }, []);
+
+  const fetchAgencyAndArtisans = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
+    if (!agency) return;
+    setAgencyId(agency.id);
+
+    const { data, error } = await supabase
+      .from("artisans")
+      .select("*")
+      .eq("agency_id", agency.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching artisans:", error);
+    } else {
+      setArtisans((data || []) as any);
+    }
+    setLoading(false);
+
+    fetchOrders((data || []) as Artisan[]);
+  };
+
+  const fetchOrders = async (agencyArtisans: Artisan[]) => {
+    if (agencyArtisans.length === 0) {
+      setOrders([]);
+      setOrdersLoading(false);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("artisan_orders")
+      .select("*")
+      .in("artisan_id", agencyArtisans.map((a) => a.id))
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching artisan orders:", error);
+    } else {
+      const artisanNameById = new Map(agencyArtisans.map((a) => [a.id, a.name]));
+      setOrders(
+        ((data || []) as ArtisanOrder[]).map((o) => ({ ...o, artisan_name: artisanNameById.get(o.artisan_id) }))
+      );
+    }
+    setOrdersLoading(false);
+  };
+
+  const updateOrderStatus = async (id: string, status: "confirmed" | "cancelled") => {
+    const { error } = await supabase.from("artisan_orders").update({ status }).eq("id", id);
+    if (error) {
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: t("ux.bo.success"), description: status === "confirmed" ? t("ux.bo.orderConfirmed") : t("ux.bo.orderDeclined") });
+    fetchAgencyAndArtisans();
+  };
+
+  const resetForm = () => {
+    setEditing(null);
+    setFormData(emptyForm);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agencyId) return;
+
+    try {
+      const artisanData = {
+        agency_id: agencyId,
+        name: formData.name,
+        craft_type: formData.craft_type,
+        bio: formData.bio || null,
+        location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        maps_url: formData.maps_url || null,
+        address: formData.address || null,
+        phone: formData.phone || null,
+        whatsapp: formData.whatsapp || null,
+        image_url: formData.image_url || null,
+        is_active: formData.available,
+        products: formData.products
+          .filter((p) => p.name.trim())
+          .map((p) => ({ ...p, price: parseFloat(p.price) || 0, currency: "XOF" })),
+      };
+
+      if (editing) {
+        const { error } = await supabase.from("artisans").update(artisanData).eq("id", editing.id);
+        if (error) throw error;
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.artisanUpdated") });
+      } else {
+        const { error } = await supabase.from("artisans").insert(artisanData);
+        if (error) throw error;
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.artisanAdded") });
+      }
+
+      setIsDialogOpen(false);
+      resetForm();
+      fetchAgencyAndArtisans();
+    } catch (error: any) {
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleEdit = (artisan: Artisan) => {
+    setEditing(artisan);
+    setFormData({
+      name: artisan.name,
+      craft_type: artisan.craft_type,
+      bio: artisan.bio || "",
+      location: artisan.location,
+      latitude: artisan.latitude,
+      longitude: artisan.longitude,
+      maps_url: artisan.maps_url || "",
+      address: artisan.address || "",
+      phone: artisan.phone || "",
+      whatsapp: artisan.whatsapp || "",
+      image_url: artisan.image_url || "",
+      available: artisan.is_active,
+      products: (artisan.products || []).map((p) => ({ ...p, price: p.price?.toString() || "" })) as any,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(t("ux.bo.deleteArtisan"))) return;
+    const { error } = await supabase.from("artisans").delete().eq("id", id);
+    if (error) {
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.artisanDeleted") });
+      fetchAgencyAndArtisans();
+    }
+  };
+
+  const addProduct = () => setFormData({ ...formData, products: [...formData.products, emptyProduct()] });
+  const removeProduct = (index: number) =>
+    setFormData({ ...formData, products: formData.products.filter((_, i) => i !== index) });
+  const updateProduct = (index: number, field: keyof Product, value: string) => {
+    const products = [...formData.products];
+    products[index] = { ...products[index], [field]: value };
+    setFormData({ ...formData, products });
+  };
+
+  const filtered = artisans.filter((a) => a.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  return (
+    <AgencyLayout>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">{t("ux.bo.myArtisans")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.showcaseLocalArtisansTheirCreations")}</p>
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+            <DialogTrigger asChild>
+              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newArtisan")}</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{editing ? t("ux.bo.editArtisan") : "Nouvel artisan"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t("ux.bo.name2")}</Label>
+                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t("ux.bo.craft")}</Label>
+                    <Select value={formData.craft_type} onValueChange={(v) => setFormData({ ...formData, craft_type: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {CRAFT_TYPES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t("ux.bo.cityDistrict")}</Label>
+                    <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t("ux.bo.address")}</Label>
+                    <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t("ux.bo.phone")}</Label>
+                    <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>WhatsApp</Label>
+                    <Input value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="+225 XX XX XX XX XX" />
+                    <p className="text-xs text-muted-foreground">{t("ux.bo.includeCountryCode225Otherwise")}</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("ux.bo.introduction")}</Label>
+                  <Textarea
+                    placeholder={t("ux.bo.artisanSBackgroundTheirKnow")}
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("ux.bo.coverPhoto")}</Label>
+                  <ImageUpload
+                    label={t("ux.bo.photoArtisanWorkshop")}
+                    folder="agency-artisans"
+                    value={formData.image_url}
+                    onChange={(url) => setFormData({ ...formData, image_url: url })}
+                  />
+                </div>
+
+                <div className="space-y-3 border-t pt-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">{t("ux.bo.featuredCreations")}</p>
+                    <Button type="button" size="sm" variant="outline" onClick={addProduct}>
+                      <Plus className="h-3.5 w-3.5 mr-1" /> Ajouter
+                    </Button>
+                  </div>
+                  {formData.products.length === 0 && (
+                    <p className="text-sm text-muted-foreground">{t("ux.bo.noCreationAddedYet")}</p>
+                  )}
+                  {formData.products.map((product, index) => (
+                    <div key={index} className="border rounded-lg p-3 space-y-3 relative">
+                      <Button
+                        aria-label={t("ux.bo.removeProduct")}
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="absolute top-2 right-2 h-6 w-6"
+                        onClick={() => removeProduct(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-xs">{t("ux.bo.creationName")}</Label>
+                          <Input value={product.name} onChange={(e) => updateProduct(index, "name", e.target.value)} />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">{t("ux.bo.price")}</Label>
+                          <div className="flex gap-2">
+                            <Input type="number" value={product.price} onChange={(e) => updateProduct(index, "price", e.target.value)} />
+                            <span className="flex items-center rounded-md border px-3 text-sm text-muted-foreground">XOF</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("ux.bo.description")}</Label>
+                        <Textarea rows={2} value={product.description} onChange={(e) => updateProduct(index, "description", e.target.value)} />
+                      </div>
+                      <ImageUpload
+                        label={t("ux.bo.photoCreation")}
+                        folder="agency-artisans"
+                        value={product.image_url}
+                        onChange={(url) => updateProduct(index, "image_url", url)}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Switch checked={formData.available} onCheckedChange={(c) => setFormData({ ...formData, available: c })} />
+                  <Label>{t("ux.bo.visibleSite")}</Label>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                  <Button type="submit">{editing ? t("ux.bo.update") : "Créer"}</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder={t("ux.bo.search")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+        </div>
+
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("ux.bo.artisan")}</TableHead>
+                <TableHead>{t("ux.bo.craft2")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.creations")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow><TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
+              ) : filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <Hammer className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    {t("ux.bo.noArtisan")}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filtered.map((a) => (
+                  <TableRow key={a.id}>
+                    <TableCell className="font-medium">{a.name}</TableCell>
+                    <TableCell>{a.craft_type}</TableCell>
+                    <TableCell>{a.location}</TableCell>
+                    <TableCell>{a.products?.length || 0}</TableCell>
+                    <TableCell>
+                      <Badge variant={a.is_active ? "default" : "secondary"}>
+                        {a.is_active ? "Visible" : "Masqué"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(a)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(a.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-bold mb-1">{t("ux.bo.orderRequests")}</h2>
+          <p className="text-muted-foreground mb-4">
+            {t("ux.bo.confirmRequestAcceptCommissionThen")}
+          </p>
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("ux.bo.artisan")}</TableHead>
+                  <TableHead>{t("ux.bo.creation")}</TableHead>
+                  <TableHead>{t("ux.bo.customer")}</TableHead>
+                  <TableHead>{t("ux.bo.amount")}</TableHead>
+                  <TableHead>{t("ux.bo.status")}</TableHead>
+                  <TableHead>{t("ux.bo.received")}</TableHead>
+                  <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordersLoading ? (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
+                ) : orders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <ShoppingBag className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      {t("ux.bo.noRequestsYet")}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  orders.map((o) => (
+                    <TableRow key={o.id}>
+                      <TableCell className="font-medium">{o.artisan_name}</TableCell>
+                      <TableCell>{o.product_name} × {o.quantity}</TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <p>{o.customer_name}</p>
+                          <p className="text-muted-foreground">{o.customer_phone}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{o.total_amount.toLocaleString()} {o.currency}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={o.status === "confirmed" ? "default" : o.status === "cancelled" ? "destructive" : "secondary"}
+                        >
+                          {o.status === "pending" ? t("ux.bo.pending2") : o.status === "confirmed" ? "Confirmée" : o.status === "cancelled" ? "Refusée" : o.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {format(new Date(o.created_at), "dd MMM yyyy", { locale: fr })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {o.status === "pending" && (
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" onClick={() => updateOrderStatus(o.id, "confirmed")}>
+                              <Check className="h-4 w-4 mr-1" />
+                              {t("ux.bo.confirm")}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => updateOrderStatus(o.id, "cancelled")}>
+                              <X className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
+    </AgencyLayout>
+  );
+}

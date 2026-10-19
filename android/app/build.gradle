@@ -4,7 +4,7 @@ android {
     namespace = "com.breserve.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.breserve.app"
+        applicationId "com.bossizplus.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

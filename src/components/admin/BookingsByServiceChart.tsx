@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { useTranslation } from "react-i18next";
 
 interface BookingsByServiceChartProps {
   data: Array<{ name: string; value: number }>;
@@ -15,15 +16,16 @@ const COLORS = [
 ];
 
 export function BookingsByServiceChart({ data }: BookingsByServiceChartProps) {
+  const { t } = useTranslation();
   if (!data || data.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Réservations par Type de Service</CardTitle>
+          <CardTitle>{t("ux.bo.bookingsServiceType")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-64 text-muted-foreground">
-            Aucune donnée disponible
+            {t("ux.bo.noDataAvailable")}
           </div>
         </CardContent>
       </Card>
@@ -47,7 +49,7 @@ export function BookingsByServiceChart({ data }: BookingsByServiceChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Réservations par Type de Service</CardTitle>
+        <CardTitle>{t("ux.bo.bookingsServiceType")}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

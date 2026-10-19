@@ -1,0 +1,652 @@
+import { useRef, useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
+import { ZodError } from "zod";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Handshake,
+  BadgePercent,
+  Users,
+  TrendingUp,
+  Hotel,
+  UtensilsCrossed,
+  Compass,
+  Hammer,
+  Car,
+  Sparkles,
+  Check,
+  ImagePlus,
+  Loader2,
+  X,
+  PartyPopper,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { JEKO_PAYOUT_METHODS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
+import { partnerApplicationSchema } from "@/lib/validation";
+import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
+import { LazyImage } from "@/components/ui/lazy-image";
+import bannerBecomePartner from "@/assets/hero-slide-1.webp";
+import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
+import { usePartnerAutoApproval } from "@/hooks/usePartnerAutoApproval";
+
+const partnerTypeOptions = [
+  { value: "hotel", label: "ux.partnerForm.typeHotel", icon: Hotel },
+  { value: "restaurant", label: "ux.partnerForm.typeRestaurant", icon: UtensilsCrossed },
+  { value: "activity", label: "ux.partnerForm.typeActivity", icon: Compass },
+  { value: "artisan", label: "ux.partnerForm.typeArtisan", icon: Hammer },
+  { value: "wellness", label: "ux.partnerForm.typeWellness", icon: Sparkles },
+  { value: "cars", label: "ux.partnerForm.typeCars", icon: Car },
+] as const;
+
+type PartnerTypeValue = (typeof partnerTypeOptions)[number]["value"];
+
+const carPlanOptions = [
+  { value: "pro", label: "ux.partnerForm.planPro" },
+  { value: "flotte", label: "ux.partnerForm.planFleet" },
+];
+
+const carPlanLabels: Record<string, string> = {
+  pro: "Pro",
+  flotte: "Flotte",
+};
+
+const commonConditions = [
+  "ux.partnerForm.common1",
+  "ux.partnerForm.common2",
+  "ux.partnerForm.common3",
+];
+
+const conditionsByType: Record<PartnerTypeValue, string[]> = {
+  hotel: [
+    "ux.partnerForm.signup",
+    "ux.partnerForm.hotel2",
+    "ux.partnerForm.share24",
+    "ux.partnerForm.hotel4",
+  ],
+  restaurant: [
+    "ux.partnerForm.signup",
+    "ux.partnerForm.restaurant2",
+    "ux.partnerForm.restaurant3",
+  ],
+  activity: [
+    "ux.partnerForm.signup",
+    "ux.partnerForm.share24",
+    "ux.partnerForm.activity3",
+  ],
+  artisan: [
+    "ux.partnerForm.signup",
+    "ux.partnerForm.artisan2",
+    "ux.partnerForm.artisan3",
+    "ux.partnerForm.artisan4",
+  ],
+  wellness: [
+    "ux.partnerForm.wellness1",
+    "ux.partnerForm.signup",
+    "ux.partnerForm.wellness3",
+    "ux.partnerForm.wellness4",
+    "ux.partnerForm.wellness5",
+  ],
+  cars: [
+    "ux.partnerForm.cars1",
+    "ux.partnerForm.cars2",
+    "ux.partnerForm.cars3",
+  ],
+};
+
+// Conditions affichées aux loueurs quand le paiement des forfaits voiture est
+// désactivé depuis l'admin (publication gratuite).
+const freeCarConditions = [
+  "ux.partnerForm.signup",
+  "ux.partnerForm.carsFree1",
+  "ux.partnerForm.carsFree2",
+];
+
+const benefits = [
+  {
+    icon: Users,
+    title: "ux.partnerForm.benefit1",
+    description: "ux.partnerForm.benefit1Desc",
+  },
+  {
+    icon: BadgePercent,
+    title: "ux.partnerForm.benefit2",
+    description: "ux.partnerForm.benefit2Desc",
+  },
+  {
+    icon: TrendingUp,
+    title: "ux.partnerForm.benefit3",
+    description: "ux.partnerForm.benefit3Desc",
+  },
+];
+
+const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2 Mo
+const ALLOWED_LOGO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+const isPartnerType = (value: string | null): value is PartnerTypeValue =>
+  !!value && partnerTypeOptions.some((option) => option.value === value);
+
+const BecomePartner = () => {
+  const { t, i18n } = useTranslation();
+  const { paymentsEnabled: carPlanPaymentsEnabled } = useCarPlanPayments();
+  const { autoApprove } = usePartnerAutoApproval();
+  // La candidature est lue en français dans le back-office : libellés enregistrés en français.
+  const tFr = i18n.getFixedT("fr");
+  const [searchParams] = useSearchParams();
+  const requestedCarPlan = searchParams.get("plan");
+  const requestedTypeParam = searchParams.get("type");
+  const initialType: PartnerTypeValue | "" = isPartnerType(requestedTypeParam)
+    ? requestedTypeParam
+    : requestedCarPlan
+      ? "cars"
+      : "";
+
+  const [formData, setFormData] = useState({
+    name: "",
+    contactEmail: "",
+    contactPhone: "",
+    description: "",
+  });
+  const [partnerType, setPartnerType] = useState<PartnerTypeValue | "">(initialType);
+  const [preferredPayoutMethod, setPreferredPayoutMethod] = useState<JekoPayoutMethod | "">("");
+  const [carPlan, setCarPlan] = useState(
+    requestedCarPlan && carPlanLabels[requestedCarPlan] ? requestedCarPlan : "decouverte"
+  );
+  const [acceptedConditions, setAcceptedConditions] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleTypeChange = (value: string) => {
+    setPartnerType(value as PartnerTypeValue);
+    setAcceptedConditions(false);
+  };
+
+  const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_LOGO_SIZE) {
+      toast.error(t("ux.becomePartner.logoTooBig"));
+      e.target.value = "";
+      return;
+    }
+    if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
+      toast.error(t("ux.becomePartner.logoFormats"));
+      e.target.value = "";
+      return;
+    }
+
+    setLogoUploading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      const { data, error } = await supabase.functions.invoke("upload-partner-logo", {
+        body: uploadData,
+      });
+      if (error || !data?.url) throw error || new Error(t("ux.becomePartner.invalidResponse"));
+      setLogoUrl(data.url);
+    } catch (error) {
+      console.error("Logo upload error:", error);
+      toast.error(t("ux.becomePartner.logoUploadError"));
+    } finally {
+      setLogoUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!partnerType) {
+      toast.error(t("ux.becomePartner.pickType"));
+      return;
+    }
+
+    if (!acceptedConditions) {
+      toast.error(t("ux.becomePartner.acceptTerms"));
+      return;
+    }
+
+    if (!preferredPayoutMethod) {
+      toast.error(t("ux.becomePartner.pickPayout"));
+      return;
+    }
+
+    try {
+      partnerApplicationSchema.parse(formData);
+    } catch (error) {
+      const message = error instanceof ZodError ? error.errors[0]?.message : undefined;
+      toast.error(message || t("ux.becomePartner.checkInfo"));
+      return;
+    }
+
+    const typeKey = partnerTypeOptions.find((option) => option.value === partnerType)?.label;
+    const typeLabel = typeKey ? tFr(typeKey) : undefined;
+    const finalDescription = [
+      typeLabel ? `Type de partenariat : ${typeLabel}` : null,
+      carPlanPaymentsEnabled && partnerType === "cars" ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}` : null,
+      formData.description || null,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    // Generated client-side (rather than via .select() after insert) because
+    // the public INSERT policy on partner_applications has no matching
+    // SELECT grant for anonymous users - reading the row back would return
+    // nothing under RLS even though the insert succeeded.
+    const applicationId = crypto.randomUUID();
+
+    setLoading(true);
+    const { error } = await supabase.from("partner_applications").insert({
+      id: applicationId,
+      name: formData.name,
+      contact_email: formData.contactEmail,
+      contact_phone: formData.contactPhone || null,
+      description: finalDescription || null,
+      logo_url: logoUrl || null,
+      requested_car_plan_id: carPlanPaymentsEnabled && partnerType === "cars" ? carPlan : null,
+      preferred_payout_method: preferredPayoutMethod,
+    });
+    setLoading(false);
+
+    if (error) {
+      console.error("Partner application error:", error);
+      toast.error(t("ux.becomePartner.sendError"));
+      return;
+    }
+
+    setSubmitted(true);
+
+    supabase.functions
+      .invoke("send-partner-application-confirmation", { body: { applicationId } })
+      .then(({ error: emailError }) => {
+        if (emailError) console.error("Partner application email error:", emailError);
+      });
+  };
+
+  const resetForm = () => {
+    setFormData({ name: "", contactEmail: "", contactPhone: "", description: "" });
+    setPartnerType("");
+    setPreferredPayoutMethod("");
+    setCarPlan("decouverte");
+    setAcceptedConditions(false);
+    setLogoUrl("");
+    setSubmitted(false);
+  };
+
+  const typeConditions = partnerType === "cars" && !carPlanPaymentsEnabled
+    ? freeCarConditions
+    : partnerType ? conditionsByType[partnerType] : [];
+  const activeConditions = partnerType ? [...typeConditions, ...commonConditions] : [];
+  const selectedTypeMeta = partnerTypeOptions.find((o) => o.value === partnerType);
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col pt-16">
+      <Navbar />
+
+      {/* Hero */}
+      <section className="relative py-16 md:py-20 bg-brand overflow-hidden">
+        <LazyImage
+          src={bannerBecomePartner}
+          alt={t("ux.becomePartner.title")}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-brand/65" />
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+        </div>
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+            {t("ux.becomePartner.title")}
+          </h1>
+          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium">
+            {t("ux.becomePartner.subtitle")}
+          </p>
+        </div>
+      </section>
+
+      <main className="flex-1 container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
+          {/* Benefits */}
+          <div className="lg:col-span-2 lg:sticky lg:top-24 lg:self-start">
+            <h2 className="text-2xl font-extrabold text-foreground mb-6 flex items-center gap-2">
+              <Handshake className="w-6 h-6 text-primary" />
+              {t("ux.becomePartner.benefitsTitle")}
+            </h2>
+            <div className="space-y-4">
+              {benefits.map((benefit) => {
+                const Icon = benefit.icon;
+                return (
+                  <Card key={benefit.title} className="transition-shadow hover:shadow-md">
+                    <CardContent className="p-6 flex gap-4">
+                      <div className="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-2xl flex items-center justify-center">
+                        <Icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold mb-1">{t(benefit.title)}</h3>
+                        <p className="text-sm text-muted-foreground">{t(benefit.description)}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+            <p className="text-sm text-muted-foreground mt-6">
+              {t(autoApprove ? "ux.becomePartner.autoReview" : "ux.becomePartner.manualReview")}
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              <Link to="/partenariat" className="text-primary font-medium hover:underline">
+                {t("ux.becomePartner.seeAllTypes")}
+              </Link>
+            </p>
+          </div>
+
+          {/* Application form */}
+          <div className="lg:col-span-3">
+            <Card className="overflow-hidden">
+              <CardHeader className="border-b border-border bg-muted/30">
+                <CardTitle>{t("ux.becomePartner.formTitle")}</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <AnimatePresence mode="wait">
+                  {submitted ? (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center py-10 px-2"
+                    >
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                        <PartyPopper className="w-8 h-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">{t("ux.becomePartner.sent")}</h3>
+                      <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
+                        {t(autoApprove ? "ux.partnerForm.thanksAuto" : "ux.partnerForm.thanks")}
+                      </p>
+                      <Button variant="outline" onClick={resetForm}>
+                        {t("ux.becomePartner.sendAnother")}
+                      </Button>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <UnifiedForm onSubmit={handleSubmit} variant="contact" loading={loading}>
+                        {/* Step 1 */}
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                          <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center flex-shrink-0">
+                            1
+                          </span>
+                          {t("ux.becomePartner.type")}
+                        </div>
+                        <div className="space-y-2">
+                          <Select value={partnerType} onValueChange={handleTypeChange}>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t("ux.becomePartner.chooseType")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {partnerTypeOptions.map((option) => {
+                                const Icon = option.icon;
+                                return (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    <span className="flex items-center gap-2">
+                                      <Icon className="w-4 h-4 text-primary" />
+                                      {t(option.label)}
+                                    </span>
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <AnimatePresence>
+                          {carPlanPaymentsEnabled && partnerType === "cars" && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="space-y-2 overflow-hidden"
+                            >
+                              <label className="text-sm font-medium block">
+                                {t("ux.partnerForm.plan")} <span className="text-destructive">*</span>
+                              </label>
+                              <Select value={carPlan} onValueChange={setCarPlan}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={t("ux.becomePartner.choosePlan")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {carPlanOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {t(option.label)}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <p className="text-xs text-muted-foreground">
+                                {t("ux.partnerForm.fullDetails")}{" "}
+                                <Link to="/partenaires/voitures" className="text-primary hover:underline">
+                                  {t("ux.partnerForm.carPlansPage")}
+                                </Link>
+                                .
+                              </p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        {/* Step 2 */}
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground pt-2">
+                          <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center flex-shrink-0">
+                            2
+                          </span>
+                          {t("ux.becomePartner.yourInfo")}
+                        </div>
+
+                        <UnifiedFormField
+                          label={t("ux.becomePartner.formName")}
+                          name="name"
+                          placeholder={t("ux.becomePartner.namePlaceholder")}
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          required
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <UnifiedFormField
+                            label={t("ux.becomePartner.formEmail")}
+                            name="contactEmail"
+                            type="email"
+                            placeholder="contact@votrehotel.com"
+                            value={formData.contactEmail}
+                            onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                            required
+                          />
+                          <UnifiedFormField
+                            label={t("ux.becomePartner.formPhone")}
+                            name="contactPhone"
+                            type="tel"
+                            placeholder="+225 XX XX XX XX XX"
+                            value={formData.contactPhone}
+                            onPhoneChange={(contactPhone) => setFormData({ ...formData, contactPhone })}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium block">
+                            Moyen souhaité pour recevoir vos reversements Jèko <span className="text-destructive">*</span>
+                          </label>
+                          <Select
+                            value={preferredPayoutMethod}
+                            onValueChange={(value) => setPreferredPayoutMethod(value as JekoPayoutMethod)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={t("ux.becomePartner.choosePayout")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {JEKO_PAYOUT_METHODS.map((method) => (
+                                <SelectItem key={method.value} value={method.value}>{method.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            {t("ux.becomePartner.payoutLater")}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium block">Logo (optionnel)</label>
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 flex-shrink-0 rounded-xl border border-dashed border-border bg-muted/40 flex items-center justify-center overflow-hidden">
+                              {logoUploading ? (
+                                <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+                              ) : logoUrl ? (
+                                <img src={logoUrl} alt={t("ux.becomePartner.logo")} className="w-full h-full object-cover" />
+                              ) : (
+                                <ImagePlus className="w-5 h-5 text-muted-foreground/50" />
+                              )}
+                            </div>
+                            <div className="flex-1 space-y-1">
+                              <input
+                                ref={logoInputRef}
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={handleLogoSelect}
+                                className="hidden"
+                              />
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={logoUploading}
+                                  onClick={() => logoInputRef.current?.click()}
+                                >
+                                  {logoUploading ? t("ux.becomePartner.uploading") : logoUrl ? t("ux.becomePartner.changeLogo") : t("ux.becomePartner.chooseFile")}
+                                </Button>
+                                {logoUrl && !logoUploading && (
+                                  <Button
+                                    aria-label={t("ux.becomePartner.removeLogo")}
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => setLogoUrl("")}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {t("ux.becomePartner.logoHint")}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium block">
+                            {t("ux.becomePartner.formDescription")}
+                          </label>
+                          <Textarea
+                            placeholder={t("ux.becomePartner.descPlaceholder")}
+                            rows={5}
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="w-full"
+                          />
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground pt-2">
+                          <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center flex-shrink-0">
+                            3
+                          </span>
+                          Conditions & validation
+                        </div>
+
+                        <AnimatePresence mode="wait">
+                          {partnerType ? (
+                            <motion.div
+                              key={partnerType}
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0 }}
+                              className="rounded-lg border border-border bg-muted/40 p-4 space-y-3"
+                            >
+                              <p className="text-sm font-semibold">
+                                {t("ux.partnerForm.conditionsFor", { type: selectedTypeMeta ? t(selectedTypeMeta.label) : "" })}
+                              </p>
+                              <ul className="space-y-2">
+                                {activeConditions.map((condition) => (
+                                  <li key={condition} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                                    <span>{t(condition)}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              <div className="flex items-start gap-2 pt-2 border-t border-border">
+                                <Checkbox
+                                  id="accept-conditions"
+                                  checked={acceptedConditions}
+                                  onCheckedChange={(checked) => setAcceptedConditions(checked === true)}
+                                  className="mt-0.5"
+                                />
+                                <label htmlFor="accept-conditions" className="text-sm cursor-pointer">
+                                  {t("ux.partnerForm.accept")}
+                                  {i18n.language.startsWith("zh") ? "" : " "}
+                                  <Link
+                                    to="/terms"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary underline underline-offset-2 hover:no-underline"
+                                  >
+                                    {t("ux.partnerForm.termsLink")}
+                                  </Link>
+                                  {t("ux.partnerForm.acceptEnd")}
+                                </label>
+                              </div>
+                            </motion.div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground italic">
+                              {t("ux.becomePartner.pickTypeForTerms")}
+                            </p>
+                          )}
+                        </AnimatePresence>
+
+                        <UnifiedSubmitButton
+                          loading={loading}
+                          fullWidth
+                          disabled={!partnerType || !acceptedConditions}
+                        >
+                          {t("ux.becomePartner.formSubmit")}
+                        </UnifiedSubmitButton>
+                      </UnifiedForm>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default BecomePartner;

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ce document détaille les optimisations de performance implémentées dans l'application B-RESERVE pour améliorer la vitesse de chargement, réduire l'utilisation de la bande passante et améliorer l'expérience utilisateur.
+Ce document détaille les optimisations de performance implémentées dans l'application Bossiz+ pour améliorer la vitesse de chargement, réduire l'utilisation de la bande passante et améliorer l'expérience utilisateur.
 
 ## 1. Code Splitting des Routes
 

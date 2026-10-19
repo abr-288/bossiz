@@ -1,10 +1,11 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NationalitySelect } from "@/components/NationalitySelect";
+import { useTranslation } from "react-i18next";
 
 export interface Passenger {
   first_name: string;
@@ -28,6 +29,7 @@ export const PassengersForm = ({
   minPassengers = 1,
   maxPassengers = 9,
 }: PassengersFormProps) => {
+  const { t } = useTranslation();
   const addPassenger = () => {
     if (passengers.length < maxPassengers) {
       onChange([
@@ -68,7 +70,7 @@ export const PassengersForm = ({
             onClick={addPassenger}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Ajouter un passager
+            {t("ux.passengersForm.add")}
           </Button>
         )}
       </div>
@@ -100,7 +102,7 @@ export const PassengersForm = ({
                   id={`first_name_${index}`}
                   value={passenger.first_name}
                   onChange={(e) => updatePassenger(index, "first_name", e.target.value)}
-                  placeholder="Jean"
+                  placeholder={t("ux.passengersForm.firstNamePlaceholder")}
                   required
                 />
               </div>
@@ -110,7 +112,7 @@ export const PassengersForm = ({
                   id={`last_name_${index}`}
                   value={passenger.last_name}
                   onChange={(e) => updatePassenger(index, "last_name", e.target.value)}
-                  placeholder="Dupont"
+                  placeholder={t("ux.passengersForm.lastNamePlaceholder")}
                   required
                 />
               </div>
@@ -128,11 +130,10 @@ export const PassengersForm = ({
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`nationality_${index}`}>Nationalité</Label>
-                <Input
+                <NationalitySelect
                   id={`nationality_${index}`}
                   value={passenger.nationality || ""}
-                  onChange={(e) => updatePassenger(index, "nationality", e.target.value)}
-                  placeholder="Française"
+                  onValueChange={(value) => updatePassenger(index, "nationality", value)}
                 />
               </div>
             </div>
@@ -149,8 +150,8 @@ export const PassengersForm = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="passport">Passeport</SelectItem>
-                    <SelectItem value="id_card">Carte d'identité</SelectItem>
-                    <SelectItem value="driver_license">Permis de conduire</SelectItem>
+                    <SelectItem value="id_card">{t("ux.passengersForm.idCard")}</SelectItem>
+                    <SelectItem value="driver_license">{t("ux.passengersForm.licence")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

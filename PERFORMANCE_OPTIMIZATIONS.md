@@ -1,4 +1,4 @@
-# Optimisations de Performance - B-Reserve
+# Optimisations de Performance - Bossiz+
 
 ## ✅ Optimisations Implémentées
 
@@ -45,7 +45,7 @@ Implémentation du composant `LazyImage` avec Intersection Observer :
 #### Meta Tags Complets
 ```html
 <!-- Primary Meta Tags -->
-<title>B-Reserve - Réservation de Voyages en Côte d'Ivoire | Vols, Hôtels, Tours</title>
+<title>Bossiz+ - Réservation de Voyages en Côte d'Ivoire | Vols, Hôtels, Tours</title>
 <meta name="description" content="Réservez vos voyages en Côte d'Ivoire facilement : vols, hôtels, locations de voiture, circuits touristiques, trains et événements. Meilleurs prix garantis.">
 <meta name="keywords" content="réservation voyage, Côte d'Ivoire, hôtel Abidjan, vol Côte d'Ivoire">
 <link rel="canonical" href="https://traversee-connect.lovable.app/">
@@ -53,7 +53,7 @@ Implémentation du composant `LazyImage` avec Intersection Observer :
 
 #### Open Graph (Facebook/LinkedIn)
 ```html
-<meta property="og:title" content="B-Reserve - Réservation de Voyages en Côte d'Ivoire">
+<meta property="og:title" content="Bossiz+ - Réservation de Voyages en Côte d'Ivoire">
 <meta property="og:description" content="Réservez vos voyages facilement...">
 <meta property="og:image" content="...">
 <meta property="og:locale" content="fr_CI">
@@ -62,7 +62,7 @@ Implémentation du composant `LazyImage` avec Intersection Observer :
 #### Twitter Cards
 ```html
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="B-Reserve...">
+<meta name="twitter:title" content="Bossiz+...">
 ```
 
 #### Structured Data (JSON-LD)
@@ -70,7 +70,7 @@ Implémentation du composant `LazyImage` avec Intersection Observer :
 {
   "@context": "https://schema.org",
   "@type": "TravelAgency",
-  "name": "B-Reserve",
+  "name": "Bossiz+",
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "XOF",

@@ -3,6 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface AdminStats {
   totalRevenue: number;
+  totalSupplierCost: number;
+  totalMargin: number;
+  bookingsWithKnownCost: number;
   totalBookings: number;
   pendingBookings: number;
   confirmedBookings: number;
@@ -19,6 +22,9 @@ interface AdminStats {
 export const useAdminStats = () => {
   const [stats, setStats] = useState<AdminStats>({
     totalRevenue: 0,
+    totalSupplierCost: 0,
+    totalMargin: 0,
+    bookingsWithKnownCost: 0,
     totalBookings: 0,
     pendingBookings: 0,
     confirmedBookings: 0,
@@ -50,9 +56,17 @@ export const useAdminStats = () => {
           .order("created_at", { ascending: false });
 
         if (bookings) {
-          const totalRevenue = bookings
-            .filter((b) => b.payment_status === "paid")
-            .reduce((sum, b) => sum + Number(b.total_price), 0);
+          const paidBookings = bookings.filter((b) => ["paid", "partially_paid"].includes(b.payment_status));
+          const totalRevenue = paidBookings.reduce((sum, b) => sum + Number(b.amount_paid ?? (b.payment_status === "paid" ? b.total_price : 0)), 0);
+
+          // supplier_cost is only known for hotel/car (back-computed from the
+          // retail markup) and flight (real base_fare) bookings - see
+          // supabase/functions/create-booking. Other verticals leave it null,
+          // so margin is only summed over bookings where it's actually known.
+          const bookingsWithCost = paidBookings.filter((b) => b.supplier_cost !== null && b.supplier_cost !== undefined);
+          const totalSupplierCost = bookingsWithCost.reduce((sum, b) => sum + Number(b.supplier_cost), 0);
+          const totalMargin = bookingsWithCost.reduce((sum, b) => sum + (Number(b.total_price) - Number(b.supplier_cost)), 0);
+          const bookingsWithKnownCost = bookingsWithCost.length;
 
           const totalBookings = bookings.length;
           const pendingBookings = bookings.filter((b) => b.status === "pending").length;
@@ -70,12 +84,12 @@ export const useAdminStats = () => {
               .filter((b) => {
                 const bookingDate = new Date(b.created_at);
                 return (
-                  b.payment_status === "paid" &&
+                  ["paid", "partially_paid"].includes(b.payment_status) &&
                   bookingDate.getMonth() === date.getMonth() &&
                   bookingDate.getFullYear() === date.getFullYear()
                 );
               })
-              .reduce((sum, b) => sum + Number(b.total_price), 0);
+              .reduce((sum, b) => sum + Number(b.amount_paid ?? (b.payment_status === "paid" ? b.total_price : 0)), 0);
 
             revenueByMonth.push({ month: monthName, revenue: monthRevenue });
           }
@@ -136,6 +150,9 @@ export const useAdminStats = () => {
 
           setStats({
             totalRevenue,
+            totalSupplierCost,
+            totalMargin,
+            bookingsWithKnownCost,
             totalBookings,
             pendingBookings,
             confirmedBookings,

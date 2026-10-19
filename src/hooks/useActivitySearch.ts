@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLocalizedRows } from "@/lib/translatableContent";
 
 export interface Activity {
   id: string;
@@ -18,6 +19,10 @@ export interface Activity {
   included: string[];
   available: boolean;
   featured: boolean;
+  available_dates: string[];
+  latitude: number | null;
+  longitude: number | null;
+  maps_url: string | null;
 }
 
 export const useActivitySearch = () => {
@@ -73,8 +78,9 @@ export const useActivitySearch = () => {
     }
   };
 
+  const localized = useLocalizedRows(activities);
   return {
-    activities,
+    activities: localized,
     loading,
     searchActivities,
   };

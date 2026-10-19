@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -18,10 +17,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { format, isSameDay, parseISO, startOfMonth, endOfMonth } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Calendar as CalendarIcon, Filter, MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Price } from "@/components/ui/price";
+import { useTranslation } from "react-i18next";
+import { BookingStatusBadge, BOOKING_STATUS_DOT_COLOR } from "@/components/dashboard/BookingStatusBadge";
+import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 interface Booking {
   id: string;
@@ -48,21 +49,8 @@ interface BookingCalendarProps {
   bookings: Booking[];
 }
 
-const statusColors = {
-  pending: "bg-amber-500",
-  confirmed: "bg-emerald-500",
-  completed: "bg-blue-500",
-  cancelled: "bg-red-500",
-};
-
-const statusLabels = {
-  pending: "En attente",
-  confirmed: "Confirmée",
-  completed: "Terminée",
-  cancelled: "Annulée",
-};
-
 export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -125,12 +113,12 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
 
   const getServiceTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      hotel: "Hôtel",
+      hotel: t("ux.calendar.hotel"),
       flight: "Vol",
       car: "Voiture",
       tour: "Tour",
-      event: "Événement",
-      flight_hotel: "Vol + Hôtel",
+      event: t("ux.calendar.event"),
+      flight_hotel: t("ux.calendar.flightHotel"),
     };
     return labels[type] || type;
   };
@@ -142,7 +130,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filtres
+            {t("ux.calendar.filters")}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4">
@@ -150,32 +138,32 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
             <label className="text-sm font-medium mb-2 block">Statut</label>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger>
-                <SelectValue placeholder="Tous les statuts" />
+                <SelectValue placeholder={t("ux.calendar.allStatuses")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="confirmed">Confirmée</SelectItem>
-                <SelectItem value="completed">Terminée</SelectItem>
-                <SelectItem value="cancelled">Annulée</SelectItem>
+                <SelectItem value="all">{t("ux.calendar.allStatuses")}</SelectItem>
+                <SelectItem value="pending">{t("ux.calendar.pending")}</SelectItem>
+                <SelectItem value="confirmed">{t("ux.calendar.confirmed")}</SelectItem>
+                <SelectItem value="completed">{t("ux.calendar.completed")}</SelectItem>
+                <SelectItem value="cancelled">{t("ux.calendar.cancelled")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex-1 min-w-[200px]">
-            <label className="text-sm font-medium mb-2 block">Type de service</label>
+            <label className="text-sm font-medium mb-2 block">{t("ux.calendar.serviceType")}</label>
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger>
-                <SelectValue placeholder="Tous les types" />
+                <SelectValue placeholder={t("ux.calendar.allTypes")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
-                <SelectItem value="hotel">Hôtel</SelectItem>
+                <SelectItem value="all">{t("ux.calendar.allTypes")}</SelectItem>
+                <SelectItem value="hotel">{t("ux.calendar.hotel")}</SelectItem>
                 <SelectItem value="flight">Vol</SelectItem>
                 <SelectItem value="car">Voiture</SelectItem>
                 <SelectItem value="tour">Tour</SelectItem>
-                <SelectItem value="event">Événement</SelectItem>
-                <SelectItem value="flight_hotel">Vol + Hôtel</SelectItem>
+                <SelectItem value="event">{t("ux.calendar.event")}</SelectItem>
+                <SelectItem value="flight_hotel">{t("ux.calendar.flightHotel")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -188,7 +176,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                 setFilterType("all");
               }}
             >
-              Réinitialiser
+              {t("ux.calendar.reset")}
             </Button>
           </div>
         </CardContent>
@@ -200,7 +188,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
-              Calendrier des réservations
+              {t("ux.calendar.title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
@@ -210,7 +198,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
               onSelect={setSelectedDate}
               month={selectedMonth}
               onMonthChange={setSelectedMonth}
-              locale={fr}
+              locale={currentDateFnsLocale()}
               modifiers={modifiers}
               modifiersClassNames={modifiersClassNames}
               className={cn("rounded-md border pointer-events-auto")}
@@ -223,14 +211,14 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
           <CardHeader>
             <CardTitle>
               {selectedDate
-                ? `Réservations du ${format(selectedDate, "d MMMM yyyy", { locale: fr })}`
-                : "Sélectionnez une date"}
+                ? `Réservations du ${format(selectedDate, "d MMMM yyyy", { locale: currentDateFnsLocale() })}`
+                : t("ux.calendar.pickDate")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {bookingsForSelectedDate.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                Aucune réservation pour cette date
+                {t("ux.calendar.noneOnDate")}
               </div>
             ) : (
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -248,15 +236,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                           {booking.services.location}
                         </p>
                       </div>
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "text-white",
-                          statusColors[booking.status as keyof typeof statusColors]
-                        )}
-                      >
-                        {statusLabels[booking.status as keyof typeof statusLabels]}
-                      </Badge>
+                      <BookingStatusBadge status={booking.status} />
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="flex items-center gap-1 text-muted-foreground">
@@ -279,7 +259,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Détails de la réservation</DialogTitle>
+            <DialogTitle>{t("ux.calendar.details")}</DialogTitle>
             <DialogDescription>
               #{selectedBooking?.id.substring(0, 8).toUpperCase()}
             </DialogDescription>
@@ -303,27 +283,19 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Statut</label>
-                  <Badge
-                    variant="secondary"
-                    className={cn(
-                      "text-white",
-                      statusColors[selectedBooking.status as keyof typeof statusColors]
-                    )}
-                  >
-                    {statusLabels[selectedBooking.status as keyof typeof statusLabels]}
-                  </Badge>
+                  <BookingStatusBadge status={selectedBooking.status} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Date de début</label>
+                  <label className="text-sm font-medium text-muted-foreground">{t("ux.calendar.startDate")}</label>
                   <p className="font-semibold">
-                    {format(parseISO(selectedBooking.start_date), "d MMMM yyyy", { locale: fr })}
+                    {format(parseISO(selectedBooking.start_date), "d MMMM yyyy", { locale: currentDateFnsLocale() })}
                   </p>
                 </div>
                 {selectedBooking.end_date && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Date de fin</label>
+                    <label className="text-sm font-medium text-muted-foreground">{t("ux.calendar.endDate")}</label>
                     <p className="font-semibold">
-                      {format(parseISO(selectedBooking.end_date), "d MMMM yyyy", { locale: fr })}
+                      {format(parseISO(selectedBooking.end_date), "d MMMM yyyy", { locale: currentDateFnsLocale() })}
                     </p>
                   </div>
                 )}
@@ -334,7 +306,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Montant total</label>
+                  <label className="text-sm font-medium text-muted-foreground">{t("ux.calendar.total")}</label>
                   <p className="font-semibold">
                     <Price amount={Number(selectedBooking.total_price)} fromCurrency={selectedBooking.currency} showLoader />
                   </p>
@@ -354,15 +326,15 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
       {/* Legend */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">Légende</CardTitle>
+          <CardTitle className="text-sm">{t("ux.calendar.legend")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            {Object.entries(statusColors).map(([status, color]) => (
+            {Object.entries(BOOKING_STATUS_DOT_COLOR).map(([status, color]) => (
               <div key={status} className="flex items-center gap-2">
                 <div className={cn("w-3 h-3 rounded-full", color)} />
                 <span className="text-sm">
-                  {statusLabels[status as keyof typeof statusLabels]}
+                  {t(`booking.status.${status}`, status)}
                 </span>
               </div>
             ))}

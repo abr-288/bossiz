@@ -11,8 +11,10 @@ import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, Search, Shield, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function AdminUsers() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,8 +62,8 @@ export default function AdminUsers() {
     } catch (error) {
       console.error("Error fetching users:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les utilisateurs",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableLoadUsers"),
         variant: "destructive",
       });
     } finally {
@@ -84,8 +86,8 @@ export default function AdminUsers() {
 
       if (existingRole) {
         toast({ 
-          title: "Information",
-          description: "L'utilisateur a déjà ce rôle" 
+          title: t("ux.bo.information"),
+          description: t("ux.bo.userAlreadyHasRole") 
         });
         setDialogOpen(false);
         return;
@@ -104,14 +106,14 @@ export default function AdminUsers() {
 
       if (error) throw error;
 
-      toast({ title: "Rôle mis à jour avec succès" });
+      toast({ title: t("ux.bo.roleUpdatedSuccessfully") });
       setDialogOpen(false);
       fetchUsers();
     } catch (error) {
       console.error("Error updating user role:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le rôle",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableUpdateRole"),
         variant: "destructive",
       });
     }
@@ -134,14 +136,14 @@ export default function AdminUsers() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Gestion des Utilisateurs</h1>
+          <h1 className="text-3xl font-bold">{t("ux.bo.userManagement2")}</h1>
         </div>
 
         <div className="flex gap-4 items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher un utilisateur..."
+              placeholder={t("ux.bo.searchUser")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -151,16 +153,16 @@ export default function AdminUsers() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Chargement...</div>
+          <div className="text-center py-12">{t("ux.bo.loading")}</div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Téléphone</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Date d'inscription</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("ux.bo.name")}</TableHead>
+                <TableHead>{t("ux.bo.phone")}</TableHead>
+                <TableHead>{t("ux.bo.role")}</TableHead>
+                <TableHead>{t("ux.bo.signUpDate")}</TableHead>
+                <TableHead>{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -173,13 +175,13 @@ export default function AdminUsers() {
                       ) : (
                         <User className="h-4 w-4 text-muted-foreground" />
                       )}
-                      {user.full_name || "Non défini"}
+                      {user.full_name || t("ux.bo.notSet")}
                     </div>
                   </TableCell>
-                  <TableCell>{user.phone || "Non renseigné"}</TableCell>
+                  <TableCell>{user.phone || t("ux.bo.notProvided")}</TableCell>
                   <TableCell>
                     <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                      {user.role === "admin" ? "Administrateur" : "Utilisateur"}
+                      {user.role === "admin" ? t("ux.bo.administrator") : t("ux.bo.user")}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -199,15 +201,15 @@ export default function AdminUsers() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Modifier le rôle utilisateur</DialogTitle>
+              <DialogTitle>{t("ux.bo.editUserRole")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Utilisateur</Label>
-                <Input value={editingUser?.full_name || "Non défini"} disabled />
+                <Label>{t("ux.bo.user")}</Label>
+                <Input value={editingUser?.full_name || t("ux.bo.notSet")} disabled />
               </div>
               <div className="space-y-2">
-                <Label>Rôle</Label>
+                <Label>{t("ux.bo.role")}</Label>
                 <Select
                   value={formData.role}
                   onValueChange={(value: "admin" | "user") => setFormData({ ...formData, role: value })}
@@ -216,16 +218,16 @@ export default function AdminUsers() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="user">Utilisateur</SelectItem>
-                    <SelectItem value="admin">Administrateur</SelectItem>
+                    <SelectItem value="user">{t("ux.bo.user")}</SelectItem>
+                    <SelectItem value="admin">{t("ux.bo.administrator")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                  Annuler
+                  {t("ux.bo.cancel")}
                 </Button>
-                <Button type="submit">Mettre à jour</Button>
+                <Button type="submit">{t("ux.bo.update")}</Button>
               </div>
             </form>
           </DialogContent>

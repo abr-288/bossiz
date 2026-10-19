@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cloud, Droplets, Wind, Thermometer, Loader2 } from "lucide-react";
 import { useWeather, WeatherData } from "@/hooks/useWeather";
+import { useTranslation } from "react-i18next";
 
 interface WeatherWidgetProps {
   city: string;
 }
 
 export const WeatherWidget = ({ city }: WeatherWidgetProps) => {
+  const { t } = useTranslation();
   const { getWeather, loading } = useWeather();
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -39,7 +41,7 @@ export const WeatherWidget = ({ city }: WeatherWidgetProps) => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-primary/10 to-secondary/10">
+    <Card className="bg-primary/5">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Cloud className="w-5 h-5 text-primary" />
@@ -65,7 +67,7 @@ export const WeatherWidget = ({ city }: WeatherWidgetProps) => {
           </div>
           <div className="flex flex-col items-center gap-1">
             <Droplets className="w-4 h-4 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground">Humidité</p>
+            <p className="text-xs text-muted-foreground">{t("ux.weather.humidity")}</p>
             <p className="font-semibold">{weather.humidity}%</p>
           </div>
           <div className="flex flex-col items-center gap-1">

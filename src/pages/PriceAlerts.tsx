@@ -1,7 +1,6 @@
 import { UserDashboardLayout } from '@/components/dashboard/UserDashboardLayout';
 import { PriceAlertManager } from '@/components/PriceAlertManager';
 import { CreatePriceAlert } from '@/components/CreatePriceAlert';
-import { NotificationPrompt } from '@/components/NotificationPrompt';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +32,6 @@ const PriceAlerts = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <NotificationPrompt />
     </UserDashboardLayout>
   );
 };

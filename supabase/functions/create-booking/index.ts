@@ -1,10 +1,50 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { verifyOfferSignature } from "../_shared/priceSignature.ts";
+import { RETAIL_MARKUP_PERCENTAGE } from "../_shared/pricing.ts";
+import { notifyCompanyApprovers } from "../_shared/notify.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Service types whose search results come from a signed offer (see
+// _shared/priceSignature.ts): the price is never trusted from the request
+// body, it's recomputed here from the server-signed unit_price.
+const SIGNED_OFFER_SERVICE_TYPES = new Set(['hotel', 'car']);
+
+// Service types backed by their own curated catalog table (not the generic
+// "services" table): when a service_id is supplied for these, the row's own
+// price_per_unit is the source of truth.
+const CATALOG_TABLE_BY_SERVICE_TYPE: Record<string, string> = {
+  stay: 'stays',
+  activity: 'activities',
+};
+
+function daysBetween(startDate: string, endDate: string): number {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+}
+
+function convertToXof(amount: number, currency: string): number {
+  const ratesToXof: Record<string, number> = {
+    XOF: 1,
+    FCFA: 1,
+    EUR: 655.957,
+    USD: 602.123,
+    GBP: 785.234,
+    CHF: 703.891,
+  };
+  const rate = ratesToXof[currency.toUpperCase()];
+
+  if (!Number.isFinite(amount) || !rate) {
+    throw new Error(`Unsupported catalog price currency: ${currency}`);
+  }
+
+  return Math.round(amount * rate);
+}
 
 interface Passenger {
   first_name: string;
@@ -13,6 +53,13 @@ interface Passenger {
   document_type?: string;
   document_number?: string;
   nationality?: string;
+}
+
+interface BookingDetails extends Record<string, unknown> {
+  pickupTime?: string;
+  dropoffTime?: string;
+  prebooking_id?: string;
+  rooms?: number;
 }
 
 interface BookingRequest {
@@ -31,7 +78,20 @@ interface BookingRequest {
   customer_phone: string;
   notes?: string;
   passengers: Passenger[];
-  booking_details?: any;
+  booking_details?: BookingDetails;
+  // Present only for service types backed by a signed search offer (hotel, car)
+  unit_price?: number;
+  offer_signature?: string;
+  offer_expires_at?: string;
+  // Flights only: the real base_fare from the signed prebook/checkout price
+  // breakdown (supplier cost excluding taxes/service fee), for reconciliation.
+  supplier_cost?: number;
+  // Present when the caller chose "bill to my company" - the RLS INSERT
+  // policy on bookings independently verifies the caller is actually a
+  // member of this company before allowing the row through, so a stranger
+  // company_id here is rejected at the database level regardless.
+  company_id?: string;
+  payment_plan?: 'full' | 'deposit';
 }
 
 serve(async (req) => {
@@ -77,9 +137,180 @@ serve(async (req) => {
       throw new Error('At least one passenger is required');
     }
 
-    // Create or get service
-    let serviceId = requestData.service_id;
-    
+    // ==============================================================
+    // SECURITY: never trust requestData.total_price as-is.
+    // - hotel/car: price comes from a search result signed server-side
+    //   by search-hotels/car-rental; verify the signature and recompute
+    //   the total from the signed unit_price, ignore whatever total the
+    //   client sent.
+    // - any type with an existing service_id: recompute from the
+    //   service's own stored price_per_unit, never the client's total.
+    // ==============================================================
+    let verifiedTotalPrice = requestData.total_price;
+    // Supplier cost tracking, for revenue/margin reconciliation - see
+    // supabase/migrations/20260801000002_add_supplier_cost_tracking.sql.
+    let verifiedSupplierCost: number | null = null;
+
+    if (SIGNED_OFFER_SERVICE_TYPES.has(requestData.service_type)) {
+      const { unit_price: unitPrice, offer_signature: offerSignature, offer_expires_at: offerExpiresAt } = requestData;
+
+      if (unitPrice === undefined || !offerSignature || !offerExpiresAt) {
+        throw new Error('Missing signed price offer for this service type');
+      }
+
+      const isValidSignature = await verifyOfferSignature(
+        {
+          service_type: requestData.service_type,
+          service_name: requestData.service_name,
+          location: requestData.location,
+          unit_price: unitPrice,
+          currency: requestData.currency,
+          expires_at: offerExpiresAt,
+        },
+        offerSignature
+      );
+
+      if (!isValidSignature) {
+        console.error('❌ Price offer signature invalid - possible tampering');
+        throw new Error('Price verification failed. Please search again.');
+      }
+
+      if (new Date(offerExpiresAt).getTime() < Date.now()) {
+        throw new Error('This price offer has expired. Please search again.');
+      }
+
+      // Cars are booked with pickup/dropoff times, not just dates (see
+      // CarBookingDialog): reproduce that exact duration calculation here
+      // so the server-verified total always matches what was shown to the
+      // user, instead of a coarser date-only diff.
+      let units: number;
+      if (requestData.service_type === 'car' && requestData.booking_details?.pickupTime && requestData.booking_details?.dropoffTime) {
+        const start = new Date(`${requestData.start_date}T${requestData.booking_details.pickupTime}`);
+        const end = new Date(`${requestData.end_date}T${requestData.booking_details.dropoffTime}`);
+        units = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+      } else {
+        units = daysBetween(requestData.start_date, requestData.end_date || requestData.start_date);
+      }
+
+      const multiplier = requestData.service_type === 'hotel' ? (requestData.booking_details?.rooms || 1) : 1;
+      verifiedTotalPrice = unitPrice * units * multiplier;
+
+      // Back out the known retail markup to get what the supplier actually
+      // charges us for this booking.
+      verifiedSupplierCost = Math.round((unitPrice / (1 + RETAIL_MARKUP_PERCENTAGE)) * units * multiplier);
+
+      console.log('✅ Price offer verified - server-computed total:', verifiedTotalPrice, '- supplier cost:', verifiedSupplierCost);
+    } else if (requestData.service_type === 'flight') {
+      // SECURITY: flights go through their own signed flow (prebook ->
+      // checkout), never the hotel/car offer_signature. The only proof
+      // that checkout actually recomputed and validated this price
+      // server-side is the flight_prebookings row itself: checkout is the
+      // sole place that flips PREBOOKED -> PENDING_PAYMENT, and it only
+      // does that after verifying price_signature. So re-derive
+      // total_price/supplier_cost from that row - never from the client -
+      // instead of trusting requestData.total_price/supplier_cost as-is.
+      const prebookingId = requestData.booking_details?.prebooking_id;
+
+      if (!prebookingId) {
+        throw new Error('Missing signed price offer for this service type');
+      }
+
+      const { data: prebooking, error: prebookingError } = await supabase
+        .from('flight_prebookings')
+        .select('total_amount, base_fare, currency, status, expires_at')
+        .eq('id', prebookingId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (prebookingError || !prebooking) {
+        console.error('Pre-booking not found for flight booking - Code:', prebookingError?.code);
+        throw new Error('Referenced pre-booking not found');
+      }
+
+      if (prebooking.status !== 'PENDING_PAYMENT') {
+        throw new Error('This booking has not completed checkout. Please start again.');
+      }
+
+      if (new Date(prebooking.expires_at).getTime() < Date.now()) {
+        throw new Error('This price offer has expired. Please search again.');
+      }
+
+      verifiedTotalPrice = prebooking.total_amount;
+      verifiedSupplierCost = prebooking.base_fare;
+
+      console.log('✅ Flight pre-booking verified - server-computed total:', verifiedTotalPrice, '- supplier cost:', verifiedSupplierCost);
+    }
+
+    // Catalog-backed types (stay, activity) live in their own table, not in
+    // `services`. Verify the price against that table, but note their id
+    // can NOT be reused as bookings.service_id below: that column has a hard
+    // foreign key to public.services, so a fresh services row still has to
+    // be created for them (using this verified price, never the client's).
+    const catalogTable = CATALOG_TABLE_BY_SERVICE_TYPE[requestData.service_type];
+
+    if (requestData.service_id && catalogTable) {
+      const { data: catalogRow, error: catalogError } = await supabase
+        .from(catalogTable)
+        .select('price_per_unit, currency')
+        .eq('id', requestData.service_id)
+        .single();
+
+      if (catalogError || !catalogRow) {
+        console.error(`Referenced ${catalogTable} row not found - Code:`, catalogError?.code);
+        throw new Error('Referenced service not found');
+      }
+
+      verifiedTotalPrice = convertToXof(
+        catalogRow.price_per_unit,
+        catalogRow.currency
+      ) * requestData.guests;
+      console.log(`✅ ${catalogTable} price verified - server-computed total:`, verifiedTotalPrice);
+    }
+
+    // Create or get service. A service_id pointing at a catalog table is
+    // never reused directly here (see above) - only a service_id that
+    // already refers to the generic `services` table can be reused as-is.
+    let serviceId = (requestData.service_id && !catalogTable) ? requestData.service_id : undefined;
+
+    if (serviceId && SIGNED_OFFER_SERVICE_TYPES.has(requestData.service_type)) {
+      // Signed-offer types (hotel/car) already had verifiedTotalPrice computed
+      // above from the signed unit_price × duration - that calculation (days,
+      // not `guests`) is the correct one for a nightly/daily rate, so it must
+      // NOT be overwritten by price_per_unit * guests below. Just confirm the
+      // referenced service (e.g. a partner's car listing) still exists, so
+      // bookings.service_id stays valid and downstream commission attribution
+      // (see postPaymentSuccess.ts) can find the right agency.
+      const { data: existingService, error: existingServiceError } = await supabase
+        .from('services')
+        .select('id')
+        .eq('id', serviceId)
+        .single();
+
+      if (existingServiceError || !existingService) {
+        console.error('Referenced service not found - Code:', existingServiceError?.code);
+        throw new Error('Referenced service not found');
+      }
+    } else if (serviceId) {
+      // A service_id was supplied that refers to the generic services table:
+      // its own stored price is the source of truth, never the client's total.
+      const { data: existingService, error: existingServiceError } = await supabase
+        .from('services')
+        .select('price_per_unit, currency')
+        .eq('id', serviceId)
+        .single();
+
+      if (existingServiceError || !existingService) {
+        console.error('Referenced service not found - Code:', existingServiceError?.code);
+        throw new Error('Referenced service not found');
+      }
+
+      verifiedTotalPrice = convertToXof(
+        existingService.price_per_unit,
+        existingService.currency
+      ) * requestData.guests;
+      console.log('✅ Existing service price verified - server-computed total:', verifiedTotalPrice);
+    }
+
     if (!serviceId) {
       console.log('Creating service...');
       const { data: service, error: serviceError } = await supabase
@@ -89,7 +320,7 @@ serve(async (req) => {
           name: requestData.service_name,
           description: requestData.service_description || requestData.service_name,
           location: requestData.location,
-          price_per_unit: requestData.total_price / requestData.guests,
+          price_per_unit: verifiedTotalPrice / requestData.guests,
           currency: requestData.currency,
           available: true,
         })
@@ -106,9 +337,56 @@ serve(async (req) => {
       console.log('Service created successfully');
     }
 
+    // Payment policy is owned by admins in site_config. The client may ask
+    // for a deposit, but the server decides whether this type is eligible
+    // and computes the amount from the verified booking total.
+    const { data: paymentPolicyRow } = await supabase
+      .from('site_config')
+      .select('config_value')
+      .eq('config_key', 'booking_payment_policy')
+      .maybeSingle();
+    const paymentPolicy = paymentPolicyRow?.config_value || {};
+    const depositTypes = Array.isArray(paymentPolicy.enabledServiceTypes)
+      ? paymentPolicy.enabledServiceTypes
+      : ['car', 'tour', 'event', 'stay', 'activity'];
+    const depositPercent = Number(paymentPolicy.depositPercent ?? 30);
+    const depositAllowed = paymentPolicy.depositEnabled !== false
+      && depositTypes.includes(requestData.service_type)
+      && !requestData.company_id
+      && !['hotel', 'flight', 'train', 'flight_hotel'].includes(requestData.service_type);
+    const paymentPlan = requestData.payment_plan === 'deposit' && depositAllowed ? 'deposit' : 'full';
+    if (requestData.payment_plan === 'deposit' && !depositAllowed) {
+      throw new Error('Le paiement en acompte n’est pas disponible pour ce service');
+    }
+    if (paymentPlan === 'deposit' && (!Number.isFinite(depositPercent) || depositPercent < 1 || depositPercent > 99)) {
+      throw new Error('Le pourcentage d’acompte configuré est invalide');
+    }
+    const amountDueNow = paymentPlan === 'deposit'
+      ? Math.ceil(verifiedTotalPrice * depositPercent / 100)
+      : verifiedTotalPrice;
+
+    // Les insertions directes dans bookings sont refusées aux utilisateurs
+    // (le prix n'y serait pas vérifié) : la réservation est créée ici avec
+    // la clé service-role, après les vérifications ci-dessus. La policy
+    // RLS qui contrôlait l'appartenance à l'entreprise est donc refaite ici.
+    const adminSupabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    if (requestData.company_id) {
+      const { data: isMember } = await adminSupabase.rpc('is_company_member', {
+        _user_id: user.id,
+        _company_id: requestData.company_id,
+      });
+      if (!isMember) {
+        throw new Error('Unauthorized company');
+      }
+    }
+
     // Create booking
     console.log('Creating booking...');
-    const { data: booking, error: bookingError } = await supabase
+    const { data: booking, error: bookingError } = await adminSupabase
       .from('bookings')
       .insert({
         user_id: user.id,
@@ -118,13 +396,26 @@ serve(async (req) => {
         start_date: requestData.start_date,
         end_date: requestData.end_date || requestData.start_date,
         guests: requestData.guests,
-        total_price: requestData.total_price,
+        total_price: verifiedTotalPrice,
+        payment_plan: paymentPlan,
+        deposit_percent: paymentPlan === 'deposit' ? depositPercent : 0,
+        amount_due_now: amountDueNow,
+        amount_paid: 0,
+        balance_due: verifiedTotalPrice - amountDueNow,
         currency: requestData.currency,
+        supplier_cost: verifiedSupplierCost,
+        supplier_cost_currency: verifiedSupplierCost !== null ? requestData.currency : null,
         customer_name: requestData.customer_name,
         customer_email: requestData.customer_email,
         customer_phone: requestData.customer_phone,
         notes: requestData.notes,
         booking_details: requestData.booking_details,
+        company_id: requestData.company_id || null,
+        // A company-billed booking always starts as pending approval - an
+        // approver/admin for that company must sign off before the DAF can
+        // pay it (see process-payment). Personal bookings (no company_id)
+        // have no approval concept at all.
+        approval_status: requestData.company_id ? 'pending_approval' : null,
       })
       .select()
       .single();
@@ -161,6 +452,20 @@ serve(async (req) => {
       console.warn('Continuing without passengers...');
     } else {
       console.log('Passengers created:', passengers.length);
+    }
+
+    // Best-effort: notify the company's approvers that a booking is waiting
+    // on them. Never blocks or fails the booking itself (notifyCompanyApprovers
+    // swallows its own errors) - a misconfigured or absent notification
+    // provider just means no SMS/WhatsApp goes out, the booking is still
+    // created either way. Awaited rather than fire-and-forget: an edge
+    // function instance can be torn down as soon as it returns its
+    // response, which would silently kill a detached background call.
+    if (requestData.company_id) {
+      await notifyCompanyApprovers(
+        requestData.company_id,
+        `Bossiz+: ${requestData.customer_name} a soumis ${requestData.service_name} (${verifiedTotalPrice} ${requestData.currency}) pour approbation. Connectez-vous à votre tableau de bord entreprise pour valider.`
+      );
     }
 
     console.log('=== CREATE BOOKING SUCCESS ===');

@@ -1,0 +1,32 @@
+# Bossiz+
+
+> Plateforme de réservation de voyages en Côte d'Ivoire : vols, hôtels, location de voitures, séjours, activités, restaurants, artisans, bien-être. Paiement sécurisé (CinetPay). Édité par Conciergerie Bossiz.
+
+Bossiz+ met en relation des voyageurs avec des prestataires locaux (hôtels, compagnies aériennes, loueurs de véhicules, restaurants, artisans, spas) en Côte d'Ivoire et permet de réserver et payer en ligne.
+
+## Pages principales
+
+- [Accueil](https://app.bossiz.com/): présentation générale et recherche multi-services
+- [Vols](https://app.bossiz.com/flights): recherche et réservation de billets d'avion
+- [Hôtels](https://app.bossiz.com/hotels-partenaires): recherche et réservation d'hôtels partenaires
+- [Location de voitures](https://app.bossiz.com/cars): location de véhicules avec ou sans chauffeur
+- [Séjours](https://app.bossiz.com/stays): offres de séjours et packages
+- [Activités](https://app.bossiz.com/activities): excursions, tours et activités touristiques
+- [Restaurants](https://app.bossiz.com/restaurants): réservation de tables
+- [Artisans](https://app.bossiz.com/artisans): commandes auprès d'artisans et guides locaux
+- [Bien-être](https://app.bossiz.com/bien-etre-beaute): spas, salons, instituts de beauté
+- [Devenir partenaire](https://app.bossiz.com/devenir-partenaire): inscription des établissements et prestataires
+- [Aide](https://app.bossiz.com/help): centre d'aide et questions fréquentes
+- [Contact](https://app.bossiz.com/contact): formulaire de contact
+
+## Informations légales
+
+- [Conditions Générales d'Utilisation](https://app.bossiz.com/terms-of-service)
+- [Politique de Confidentialité](https://app.bossiz.com/privacy-policy)
+- [Politique des Cookies](https://app.bossiz.com/politique-cookies)
+
+## Notes pour les agents
+
+- Les espaces suivants nécessitent une authentification et ne doivent pas être explorés ou indexés : /admin, /agency, /dashboard, /account, /auth, /payment, /booking-history.
+- Les prix affichés sont en Franc CFA (XOF) et indicatifs jusqu'à confirmation de la réservation.
+- Pour toute action au nom d'un utilisateur (réservation, paiement, modification de compte), une authentification réelle de cet utilisateur est requise - n'effectuez jamais d'action transactionnelle sans confirmation explicite de la personne réelle.

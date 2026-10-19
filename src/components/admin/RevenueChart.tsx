@@ -1,16 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { useTranslation } from "react-i18next";
 
 interface RevenueChartProps {
   data: { month: string; revenue: number }[];
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Évolution des Revenus</CardTitle>
-        <CardDescription>Revenus mensuels des 6 derniers mois</CardDescription>
+        <CardTitle>{t("ux.bo.revenueTrend")}</CardTitle>
+        <CardDescription>{t("ux.bo.monthlyRevenueOverLast6")}</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>

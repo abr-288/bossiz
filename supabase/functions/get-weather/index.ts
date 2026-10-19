@@ -68,21 +68,10 @@ serve(async (req) => {
   }
 });
 
-function getMockWeather(city: string) {
+// Météo indisponible : on ne renvoie jamais de valeurs inventées, le widget se masque.
+function getMockWeather(_city: string) {
   return new Response(
-    JSON.stringify({
-      success: true,
-      data: {
-        location: city,
-        country: 'Mock Country',
-        temperature: 25,
-        condition: 'Partly cloudy',
-        icon: '//cdn.weatherapi.com/weather/64x64/day/116.png',
-        humidity: 65,
-        windSpeed: 15,
-        feelsLike: 26,
-      }
-    }),
+    JSON.stringify({ success: false, error: "Météo indisponible" }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }

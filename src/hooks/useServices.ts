@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocalizedRows } from "@/lib/translatableContent";
 
 type ServiceType = "car" | "event" | "flight" | "flight_hotel" | "hotel" | "tour";
 
@@ -38,5 +39,6 @@ export const useServices = (type?: ServiceType) => {
     }
   };
 
-  return { services, loading, error, refetch: fetchServices };
+  const localized = useLocalizedRows(services);
+  return { services: localized, loading, error, refetch: fetchServices };
 };

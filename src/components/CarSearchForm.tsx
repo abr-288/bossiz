@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { MOTION } from "@/lib/motion";
 
 /**
  * CarSearchForm - Recherche de voitures avec validation Zod
@@ -134,8 +135,8 @@ export const CarSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
@@ -180,7 +181,7 @@ export const CarSearchForm = () => {
         <Alert variant="destructive" className="mb-3 md:mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Veuillez corriger les erreurs dans le formulaire
+            {t("ux.carSearch.fixErrors")}
           </AlertDescription>
         </Alert>
       )}
@@ -191,7 +192,7 @@ export const CarSearchForm = () => {
           <div className="flex items-center gap-2">
             <ArrowRightLeft className="w-4 h-4 text-muted-foreground" />
             <Label htmlFor="different-dropoff" className="text-sm font-medium cursor-pointer">
-              Restituer à un autre endroit
+              {t("ux.carSearch.otherReturn")}
             </Label>
           </div>
           <Switch
@@ -208,14 +209,14 @@ export const CarSearchForm = () => {
             {/* Pickup Location */}
             <div className="space-y-1">
               <UnifiedAutocomplete
-                label="Lieu de prise en charge"
+                label={t('cars.pickupLocation')}
                 type="location"
                 value={pickupLocation}
                 onChange={(value) => {
                   setPickupLocation(value);
                   handleBlur("pickupLocation");
                 }}
-                placeholder="Ville, aéroport ou adresse"
+                placeholder={t('cars.cityOrAirport')}
                 required
                 className={errors.pickupLocation && touched.pickupLocation ? "border-destructive" : ""}
               />
@@ -230,6 +231,7 @@ export const CarSearchForm = () => {
             {differentDropoff && (
               <div className="hidden md:flex items-end pb-2">
                 <Button
+                  aria-label="Inverser le départ et l'arrivée"
                   type="button"
                   variant="outline"
                   size="icon"
@@ -248,18 +250,18 @@ export const CarSearchForm = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: MOTION.base }}
                   className="space-y-1"
                 >
                   <UnifiedAutocomplete
-                    label="Lieu de restitution"
+                    label={t('cars.dropoffLocation')}
                     type="location"
                     value={dropoffLocation}
                     onChange={(value) => {
                       setDropoffLocation(value);
                       handleBlur("dropoffLocation");
                     }}
-                    placeholder="Ville, aéroport ou adresse"
+                    placeholder={t('cars.cityOrAirport')}
                     required
                     className={errors.dropoffLocation && touched.dropoffLocation ? "border-destructive" : ""}
                   />
@@ -280,7 +282,7 @@ export const CarSearchForm = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label="Date de prise en charge"
+                label={t('cars.pickupDate')}
                 value={pickupDate}
                 onChange={(date) => {
                   setPickupDate(date);
@@ -298,7 +300,7 @@ export const CarSearchForm = () => {
             <div className="space-y-1">
               <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4" />
-                Heure
+                {t('search.time')}
               </Label>
               <Select value={pickupTime} onValueChange={setPickupTime}>
                 <SelectTrigger className="h-11">
@@ -317,7 +319,7 @@ export const CarSearchForm = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label="Date de restitution"
+                label={t('cars.dropoffDate')}
                 value={returnDate}
                 onChange={(date) => {
                   setReturnDate(date);
@@ -335,7 +337,7 @@ export const CarSearchForm = () => {
             <div className="space-y-1">
               <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4" />
-                Heure
+                {t('search.time')}
               </Label>
               <Select value={returnTime} onValueChange={setReturnTime}>
                 <SelectTrigger className="h-11">
@@ -356,7 +358,7 @@ export const CarSearchForm = () => {
           <div className="space-y-1">
             <Label className="text-sm font-medium flex items-center gap-2 mb-2">
               <User className="w-4 h-4" />
-              Âge du conducteur
+              {t("ux.carSearch.driverAge")}
             </Label>
             <Select value={driverAge} onValueChange={setDriverAge}>
               <SelectTrigger className="h-11">
@@ -365,23 +367,23 @@ export const CarSearchForm = () => {
               <SelectContent className="max-h-[200px]">
                 {ageOptions.map((age) => (
                   <SelectItem key={age} value={age}>
-                    {age} ans
-                    {parseInt(age) < 21 && " (jeune conducteur)"}
-                    {parseInt(age) >= 65 && " (senior)"}
+                    {t("ux.carSearch.years", { age })}
+                    {parseInt(age) < 21 && t("ux.carSearch.young")}
+                    {parseInt(age) >= 65 && t("ux.carSearch.senior")}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {parseInt(driverAge) < 21 && (
-              <p className="text-xs text-amber-600 flex items-center gap-1">
+              <p className="text-xs text-warning-foreground flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
-                Frais jeune conducteur possibles
+                {t("ux.carSearch.youngFee")}
               </p>
             )}
             {parseInt(driverAge) >= 70 && (
-              <p className="text-xs text-amber-600 flex items-center gap-1">
+              <p className="text-xs text-warning-foreground flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
-                Restrictions d'âge possibles
+                {t("ux.carSearch.ageRestrictions")}
               </p>
             )}
           </div>

@@ -46,6 +46,7 @@ export const TravelersSelector = ({
             </div>
             <div className="flex items-center gap-3">
               <Button
+                aria-label="Diminuer"
                 variant="outline"
                 size="icon"
                 onClick={() => onAdultsChange(Math.max(1, adults - 1))}
@@ -55,6 +56,7 @@ export const TravelersSelector = ({
               </Button>
               <span className="w-8 text-center font-medium">{adults}</span>
               <Button
+                aria-label="Augmenter"
                 variant="outline"
                 size="icon"
                 onClick={() => onAdultsChange(adults + 1)}
@@ -71,6 +73,7 @@ export const TravelersSelector = ({
             </div>
             <div className="flex items-center gap-3">
               <Button
+                aria-label="Diminuer"
                 variant="outline"
                 size="icon"
                 onClick={() => onChildrenChange(Math.max(0, children - 1))}
@@ -80,6 +83,7 @@ export const TravelersSelector = ({
               </Button>
               <span className="w-8 text-center font-medium">{children}</span>
               <Button
+                aria-label="Augmenter"
                 variant="outline"
                 size="icon"
                 onClick={() => onChildrenChange(children + 1)}
@@ -97,6 +101,7 @@ export const TravelersSelector = ({
               </div>
               <div className="flex items-center gap-3">
                 <Button
+                  aria-label="Diminuer"
                   variant="outline"
                   size="icon"
                   onClick={() => onRoomsChange(Math.max(1, rooms - 1))}
@@ -106,6 +111,7 @@ export const TravelersSelector = ({
                 </Button>
                 <span className="w-8 text-center font-medium">{rooms}</span>
                 <Button
+                  aria-label="Augmenter"
                   variant="outline"
                   size="icon"
                   onClick={() => onRoomsChange(rooms + 1)}

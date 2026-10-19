@@ -1,144 +1,128 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-const smtpClient = new SMTPClient({
-  connection: {
-    hostname: Deno.env.get("SMTP_HOST")!,
-    port: Number(Deno.env.get("SMTP_PORT")),
-    tls: true,
-    auth: {
-      username: Deno.env.get("SMTP_USERNAME")!,
-      password: Deno.env.get("SMTP_PASSWORD")!,
-    },
-  },
-});
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/integrations.ts";
+import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface NewsletterRequest {
-  email: string;
-}
-
-const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email }: NewsletterRequest = await req.json();
+    const { email } = await req.json();
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
+    if (!email) {
       return new Response(
-        JSON.stringify({ error: "Email invalide" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
+        JSON.stringify({ success: false, error: 'Email is required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
 
-    // Initialize Supabase client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Supabase configuration missing');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Server configuration error' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Check if email already exists
-    const { data: existing } = await supabaseClient
+    const { data: existingSubscriber } = await supabase
       .from('newsletter_subscribers')
       .select('email')
       .eq('email', email)
-      .maybeSingle();
+      .single();
 
-    if (existing) {
+    if (existingSubscriber) {
       return new Response(
-        JSON.stringify({ message: "Vous êtes déjà inscrit à notre newsletter" }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
+        JSON.stringify({ success: true, message: 'Already subscribed' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Insert new subscriber
-    const { error: insertError } = await supabaseClient
+    // Add to newsletter subscribers
+    const { error: insertError } = await supabase
       .from('newsletter_subscribers')
-      .insert([{ email }]);
+      .insert({
+        email,
+        subscribed_at: new Date().toISOString(),
+      });
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error('Error inserting subscriber:', insertError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Failed to subscribe' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
 
-    // Send welcome email
-    const welcomeHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 10px 10px 0 0; text-align: center; }
-            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .benefits { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #667eea; }
-            .benefit-item { margin: 10px 0; padding-left: 20px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>🎉 Bienvenue chez B-Reserve !</h1>
-            </div>
-            <div class="content">
-              <p>Merci de vous être inscrit à notre newsletter !</p>
-              <p>Vous recevrez désormais :</p>
-              <div class="benefits">
-                <div class="benefit-item">✈️ Les meilleures offres de vols</div>
-                <div class="benefit-item">🏨 Des promotions exclusives sur les hôtels</div>
-                <div class="benefit-item">🚗 Des réductions sur la location de voitures</div>
-                <div class="benefit-item">🎫 Des offres spéciales sur les événements</div>
-              </div>
-              <p>À très bientôt pour de nouvelles aventures !</p>
-              <p>Cordialement,<br>L'équipe B-Reserve</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    await smtpClient.send({
-      from: "B-Reserve <noreply@bossiz.com>",
-      to: email,
-      subject: "Bienvenue chez B-Reserve ! 🎉",
-      html: welcomeHtml,
-    });
-
-    console.log("Newsletter subscription successful");
+    // Send confirmation email if a provider is configured. A failed send
+    // never fails the subscription (the row is already saved), but a real
+    // send failure - as opposed to no provider being configured at all -
+    // is logged at error level so it actually gets noticed instead of
+    // blending into routine warnings.
+    try {
+      const result = await sendConfirmationEmail(supabase, email);
+      if (!result.ok) {
+        if (result.error === 'RESEND_API_KEY not configured') {
+          console.log('Newsletter confirmation email skipped: no email provider configured');
+        } else {
+          console.error('Failed to send newsletter confirmation email:', result.error);
+        }
+      }
+    } catch (emailError) {
+      console.error('Failed to send newsletter confirmation email:', emailError);
+      // Don't fail the subscription if email fails
+    }
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
-        message: "Merci de vous être inscrit à notre newsletter !" 
+        message: 'Successfully subscribed to newsletter'
       }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error: any) {
-    console.error("Error in newsletter-subscribe function:", error);
+  } catch (error) {
+    console.error('Error in newsletter-subscribe:', error);
     return new Response(
-      JSON.stringify({ error: error.message || "Une erreur est survenue" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      JSON.stringify({ success: false, error: 'Internal server error' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
-};
+});
 
-serve(handler);
+async function sendConfirmationEmail(supabase: ReturnType<typeof createClient>, email: string) {
+  const vars = { year: String(new Date().getFullYear()) };
+  const rendered = await renderEmailTemplate(supabase, "newsletter_welcome", vars);
+
+  return sendEmail(supabase, {
+    from: 'Bossiz+ <noreply@bossiz.com>',
+    to: [email],
+    subject: rendered?.subject ?? 'Bienvenue à la newsletter Bossiz+',
+    html: rendered?.html ?? `
+      <h1>Bienvenue chez Bossiz+ !</h1>
+      <p>Merci de vous être inscrit à notre newsletter.</p>
+      <p>Vous recevrez nos meilleures offres de voyage, recommandations de destinations et promotions exclusives.</p>
+      <p>À bientôt,<br>L'équipe Bossiz+</p>
+    `,
+    text: `
+      Bienvenue chez Bossiz+ !
+
+      Merci de vous être inscrit à notre newsletter.
+      Vous recevrez nos meilleures offres de voyage, recommandations de destinations et promotions exclusives.
+
+      À bientôt,
+      L'équipe Bossiz+
+    `,
+  });
+}

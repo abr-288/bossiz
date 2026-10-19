@@ -2,10 +2,11 @@ import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, TrendingDown, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isWeekend, getDay, getMonth } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 interface HotelPriceCalendarProps {
   checkInDate: string;
@@ -75,6 +76,7 @@ export const HotelPriceCalendar = ({
   basePrice = 120,
   viewMode: initialViewMode = "week"
 }: HotelPriceCalendarProps) => {
+  const { t } = useTranslation();
   const baseDate = parseISO(checkInDate);
   const [currentMonth, setCurrentMonth] = useState(baseDate);
   const [viewMode, setViewMode] = useState<"week" | "month">(initialViewMode);
@@ -122,9 +124,9 @@ export const HotelPriceCalendar = ({
     const range = max - min;
     const position = (price - min) / range;
     
-    if (position < 0.33) return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800";
-    if (position < 0.66) return "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800";
-    return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800";
+    if (position < 0.33) return "text-success bg-success/10 border-success/30";
+    if (position < 0.66) return "text-warning-foreground bg-warning border-warning-foreground/20";
+    return "text-destructive bg-destructive/10 border-destructive/30";
   };
 
   const handlePrevMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
@@ -137,11 +139,11 @@ export const HotelPriceCalendar = ({
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-background to-muted/20 rounded-lg border border-border p-4"
+        className="bg-background rounded-lg border border-border p-4"
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-green-600" />
+            <TrendingDown className="h-4 w-4 text-success" />
             <span className="text-sm font-medium">
               Prix par nuit - Meilleur: <Price amount={priceStats.min} fromCurrency={currency} />
             </span>
@@ -153,7 +155,7 @@ export const HotelPriceCalendar = ({
             className="text-xs"
           >
             <CalendarIcon className="h-3 w-3 mr-1" />
-            Vue mois
+            {t("ux.priceCalendar.month")}
           </Button>
         </div>
         
@@ -184,24 +186,24 @@ export const HotelPriceCalendar = ({
                 )}
               >
                 <span className="text-xs font-medium capitalize opacity-80">
-                  {format(date, "EEE", { locale: fr })}
+                  {format(date, "EEE", { locale: currentDateFnsLocale() })}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  {format(date, "d MMM", { locale: fr })}
+                  {format(date, "d MMM", { locale: currentDateFnsLocale() })}
                 </span>
                 <span className="text-lg font-bold mt-1">
                   <Price amount={price} fromCurrency={currency} />
                 </span>
-                <span className="text-[10px] text-muted-foreground mt-0.5">
-                  par nuit
+                <span className="text-[11px] text-muted-foreground mt-0.5">
+                  {t("ux.priceCalendar.perNight")}
                 </span>
                 {price === priceStats.min && !isPast && (
-                  <span className="text-[10px] font-semibold text-green-600 dark:text-green-400 mt-0.5">
-                    Meilleur prix
+                  <span className="text-[11px] font-semibold text-success mt-0.5">
+                    {t("ux.priceCalendar.best")}
                   </span>
                 )}
                 {isWeekendDay && !isPast && (
-                  <span className="text-[10px] font-medium text-orange-600 dark:text-orange-400 mt-0.5">
+                  <span className="text-[11px] font-medium text-warning-foreground mt-0.5">
                     Week-end
                   </span>
                 )}
@@ -229,24 +231,24 @@ export const HotelPriceCalendar = ({
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gradient-to-br from-background to-muted/20 rounded-lg border border-border p-4"
+      className="bg-background rounded-lg border border-border p-4"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handlePrevMonth}>
+          <Button aria-label={t("ux.priceCalendar.prev")} variant="ghost" size="icon" onClick={handlePrevMonth}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <h3 className="text-lg font-semibold capitalize min-w-[140px] text-center">
-            {format(currentMonth, "MMMM yyyy", { locale: fr })}
+            {format(currentMonth, "MMMM yyyy", { locale: currentDateFnsLocale() })}
           </h3>
-          <Button variant="ghost" size="icon" onClick={handleNextMonth}>
+          <Button aria-label={t("ux.priceCalendar.next")} variant="ghost" size="icon" onClick={handleNextMonth}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
         
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm">
-            <TrendingDown className="h-4 w-4 text-green-600" />
+            <TrendingDown className="h-4 w-4 text-success" />
             <span className="font-medium">
               Min: <Price amount={priceStats.min} fromCurrency={currency} />
             </span>
@@ -257,7 +259,7 @@ export const HotelPriceCalendar = ({
             onClick={() => setViewMode("week")}
             className="text-xs"
           >
-            Vue semaine
+            {t("ux.priceCalendar.week")}
           </Button>
         </div>
       </div>
@@ -302,19 +304,19 @@ export const HotelPriceCalendar = ({
                 )}
               >
                 {isWeekendDay && !isPast && (
-                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-orange-500" />
+                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-gold" />
                 )}
                 <span className="text-xs font-medium mb-1">
                   {format(date, "d")}
                 </span>
                 <span className="text-xs font-bold">
-                  <Price amount={price} fromCurrency={currency} className="text-[10px]" />
+                  <Price amount={price} fromCurrency={currency} className="text-[11px]" />
                 </span>
-                <span className="text-[9px] text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   /nuit
                 </span>
                 {price === priceStats.min && !isPast && (
-                  <TrendingDown className="h-3 w-3 text-green-600 mt-0.5" />
+                  <TrendingDown className="h-3 w-3 text-success mt-0.5" />
                 )}
               </motion.button>
             );
@@ -325,19 +327,19 @@ export const HotelPriceCalendar = ({
       {/* Légende */}
       <div className="flex flex-wrap items-center justify-center gap-4 mt-4 pt-4 border-t border-border">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800" />
-          <span className="text-xs text-muted-foreground">Prix bas</span>
+          <div className="w-4 h-4 rounded bg-success/10 border border-success/30" />
+          <span className="text-xs text-muted-foreground">{t("ux.priceCalendar.low")}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800" />
-          <span className="text-xs text-muted-foreground">Prix moyen</span>
+          <div className="w-4 h-4 rounded bg-warning border border-warning-foreground/20" />
+          <span className="text-xs text-muted-foreground">{t("ux.priceCalendar.mid")}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800" />
-          <span className="text-xs text-muted-foreground">Prix élevé</span>
+          <div className="w-4 h-4 rounded bg-destructive/10 border border-destructive/30" />
+          <span className="text-xs text-muted-foreground">{t("ux.priceCalendar.high")}</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500" />
+          <div className="w-3 h-3 rounded-full bg-gold" />
           <span className="text-xs text-muted-foreground">Week-end</span>
         </div>
       </div>

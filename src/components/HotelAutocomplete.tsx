@@ -134,13 +134,13 @@ export const HotelAutocomplete = ({
         required
       />
       {isLoading && (
-        <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
+        <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground animate-spin" />
       )}
 
       {isOpen && suggestions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute z-[9999] w-full mt-1 bg-popover/100 backdrop-blur-sm border-2 border-border rounded-lg shadow-2xl max-h-[400px] overflow-y-auto"
+          className="absolute z-popover w-full mt-1 bg-popover/100 backdrop-blur-sm border-2 border-border rounded-lg shadow-2xl max-h-[400px] overflow-y-auto"
         >
           {suggestions.map((suggestion, index) => (
             <button
@@ -179,7 +179,7 @@ export const HotelAutocomplete = ({
                       <span className="text-xs font-semibold text-primary">
                         <Price amount={suggestion.average_price} fromCurrency="EUR" />
                       </span>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         Prix moyen/nuit
                       </span>
                     </div>
@@ -193,7 +193,7 @@ export const HotelAutocomplete = ({
                     {suggestion.description}
                   </p>
                   {suggestion.price_range && (
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       <Price amount={suggestion.price_range.min} fromCurrency="EUR" /> - <Price amount={suggestion.price_range.max} fromCurrency="EUR" />
                     </span>
                   )}

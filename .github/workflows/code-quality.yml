@@ -2,9 +2,9 @@ name: Code Quality
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, prod ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, prod ]
 
 jobs:
   code-quality:

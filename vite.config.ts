@@ -9,24 +9,61 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    hmr: {
+      overlay: false
+    }
+  },
+  build: {
+    target: 'es2015',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+          utils: ['framer-motion', 'date-fns', 'clsx'],
+          supabase: ['@supabase/supabase-js']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production',
+        ecma: 5
+      },
+      format: {
+        ecma: 5
+      }
+    },
+    cssCodeSplit: true,
+    sourcemap: mode === 'development'
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion'],
+    exclude: ['@supabase/supabase-js']
   },
   plugins: [
     react(), 
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'pwa-icons/*.png'],
+      // Les icônes du manifeste sont déjà précachées (includeManifestIcons) ;
+      // inutile d'y ajouter tout le dossier pwa-icons (écrans de démarrage iOS...).
+      includeAssets: ['favicon.ico', 'robots.txt'],
       devOptions: {
         enabled: true,
         type: 'module'
       },
       manifest: {
         id: '/',
-        name: 'B-Reserve - Voyages & Réservations',
-        short_name: 'B-Reserve',
+        name: 'Bossiz+ - Voyages & Réservations',
+        short_name: 'Bossiz+',
         description: 'Votre compagnon de voyage - Réservez vols, hôtels, voitures et plus encore en quelques clics',
-        theme_color: '#0c4a6e',
-        background_color: '#0c4a6e',
+        theme_color: '#1B2A4A',
+        background_color: '#1B2A4A',
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: '/',
@@ -97,14 +134,14 @@ export default defineConfig(({ mode }) => ({
             sizes: '390x844',
             type: 'image/png',
             form_factor: 'narrow',
-            label: 'Accueil B-Reserve Mobile'
+            label: 'Accueil Bossiz+ Mobile'
           },
           {
             src: '/pwa-icons/screenshot-desktop.png',
             sizes: '1920x1080',
             type: 'image/png',
             form_factor: 'wide',
-            label: 'Accueil B-Reserve Desktop'
+            label: 'Accueil Bossiz+ Desktop'
           }
         ],
         shortcuts: [
@@ -141,7 +178,11 @@ export default defineConfig(({ mode }) => ({
         handle_links: 'preferred'
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff,woff2,webp}'],
+        // Seul le code de l'application est précaché. Les images (~30 Mo) ne
+        // le sont plus : le précache les téléchargeait toutes dès la première
+        // visite, ce qui saturait les connexions lentes. Elles restent mises
+        // en cache à la demande par la règle « local-images-cache » ci-dessous.
+        globPatterns: ['**/*.{js,css,html,ico,woff,woff2}'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/supabase/, /^\/auth\/callback/, /^\/~oauth/],
         cleanupOutdatedCaches: true,

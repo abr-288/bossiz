@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Facebook, Twitter, Instagram, Youtube, Mail, Linkedin } from "lucide-react";
-import logoDark from "@/assets/logo-dark.png";
-import logoLight from "@/assets/logo-light.png";
+import Logo from "./Logo";
 import { useState } from "react";
 import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
 import { toast } from "sonner";
@@ -12,9 +11,17 @@ import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 
 const Footer = () => {
   const { config } = useSiteConfigContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // Textes de l'admin (en français) affichés en français uniquement
+  const isFrench = i18n.language.startsWith("fr");
   const [email, setEmail] = useState("");
   const { subscribe, loading } = useNewsletterSubscribe();
+
+  // L'application n'est pas sur les stores : la page /install explique
+  // l'installation depuis le navigateur pour chaque appareil.
+  const handleAppInstall = () => {
+    window.location.href = '/install';
+  };
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,77 +41,67 @@ const Footer = () => {
     }
   };
 
+  // Fond marine fixe : bg-primary/border-primary-light basculeraient vers le vert
+  // accent en mode sombre, ce footer doit garder la même identité dans les deux modes.
   return (
-    <footer className="bg-primary border-t border-primary-light w-full">
+    <footer className="bg-[hsl(225,45%,18%)] border-t border-[hsl(225,45%,28%)] w-full">
       <div className="site-container py-8 md:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
           {/* Brand Section */}
           <div className="space-y-3 md:space-y-4 text-center sm:text-left">
             <div className="flex items-center gap-2 md:gap-3 justify-center sm:justify-start">
-              <img 
-                src={config.branding.logoLight || logoLight} 
-                alt={`${config.branding.siteName} Logo`} 
-                className="h-10 md:h-12 w-auto" 
-              />
+              {config.branding.logoLight ? (
+                <img
+                  src={config.branding.logoLight}
+                  alt={`${config.branding.siteName} Logo`}
+                  className="h-10 md:h-12 w-auto"
+                  loading="lazy"
+                />
+              ) : (
+                <Logo variant="light" showWordmark={false} className="h-10 md:h-12 w-auto" />
+              )}
               <span className="text-xl md:text-2xl font-bold text-white">
                 {config.branding.siteName}
               </span>
             </div>
             <p className="text-white/80 text-sm">
-              {config.branding.tagline || t("footer.description")}
+              {(isFrench && config.branding.tagline) || t("footer.description")}
             </p>
             <div className="flex gap-2 md:gap-3 justify-center sm:justify-start">
               {config.social.facebook && (
                 <a href={config.social.facebook} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
+                  <Button aria-label="Facebook" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Facebook className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.twitter && (
                 <a href={config.social.twitter} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
+                  <Button aria-label="Twitter" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Twitter className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.instagram && (
                 <a href={config.social.instagram} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
+                  <Button aria-label="Instagram" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Instagram className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.youtube && (
                 <a href={config.social.youtube} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
+                  <Button aria-label="YouTube" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Youtube className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.linkedin && (
                 <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
+                  <Button aria-label="LinkedIn" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
                     <Linkedin className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
-              )}
-              {/* Fallback if no social links configured */}
-              {!config.social.facebook && !config.social.twitter && !config.social.instagram && !config.social.youtube && (
-                <>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
-                    <Facebook className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
-                    <Twitter className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
-                    <Instagram className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-8 w-8 md:h-10 md:w-10">
-                    <Youtube className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                </>
               )}
             </div>
           </div>
@@ -114,12 +111,12 @@ const Footer = () => {
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.services")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
-                <Link to="/flights" className="text-white/80 hover:text-secondary transition-smooth">
+                <a href="https://vols.bossiz.com/" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.flights")}
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/hotels" className="text-white/80 hover:text-secondary transition-smooth">
+                <Link to="/hotels-partenaires" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.hotels")}
                 </Link>
               </li>
@@ -143,36 +140,41 @@ const Footer = () => {
                   {t("footer.activities")}
                 </Link>
               </li>
+              <li>
+                <Link to="/bien-etre-beaute" className="text-white/80 hover:text-secondary transition-smooth">
+                  {t("nav.wellness")}
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Informations */}
           <div className="text-center sm:text-left">
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.support")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
-                <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
+                <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.help")}
                 </Link>
               </li>
               <li>
                 <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
-                  {t("footer.faq")}
+                  {t("nav.support")}
                 </Link>
               </li>
               <li>
-                <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
+                <Link to="/contact" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.contact")}
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-white/80 hover:text-secondary transition-smooth">
-                  Tableau de bord
+                <Link to="/partenariat" className="text-white/80 hover:text-secondary transition-smooth">
+                  {t("ux.footer.becomePartner")}
                 </Link>
               </li>
               <li>
-                <Link to="/install" className="text-secondary hover:text-secondary/80 transition-smooth font-semibold">
-                  📱 {t("common.install")}
+                <Link to="/entreprises" className="text-white/80 hover:text-secondary transition-smooth">
+                  {t("ux.footer.business")}
                 </Link>
               </li>
             </ul>
@@ -182,7 +184,7 @@ const Footer = () => {
           {config.footer.showNewsletter && (
             <div className="text-center sm:text-left">
               <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">
-                {config.footer.newsletterTitle || t("footer.newsletter.title")}
+                {(isFrench && config.footer.newsletterTitle) || t("footer.newsletter.title")}
               </h3>
               <p className="text-white/80 text-xs md:text-sm mb-3 md:mb-4">
                 {t("footer.newsletter.description")}
@@ -197,7 +199,7 @@ const Footer = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
                   />
-                  <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-primary h-9 md:h-10" disabled={loading}>
+                  <Button type="submit" size="icon" aria-label={t("ux.footer.subscribe")} disabled={loading}>
                     <Mail className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
@@ -212,24 +214,30 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-primary-light flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <p className="text-white/80 text-sm">
-            {config.footer.copyright || `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
+            {(isFrench && config.footer.copyright) || `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
-            <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
-              {t("footer.about")}
-            </Link>
             <Link to="/terms" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.terms")}
             </Link>
             <Link to="/privacy" className="text-white/80 hover:text-secondary transition-smooth">
               {t("footer.privacy")}
             </Link>
-            <Link to="/support" className="text-white/80 hover:text-secondary transition-smooth">
-              {t("footer.help")}
+            <Link to="/politique-cookies" className="text-white/80 hover:text-secondary transition-smooth">
+              {t("ux.footer.cookies")}
             </Link>
-            <Link to="/install" className="text-secondary hover:text-secondary/80 transition-smooth font-semibold">
+            <Link to="/mentions-legales" className="text-white/80 hover:text-secondary transition-smooth">
+              {t("ux.footer.legal")}
+            </Link>
+            <button
+              type="button"
+              onClick={handleAppInstall}
+              className="text-secondary hover:text-secondary/80 transition-smooth font-semibold"
+            >
               📱 {t("common.install")}
-            </Link>
+            </button>
+            {/* Lien « Bossiz Groupe » (/bossiz-portal) masqué pour l'instant :
+                la page reste accessible par son URL. */}
           </div>
         </div>
       </div>

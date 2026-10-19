@@ -27,13 +27,17 @@ import {
   Copy,
   Check,
   Printer,
-  QrCode
+  QrCode,
+  Star
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { toast } from "sonner";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
+import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
+import { HotelBookingCancelCard } from "@/components/hotels/HotelBookingCancelCard";
+import { MOTION } from "@/lib/motion";
 
 const Confirmation = () => {
   const { t, i18n } = useTranslation();
@@ -43,6 +47,9 @@ const Confirmation = () => {
   const [booking, setBooking] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [hasReview, setHasReview] = useState(false);
+  const [reviewPromptEnabled, setReviewPromptEnabled] = useState(true);
 
   const getLocale = () => {
     switch (i18n.language) {
@@ -80,7 +87,7 @@ const Confirmation = () => {
           }));
           
           // Show toast notification on status change
-          if (payload.new.payment_status === 'paid' && payload.old?.payment_status !== 'paid') {
+          if (['paid', 'partially_paid'].includes(payload.new.payment_status) && !['paid', 'partially_paid'].includes(payload.old?.payment_status)) {
             toast.success(t('confirmation.paymentReceived'), {
               description: t('confirmation.confirmedDesc'),
               duration: 5000,
@@ -104,7 +111,7 @@ const Confirmation = () => {
 
   const loadBooking = async () => {
     if (!bookingId) {
-      setError("ID de réservation manquant");
+      setError(t('confirmation.missingBookingId'));
       setLoading(false);
       return;
     }
@@ -122,6 +129,12 @@ const Confirmation = () => {
 
       if (error) throw error;
       setBooking(data);
+      const [{ data: existingReview }, { data: reviewConfig }] = await Promise.all([
+        supabase.from("reviews").select("id").eq("booking_id", bookingId).maybeSingle(),
+        supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle(),
+      ]);
+      setHasReview(!!existingReview);
+      setReviewPromptEnabled((reviewConfig?.config_value as any)?.reviewPromptEnabled !== false);
     } catch (err: any) {
       console.error("Error loading booking:", err);
       setError(err.message);
@@ -141,13 +154,21 @@ const Confirmation = () => {
   };
 
   const getStatusConfig = () => {
-    if (booking?.status === 'confirmed' || booking?.payment_status === 'paid') {
+    if (booking?.status === 'confirmed') {
       return {
-        icon: <CheckCircle2 className="h-20 w-20 text-green-500" />,
+        icon: <CheckCircle2 className="h-20 w-20 text-success" />,
         title: t('confirmation.confirmed'),
         description: t('confirmation.confirmedDesc'),
-        bgClass: "from-green-500/20 to-green-500/5",
-        borderClass: "border-green-500/30",
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-success/30",
+      };
+    } else if (booking?.status === 'cancelled' && booking?.payment_status === 'refunded') {
+      return {
+        icon: <XCircle className="h-20 w-20 text-gold" />,
+        title: t('confirmation.cancelled'),
+        description: t('confirmation.cancelledDesc'),
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-warning-foreground/20",
       };
     } else if (booking?.status === 'failed' || booking?.payment_status === 'failed') {
       return {
@@ -157,13 +178,24 @@ const Confirmation = () => {
         bgClass: "from-destructive/20 to-destructive/5",
         borderClass: "border-destructive/30",
       };
+    } else if (booking?.payment_status === 'paid' && booking?.status === 'pending') {
+      // Paid but a flight booking still awaiting a real PNR from the
+      // supplier (see create-pnr) - never shown as a green success yet,
+      // since it may still automatically resolve to a refund.
+      return {
+        icon: <Clock className="h-20 w-20 text-gold animate-pulse" />,
+        title: t('confirmation.processingSupplier'),
+        description: t('confirmation.processingSupplierDesc'),
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-warning-foreground/20",
+      };
     } else if (booking?.payment_status === 'pending') {
       return {
-        icon: <Clock className="h-20 w-20 text-amber-500 animate-pulse" />,
+        icon: <Clock className="h-20 w-20 text-gold animate-pulse" />,
         title: t('confirmation.paymentPending'),
         description: t('confirmation.paymentPendingDesc'),
-        bgClass: "from-amber-500/20 to-amber-500/5",
-        borderClass: "border-amber-500/30",
+        bgClass: "from-primary/10 to-primary/5",
+        borderClass: "border-warning-foreground/20",
       };
     }
     return {
@@ -195,8 +227,8 @@ const Confirmation = () => {
 
   const handleShare = async () => {
     const shareData = {
-      title: "Ma réservation Bossiz",
-      text: `Réservation ${generateBookingRef()} - ${booking?.services?.name}`,
+      title: t('confirmation.shareTitle'),
+      text: `${t('confirmation.bookingNumber')} ${generateBookingRef()} - ${booking?.services?.name}`,
       url: window.location.href,
     };
 
@@ -208,7 +240,7 @@ const Confirmation = () => {
       }
     } else {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success("Lien copié dans le presse-papier !");
+      toast.success(t('confirmation.linkCopied'));
     }
   };
 
@@ -274,7 +306,7 @@ const Confirmation = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", duration: 0.5 }}
+                  transition={{ type: "spring", duration: MOTION.slow }}
                 >
                   {statusConfig.icon}
                 </motion.div>
@@ -291,7 +323,7 @@ const Confirmation = () => {
           </Card>
 
           {/* Booking Reference */}
-          <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+          <Card className="border-2 border-primary/20 bg-primary/5">
             <CardContent className="py-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="text-center md:text-left">
@@ -301,13 +333,14 @@ const Confirmation = () => {
                       {bookingRef}
                     </span>
                     <Button
+                      aria-label="Copier"
                       variant="ghost"
                       size="icon"
                       onClick={copyToClipboard}
                       className="shrink-0"
                     >
                       {copied ? (
-                        <Check className="h-5 w-5 text-green-500" />
+                        <Check className="h-5 w-5 text-success" />
                       ) : (
                         <Copy className="h-5 w-5" />
                       )}
@@ -438,17 +471,33 @@ const Confirmation = () => {
                 <CardContent className="py-6">
                   <h3 className="font-semibold mb-4 flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-primary" />
-                    {t('confirmation.amountPaid')}
+                    {booking.payment_status === "partially_paid" ? "Acompte payé" : t('confirmation.amountPaid')}
                   </h3>
                   <div className="text-4xl font-bold text-primary mb-2">
-                    <Price amount={booking.total_price} fromCurrency={booking.currency || "XOF"} />
+                    <Price amount={booking.amount_paid || booking.total_price} fromCurrency={booking.currency || "XOF"} />
                   </div>
+                  {booking.payment_status === "partially_paid" && (
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Solde de <Price amount={booking.balance_due || 0} fromCurrency={booking.currency || "XOF"} /> à régler sur place.
+                    </p>
+                  )}
                   <Badge 
-                    variant={booking.payment_status === 'paid' ? 'default' : 'secondary'}
-                    className={booking.payment_status === 'paid' ? 'bg-green-500' : ''}
+                    variant={['paid', 'partially_paid'].includes(booking.payment_status) ? 'default' : 'secondary'}
+                    className={['paid', 'partially_paid'].includes(booking.payment_status) ? 'bg-success' : ''}
                   >
                     {booking.payment_status === 'paid' ? '✓ ' + t('confirmation.paid') : t('confirmation.pending')}
                   </Badge>
+                  {reviewPromptEnabled && booking.status === "confirmed" && ["paid", "partially_paid"].includes(booking.payment_status) && booking.service_id && (
+                    <div className="mt-4 border-t pt-4">
+                      {hasReview ? (
+                        <p className="text-sm text-muted-foreground">Merci, votre avis a bien été envoyé.</p>
+                      ) : (
+                        <Button variant="outline" className="gap-2" onClick={() => setReviewOpen(true)}>
+                          <Star className="h-4 w-4" /> Noter ce service
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -500,10 +549,22 @@ const Confirmation = () => {
             </div>
           </div>
 
+          {/* Hôtel partenaire : annulation en ligne selon les conditions du tarif */}
+          {booking?.booking_details?.kind === "partner_hotel" && (
+            <div className="mb-6">
+              <HotelBookingCancelCard
+                bookingId={booking.id}
+                cancelled={booking.status === "cancelled"}
+                cancellation={booking.booking_details?.cancellation}
+                onCancelled={loadBooking}
+              />
+            </div>
+          )}
+
           {/* Important Info */}
-          <Card className="border-amber-500/30 bg-amber-500/5">
+          <Card className="border-warning-foreground/20 bg-warning">
             <CardContent className="py-4">
-              <h3 className="font-semibold mb-2 text-amber-700 dark:text-amber-400">
+              <h3 className="font-semibold mb-2 text-warning-foreground">
                 {t('confirmation.important')}
               </h3>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -516,6 +577,16 @@ const Confirmation = () => {
           </Card>
         </motion.div>
       </main>
+      {booking?.service_id && (
+        <WriteReviewDialog
+          open={reviewOpen}
+          onOpenChange={setReviewOpen}
+          bookingId={booking.id}
+          serviceId={booking.service_id}
+          serviceName={booking.services?.name || "Service réservé"}
+          onSubmitted={() => setHasReview(true)}
+        />
+      )}
       <Footer />
     </div>
   );

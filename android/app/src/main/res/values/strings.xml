@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">B-Reserve</string>
-    <string name="title_activity_main">B-Reserve</string>
-    <string name="package_name">com.breserve.app</string>
-    <string name="custom_url_scheme">com.breserve.app</string>
+    <string name="app_name">Bossiz+</string>
+    <string name="title_activity_main">Bossiz+</string>
+    <string name="package_name">com.bossizplus.app</string>
+    <string name="custom_url_scheme">com.bossizplus.app</string>
 </resources>

@@ -1,10 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, CalendarX2 } from "lucide-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Price } from "@/components/ui/price";
+import { EmptyState } from "@/components/ui/empty-state";
+import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 interface Event {
   id: string;
@@ -23,14 +24,17 @@ interface Event {
 
 interface EventResultsProps {
   events: Event[];
+  onBook?: (event: Event) => void;
 }
 
-export const EventResults = ({ events }: EventResultsProps) => {
+export const EventResults = ({ events, onBook }: EventResultsProps) => {
   if (!events || events.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">Aucun événement trouvé</p>
-      </div>
+      <EmptyState
+        icon={CalendarX2}
+        title="Aucun événement trouvé"
+        description="Essayez une autre ville ou d'autres dates."
+      />
     );
   }
 
@@ -49,6 +53,7 @@ export const EventResults = ({ events }: EventResultsProps) => {
                   src={event.image}
                   alt={event.name}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
             )}
@@ -70,7 +75,7 @@ export const EventResults = ({ events }: EventResultsProps) => {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span>
-                    {format(new Date(event.date), "PPP", { locale: fr })}
+                    {format(new Date(event.date), "PPP", { locale: currentDateFnsLocale() })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
@@ -88,14 +93,21 @@ export const EventResults = ({ events }: EventResultsProps) => {
                     <Price amount={parseFloat(event.price) || 0} fromCurrency={event.currency || 'EUR'} showLoader />
                   </p>
                 </div>
-                {event.link && (
-                  <Button asChild size="sm">
-                    <a href={event.link} target="_blank" rel="noopener noreferrer">
-                      Détails
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </a>
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {onBook && (
+                    <Button size="sm" onClick={() => onBook(event)}>
+                      Réserver
+                    </Button>
+                  )}
+                  {event.link && (
+                    <Button asChild size="sm" variant={onBook ? "outline" : "default"}>
+                      <a href={event.link} target="_blank" rel="noopener noreferrer">
+                        Détails
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </a>
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

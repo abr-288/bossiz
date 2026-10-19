@@ -8,11 +8,13 @@ import { Slider } from "@/components/ui/slider";
 import { Loader2, Save, Palette, RotateCcw, Moon } from "lucide-react";
 import { useTheme, AVAILABLE_FONTS } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 
 // Preset themes
 const PRESET_THEMES = {
   emerald: {
-    name: "Émeraude (Défaut)",
+    get name() { return i18n.t("ux.bo.emeraldDefault"); },
     primaryColor: "160 84% 39%",
     secondaryColor: "160 60% 45%",
     accentColor: "38 92% 50%",
@@ -21,7 +23,7 @@ const PRESET_THEMES = {
     mutedColor: "160 20% 96%",
   },
   ocean: {
-    name: "Océan",
+    get name() { return i18n.t("ux.bo.ocean"); },
     primaryColor: "221 83% 53%",
     secondaryColor: "217 91% 60%",
     accentColor: "199 89% 48%",
@@ -30,7 +32,7 @@ const PRESET_THEMES = {
     mutedColor: "210 40% 96%",
   },
   sunset: {
-    name: "Coucher de soleil",
+    get name() { return i18n.t("ux.bo.sunset"); },
     primaryColor: "25 95% 53%",
     secondaryColor: "15 90% 55%",
     accentColor: "45 93% 47%",
@@ -39,7 +41,7 @@ const PRESET_THEMES = {
     mutedColor: "30 20% 96%",
   },
   forest: {
-    name: "Forêt",
+    get name() { return i18n.t("ux.bo.forest"); },
     primaryColor: "142 76% 36%",
     secondaryColor: "142 69% 58%",
     accentColor: "84 81% 44%",
@@ -115,6 +117,7 @@ const hexToHsl = (hex: string): string => {
 };
 
 export function ThemeConfig() {
+  const { t } = useTranslation();
   const { theme, updateTheme } = useTheme();
   const { toast } = useToast();
   const [localTheme, setLocalTheme] = useState(theme);
@@ -134,13 +137,13 @@ export function ThemeConfig() {
     try {
       await updateTheme(localTheme);
       toast({
-        title: "Succès",
-        description: "Thème sauvegardé et appliqué",
+        title: t("ux.bo.success"),
+        description: t("ux.bo.themeSavedApplied"),
       });
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder le thème",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableSaveTheme"),
         variant: "destructive",
       });
     } finally {
@@ -170,9 +173,9 @@ export function ThemeConfig() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Thèmes prédéfinis
+            {t("ux.bo.presetThemes")}
           </CardTitle>
-          <CardDescription>Choisissez un thème de base puis personnalisez-le</CardDescription>
+          <CardDescription>{t("ux.bo.chooseBaseThemeThenCustomize")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -196,13 +199,13 @@ export function ThemeConfig() {
       {/* Color Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle>Couleurs</CardTitle>
-          <CardDescription>Personnalisez les couleurs du site</CardDescription>
+          <CardTitle>{t("ux.bo.colors")}</CardTitle>
+          <CardDescription>{t("ux.bo.customizeSiteColors")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
-              <Label>Couleur principale</Label>
+              <Label>{t("ux.bo.primaryColor")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -220,7 +223,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Couleur secondaire</Label>
+              <Label>{t("ux.bo.secondaryColor")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -237,7 +240,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Couleur d'accent</Label>
+              <Label>{t("ux.bo.accentColor")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -254,7 +257,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Arrière-plan</Label>
+              <Label>{t("ux.bo.background")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -271,7 +274,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Texte principal</Label>
+              <Label>{t("ux.bo.mainText")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -288,7 +291,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Couleur atténuée</Label>
+              <Label>{t("ux.bo.mutedColor")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -312,14 +315,14 @@ export function ThemeConfig() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Moon className="h-5 w-5" />
-            Couleurs du mode sombre
+            {t("ux.bo.darkModeColors")}
           </CardTitle>
-          <CardDescription>Personnalisez les couleurs pour le mode sombre</CardDescription>
+          <CardDescription>{t("ux.bo.customizeColorsDarkMode")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
-              <Label>Arrière-plan (sombre)</Label>
+              <Label>{t("ux.bo.backgroundDark")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -345,7 +348,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Texte (sombre)</Label>
+              <Label>{t("ux.bo.textDark")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -371,7 +374,7 @@ export function ThemeConfig() {
             </div>
 
             <div className="space-y-2">
-              <Label>Atténué (sombre)</Label>
+              <Label>{t("ux.bo.mutedDark")}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -402,13 +405,13 @@ export function ThemeConfig() {
       {/* Typography */}
       <Card>
         <CardHeader>
-          <CardTitle>Typographie</CardTitle>
-          <CardDescription>Choisissez les polices de caractères</CardDescription>
+          <CardTitle>{t("ux.bo.typography")}</CardTitle>
+          <CardDescription>{t("ux.bo.chooseFonts")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Police des titres</Label>
+              <Label>{t("ux.bo.headingFont")}</Label>
               <Select
                 value={localTheme.fontHeading}
                 onValueChange={(value) => setLocalTheme((prev) => ({ ...prev, fontHeading: value }))}
@@ -425,12 +428,12 @@ export function ThemeConfig() {
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground" style={{ fontFamily: localTheme.fontHeading }}>
-                Aperçu: Titre exemple
+                {t("ux.bo.previewSampleHeading")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Police du corps</Label>
+              <Label>{t("ux.bo.bodyFont")}</Label>
               <Select
                 value={localTheme.fontBody}
                 onValueChange={(value) => setLocalTheme((prev) => ({ ...prev, fontBody: value }))}
@@ -447,7 +450,7 @@ export function ThemeConfig() {
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground" style={{ fontFamily: localTheme.fontBody }}>
-                Aperçu: Texte de paragraphe exemple
+                {t("ux.bo.previewSampleParagraphText")}
               </p>
             </div>
           </div>
@@ -457,8 +460,8 @@ export function ThemeConfig() {
       {/* Border Radius */}
       <Card>
         <CardHeader>
-          <CardTitle>Arrondis</CardTitle>
-          <CardDescription>Ajustez l'arrondi des coins des éléments</CardDescription>
+          <CardTitle>{t("ux.bo.cornerRounding")}</CardTitle>
+          <CardDescription>{t("ux.bo.adjustCornerRoundingElements")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -484,7 +487,7 @@ export function ThemeConfig() {
                 className="w-24 h-16 border-2 border-primary"
                 style={{ borderRadius: localTheme.borderRadius }}
               />
-              <Button style={{ borderRadius: localTheme.borderRadius }}>Bouton</Button>
+              <Button style={{ borderRadius: localTheme.borderRadius }}>{t("ux.bo.button")}</Button>
             </div>
           </div>
         </CardContent>
@@ -493,8 +496,8 @@ export function ThemeConfig() {
       {/* Preview */}
       <Card>
         <CardHeader>
-          <CardTitle>Aperçu</CardTitle>
-          <CardDescription>Visualisez vos modifications en temps réel</CardDescription>
+          <CardTitle>{t("ux.bo.preview")}</CardTitle>
+          <CardDescription>{t("ux.bo.previewChangesRealTime")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div
@@ -512,13 +515,13 @@ export function ThemeConfig() {
                 color: hslToHex(localTheme.primaryColor),
               }}
             >
-              Titre de la page
+              {t("ux.bo.pageTitle")}
             </h2>
             <p
               className="mb-4"
               style={{ fontFamily: localTheme.fontBody }}
             >
-              Ceci est un exemple de texte pour visualiser l'apparence de votre thème personnalisé.
+              {t("ux.bo.sampleTextPreviewLookCustom")}
             </p>
             <div className="flex gap-2">
               <button
@@ -528,7 +531,7 @@ export function ThemeConfig() {
                   borderRadius: localTheme.borderRadius,
                 }}
               >
-                Bouton principal
+                {t("ux.bo.primaryButton")}
               </button>
               <button
                 className="px-4 py-2"
@@ -538,7 +541,7 @@ export function ThemeConfig() {
                   borderRadius: localTheme.borderRadius,
                 }}
               >
-                Secondaire
+                {t("ux.bo.secondary")}
               </button>
               <button
                 className="px-4 py-2"
@@ -559,7 +562,7 @@ export function ThemeConfig() {
       <div className="flex gap-2">
         <Button onClick={handleSave} disabled={saving} size="lg">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Sauvegarder le thème
+          {t("ux.bo.saveTheme")}
         </Button>
         <Button
           variant="outline"
@@ -567,7 +570,7 @@ export function ThemeConfig() {
           size="lg"
         >
           <RotateCcw className="mr-2 h-4 w-4" />
-          Annuler
+          {t("ux.bo.cancel")}
         </Button>
       </div>
     </div>

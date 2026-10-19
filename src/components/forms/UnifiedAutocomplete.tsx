@@ -6,6 +6,7 @@ import { MapPin, Plane, Building2, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { ContextualHelp } from "@/components/forms/ContextualHelp";
+import { MOTION } from "@/lib/motion";
 
 export interface AutocompleteSuggestion {
   id: string;
@@ -142,7 +143,7 @@ export const UnifiedAutocomplete = ({
       ref={inputRef}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: MOTION.slow }}
       className={cn("space-y-2 relative", className)}
     >
       {label && (
@@ -171,7 +172,7 @@ export const UnifiedAutocomplete = ({
           disabled={disabled}
           className={cn(
             "pl-11 h-12 border-2 border-input hover:border-primary/50 focus:border-primary",
-            "transition-all duration-200",
+            "transition-all duration-base ease-standard",
             "placeholder:text-muted-foreground/60",
             "font-medium",
             error && "border-destructive focus:border-destructive"
@@ -190,7 +191,7 @@ export const UnifiedAutocomplete = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: MOTION.base }}
             className="absolute z-50 w-full mt-1 bg-popover border-2 border-primary/20 rounded-xl shadow-xl overflow-hidden"
           >
             <div className="max-h-64 overflow-y-auto">
@@ -232,10 +233,10 @@ export const UnifiedAutocomplete = ({
       </AnimatePresence>
 
       {error && (
-        <motion.p
+        <motion.p role="alert"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-xs text-destructive font-medium flex items-center gap-1"
+          className="text-sm text-destructive font-medium flex items-center gap-1"
         >
           ⚠️ {error}
         </motion.p>

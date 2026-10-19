@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { ArrowRightLeft, AlertCircle, TrendingDown } from "lucide-react";
+import { ArrowRightLeft, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,7 +17,8 @@ import { flightSearchSchema, type FlightSearchInput } from "@/lib/validationSche
 import { safeValidate } from "@/lib/formHelpers";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { PriceCalendar } from "@/components/flights/PriceCalendar";
+import { UnifiedPassengerSelector } from "@/components/forms/UnifiedPassengerSelector";
+import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
 
 /**
  * FlightSearchForm - Recherche de vols avec UnifiedForm
@@ -28,17 +28,23 @@ import { PriceCalendar } from "@/components/flights/PriceCalendar";
 export const FlightSearchForm = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [tripType, setTripType] = useState<"round-trip" | "one-way">("round-trip");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [departureDate, setDepartureDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
+
+  // Validation pour que la date de départ soit au minimum demain
+  const getMinDepartureDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  };
+
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [travelClass, setTravelClass] = useState<"economy" | "premium_economy" | "business" | "first">("economy");
-  const [showPriceCalendar, setShowPriceCalendar] = useState(false);
   
   // État des erreurs de validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -131,18 +137,27 @@ export const FlightSearchForm = () => {
       return;
     }
 
-    const params = new URLSearchParams({
-      from: validation.data.origin,
-      to: validation.data.destination,
-      date: validation.data.departureDate,
-      ...(validation.data.returnDate && { returnDate: validation.data.returnDate }),
-      adults: validation.data.adults.toString(),
-      children: validation.data.children.toString(),
-      infants: validation.data.infants.toString(),
-      class: validation.data.travelClass,
+    // Afficher un indicateur de chargement
+    toast({
+      title: "Recherche en cours",
+      description: "Nous recherchons les meilleurs vols pour vous...",
     });
 
-    navigate(`/flights?${params.toString()}`);
+    // Rediriger vers vols.bossiz.com avec les critères de recherche
+    const searchUrl = buildVolsBossizSearchUrl({
+      origin: validation.data.origin,
+      destination: validation.data.destination,
+      departureDate: validation.data.departureDate,
+      returnDate: validation.data.returnDate,
+      adults: validation.data.adults,
+      children: validation.data.children,
+      infants: validation.data.infants,
+      travelClass: validation.data.travelClass,
+    });
+
+    setTimeout(() => {
+      window.location.href = searchUrl;
+    }, 300);
   };
 
   const hasErrors = Object.keys(errors).length > 0;
@@ -191,7 +206,7 @@ export const FlightSearchForm = () => {
             }}
             whileTap={{ scale: 0.98 }}
             className={cn(
-              "px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm border",
+              "px-4 py-2 rounded-lg font-medium transition-all duration-base ease-standard text-sm border",
               tripType === value
                 ? "bg-primary text-primary-foreground border-primary shadow-sm"
                 : "bg-background text-foreground border-border hover:border-primary/50"
@@ -215,15 +230,16 @@ export const FlightSearchForm = () => {
             }}
             placeholder={t("search.cityOrAirport")}
             required
-            className={cn("h-11", errors.origin && touched.origin ? "border-destructive" : "")}
+            className={cn(errors.origin && touched.origin ? "border-destructive" : "")}
           />
           {errors.origin && touched.origin && (
-            <p className="text-xs text-destructive mt-1">{errors.origin}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">{errors.origin}</p>
           )}
         </div>
 
         <div className="sm:col-span-1 flex justify-center items-center pt-6">
           <Button
+            aria-label="Inverser le départ et l'arrivée"
             type="button"
             variant="outline"
             size="icon"
@@ -245,10 +261,10 @@ export const FlightSearchForm = () => {
             }}
             placeholder={t("search.cityOrAirport")}
             required
-            className={cn("h-11", errors.destination && touched.destination ? "border-destructive" : "")}
+            className={cn(errors.destination && touched.destination ? "border-destructive" : "")}
           />
           {errors.destination && touched.destination && (
-            <p className="text-xs text-destructive mt-1">{errors.destination}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">{errors.destination}</p>
           )}
         </div>
       </div>
@@ -267,11 +283,11 @@ export const FlightSearchForm = () => {
               setDepartureDate(date);
               handleBlur("departureDate");
             }}
-            minDate={new Date()}
+            minDate={getMinDepartureDate()}
             required
           />
           {errors.departureDate && touched.departureDate && (
-            <p className="text-xs text-destructive mt-1">{errors.departureDate}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">{errors.departureDate}</p>
           )}
         </div>
 
@@ -289,75 +305,25 @@ export const FlightSearchForm = () => {
               required
             />
             {errors.returnDate && touched.returnDate && (
-              <p className="text-xs text-destructive mt-1">{errors.returnDate}</p>
+              <p role="alert" className="text-sm text-destructive mt-1">{errors.returnDate}</p>
             )}
           </div>
         )}
       </div>
 
-      {/* Ligne 3: Passagers et Classe */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">
-            {t("search.adults")}
-          </label>
-          <Select 
-            value={adults.toString()} 
-            onValueChange={(value) => {
-              setAdults(parseInt(value));
-              handleBlur("adults");
-            }}
-          >
-            <SelectTrigger className={cn("h-11 bg-background", errors.adults && touched.adults && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">{t("search.children")}</label>
-          <Select 
-            value={children.toString()} 
-            onValueChange={(value) => {
-              setChildren(parseInt(value));
-              handleBlur("children");
-            }}
-          >
-            <SelectTrigger className={cn("h-11 bg-background", errors.children && touched.children && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">{t("search.infants", "Bébés")}</label>
-          <Select 
-            value={infants.toString()} 
-            onValueChange={(value) => {
-              setInfants(parseInt(value));
-              handleBlur("infants");
-            }}
-          >
-            <SelectTrigger className={cn("h-11 bg-background", errors.infants && touched.infants && "border-destructive")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              {[0, 1, 2, 3, 4].map((num) => (
-                <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Ligne 3: Voyageurs (un seul champ) et Classe */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <UnifiedPassengerSelector
+          label={t("search.travelers", "Voyageurs")}
+          value={{ adults, children, infants }}
+          onChange={(value) => {
+            setAdults(Math.max(1, value.adults));
+            setChildren(value.children);
+            setInfants(value.infants ?? 0);
+            handleBlur("adults");
+          }}
+          showInfants
+        />
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-foreground">{t("search.class.title")}</label>
@@ -381,39 +347,7 @@ export const FlightSearchForm = () => {
         </div>
       </div>
 
-      {/* Comparateur de prix */}
-      {departureDate && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setShowPriceCalendar(!showPriceCalendar)}
-          className="w-full sm:w-auto h-10"
-        >
-          <TrendingDown className="h-4 w-4 mr-2" />
-          {showPriceCalendar ? "Masquer" : "Comparer"} les prix
-        </Button>
-      )}
 
-      {/* Calendrier de comparaison des prix */}
-      {showPriceCalendar && departureDate && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="overflow-hidden"
-        >
-          <PriceCalendar
-            departureDate={format(departureDate, "yyyy-MM-dd")}
-            onDateSelect={(dateStr) => {
-              setDepartureDate(new Date(dateStr));
-              handleBlur("departureDate");
-            }}
-            lowestPrice={250}
-            viewMode="week"
-          />
-        </motion.div>
-      )}
 
       {/* Submit Button */}
       <UnifiedSubmitButton 

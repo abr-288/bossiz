@@ -10,10 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Loader2, RefreshCw, Percent, MapPin, Image } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, RefreshCw, Percent, MapPin, Image, Tag } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { EmptyState } from "@/components/ui/empty-state";
+import { useTranslation } from "react-i18next";
 
 interface Promotion {
   id: string;
@@ -44,6 +46,7 @@ const emptyPromotion: Omit<Promotion, "id" | "created_at"> = {
 };
 
 export default function AdminPromotions() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +66,7 @@ export default function AdminPromotions() {
       if (error) throw error;
       setPromotions((data as Promotion[]) || []);
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +101,7 @@ export default function AdminPromotions() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.location || formData.original_price <= 0) {
-      toast({ title: "Erreur", description: "Veuillez remplir tous les champs obligatoires", variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: t("ux.bo.pleaseFillAllRequiredFields"), variant: "destructive" });
       return;
     }
 
@@ -115,34 +118,34 @@ export default function AdminPromotions() {
           .update(dataToSave)
           .eq("id", editingPromotion.id);
         if (error) throw error;
-        toast({ title: "Succès", description: "Promotion mise à jour" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionUpdated") });
       } else {
         const { error } = await supabase
           .from("promotions")
           .insert(dataToSave);
         if (error) throw error;
-        toast({ title: "Succès", description: "Promotion créée" });
+        toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionCreated") });
       }
 
       setIsDialogOpen(false);
       fetchPromotions();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette promotion ?")) return;
+    if (!confirm(t("ux.bo.youSureYouWantDelete3"))) return;
 
     try {
       const { error } = await supabase.from("promotions").delete().eq("id", id);
       if (error) throw error;
-      toast({ title: "Succès", description: "Promotion supprimée" });
+      toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionDeleted") });
       fetchPromotions();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -155,7 +158,7 @@ export default function AdminPromotions() {
       if (error) throw error;
       fetchPromotions();
     } catch (error: any) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -164,17 +167,17 @@ export default function AdminPromotions() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Promotions Exclusives</h1>
-            <p className="text-muted-foreground">Gérez les offres promotionnelles affichées sur le site</p>
+            <h1 className="text-2xl font-bold">{t("ux.bo.exclusivePromotions")}</h1>
+            <p className="text-muted-foreground">{t("ux.bo.managePromotionalOffersShownSite")}</p>
           </div>
           <div className="flex gap-2">
             <Button onClick={fetchPromotions} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
-              Actualiser
+              {t("ux.bo.refresh")}
             </Button>
             <Button onClick={handleCreate}>
               <Plus className="w-4 h-4 mr-2" />
-              Nouvelle promotion
+              {t("ux.bo.newPromotion")}
             </Button>
           </div>
         </div>
@@ -185,7 +188,7 @@ export default function AdminPromotions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total</p>
+                  <p className="text-sm text-muted-foreground">{t("ux.bo.total")}</p>
                   <p className="text-2xl font-bold">{promotions.length}</p>
                 </div>
                 <Percent className="w-8 h-8 text-muted-foreground" />
@@ -196,12 +199,12 @@ export default function AdminPromotions() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Actives</p>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-sm text-muted-foreground">{t("ux.bo.active3")}</p>
+                  <p className="text-2xl font-bold text-success">
                     {promotions.filter(p => p.is_active).length}
                   </p>
                 </div>
-                <Percent className="w-8 h-8 text-green-500" />
+                <Percent className="w-8 h-8 text-success" />
               </div>
             </CardContent>
           </Card>
@@ -217,19 +220,19 @@ export default function AdminPromotions() {
                 <Loader2 className="w-8 h-8 animate-spin" />
               </div>
             ) : promotions.length === 0 ? (
-              <p className="text-center py-12 text-muted-foreground">Aucune promotion trouvée</p>
+              <EmptyState icon={Tag} title={t("ux.bo.noPromotion")} description={t("ux.bo.promotionsCreatedHereAppearSite")} />
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Lieu</TableHead>
-                    <TableHead>Réduction</TableHead>
-                    <TableHead>Prix</TableHead>
-                    <TableHead>Expiration</TableHead>
-                    <TableHead>Actif</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t("ux.bo.image")}</TableHead>
+                    <TableHead>{t("ux.bo.name")}</TableHead>
+                    <TableHead>{t("ux.bo.location2")}</TableHead>
+                    <TableHead>{t("ux.bo.discount2")}</TableHead>
+                    <TableHead>{t("ux.bo.price")}</TableHead>
+                    <TableHead>{t("ux.bo.expiry")}</TableHead>
+                    <TableHead>{t("ux.bo.active2")}</TableHead>
+                    <TableHead className="text-right">{t("ux.bo.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -254,7 +257,7 @@ export default function AdminPromotions() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-bold text-green-600">-{promo.discount}%</span>
+                        <span className="font-bold text-success">-{promo.discount}%</span>
                       </TableCell>
                       <TableCell>
                         <div>
@@ -291,11 +294,11 @@ export default function AdminPromotions() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingPromotion ? "Modifier la promotion" : "Créer une promotion"}</DialogTitle>
+              <DialogTitle>{editingPromotion ? t("ux.bo.editPromotion") : t("ux.bo.createPromotion")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label>Nom *</Label>
+                <Label>{t("ux.bo.name2")}</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -304,18 +307,18 @@ export default function AdminPromotions() {
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label>{t("ux.bo.description")}</Label>
                 <Textarea
                   value={formData.description || ""}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Description de l'offre..."
+                  placeholder={t("ux.bo.offerDescription")}
                   rows={3}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Lieu *</Label>
+                  <Label>{t("ux.bo.location3")}</Label>
                   <Input
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -323,7 +326,7 @@ export default function AdminPromotions() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Note (0-5)</Label>
+                  <Label>{t("ux.bo.rating05")}</Label>
                   <Input
                     type="number"
                     step="0.1"
@@ -339,12 +342,12 @@ export default function AdminPromotions() {
                 value={formData.image_url || ""}
                 onChange={(url) => setFormData({ ...formData, image_url: url })}
                 folder="promotions"
-                label="Image de la promotion"
+                label={t("ux.bo.promotionImage")}
               />
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Prix original *</Label>
+                  <Label>{t("ux.bo.originalPrice")}</Label>
                   <Input
                     type="number"
                     value={formData.original_price}
@@ -352,7 +355,7 @@ export default function AdminPromotions() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Réduction (%) *</Label>
+                  <Label>{t("ux.bo.discount")}</Label>
                   <Input
                     type="number"
                     min="0"
@@ -362,7 +365,7 @@ export default function AdminPromotions() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Devise</Label>
+                  <Label>{t("ux.bo.currency")}</Label>
                   <Input
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
@@ -372,7 +375,7 @@ export default function AdminPromotions() {
               </div>
 
               <div className="space-y-2">
-                <Label>Date d'expiration</Label>
+                <Label>{t("ux.bo.expiryDate")}</Label>
                 <Input
                   type="datetime-local"
                   value={formData.expires_at ? formData.expires_at.slice(0, 16) : ""}
@@ -385,14 +388,14 @@ export default function AdminPromotions() {
                   checked={formData.is_active}
                   onCheckedChange={(v) => setFormData({ ...formData, is_active: v })}
                 />
-                <Label>Promotion active</Label>
+                <Label>{t("ux.bo.activePromotion")}</Label>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
                 <Button onClick={handleSave} disabled={isSaving}>
                   {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {editingPromotion ? "Mettre à jour" : "Créer"}
+                  {editingPromotion ? t("ux.bo.update") : "Créer"}
                 </Button>
               </div>
             </div>

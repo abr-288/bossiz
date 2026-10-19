@@ -16,10 +16,12 @@ describe('Validation Schemas', () => {
       const validData = {
         origin: 'Dakar (DSS)',
         destination: 'Abidjan (ABJ)',
-        departureDate: '2025-12-01',
+        departureDate: '2099-12-01',
         adults: 2,
         children: 1,
-        travelClass: 'ECONOMY' as const
+        infants: 0,
+        travelClass: 'economy' as const,
+        tripType: 'one-way' as const,
       };
 
       const result = flightSearchSchema.safeParse(validData);
@@ -80,8 +82,8 @@ describe('Validation Schemas', () => {
     it('should validate correct hotel search data', () => {
       const validData = {
         destination: 'Abidjan',
-        checkIn: '2025-12-01',
-        checkOut: '2025-12-05',
+        checkIn: '2099-12-01',
+        checkOut: '2099-12-05',
         adults: 2,
         children: 1,
         rooms: 1
@@ -123,8 +125,8 @@ describe('Validation Schemas', () => {
       const validData = {
         pickupLocation: 'Abidjan Aéroport',
         dropoffLocation: 'Abidjan Centre',
-        pickupDate: '2025-12-01',
-        dropoffDate: '2025-12-05',
+        pickupDate: '2099-12-01',
+        dropoffDate: '2099-12-05',
         pickupTime: '10:00',
         dropoffTime: '18:00',
         driverAge: 25
@@ -166,13 +168,37 @@ describe('Validation Schemas', () => {
         customerName: 'John Doe',
         customerEmail: 'john@example.com',
         customerPhone: '+2250708090102',
-        address: '123 Main St',
-        city: 'Abidjan',
-        paymentMethod: 'card' as const
+        customerAddress: '123 Main St',
+        customerCity: 'Abidjan',
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(validData);
       expect(result.success).toBe(true);
+    });
+
+    it('should accept Jèko as the payment method', () => {
+      const result = paymentSchema.safeParse({
+        customerName: 'John Doe',
+        customerEmail: 'john@example.com',
+        customerPhone: '+2250708090102',
+        customerCity: 'Abidjan',
+        paymentMethod: 'jeko',
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject payment methods other than Jèko', () => {
+      const result = paymentSchema.safeParse({
+        customerName: 'John Doe',
+        customerEmail: 'john@example.com',
+        customerPhone: '+2250708090102',
+        customerCity: 'Abidjan',
+        paymentMethod: 'cinetpay',
+      });
+
+      expect(result.success).toBe(false);
     });
 
     it('should reject invalid email', () => {
@@ -180,7 +206,7 @@ describe('Validation Schemas', () => {
         customerName: 'John Doe',
         customerEmail: 'invalid-email',
         customerPhone: '+2250708090102',
-        paymentMethod: 'card' as const
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(invalidData);
@@ -192,7 +218,7 @@ describe('Validation Schemas', () => {
         customerName: 'John Doe',
         customerEmail: 'john@example.com',
         customerPhone: '123',
-        paymentMethod: 'card' as const
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(invalidData);
@@ -204,7 +230,8 @@ describe('Validation Schemas', () => {
         customerName: '  John Doe  ',
         customerEmail: '  JOHN@EXAMPLE.COM  ',
         customerPhone: '+2250708090102',
-        paymentMethod: 'card' as const
+        customerCity: 'Abidjan',
+        paymentMethod: 'jeko' as const
       };
 
       const result = paymentSchema.safeParse(data);
@@ -260,8 +287,8 @@ describe('Validation Schemas', () => {
     it('should validate correct event search data', () => {
       const validData = {
         location: 'Abidjan',
-        startDate: '2025-12-01',
-        endDate: '2025-12-05',
+        startDate: '2099-12-01',
+        endDate: '2099-12-05',
         category: 'concert' as const,
         guests: 2
       };
@@ -270,14 +297,14 @@ describe('Validation Schemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept optional dates', () => {
+    it('should reject a missing start date', () => {
       const validData = {
         location: 'Abidjan',
         guests: 2
       };
 
       const result = eventSearchSchema.safeParse(validData);
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
     });
   });
 
@@ -286,30 +313,26 @@ describe('Validation Schemas', () => {
       const validData = {
         origin: 'Abidjan',
         destination: 'Yamoussoukro',
-        departureDate: '2025-12-01',
+        departureDate: '2099-12-01',
         adults: 2,
         children: 1,
-        travelClass: 'first' as const
+        travelClass: 'first' as const,
       };
 
       const result = trainSearchSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should use default values', () => {
+    it('should require explicit passenger and travel-class values', () => {
       const minimalData = {
         origin: 'Abidjan',
         destination: 'Yamoussoukro',
-        departureDate: '2025-12-01',
+        departureDate: '2099-12-01',
         adults: 1
       };
 
       const result = trainSearchSchema.safeParse(minimalData);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.children).toBe(0);
-        expect(result.data.travelClass).toBe('second');
-      }
+      expect(result.success).toBe(false);
     });
   });
 
@@ -317,10 +340,10 @@ describe('Validation Schemas', () => {
     it('should validate correct stay search data', () => {
       const validData = {
         destination: 'Abidjan',
-        checkIn: '2025-12-01',
-        checkOut: '2025-12-05',
+        checkIn: '2099-12-01',
+        checkOut: '2099-12-05',
         guests: 2,
-        propertyType: 'hotel' as const
+        propertyType: 'villa' as const
       };
 
       const result = staySearchSchema.safeParse(validData);

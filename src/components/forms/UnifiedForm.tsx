@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { MOTION } from "@/lib/motion";
 
 export interface UnifiedFormProps {
   onSubmit: (e: React.FormEvent) => void;
@@ -27,7 +28,7 @@ export const UnifiedForm = ({
       opacity: 1, 
       y: 0,
       transition: {
-        duration: 0.4,
+        duration: MOTION.slow,
         ease: "easeOut" as const
       }
     }
@@ -48,7 +49,7 @@ export const UnifiedForm = ({
       variants={variants}
       onSubmit={onSubmit}
       className={cn(
-        "w-full transition-all duration-300",
+        "w-full transition-all duration-slow ease-standard",
         variantStyles[variant],
         loading && "opacity-60 pointer-events-none",
         className

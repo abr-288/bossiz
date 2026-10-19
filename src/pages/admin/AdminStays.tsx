@@ -11,8 +11,10 @@ import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function AdminStays() {
+  const { t } = useTranslation();
   const [stays, setStays] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,8 +51,8 @@ export default function AdminStays() {
     } catch (error) {
       console.error("Error fetching stays:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les séjours",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableLoadStays"),
         variant: "destructive",
       });
     } finally {
@@ -68,11 +70,11 @@ export default function AdminStays() {
           .eq("id", editingStay.id);
 
         if (error) throw error;
-        toast({ title: "Séjour mis à jour avec succès" });
+        toast({ title: t("ux.bo.stayUpdatedSuccessfully") });
       } else {
         const { error } = await supabase.from("stays").insert([formData]);
         if (error) throw error;
-        toast({ title: "Séjour créé avec succès" });
+        toast({ title: t("ux.bo.stayCreatedSuccessfully") });
       }
 
       setDialogOpen(false);
@@ -81,26 +83,26 @@ export default function AdminStays() {
     } catch (error) {
       console.error("Error saving stay:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder le séjour",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableSaveStay"),
         variant: "destructive",
       });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer ce séjour ?")) return;
+    if (!confirm(t("ux.bo.youSureYouWantDelete5"))) return;
 
     try {
       const { error } = await supabase.from("stays").delete().eq("id", id);
       if (error) throw error;
-      toast({ title: "Séjour supprimé avec succès" });
+      toast({ title: t("ux.bo.stayDeletedSuccessfully") });
       fetchStays();
     } catch (error) {
       console.error("Error deleting stay:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le séjour",
+        title: t("ux.bo.error"),
+        description: t("ux.bo.unableDeleteStay"),
         variant: "destructive",
       });
     }
@@ -147,24 +149,24 @@ export default function AdminStays() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Gestion des Séjours</h1>
+          <h1 className="text-3xl font-bold">{t("ux.bo.stayManagement")}</h1>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={resetForm}>
                 <Plus className="h-4 w-4 mr-2" />
-                Nouveau Séjour
+                {t("ux.bo.newStay")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {editingStay ? "Modifier le séjour" : "Créer un séjour"}
+                  {editingStay ? t("ux.bo.editStay") : t("ux.bo.createStay")}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Nom</Label>
+                    <Label>{t("ux.bo.name")}</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -172,16 +174,16 @@ export default function AdminStays() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Type</Label>
+                    <Label>{t("ux.bo.type")}</Label>
                     <Input
                       value={formData.type}
                       onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                      placeholder="Ex: Villa, Resort"
+                      placeholder={t("ux.bo.eGVillaResort")}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Localisation</Label>
+                    <Label>{t("ux.bo.location")}</Label>
                     <Input
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -189,16 +191,16 @@ export default function AdminStays() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Durée</Label>
+                    <Label>{t("ux.bo.duration")}</Label>
                     <Input
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                      placeholder="Ex: 5 jours / 4 nuits"
+                      placeholder={t("ux.bo.eG5Days4")}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Prix par nuit</Label>
+                    <Label>{t("ux.bo.pricePerNight")}</Label>
                     <Input
                       type="number"
                       value={formData.price_per_unit}
@@ -207,7 +209,7 @@ export default function AdminStays() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Devise</Label>
+                    <Label>{t("ux.bo.currency")}</Label>
                     <Input
                       value={formData.currency}
                       onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
@@ -215,7 +217,7 @@ export default function AdminStays() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>{t("ux.bo.description")}</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -229,7 +231,7 @@ export default function AdminStays() {
                       checked={formData.available}
                       onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
                     />
-                    Disponible
+                    {t("ux.bo.available")}
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -237,15 +239,15 @@ export default function AdminStays() {
                       checked={formData.featured}
                       onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                     />
-                    En vedette
+                    {t("ux.bo.featured")}
                   </label>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Annuler
+                    {t("ux.bo.cancel")}
                   </Button>
                   <Button type="submit">
-                    {editingStay ? "Mettre à jour" : "Créer"}
+                    {editingStay ? t("ux.bo.update") : "Créer"}
                   </Button>
                 </div>
               </form>
@@ -257,7 +259,7 @@ export default function AdminStays() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher un séjour..."
+              placeholder={t("ux.bo.searchStay")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -267,18 +269,18 @@ export default function AdminStays() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Chargement...</div>
+          <div className="text-center py-12">{t("ux.bo.loading")}</div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Durée</TableHead>
-                <TableHead>Prix</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("ux.bo.name")}</TableHead>
+                <TableHead>{t("ux.bo.type")}</TableHead>
+                <TableHead>{t("ux.bo.location")}</TableHead>
+                <TableHead>{t("ux.bo.duration")}</TableHead>
+                <TableHead>{t("ux.bo.price")}</TableHead>
+                <TableHead>{t("ux.bo.status")}</TableHead>
+                <TableHead>{t("ux.bo.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -295,8 +297,8 @@ export default function AdminStays() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      {stay.available && <Badge variant="secondary">Disponible</Badge>}
-                      {stay.featured && <Badge>Vedette</Badge>}
+                      {stay.available && <Badge variant="secondary">{t("ux.bo.available")}</Badge>}
+                      {stay.featured && <Badge>{t("ux.bo.featured2")}</Badge>}
                     </div>
                   </TableCell>
                   <TableCell>

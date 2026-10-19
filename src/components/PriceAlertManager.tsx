@@ -7,7 +7,8 @@ import { Bell, BellOff, Trash2, Plane, Hotel, Car } from 'lucide-react';
 import { usePriceAlerts, PriceAlert } from '@/hooks/usePriceAlerts';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { EmptyState } from "@/components/ui/empty-state";
+import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 const getServiceIcon = (type: string) => {
   switch (type) {
@@ -75,13 +76,11 @@ export const PriceAlertManager = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {alerts.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <BellOff className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>Aucune alerte de prix configurée</p>
-              <p className="text-sm mt-2">
-                Créez des alertes pour être notifié des baisses de prix
-              </p>
-            </div>
+            <EmptyState
+              icon={BellOff}
+              title="Aucune alerte de prix configurée"
+              description="Créez une alerte pour être prévenu dès que le prix d'un trajet baisse."
+            />
           ) : (
             alerts.map((alert) => (
               <Card key={alert.id} className="border-l-4 border-l-primary">
@@ -106,8 +105,8 @@ export const PriceAlertManager = () => {
                         
                         {alert.departure_date && (
                           <div className="text-sm text-muted-foreground">
-                            Départ: {format(new Date(alert.departure_date), 'dd MMMM yyyy', { locale: fr })}
-                            {alert.return_date && ` - Retour: ${format(new Date(alert.return_date), 'dd MMMM yyyy', { locale: fr })}`}
+                            Départ: {format(new Date(alert.departure_date), 'dd MMMM yyyy', { locale: currentDateFnsLocale() })}
+                            {alert.return_date && ` - Retour: ${format(new Date(alert.return_date), 'dd MMMM yyyy', { locale: currentDateFnsLocale() })}`}
                           </div>
                         )}
                         
@@ -118,7 +117,7 @@ export const PriceAlertManager = () => {
                         )}
                         
                         {alert.target_price && (
-                          <div className="text-sm text-green-600 dark:text-green-400">
+                          <div className="text-sm text-success">
                             Prix cible: <span className="font-semibold">{formatPrice(alert.target_price, alert.currency)}</span>
                           </div>
                         )}
@@ -135,6 +134,7 @@ export const PriceAlertManager = () => {
                         onCheckedChange={() => handleToggleAlert(alert.id, alert.is_active)}
                       />
                       <Button
+                        aria-label="Supprimer"
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteAlert(alert.id)}

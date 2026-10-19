@@ -1,115 +1,110 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { getClientIP, checkRateLimit, createRateLimitResponse, RATE_LIMITS } from "../_shared/rate-limiter.ts";
+import { getClientIP, checkRateLimit, createRateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const ANTHROPIC_MODEL = 'claude-sonnet-5';
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Rate limiting - more restrictive for AI endpoints
-  const clientIP = getClientIP(req);
-  const rateLimitResult = checkRateLimit(clientIP, { ...RATE_LIMITS.AI, keyPrefix: 'ai-advisor' });
-  
-  if (!rateLimitResult.allowed) {
-    console.log(`Rate limit exceeded for IP: ${clientIP.substring(0, 8)}...`);
-    return createRateLimitResponse(rateLimitResult, RATE_LIMITS.AI, corsHeaders);
+  // Fonction publique qui consomme l'API Claude : plafond par IP pour
+  // qu'un script muni de la clé anon ne puisse pas faire exploser la facture.
+  const rateLimit = { windowMs: 60 * 60 * 1000, maxRequests: 20, keyPrefix: 'ai-travel-advisor' };
+  const rate = checkRateLimit(getClientIP(req), rateLimit);
+  if (!rate.allowed) {
+    return createRateLimitResponse(rate, rateLimit, corsHeaders);
   }
 
   try {
     const { destination, interests, budget, duration } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    if (!destination || !String(destination).trim()) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Destination requise' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Security: Only log non-sensitive request metadata
-    console.log('Generating AI travel recommendations for destination:', destination);
+    const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
 
-    const prompt = `En tant qu'expert en voyage, fournissez des recommandations détaillées pour un voyage à ${destination}.
-    
-Intérêts du voyageur: ${interests || 'général'}
-Budget: ${budget || 'moyen'}
-Durée: ${duration || 'flexible'}
+    if (!anthropicApiKey) {
+      // No fictitious fallback: without a real API key there is no real
+      // AI advisor to consult, so this returns an honest error instead of
+      // fabricated, generic recommendations.
+      console.log('ANTHROPIC_API_KEY not configured, returning error (no fictitious fallback)');
+      return new Response(
+        JSON.stringify({ success: false, error: "Le conseiller IA n'est pas configuré pour le moment." }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-Veuillez fournir:
-1. Les meilleures attractions touristiques (5-7)
-2. Suggestions d'activités selon les intérêts
-3. Conseils pour le budget
-4. Meilleure période pour visiter
-5. Conseils pratiques (transport, hébergement, sécurité)
-6. Spécialités culinaires locales à essayer
+    const field = (v: unknown) => String(v ?? '').slice(0, 300);
+    const userPrompt = `Destination : ${field(destination)}
+Centres d'intérêt : ${field(interests) || 'non précisé'}
+Budget : ${field(budget) || 'non précisé'}
+Durée du séjour : ${field(duration) || 'non précisée'}
 
-Soyez spécifique et pratique dans vos recommandations.`;
+Rédige des recommandations de voyage personnalisées pour cette destination, structurées avec des sections claires (attractions incontournables, gastronomie locale, conseils d'hébergement, meilleure période pour visiter, budget quotidien estimé, astuces d'initié). Réponds en français, en texte simple et lisible (pas de JSON, pas de Markdown : ni #, ni **), avec des titres de section sur leur propre ligne et des listes à tirets.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        'content-type': 'application/json',
+        'x-api-key': anthropicApiKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content: 'Vous êtes un expert en voyage qui fournit des recommandations détaillées, pratiques et personnalisées. Répondez en français de manière structurée et claire.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        model: ANTHROPIC_MODEL,
+        max_tokens: 1500,
+        // Pas de réflexion préalable : elle pouvait consommer tout max_tokens
+        // avant le premier mot, et la réponse arrivait vide.
+        thinking: { type: 'disabled' },
+        system: 'Tu es un conseiller de voyage expert et chaleureux pour Bossiz+, une agence de voyage. Tu donnes des recommandations concrètes, honnêtes et utiles, jamais génériques ou inventées au hasard.',
+        messages: [{ role: 'user', content: userPrompt }],
       }),
     });
 
     if (!response.ok) {
-      // Security: Don't log full API error response which may contain sensitive data
-      console.error('Lovable AI API error - Status:', response.status);
-      
-      if (response.status === 429) {
-        throw new Error('Limite de requêtes atteinte. Veuillez réessayer plus tard.');
-      }
-      if (response.status === 402) {
-        throw new Error('Crédits insuffisants. Veuillez recharger votre compte.');
-      }
-      
-      throw new Error(`AI API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Anthropic API error:', response.status, errorText);
+      return new Response(
+        JSON.stringify({ success: false, error: "Le conseiller IA est temporairement indisponible." }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
-    const recommendations = data.choices[0]?.message?.content;
+    // La réponse peut contenir plusieurs blocs (réflexion, texte…) : on
+    // assemble tous les blocs de texte au lieu de ne lire que le premier.
+    const recommendations = (data.content ?? [])
+      .filter((b: { type: string }) => b.type === 'text')
+      .map((b: { text: string }) => b.text)
+      .join('')
+      .trim();
 
-    console.log('AI travel recommendations generated successfully');
+    if (!recommendations) {
+      console.error('Anthropic API returned no text content:', JSON.stringify(data).substring(0, 500));
+      return new Response(
+        JSON.stringify({ success: false, error: "Le conseiller IA n'a pas pu générer de réponse." }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        recommendations: recommendations,
-        destination: destination,
-      }),
+      JSON.stringify({ success: true, recommendations }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    // Security: Only log error type, not full error details
-    console.error('Error in ai-travel-advisor function:', error instanceof Error ? error.constructor.name : 'Unknown');
+    console.error('Error in ai-travel-advisor:', error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

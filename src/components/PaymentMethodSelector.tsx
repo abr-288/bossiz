@@ -1,4 +1,4 @@
-import { CreditCard, Smartphone, Waves, Building2, Check } from "lucide-react";
+import { Check, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PaymentMethod {
@@ -11,32 +11,11 @@ interface PaymentMethod {
 
 const paymentMethods: PaymentMethod[] = [
   {
-    id: "wave",
-    name: "Wave",
-    description: "Paiement rapide et sécurisé",
-    icon: <Waves className="h-6 w-6" />,
-    color: "bg-[#1DC2FF]/10 text-[#1DC2FF] border-[#1DC2FF]/30",
-  },
-  {
-    id: "mobile_money",
-    name: "Mobile Money",
-    description: "Orange, MTN, Moov",
-    icon: <Smartphone className="h-6 w-6" />,
-    color: "bg-orange-500/10 text-orange-500 border-orange-500/30",
-  },
-  {
-    id: "card",
-    name: "Carte bancaire",
-    description: "Visa, Mastercard",
-    icon: <CreditCard className="h-6 w-6" />,
-    color: "bg-violet-500/10 text-violet-500 border-violet-500/30",
-  },
-  {
-    id: "bank_transfer",
-    name: "Virement bancaire",
-    description: "Transfert sécurisé",
-    icon: <Building2 className="h-6 w-6" />,
-    color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/30",
+    id: "jeko",
+    name: "Jèko",
+    description: "Mobile Money ou carte bancaire sur la page sécurisée Jèko",
+    icon: <Wallet className="h-6 w-6" />,
+    color: "bg-warning text-warning-foreground border-warning-foreground/20",
   },
 ];
 
@@ -56,7 +35,7 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
             type="button"
             onClick={() => onChange(method.id)}
             className={cn(
-              "relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200",
+              "relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-base ease-standard",
               "hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
               isSelected
                 ? "border-primary bg-primary/5 shadow-sm"

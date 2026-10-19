@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.breserve.app',
-  appName: 'B-Reserve',
+  appId: 'com.bossizplus.app',
+  appName: 'Bossiz+',
   webDir: 'dist'
 };
 

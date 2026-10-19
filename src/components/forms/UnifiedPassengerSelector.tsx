@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { MOTION } from "@/lib/motion";
 
 interface PassengerCount {
   adults: number;
@@ -89,21 +90,23 @@ export const UnifiedPassengerSelector = ({
       </div>
       <div className="flex items-center gap-3">
         <Button
+          aria-label={`Retirer : ${label}`}
           type="button"
           variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-full border-2 hover:border-primary hover:bg-primary/10"
+          className="h-10 w-10 rounded-full"
           onClick={onDecrement}
           disabled={count <= min}
         >
           <Minus className="h-4 w-4" />
         </Button>
-        <span className="font-bold text-lg min-w-[24px] text-center">{count}</span>
+        <span className="font-bold text-lg min-w-[24px] text-center tabular-nums" aria-live="polite">{count}</span>
         <Button
+          aria-label={`Ajouter : ${label}`}
           type="button"
           variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-full border-2 hover:border-primary hover:bg-primary/10"
+          className="h-10 w-10 rounded-full"
           onClick={onIncrement}
           disabled={count >= max}
         >
@@ -117,7 +120,7 @@ export const UnifiedPassengerSelector = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: MOTION.slow }}
       className={cn("space-y-2", className)}
     >
       {label && (
@@ -139,7 +142,7 @@ export const UnifiedPassengerSelector = ({
             className={cn(
               "w-full h-12 justify-start text-left font-medium",
               "border-2 border-input hover:border-primary/50",
-              "transition-all duration-200",
+              "transition-all duration-base ease-standard",
               "group overflow-hidden"
             )}
           >

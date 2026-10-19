@@ -1,20 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { useTranslation } from "react-i18next";
 
 interface GeographicDistributionChartProps {
   data: Array<{ location: string; revenue: number; bookings: number }>;
 }
 
 export function GeographicDistributionChart({ data }: GeographicDistributionChartProps) {
+  const { t } = useTranslation();
   if (!data || data.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Répartition Géographique</CardTitle>
+          <CardTitle>{t("ux.bo.geographicBreakdown2")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-64 text-muted-foreground">
-            Aucune donnée disponible
+            {t("ux.bo.noDataAvailable")}
           </div>
         </CardContent>
       </Card>
@@ -41,7 +43,7 @@ export function GeographicDistributionChart({ data }: GeographicDistributionChar
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top 10 Destinations</CardTitle>
+        <CardTitle>{t("ux.bo.top10Destinations")}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>

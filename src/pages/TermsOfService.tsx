@@ -1,7 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
-import { FileText, Scale, CreditCard, AlertTriangle, Ban, RefreshCcw, Gavel, ShieldCheck, Plane, Users } from "lucide-react";
+import { FileText, Scale, CreditCard, AlertTriangle, Ban, RefreshCcw, Gavel, ShieldCheck, Plane, Users, Handshake } from "lucide-react";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { PageHero } from "@/components/PageHero";
+import heroImage from "@/assets/hero-slide-3.webp";
 
 const TermsOfService = () => {
   const { config } = useSiteConfigContext();
@@ -37,6 +40,10 @@ const TermsOfService = () => {
         "**2.3 Conditions d'âge**",
         "• Vous devez avoir au moins 18 ans pour créer un compte et effectuer des réservations.",
         "• Les mineurs peuvent voyager uniquement sous la responsabilité d'un adulte ayant effectué la réservation.",
+        "",
+        "**2.4 Acceptation préalable obligatoire**",
+        "• La création d'un compte, quel que soit son type (client, agence partenaire ou compte entreprise), n'est possible qu'après acceptation expresse des présentes CGU et de notre Politique de Confidentialité, au moyen d'une case à cocher dédiée lors de l'inscription.",
+        "• Cette acceptation constitue une preuve contractuelle de votre consentement, horodatée et conservée conformément à la section « Conservation des données » de la Politique de Confidentialité.",
       ],
     },
     {
@@ -145,19 +152,56 @@ const TermsOfService = () => {
         `L'ensemble des éléments de la plateforme ${siteName} (logos, textes, images, design, base de données, logiciels) sont protégés par les lois sur la propriété intellectuelle.`,
         "",
         "• Toute reproduction, modification ou utilisation sans autorisation préalable est strictement interdite.",
-        "• Les marques et logos des compagnies aériennes, hôtels et autres partenaires restent la propriété de leurs titulaires respectifs.",
+        "• Les marques et logos des compagnies aériennes, hôtels et autres partenaires restent la propriété de leurs titulaires respectifs. Ils ne sont présentés comme ceux de partenaires que dans les conditions prévues à l'article 9.5.",
         `• Le contenu généré par les utilisateurs (avis, commentaires) reste leur propriété, mais ${siteName} dispose d'une licence non exclusive pour les afficher sur la plateforme.`,
       ],
     },
     {
-      icon: Scale,
-      title: "9. Abonnements et services premium",
+      icon: Handshake,
+      title: "9. Partenariats (hôtels, restaurants, activités, artisans, location de voitures)",
       content: [
-        "**9.1 Plans d'abonnement**",
+        "**9.1 Candidature et étude du dossier**",
+        `• Toute personne ou entreprise souhaitant référencer ses services sur ${siteName} (hôtel, restaurant, activité/excursion, artisan/guide, location de voitures) doit soumettre une candidature via la page « Devenir partenaire ».`,
+        "• Le dépôt d'une candidature ne constitue ni un engagement contractuel ni une garantie d'acceptation. Chaque dossier est étudié manuellement et peut être accepté, rejeté ou classé sans suite, sans obligation de motivation.",
+        `• L'acceptation d'une candidature nécessite que le candidat dispose déjà d'un compte utilisateur ${siteName} enregistré avec la même adresse e-mail que celle indiquée dans sa candidature, ce compte étant ensuite rattaché à l'espace agence créé.`,
+        "",
+        "**9.2 Conditions spécifiques par catégorie**",
+        "• Le partage standard des paiements en ligne encaissés par Bossiz via Jèko est de 90% pour le partenaire et 10% pour Bossiz. Les conditions de publication des véhicules pour les loueurs de voitures (publication gratuite ou forfait payant) sont présentées sur la page dédiée aux loueurs de voitures ; la mise en place d'un forfait payant ne s'applique aux partenaires concernés qu'après les en avoir préalablement informés.",
+        "• Ces conditions peuvent évoluer ; les partenaires déjà actifs seront informés de toute modification substantielle affectant leur taux de commission ou leur forfait.",
+        "",
+        "**9.3 Commission et paiement des partenaires**",
+        `• Pour les paiements encaissés par ${siteName} via Jèko, 10% du montant payé revient à la plateforme et 90% au partenaire. Les paiements partiels ne donnent lieu à un reversement qu'après règlement complet ; certaines prestations, notamment les billets d'avion, peuvent aussi nécessiter une confirmation avant le reversement.`,
+        "• Le partenaire choisit un moyen de réception proposé par Jèko et renseigne les coordonnées nécessaires dans son espace agence. Lorsque le transfert est éligible, il est initié automatiquement sous 24 heures ; son délai final de traitement dépend de Jèko et du moyen choisi.",
+        "• Les paiements reçus directement par le partenaire ou encaissés via un autre prestataire ne transitent pas par le portefeuille marchand Jèko de Bossiz et ne peuvent pas être reversés automatiquement par ce mécanisme. Leur règlement éventuel suit les modalités convenues entre les parties.",
+        "• Les forfaits payants, lorsqu'ils sont proposés, sont facturés par avance (mensuellement ou annuellement) et ne sont pas remboursables au prorata en cas de résiliation en cours de période, sauf disposition légale contraire.",
+        "",
+        "**9.4 Obligations du partenaire**",
+        "• Le partenaire garantit l'exactitude des informations et tarifs qu'il publie, ainsi que sa capacité à honorer les réservations confirmées.",
+        "• Le partenaire demeure seul responsable du respect des réglementations applicables à son secteur d'activité (autorisations d'exploitation, assurances, normes sanitaires ou de sécurité, réglementation du transport pour la location de voitures).",
+        `• Le partenaire garantit détenir tous les droits nécessaires sur le logo, les photos et les textes qu'il transmet (y compris via le formulaire de candidature) et concède à ${siteName} une licence non exclusive, gratuite et mondiale pour les reproduire et les afficher dans le cadre de son référencement sur la plateforme.`,
+        "• Un fichier logo transmis lors d'une candidature est stocké sur un espace de stockage public et accessible via son lien direct dès son téléversement, y compris avant toute validation de la candidature.",
+        "",
+        "**9.5 Utilisation du nom et du logo du partenaire**",
+        `• Une fois sa candidature acceptée, le partenaire autorise ${siteName} à faire figurer son nom commercial et son logo en tant que partenaire, notamment sur le site et l'application (page d'accueil, page des partenaires, sections « Ils nous font confiance »), sur les réseaux sociaux de ${siteName} et dans ses supports de communication et de présentation.`,
+        "• Cette autorisation est gratuite, non exclusive et vaut pour toute la durée du partenariat. Elle porte sur le logo dans la forme transmise par le partenaire ou dans la version qu'il communique ultérieurement ; le logo n'est ni déformé ni modifié, sauf redimensionnement nécessaire à son affichage.",
+        `• Cette mention signale l'existence d'un partenariat commercial ; elle ne signifie pas que le partenaire garantit les autres services proposés sur ${siteName}.`,
+        `• Le partenaire peut retirer cette autorisation à tout moment par simple demande écrite au support ; ${siteName} retire alors son nom et son logo de la plateforme et de ses réseaux sociaux dans un délai de 15 jours. Les supports déjà imprimés ou diffusés avant la demande ne sont pas concernés.`,
+        `• À la fin du partenariat, quelle qu'en soit la cause, ${siteName} cesse toute nouvelle utilisation du nom et du logo du partenaire et les retire de la plateforme dans le même délai.`,
+        "",
+        "**9.6 Suspension et résiliation du partenariat**",
+        `• ${siteName} peut suspendre ou mettre fin à un partenariat, à tout moment et sans préavis en cas de manquement grave (fraude, non-respect des présentes conditions, plaintes répétées de clients, non-conformité réglementaire), et avec un préavis raisonnable dans les autres cas.`,
+        "• La résiliation n'affecte pas les réservations déjà confirmées, qui doivent être honorées ou remboursées selon les conditions applicables.",
+      ],
+    },
+    {
+      icon: Scale,
+      title: "10. Abonnements et services premium",
+      content: [
+        "**10.1 Plans d'abonnement**",
         `• ${siteName} propose des plans d'abonnement offrant des avantages exclusifs.`,
         "• Les détails des plans sont disponibles sur la page Abonnements.",
         "",
-        "**9.2 Résiliation**",
+        "**10.2 Résiliation**",
         "• Vous pouvez résilier votre abonnement à tout moment depuis votre espace personnel.",
         "• La résiliation prend effet à la fin de la période en cours.",
         "• Aucun remboursement prorata temporis n'est effectué sauf disposition contraire.",
@@ -165,60 +209,49 @@ const TermsOfService = () => {
     },
     {
       icon: Gavel,
-      title: "10. Droit applicable et litiges",
+      title: "11. Droit applicable et litiges",
       content: [
-        "**10.1 Droit applicable**",
+        "**11.1 Droit applicable**",
         "Les présentes conditions sont régies par le droit en vigueur en Côte d'Ivoire et les conventions internationales applicables au transport aérien.",
         "",
-        "**10.2 Résolution des litiges**",
+        "**11.2 Résolution des litiges**",
         "• En cas de litige, une solution amiable sera recherchée en priorité via notre service support.",
         "• À défaut de résolution amiable, les tribunaux compétents d'Abidjan seront seuls compétents.",
         "",
-        "**10.3 Médiation**",
+        "**11.3 Médiation**",
         "• Conformément aux dispositions en vigueur, vous pouvez recourir à un médiateur avant toute action judiciaire.",
         "",
-        `Dernière mise à jour : ${new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}`,
+        `Dernière mise à jour : ${new Date().toLocaleDateString(currentLocaleTag(), { year: "numeric", month: "long", day: "numeric" })}`,
       ],
     },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       <Navbar />
-      <main className="pt-32 pb-16">
+      <PageHero
+        image={heroImage}
+        title={<>Conditions Générales d'Utilisation</>}
+        subtitle={<>Veuillez lire attentivement les conditions suivantes avant d'utiliser les services de {siteName}. 
+              Ces conditions constituent un accord juridiquement contraignant entre vous et {siteName}.</>}
+      />
+      <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Scale className="w-8 h-8 text-primary" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Conditions Générales d'Utilisation
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Veuillez lire attentivement les conditions suivantes avant d'utiliser les services de {siteName}. 
-              Ces conditions constituent un accord juridiquement contraignant entre vous et {siteName}.
-            </p>
-          </div>
 
           {/* Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => {
-              const Icon = section.icon;
               return (
                 <section
                   key={index}
                   className="bg-card border border-border rounded-xl p-6 md:p-8"
                 >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-foreground pt-1.5">
+                  <div className="mb-4">
+                    <h2 className="text-xl font-bold text-foreground">
                       {section.title}
                     </h2>
                   </div>
-                  <div className="pl-14 space-y-2">
+                  <div className="space-y-2">
                     {section.content.map((line, i) => (
                       <p
                         key={i}

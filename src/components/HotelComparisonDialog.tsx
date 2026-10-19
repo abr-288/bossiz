@@ -53,11 +53,13 @@ export function HotelComparisonDialog({
                       src={hotel.image}
                       alt={hotel.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                       onError={(e) => {
                         e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
                       }}
                     />
                     <Button
+                      aria-label="Retirer de la comparaison"
                       variant="destructive"
                       size="icon"
                       className="absolute top-2 right-2 h-8 w-8"

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Bell, Calendar, ArrowRight } from "lucide-react";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 interface Booking {
   id: string;
@@ -60,7 +61,7 @@ export const UpcomingReminders = ({ bookings, onViewDetails }: UpcomingReminders
               <p className="font-medium text-sm">{booking.services.name}</p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(booking.start_date).toLocaleDateString("fr-FR", {
+                {new Date(booking.start_date).toLocaleDateString(currentLocaleTag(), {
                   weekday: "long",
                   day: "numeric",
                   month: "long",
@@ -72,6 +73,7 @@ export const UpcomingReminders = ({ bookings, onViewDetails }: UpcomingReminders
                 {getDaysUntil(booking.start_date)}
               </Badge>
               <Button
+                aria-label="Voir le détail"
                 variant="ghost"
                 size="icon"
                 onClick={() => onViewDetails(booking.id)}

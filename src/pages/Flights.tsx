@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Loader2, TrendingUp, Plane } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { TrendingUp, Plane, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { FlightSearchForm } from "@/components/FlightSearchForm";
@@ -8,13 +9,18 @@ import { useFlightSearch } from "@/hooks/useFlightSearch";
 import { FlightBookingDialog } from "@/components/FlightBookingDialog";
 import { getAirlineName } from "@/utils/airlineNames";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PriceCalendar } from "@/components/flights/PriceCalendar";
+import { FlightCardSkeleton } from "@/components/ui/search-result-skeletons";
 import { FlightFilters } from "@/components/flights/FlightFilters";
 import { FlightCard } from "@/components/flights/FlightCard";
-import { Button } from "@/components/ui/button";
-import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
-import bannerFlights from "@/assets/banner-flights.jpg";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { LazyImage } from "@/components/ui/lazy-image";
+import { useDestinations } from "@/hooks/useDestinations";
+import { getIataByCity, getCountryFlag } from "@/utils/airportNames";
+import bannerFlights from "@/assets/banner-flights.webp";
+import { buildVolsBossizSearchUrl } from "@/lib/volsBossiz";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface MappedFlight {
   id: string;
@@ -40,7 +46,8 @@ interface MappedFlight {
 }
 
 const Flights = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const { searchFlights, loading, error } = useFlightSearch();
   const [flights, setFlights] = useState<MappedFlight[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -54,15 +61,44 @@ const Flights = () => {
   const [stopsFilter, setStopsFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("best");
 
-  const departureDate = searchParams.get("date") || "";
 
-  // Default popular routes for suggestions
-  const defaultRoutes = [
-    { from: "ABJ", to: "CDG", fromCity: "Abidjan", toCity: "Paris" },
-    { from: "ABJ", to: "DXB", fromCity: "Abidjan", toCity: "Dubai" },
-    { from: "ABJ", to: "ACC", fromCity: "Abidjan", toCity: "Accra" },
-    { from: "ABJ", to: "DKR", fromCity: "Abidjan", toCity: "Dakar" },
-  ];
+  // Use live trending destinations
+  const { data: trendingDestinations, isLoading: loadingTrends } = useDestinations();
+
+  const popularRoutes = useMemo(() => {
+    // If we have dynamic data, use it
+    if (trendingDestinations && trendingDestinations.length > 0) {
+      return trendingDestinations
+        .filter(d => d.trending || d.rating >= 4.5)
+        .slice(0, 8)
+        .map(dest => {
+          // Attempt to find IATA code, default to a sensible mapping or the current list if failed
+          const iata = getIataByCity(dest.name) || getIataByCity(dest.location);
+          if (!iata) return null;
+          
+          return {
+            from: "ABJ",
+            to: iata,
+            fromCity: "Abidjan",
+            toCity: dest.name,
+            flag: getCountryFlag(dest.country)
+          };
+        })
+        .filter(Boolean) as any[];
+    }
+
+    // Default static routes as fallback
+    return [
+      { from: "ABJ", to: "CDG", fromCity: "Abidjan", toCity: "Paris", flag: "🇫🇷" },
+      { from: "ABJ", to: "DXB", fromCity: "Abidjan", toCity: "Dubai", flag: "🇦🇪" },
+      { from: "ABJ", to: "IST", fromCity: "Abidjan", toCity: "Istanbul", flag: "🇹🇷" },
+      { from: "ABJ", to: "ACC", fromCity: "Abidjan", toCity: "Accra", flag: "🇬🇭" },
+      { from: "ABJ", to: "DKR", fromCity: "Abidjan", toCity: "Dakar", flag: "🇸🇳" },
+      { from: "ABJ", to: "CMN", fromCity: "Abidjan", toCity: "Casablanca", flag: "🇲🇦" },
+      { from: "ABJ", to: "JNB", fromCity: "Abidjan", toCity: "Johannesburg", flag: "🇿🇦" },
+      { from: "ABJ", to: "ADD", fromCity: "Abidjan", toCity: "Addis-Abeba", flag: "🇪🇹" },
+    ];
+  }, [trendingDestinations]);
 
   const mapFlightData = (data: any[], from: string, to: string, date: string, returnDate?: string, travelClass: string = "ECONOMY"): MappedFlight[] => {
     return data.map((offer: any) => {
@@ -185,11 +221,6 @@ const Flights = () => {
     setDialogOpen(true);
   };
 
-  const handleDateSelect = (newDate: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("date", newDate);
-    setSearchParams(params);
-  };
 
   const parseDuration = (duration: string): number => {
     const match = duration.match(/PT(\d+)H(\d+)M/);
@@ -225,26 +256,25 @@ const Flights = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerFlights}
-          alt="Recherche de vols"
+          alt={t('pages.flights.title')}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
+        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-            <div className="flex justify-center mb-4">
-              <Plane className="w-16 h-16 text-white drop-shadow-lg" />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Recherche de vols</h1>
+
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t('pages.flights.title')}</h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
-              Trouvez les meilleurs prix pour votre voyage
+              {t('pages.flights.subtitle')}
             </p>
           </div>
           {hasSearched && (
             <div className="flex justify-center mb-6">
               <Link to={`/flight-comparison?${searchParams.toString()}`}>
-                <Button variant="secondary" className="gap-2">
+                <Button className="gap-2">
                   <TrendingUp className="h-4 w-4" />
-                  Comparer les prix
+                  {t('pages.flights.comparePrices')}
                 </Button>
               </Link>
             </div>
@@ -255,53 +285,52 @@ const Flights = () => {
 
           {/* Popular Destinations */}
           <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <p className="text-white/80 text-sm mb-3 text-center">Destinations populaires au départ d'Abidjan :</p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {[
-                { from: "ABJ", to: "CDG", fromCity: "Abidjan", toCity: "Paris", flag: "🇫🇷" },
-                { from: "ABJ", to: "DXB", fromCity: "Abidjan", toCity: "Dubai", flag: "🇦🇪" },
-                { from: "ABJ", to: "IST", fromCity: "Abidjan", toCity: "Istanbul", flag: "🇹🇷" },
-                { from: "ABJ", to: "ACC", fromCity: "Abidjan", toCity: "Accra", flag: "🇬🇭" },
-                { from: "ABJ", to: "DKR", fromCity: "Abidjan", toCity: "Dakar", flag: "🇸🇳" },
-                { from: "ABJ", to: "CMN", fromCity: "Abidjan", toCity: "Casablanca", flag: "🇲🇦" },
-                { from: "ABJ", to: "JNB", fromCity: "Abidjan", toCity: "Johannesburg", flag: "🇿🇦" },
-                { from: "ABJ", to: "ADD", fromCity: "Abidjan", toCity: "Addis-Abeba", flag: "🇪🇹" },
-              ].map((route) => {
-                const futureDate = new Date();
-                futureDate.setDate(futureDate.getDate() + 14);
-                const dateStr = futureDate.toISOString().split('T')[0];
-                return (
-                  <Link
-                    key={route.to}
-                    to={`/flights?from=${route.from}&to=${route.to}&date=${dateStr}&adults=1&class=ECONOMY`}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium transition-all hover:scale-105 flex items-center gap-2 border border-white/20"
-                  >
-                    <span>{route.flag}</span>
-                    <span>{route.toCity}</span>
-                  </Link>
-                );
-              })}
-            </div>
+            <p className="text-white/80 text-sm mb-3 text-center">{t('pages.flights.popularFromAbidjan')}</p>
+            {loadingTrends ? (
+              <div className="flex justify-center gap-2">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="h-9 w-24 bg-white/10 animate-pulse rounded-full" />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap justify-center gap-2">
+                {popularRoutes.map((route) => {
+                  const futureDate = new Date();
+                  futureDate.setDate(futureDate.getDate() + 14);
+                  const dateStr = futureDate.toISOString().split('T')[0];
+                  const searchUrl = buildVolsBossizSearchUrl({
+                    origin: route.from,
+                    destination: route.to,
+                    departureDate: dateStr,
+                    adults: 1,
+                    travelClass: "economy",
+                  });
+                  return (
+                    <a
+                      key={route.to}
+                      href={searchUrl}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium transition-all hover:scale-105 flex items-center gap-2 border border-white/20"
+                    >
+                      <span>{route.flag}</span>
+                      <span>{route.toCity}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Price Calendar */}
-      {hasSearched && departureDate && flights.length > 0 && (
-        <PriceCalendar
-          departureDate={departureDate}
-          onDateSelect={handleDateSelect}
-          currency="EUR"
-          lowestPrice={Math.min(...flights.map(f => f.price))}
-        />
-      )}
 
       {/* Main Content */}
-      <div className="flex-1 bg-muted/30">
-        <div className="container mx-auto px-4 py-6">
+      <div className="flex-1 bg-muted/20">
+        <div className="container mx-auto px-4 py-10 md:py-16">
           {loading && (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <FlightCardSkeleton key={i} />
+              ))}
             </div>
           )}
 
@@ -312,37 +341,50 @@ const Flights = () => {
           )}
 
           {!hasSearched && !loading && !isDefaultResults && flights.length === 0 && (
-            <div className="text-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                Chargement des vols populaires...
+            <div className="space-y-4">
+              <p className="text-center text-muted-foreground mb-4">
+                {t('pages.flights.loadingPopular')}
               </p>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <FlightCardSkeleton key={i} />
+              ))}
             </div>
           )}
 
           {(hasSearched || isDefaultResults) && !loading && filteredAndSortedFlights.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">Aucun vol trouvé pour cette recherche</p>
-            </div>
+            <EmptyState
+              icon={Plane}
+              title={t('pages.flights.results.noResultsDesc')}
+              description={t("ux.empty.flightsDesc")}
+            />
           )}
 
           {/* Default results header */}
           {isDefaultResults && !loading && filteredAndSortedFlights.length > 0 && (
-            <div className="mb-6 p-4 bg-secondary/10 rounded-lg border border-secondary/20">
-              <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Plane className="w-5 h-5 text-secondary" />
-                Vols populaires : Abidjan → Paris
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Voici les vols disponibles pour dans 2 semaines. Utilisez le formulaire ci-dessus pour personnaliser votre recherche.
-              </p>
+            <div className="mb-10 p-6 md:p-8 bg-card border border-border rounded-3xl shadow-lg flex flex-col md:flex-row items-center gap-6 animate-slide-up-fade">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <Plane className="w-8 h-8 text-primary" />
+              </div>
+              <div className="text-center md:text-left">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                  {t('pages.flights.featured.title')}
+                </h2>
+                <p className="text-muted-foreground mt-2 max-w-xl">
+                  {t('pages.flights.featured.subtitle')}
+                </p>
+              </div>
+              <div className="md:ml-auto">
+                <Badge variant="secondary" className="px-4 py-2 rounded-full font-semibold">
+                  {t('pages.flights.featured.trending')}
+                </Badge>
+              </div>
             </div>
           )}
 
           {(hasSearched || isDefaultResults) && !loading && filteredAndSortedFlights.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[300px_1fr_300px] gap-6">
               {/* Left Sidebar - Filters */}
-              <aside className="hidden lg:block">
+              <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
                 <FlightFilters
                   baggageHandCount={baggageHandCount}
                   baggageCheckCount={baggageCheckCount}
@@ -363,7 +405,7 @@ const Flights = () => {
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">Le meilleur</span>
+                        <span className="font-semibold text-sm">{t('pages.flights.sort.best')}</span>
                         <span className="text-xs text-muted-foreground">
                           <Price amount={filteredAndSortedFlights[0]?.price || 0} fromCurrency="EUR" /> · {filteredAndSortedFlights[0]?.duration}
                         </span>
@@ -374,7 +416,7 @@ const Flights = () => {
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">Le moins cher</span>
+                        <span className="font-semibold text-sm">{t('pages.flights.filters.cheapest')}</span>
                         <span className="text-xs text-muted-foreground">
                           <Price amount={Math.min(...filteredAndSortedFlights.map(f => f.price))} fromCurrency="EUR" />
                         </span>
@@ -385,7 +427,7 @@ const Flights = () => {
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">Le plus court</span>
+                        <span className="font-semibold text-sm">{t('pages.flights.filters.fastest')}</span>
                         <span className="text-xs text-muted-foreground">
                           {filteredAndSortedFlights.sort((a, b) => parseDuration(a.duration) - parseDuration(b.duration))[0]?.duration}
                         </span>
@@ -417,19 +459,26 @@ const Flights = () => {
 
               {/* Right Sidebar - Ads */}
               <aside className="hidden xl:block">
-                <div className="sticky top-6 bg-gradient-to-br from-secondary to-secondary/80 rounded-lg p-6 text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
-                    <span className="text-4xl">✈️</span>
+                <div className="sticky top-24 bg-brand rounded-2xl p-8 text-center shadow-xl border border-white/10 overflow-hidden group">
+                  {/* Decorative background element */}
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl group-hover:bg-secondary/30 transition-colors" />
+                  
+                  <div className="relative z-10">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/20 group-hover:scale-110 transition-transform duration-slow ease-standard">
+                      <Shield className="w-10 h-10 text-secondary" />
+                    </div>
+                    <h3 className="font-bold text-xl mb-3 text-white leading-tight">
+                      {t("ux.flights.guaranteeTitle")}
+                    </h3>
+                    <p className="text-sm text-white/70 mb-8 leading-relaxed">
+                      {t("ux.flights.guaranteeText")}
+                    </p>
+                    <Link to="/help">
+                      <Button className="w-full">
+                        {t("ux.flights.learnMore")}
+                      </Button>
+                    </Link>
                   </div>
-                  <h3 className="font-bold text-lg mb-2 text-primary-foreground">
-                    Le forfait de voyage ultime
-                  </h3>
-                  <p className="text-sm text-primary-foreground/80 mb-4">
-                    La Garantie B-Reserve offre des solutions instantanées aux perturbations, une assistance continue et des services de voyage automatisés.
-                  </p>
-                  <button className="px-4 py-2 bg-card hover:bg-card/90 text-foreground rounded-lg text-sm font-medium transition-colors">
-                    En savoir plus
-                  </button>
                 </div>
               </aside>
             </div>

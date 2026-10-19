@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Bell } from 'lucide-react';
 import { usePriceAlerts } from '@/hooks/usePriceAlerts';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from "react-i18next";
 
 interface CreatePriceAlertProps {
   initialData?: {
@@ -21,6 +22,7 @@ interface CreatePriceAlertProps {
 }
 
 export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertProps) => {
+  const { t } = useTranslation();
   const { createAlert, isLoading } = usePriceAlerts();
   const { selectedCurrency } = useCurrency();
   
@@ -73,17 +75,17 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5 text-primary" />
-          Créer une Alerte de Prix
+          {t("ux.priceAlert.title")}
         </CardTitle>
         <CardDescription>
-          Soyez notifié quand les prix baissent pour cette recherche
+          {t("ux.priceAlert.subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="serviceType">Type de service</Label>
+              <Label htmlFor="serviceType">{t("ux.priceAlert.serviceType")}</Label>
               <Select
                 value={formData.serviceType}
                 onValueChange={(value) => setFormData({ ...formData, serviceType: value as 'flight' | 'hotel' | 'car' })}
@@ -93,7 +95,7 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="flight">Vol</SelectItem>
-                  <SelectItem value="hotel">Hôtel</SelectItem>
+                  <SelectItem value="hotel">{t("ux.priceAlert.hotel")}</SelectItem>
                   <SelectItem value="car">Voiture</SelectItem>
                 </SelectContent>
               </Select>
@@ -123,7 +125,7 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="departureDate">Date de départ</Label>
+              <Label htmlFor="departureDate">{t("ux.priceAlert.departure")}</Label>
               <Input
                 id="departureDate"
                 type="date"
@@ -133,7 +135,7 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="returnDate">Date de retour</Label>
+              <Label htmlFor="returnDate">{t("ux.priceAlert.return")}</Label>
               <Input
                 id="returnDate"
                 type="date"
@@ -150,12 +152,12 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
                 step="0.01"
                 value={formData.targetPrice}
                 onChange={(e) => setFormData({ ...formData, targetPrice: e.target.value })}
-                placeholder="Prix souhaité"
+                placeholder={t("ux.priceAlert.targetPrice")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="alertThreshold">Seuil d'alerte (%)</Label>
+              <Label htmlFor="alertThreshold">{t("ux.priceAlert.threshold")}</Label>
               <Input
                 id="alertThreshold"
                 type="number"
@@ -167,13 +169,13 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
                 placeholder="10"
               />
               <p className="text-xs text-muted-foreground">
-                Vous serez notifié si le prix baisse de ce pourcentage
+                {t("ux.priceAlert.thresholdDesc")}
               </p>
             </div>
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? 'Création...' : 'Créer l\'alerte'}
+            {isLoading ? t("ux.priceAlert.creating") : 'Créer l\'alerte'}
           </Button>
         </form>
       </CardContent>

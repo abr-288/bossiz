@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface ImageUploadProps {
   value: string;
@@ -24,6 +25,11 @@ export function ImageUpload({
   const [preview, setPreview] = useState<string | null>(value || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    setPreview(value || null);
+  }, [value]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,8 +38,8 @@ export function ImageUpload({
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: "Fichier trop volumineux",
-        description: "La taille maximale est de 5 Mo",
+        title: t("ux.bo.fileTooLarge"),
+        description: t("ux.bo.maximumSize5Mb"),
         variant: "destructive",
       });
       return;
@@ -42,8 +48,8 @@ export function ImageUpload({
     // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
-        title: "Format invalide",
-        description: "Veuillez sélectionner une image",
+        title: t("ux.bo.invalidFormat"),
+        description: t("ux.bo.pleaseSelectImage"),
         variant: "destructive",
       });
       return;
@@ -55,7 +61,7 @@ export function ImageUpload({
       // Get the session token
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        throw new Error("Non authentifié");
+        throw new Error(t("ux.bo.notAuthenticated"));
       }
 
       // Create form data
@@ -64,8 +70,11 @@ export function ImageUpload({
       formData.append("folder", folder);
 
       // Call edge function
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!supabaseUrl) throw new Error(t("ux.bo.storageConfigurationUnavailable"));
+
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-site-asset`,
+        `${supabaseUrl}/functions/v1/upload-site-asset`,
         {
           method: "POST",
           headers: {
@@ -78,21 +87,21 @@ export function ImageUpload({
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Erreur d'upload");
+        throw new Error(result.error || t("ux.bo.uploadError"));
       }
 
       setPreview(result.url);
       onChange(result.url);
 
       toast({
-        title: "Image téléchargée",
-        description: "L'image a été téléchargée avec succès",
+        title: t("ux.bo.imageUploaded"),
+        description: t("ux.bo.imageWasUploadedSuccessfully"),
       });
-    } catch (error: any) {
-      console.error("Upload error:", error);
+    } catch (error: unknown) {
+      console.error("Upload error");
       toast({
-        title: "Erreur d'upload",
-        description: error.message || "Impossible de télécharger l'image",
+        title: t("ux.bo.uploadError"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableUploadImage"),
         variant: "destructive",
       });
     } finally {
@@ -124,6 +133,7 @@ export function ImageUpload({
             />
             <button
               type="button"
+              aria-label={t("ux.common.removeImage")}
               onClick={handleRemove}
               className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"
             >
@@ -144,7 +154,7 @@ export function ImageUpload({
               onChange(e.target.value);
               setPreview(e.target.value);
             }}
-            placeholder="URL de l'image ou télécharger"
+            placeholder={t("ux.bo.imageUrlUpload")}
             className="text-sm"
           />
           

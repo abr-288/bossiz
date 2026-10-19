@@ -3,49 +3,62 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Star, Sparkles, Loader2, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clock, Heart, Users, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Star, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clock, Heart, Users, CheckCircle } from "lucide-react";
 import { WeatherWidget } from "@/components/WeatherWidget";
 
 import { StaySearchForm } from "@/components/StaySearchForm";
 import { BookingDialog } from "@/components/BookingDialog";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Price } from "@/components/ui/price";
 import { useStaySearch } from "@/hooks/useStaySearch";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import bannerStays from "@/assets/banner-stays.jpg";
+import { cn } from "@/lib/utils";
+import bannerStays from "@/assets/banner-stays.webp";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 // Types de séjours
-const stayTypes = [
-  { id: "villa", name: "Villas", icon: Palmtree, color: "bg-green-500" },
-  { id: "apartment", name: "Appartements", icon: Coffee, color: "bg-blue-500" },
-  { id: "beach", name: "Bord de mer", icon: Waves, color: "bg-cyan-500" },
-  { id: "luxury", name: "Luxe", icon: Star, color: "bg-amber-500" },
-];
-
-// Features des séjours
-const stayFeatures = [
-  { icon: Shield, title: "Réservation sécurisée", description: "Paiement 100% sécurisé" },
-  { icon: Clock, title: "Annulation gratuite", description: "Jusqu'à 48h avant" },
-  { icon: Users, title: "Support 24/7", description: "À votre écoute" },
-  { icon: CheckCircle, title: "Qualité vérifiée", description: "Tous nos hébergements sont inspectés" },
+const STAY_TYPE_ICONS = [
+  { id: "villa", icon: Palmtree, color: "bg-success" },
+  { id: "apartment", icon: Coffee, color: "bg-info" },
+  { id: "beach", icon: Waves, color: "bg-cyan-500" },
+  { id: "luxury", icon: Star, color: "bg-gold" },
 ];
 
 const Stays = () => {
   const { t } = useTranslation();
+
+  const stayTypes = STAY_TYPE_ICONS.map((type) => ({
+    ...type,
+    name: t(`pages.stays.types.${type.id}`),
+  }));
+
+  const stayFeatures = [
+    { icon: Shield, title: t('pages.stays.features.secureBooking.title'), description: t('pages.stays.features.secureBooking.description') },
+    { icon: Clock, title: t('pages.hotels.badges.freeCancellation'), description: t('pages.stays.features.freeCancellation.description') },
+    { icon: Users, title: t('pages.stays.features.support.title'), description: t('pages.stays.features.support.description') },
+    { icon: CheckCircle, title: t('pages.stays.features.quality.title'), description: t('pages.stays.features.quality.description') },
+  ];
+  const [searchParams] = useSearchParams();
   const [selectedStay, setSelectedStay] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(searchParams.get("type"));
   const [favorites, setFavorites] = useState<string[]>([]);
   const { stays, loading, searchStays } = useStaySearch();
-  
+
   useEffect(() => {
-    searchStays();
-  }, []);
+    const destination = searchParams.get("destination") || undefined;
+    const type = searchParams.get("type") || undefined;
+    setSelectedType(type || null);
+    searchStays({ location: destination, type });
+  }, [searchParams]);
 
   const toggleFavorite = (id: string) => {
-    setFavorites(prev => 
+    setFavorites(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
@@ -57,108 +70,143 @@ const Stays = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
-      
-      {/* Hero Banner */}
+
+      {/* Hero Section Synchronized with other bannières */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
-        <LazyImage 
+        <LazyImage
           src={bannerStays}
-          alt="Séjours et Escapades" 
+          alt={t("stays.title", "Séjours et Escapades")}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background/20"></div>
+        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
-          >
-            <div className="flex justify-center mb-4">
-              <Palmtree className="w-16 h-16 text-white drop-shadow-lg" />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+          <div className="text-center mb-8 animate-fade-in">
+
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
               {t("stays.title", "Séjours et Escapades")}
             </h1>
-            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
-              {t("stays.subtitle", "Découvrez nos forfaits séjours tout compris")}
+            <p className="text-lg md:text-2xl text-white/95 drop-shadow-md max-w-2xl mx-auto font-medium">
+              {t("stays.subtitle", "Découvrez nos forfaits séjours tout compris et voyages sur mesure")}
             </p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          </div>
+          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <StaySearchForm />
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Types de séjours */}
-      <section className="py-10 bg-muted/30">
+      {/* Top Filter Bar - Mobile Only */}
+      <section className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-border py-4 shadow-sm lg:hidden">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-            {t("stays.types", "Types de séjours")}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
+            <span className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground whitespace-nowrap mr-2">{t('pages.stays.filterBy')}</span>
+            <Button
+              variant={selectedType === null ? "default" : "outline"}
+              className="rounded-full h-10 px-6 font-bold"
+              onClick={() => setSelectedType(null)}
+            >
+              {t("ux.stays.all")}
+            </Button>
             {stayTypes.map((type) => (
-              <Card 
+              <Button
                 key={type.id}
-                className={`cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 ${
-                  selectedType === type.id ? 'ring-2 ring-primary' : ''
-                }`}
-                onClick={() => setSelectedType(selectedType === type.id ? null : type.id)}
+                variant={selectedType === type.id ? "default" : "outline"}
+                className={cn(
+                  "rounded-full h-10 px-6 font-bold flex items-center gap-2 transition-all",
+                  selectedType === type.id ? "shadow-lg shadow-primary/20 scale-105" : "hover:bg-primary/5"
+                )}
+                onClick={() => setSelectedType(type.id)}
               >
-                <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-                  <div className={`${type.color} p-4 rounded-full mb-4`}>
-                    <type.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="font-semibold">{type.name}</h3>
-                </CardContent>
-              </Card>
+                <type.icon className={cn("w-4 h-4", selectedType === type.id ? "text-secondary" : "text-primary")} />
+                {type.name}
+              </Button>
             ))}
           </div>
         </div>
       </section>
-      
-      <main className="flex-1 container mx-auto px-4 py-8">
 
-        {/* Weather Widget */}
-        <div className="mb-8">
-          <WeatherWidget city="Abidjan" />
-        </div>
+      <main className="flex-1 container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
+          
+          {/* Sidebar Filters - Desktop Only */}
+          <aside className="hidden lg:block space-y-8 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+            <div className="sticky top-28 space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <span className="w-8 h-[2px] bg-primary"></span>
+                  {t("stays.filters", "Filtrer")}
+                </h3>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant={selectedType === null ? "default" : "ghost"}
+                    className={cn(
+                      "justify-start h-12 px-4 rounded-xl font-bold transition-all",
+                      selectedType === null ? "shadow-lg shadow-primary/20 scale-[1.02]" : "hover:bg-primary/5"
+                    )}
+                    onClick={() => setSelectedType(null)}
+                  >
+                    {t("ux.stays.all")}
+                  </Button>
+                  {stayTypes.map((type) => (
+                    <Button
+                      key={type.id}
+                      variant={selectedType === type.id ? "default" : "ghost"}
+                      className={cn(
+                        "justify-start h-12 px-4 rounded-xl font-bold transition-all group",
+                        selectedType === type.id ? "shadow-lg shadow-primary/20 scale-[1.02]" : "hover:bg-primary/5"
+                      )}
+                      onClick={() => setSelectedType(type.id)}
+                    >
+                      <type.icon className={cn("w-5 h-5 mr-3 transition-transform group-hover:scale-110", selectedType === type.id ? "text-secondary" : "text-primary")} />
+                      {type.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
 
-        {/* Titre section résultats */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold">
-              {selectedType 
-                ? `${stayTypes.find(t => t.id === selectedType)?.name || 'Séjours'}`
-                : t("stays.available", "Séjours disponibles")}
-            </h2>
-            <p className="text-muted-foreground">
-              {filteredStays.length} {t("stays.found", "hébergements trouvés")}
-            </p>
-          </div>
-          {selectedType && (
-            <Button variant="outline" onClick={() => setSelectedType(null)}>
-              Voir tout
-            </Button>
-          )}
-        </div>
+              {/* Weather in Sidebar for Desktop */}
+              <div className="pt-4 border-t border-border">
+                <WeatherWidget city="Abidjan" />
+              </div>
+            </div>
+          </aside>
+
+          {/* Results Area */}
+          <div className="space-y-8">
+            {/* Header / Summary */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/50 pb-8">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-3xl md:text-4xl font-extrabold tracking-tighter text-foreground">
+                    {selectedType 
+                      ? `${stayTypes.find(t => t.id === selectedType)?.name || 'Séjours'}`
+                      : t("stays.available", "Séjours disponibles")}
+                  </h2>
+                  <Badge variant="secondary" className="h-7 px-3 rounded-full font-extrabold uppercase tracking-widest text-xs">
+                    {filteredStays.length} {t("stays.results", "Hébergements")}
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground font-medium max-w-xl">
+                  {t("stays.results_desc", "Découvrez notre sélection exclusive triée sur le volet pour vos prochaines vacances.")}
+                </p>
+              </div>
+
+              {/* Weather Widget - Mobile Only */}
+              <div className="lg:hidden w-full md:w-auto">
+                <WeatherWidget city="Abidjan" />
+              </div>
+            </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
+          <CardGridSkeleton />
         ) : filteredStays.length === 0 ? (
-          <div className="text-center py-20">
-            <Palmtree className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-xl text-muted-foreground">
-              {t("stays.noResults", "Aucun séjour disponible")}
-            </p>
-            <Button className="mt-4" onClick={() => setSelectedType(null)}>
-              Voir tous les séjours
-            </Button>
-          </div>
+          <EmptyState
+            icon={Palmtree}
+            title={t("ux.empty.staysTitle")}
+            description={t("ux.empty.staysDesc")}
+            action={<Button onClick={() => setSelectedType(null)}>{t("ux.stays.seeAll")}</Button>}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredStays.map((stay, index) => (
@@ -170,21 +218,20 @@ const Stays = () => {
               >
                 <Card className="overflow-hidden hover:shadow-lg transition-all group h-full">
                   <div className="relative h-48 overflow-hidden">
-                    <LazyImage 
-                      src={stay.image_url || 'https://images.unsplash.com/photo-1516426122078-c23e76319801'} 
+                    <LazyImage
+                      src={stay.image_url || 'https://images.unsplash.com/photo-1516426122078-c23e76319801'}
                       alt={stay.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-slow ease-standard"
                     />
                     <div className="absolute top-4 left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
                       {stay.type}
                     </div>
                     <Button
+                      aria-label="Ajouter aux favoris"
                       size="icon"
                       variant="ghost"
-                      className={`absolute top-4 right-4 bg-white/80 hover:bg-white ${
-                        favorites.includes(stay.id) ? 'text-red-500' : ''
-                      }`}
+                      className={`absolute top-4 right-4 bg-white/80 hover:bg-white ${favorites.includes(stay.id) ? 'text-destructive' : ''
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleFavorite(stay.id);
@@ -193,21 +240,23 @@ const Stays = () => {
                       <Heart className={`h-4 w-4 ${favorites.includes(stay.id) ? 'fill-current' : ''}`} />
                     </Button>
                   </div>
-                  
+
                   <CardContent className="p-6">
                     <div className="mb-4">
                       <h3 className="text-xl font-bold mb-2 line-clamp-1">{stay.name}</h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                        <MapPin className="w-4 h-4" />
-                        {stay.location}
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{stay.location}</span>
                       </div>
+                      {stay.maps_url && <a href={stay.maps_url} target="_blank" rel="noreferrer" className="mb-2 inline-block text-sm text-primary underline underline-offset-2">{t("ux.stays.map")}</a>}
+                      {!!stay.available_dates?.length && <div className="mb-2 flex flex-wrap gap-2">{stay.available_dates.slice(0, 4).map((date: string) => <span key={date} className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary">{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</span>)}</div>}
                       <div className="flex items-center gap-4 text-sm">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4 text-primary" />
                           {stay.duration}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <Star className="w-4 h-4 fill-gold text-gold" />
                           {stay.rating} ({stay.reviews})
                         </span>
                       </div>
@@ -228,11 +277,11 @@ const Stays = () => {
 
                     <div className="bg-muted/50 rounded-lg p-3 mb-4">
                       <p className="text-xs font-semibold mb-2">{t("stays.highlights", "Points forts")} :</p>
-                      <ul className="grid grid-cols-2 gap-1 text-xs">
+                      <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
                         {stay.highlights?.slice(0, 4).map((item, idx) => (
-                          <li key={idx} className="flex items-center gap-1">
-                            <div className="w-1 h-1 rounded-full bg-primary"></div>
-                            {item}
+                          <li key={idx} className="flex items-center gap-1 min-w-0">
+                            <div className="w-1 h-1 rounded-full bg-primary flex-shrink-0"></div>
+                            <span className="truncate">{item}</span>
                           </li>
                         ))}
                       </ul>
@@ -241,14 +290,14 @@ const Stays = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs text-muted-foreground">{t("common.from", "À partir de")}</p>
-                        <Price 
-                          amount={stay.price_per_unit} 
+                        <Price
+                          amount={stay.price_per_unit}
                           fromCurrency={stay.currency}
                           className="text-2xl font-bold text-primary"
                           showLoader={true}
                         />
                       </div>
-                      <Button 
+                      <Button
                         className="bg-primary text-primary-foreground font-semibold"
                         onClick={() => {
                           setSelectedStay({
@@ -257,7 +306,8 @@ const Stays = () => {
                             price_per_unit: stay.price_per_unit,
                             currency: stay.currency,
                             type: "stay",
-                            location: stay.location
+                            location: stay.location,
+                            availableDates: stay.available_dates
                           });
                           setDialogOpen(true);
                         }}
@@ -271,6 +321,8 @@ const Stays = () => {
             ))}
           </div>
         )}
+          </div> {/* End Results Area */}
+        </div> {/* End Grid */}
       </main>
 
       {/* Features Section */}
@@ -294,7 +346,7 @@ const Stays = () => {
       </section>
 
       {selectedStay && (
-        <BookingDialog 
+        <BookingDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           service={selectedStay}

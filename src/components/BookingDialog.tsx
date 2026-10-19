@@ -1,10 +1,12 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plane, Hotel, Car, MapPin, Calendar, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Price } from "@/components/ui/price";
+import { currentLocaleTag } from "@/lib/dateLocale";
 
 interface BookingDialogProps {
   open: boolean;
@@ -16,12 +18,18 @@ interface BookingDialogProps {
     currency: string;
     type: string;
     location?: string;
+    availableDates?: string[];
   };
 }
 
 export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [startDate, setStartDate] = useState(service.availableDates?.[0] || "");
+
+  useEffect(() => {
+    setStartDate(service.availableDates?.[0] || "");
+  }, [service.id, service.availableDates]);
 
   const getServiceIcon = () => {
     switch (service.type) {
@@ -42,6 +50,7 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
       location: service.location || "",
       serviceId: service.id,
     });
+    if (service.availableDates?.length && startDate) params.set("startDate", startDate);
 
     // Rediriger vers le processus de réservation unifié
     navigate(`/booking/${service.type}?${params.toString()}`);
@@ -57,7 +66,7 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
             {t('booking.dialog.generic.title')} {service.name}
           </DialogTitle>
           <DialogDescription>
-            Préparez-vous à réserver ce service en quelques étapes simples
+            {t('booking.dialog.generic.prepareDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -76,6 +85,14 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
                     {service.location}
                   </span>
                 </div>
+              )}
+              {!!service.availableDates?.length && (
+                <label className="block space-y-2">
+                  <span className="text-sm font-medium">Date de départ disponible</span>
+                  <select className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={startDate} onChange={(event) => setStartDate(event.target.value)} required>
+                    {service.availableDates.map((date) => <option key={date} value={date}>{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</option>)}
+                  </select>
+                </label>
               )}
               <div className="flex items-center justify-between pt-2 border-t">
                 <span className="text-sm text-muted-foreground">Prix de base</span>
@@ -122,7 +139,7 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
               onClick={handleStartBooking}
               className="flex-1 gradient-primary"
             >
-              Commencer la réservation
+              {t('booking.dialog.generic.startBooking')}
             </Button>
           </div>
         </div>

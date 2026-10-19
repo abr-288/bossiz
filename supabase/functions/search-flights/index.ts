@@ -69,6 +69,9 @@ serve(async (req) => {
     const amadeusSecret = Deno.env.get('AMADEUS_API_SECRET');
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
     const travelpayoutsToken = Deno.env.get('TRAVELPAYOUTS_TOKEN');
+    const kayakRapidApiKey = Deno.env.get('KAYAK_RAPIDAPI_KEY') || rapidApiKey;
+    const kayakRapidApiHost = Deno.env.get('KAYAK_RAPIDAPI_HOST') || 'kayak-api.p.rapidapi.com';
+
     
     const results: any[] = [];
     
@@ -95,9 +98,20 @@ serve(async (req) => {
       apiPromises.push(searchTravelpayouts(originCode, destinationCode, departureDate, returnDate, adults, finalChildren, finalTravelClass, travelpayoutsToken));
     }
 
+    // Kayak API via RapidAPI
+    if (kayakRapidApiKey) {
+      apiPromises.push(searchKayak(originCode, destinationCode, departureDate, returnDate, adults, finalChildren, finalTravelClass, kayakRapidApiKey, kayakRapidApiHost));
+    }
+
+
     if (apiPromises.length === 0) {
-      console.log('No API credentials configured, returning mock data');
-      return getMockFlights(originCode, destinationCode, departureDate, returnDate, adults, finalTravelClass);
+      // No fictitious fallback: without a real provider credential there
+      // is no real flight data to show.
+      console.log('No API credentials configured, returning no results (no fictitious fallback)');
+      return new Response(
+        JSON.stringify({ success: true, data: [] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Wait for all API calls to complete
@@ -113,12 +127,6 @@ serve(async (req) => {
         console.error(`API ${index + 1} failed`);
       }
     });
-
-    // If no results, return mock data
-    if (results.length === 0) {
-      console.log('No results from API, returning mock data');
-      return getMockFlights(originCode, destinationCode, departureDate, returnDate, adults, finalTravelClass);
-    }
 
     return new Response(
       JSON.stringify({
@@ -145,74 +153,10 @@ serve(async (req) => {
   }
 });
 
-function getMockFlights(origin: string, destination: string, departureDate: string, returnDate: string | undefined, adults: number, travelClass: string) {
-  // Multiple airlines for variety - prices in EUR
-  const airlines = [
-    { code: 'AF', name: 'Air France', basePrice: 280 },
-    { code: 'ET', name: 'Ethiopian Airlines', basePrice: 250 },
-    { code: 'TK', name: 'Turkish Airlines', basePrice: 265 },
-    { code: 'EK', name: 'Emirates', basePrice: 375 },
-    { code: 'KQ', name: 'Kenya Airways', basePrice: 235 },
-    { code: 'AT', name: 'Royal Air Maroc', basePrice: 220 },
-    { code: 'SN', name: 'Brussels Airlines', basePrice: 295 },
-    { code: 'MS', name: 'EgyptAir', basePrice: 245 },
-  ];
-  
-  const mockFlights = airlines.map((airline, index) => {
-    const departureHour = 6 + (index * 2); // Stagger departures
-    const flightDuration = 4 + Math.floor(Math.random() * 3); // 4-6 hours
-    const arrivalHour = departureHour + flightDuration;
-    const priceVariation = Math.floor(Math.random() * 30) - 15; // +/- 15 EUR
-    
-    return {
-      id: `MOCK-${origin}-${destination}-${index}`,
-      itineraries: [{
-        segments: [{
-          departure: {
-            iataCode: origin,
-            at: `${departureDate}T${String(departureHour).padStart(2, '0')}:${index % 2 === 0 ? '00' : '30'}:00`,
-          },
-          arrival: {
-            iataCode: destination,
-            at: `${departureDate}T${String(arrivalHour % 24).padStart(2, '0')}:${index % 2 === 0 ? '30' : '00'}:00`,
-          },
-          carrierCode: airline.code,
-          carrierName: airline.name,
-          number: String(1000 + index * 111),
-          duration: `PT${flightDuration}H${index % 2 === 0 ? '30' : '00'}M`,
-        }],
-        duration: `PT${flightDuration}H${index % 2 === 0 ? '30' : '00'}M`,
-      }],
-      price: {
-        grandTotal: String(airline.basePrice + priceVariation),
-        currency: 'EUR',
-      },
-      validatingAirlineCodes: [airline.code],
-      carrierName: airline.name,
-      travelerPricings: [{
-        fareDetailsBySegment: [{
-          cabin: travelClass || 'ECONOMY',
-        }],
-      }],
-      baggage: {
-        cabin: { pieces: 1, weightKg: 8, included: true },
-        checked: { pieces: 1, weightKg: 23, included: airline.code !== 'FR' && airline.code !== 'U2' },
-        personalItem: true
-      },
-      source: 'mock'
-    };
-  });
-
-  return new Response(
-    JSON.stringify({
-      success: true,
-      data: mockFlights,
-    }),
-    {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    }
-  );
-}
+// getMockFlights was removed - it fabricated a full page of "flights" for
+// nonexistent airline schedules whenever no provider credential was
+// configured or every real API call failed. No fictitious fallback now:
+// callers get an honestly empty result instead.
 
 // Amadeus API search function
 async function searchAmadeus(
@@ -370,21 +314,21 @@ async function searchFlightFare(
                            lastSegment.to || 
                            destination;
         
-        const departureTime = firstSegment.departure?.at || 
-                             firstSegment.departureTime || 
-                             `${departureDate}T00:00:00`;
-        const arrivalTime = lastSegment.arrival?.at || 
-                           lastSegment.arrivalTime || 
-                           `${departureDate}T23:59:00`;
-        
-        const carrierCode = firstSegment.carrierCode || 
-                           firstSegment.airline?.code || 
-                           firstSegment.airline || 
+        const departureTime = firstSegment.departure?.at ||
+                             firstSegment.departureTime ||
+                             '';
+        const arrivalTime = lastSegment.arrival?.at ||
+                           lastSegment.arrivalTime ||
+                           '';
+
+        const carrierCode = firstSegment.carrierCode ||
+                           firstSegment.airline?.code ||
+                           firstSegment.airline ||
                            flight.validatingAirlineCodes?.[0] ||
                            'XX';
-        const flightNumber = firstSegment.number || 
-                            firstSegment.flightNumber || 
-                            '0000';
+        const flightNumber = firstSegment.number ||
+                            firstSegment.flightNumber ||
+                            '';
         
         // Calculate duration
         const duration = firstSegment.duration || flight.duration || 'PT0H';
@@ -557,14 +501,14 @@ async function searchKiwi(
           destination;
         
         // Get times
-        const departureTime = firstSegment.source?.localTime || 
-          firstSegment.departure || 
-          firstSegment.local_departure || 
-          `${departureDate}T00:00:00`;
-        const arrivalTime = lastSegment.destination?.localTime || 
-          lastSegment.arrival || 
-          lastSegment.local_arrival || 
-          `${departureDate}T23:59:00`;
+        const departureTime = firstSegment.source?.localTime ||
+          firstSegment.departure ||
+          firstSegment.local_departure ||
+          '';
+        const arrivalTime = lastSegment.destination?.localTime ||
+          lastSegment.arrival ||
+          lastSegment.local_arrival ||
+          '';
         
         // Get carrier info - try multiple paths for carrier code
         const carrierCode = firstSegment.carrier?.code || 
@@ -578,10 +522,10 @@ async function searchKiwi(
           firstSegment.marketingCarrier?.name ||
           flight.carriers?.[0]?.name || 
           flight.airlines?.[0]?.name || '';
-        const flightNumber = firstSegment.flightNumber?.toString() || 
-          firstSegment.flight_no?.toString() || 
+        const flightNumber = firstSegment.flightNumber?.toString() ||
+          firstSegment.flight_no?.toString() ||
           firstSegment.number?.toString() ||
-          '0000';
+          '';
         
         // Log carrier extraction for debugging
         console.log(`Kiwi flight ${index}: carrier=${carrierCode}, segment keys:`, Object.keys(firstSegment));
@@ -805,8 +749,8 @@ async function searchSkyScrapper(
         // Get departure/arrival info
         const departureCode = firstLeg.origin?.id || firstSegment.origin?.flightPlaceId || origin;
         const arrivalCode = firstLeg.destination?.id || firstSegment.destination?.flightPlaceId || destination;
-        const departureTime = firstLeg.departure || firstSegment.departure || `${departureDate}T00:00:00`;
-        const arrivalTime = firstLeg.arrival || firstSegment.arrival || `${departureDate}T23:59:00`;
+        const departureTime = firstLeg.departure || firstSegment.departure || '';
+        const arrivalTime = firstLeg.arrival || firstSegment.arrival || '';
         
         // Get carrier info - try multiple paths
         const carriers = firstLeg.carriers?.marketing || firstLeg.carriers || [];
@@ -818,7 +762,7 @@ async function searchSkyScrapper(
           firstSegment.operatingCarrier?.alternateId ||
           'XX';
         const carrierName = carriers[0]?.name || firstSegment.marketingCarrier?.name || '';
-        const flightNumber = firstSegment.flightNumber || firstSegment.number || '0000';
+        const flightNumber = firstSegment.flightNumber || firstSegment.number || '';
         
         // Log carrier extraction for debugging
         console.log(`SkyScrapper flight ${index}: carrier=${carrierCode}, name=${carrierName}`);
@@ -1007,17 +951,17 @@ async function searchTravelpayouts(
         const carrierCode = flight.airline || 'XX';
         const carrierName = airlineNames[carrierCode] || carrierCode;
         
-        // Parse departure time
-        const departureTime = flight.departure_at || `${departureDate}T08:00:00`;
-        
-        // Calculate arrival time from duration
-        const durationMinutes = flight.duration_to || flight.duration || 120;
-        const depDate = new Date(departureTime);
-        const arrDate = new Date(depDate.getTime() + durationMinutes * 60 * 1000);
-        
+        // Parse departure time - leave blank if the API didn't provide one
+        // rather than fabricating a plausible-looking time.
+        const departureTime = flight.departure_at || '';
+        const durationMinutes = flight.duration_to || flight.duration || 0;
+        const arrivalTime = departureTime && durationMinutes
+          ? new Date(new Date(departureTime).getTime() + durationMinutes * 60 * 1000).toISOString()
+          : '';
+
         const hours = Math.floor(durationMinutes / 60);
         const minutes = durationMinutes % 60;
-        
+
         return {
           id: `TP-${origin}-${destination}-${index}`,
           itineraries: [{
@@ -1028,14 +972,14 @@ async function searchTravelpayouts(
               },
               arrival: {
                 iataCode: flight.destination_airport || flight.destination || destination,
-                at: arrDate.toISOString(),
+                at: arrivalTime,
               },
               carrierCode: carrierCode,
               carrierName: carrierName,
-              number: flight.flight_number || String(1000 + index),
-              duration: `PT${hours}H${minutes}M`,
+              number: flight.flight_number || '',
+              duration: durationMinutes ? `PT${hours}H${minutes}M` : '',
             }],
-            duration: `PT${hours}H${minutes}M`,
+            duration: durationMinutes ? `PT${hours}H${minutes}M` : '',
           }],
           price: {
             grandTotal: priceEur.toString(),
@@ -1065,3 +1009,127 @@ async function searchTravelpayouts(
     return [];
   }
 }
+
+// Kayak API via RapidAPI implementation
+async function searchKayak(
+  origin: string,
+  destination: string,
+  departureDate: string,
+  returnDate: string | undefined,
+  adults: number,
+  children: number,
+  travelClass: string,
+  rapidApiKey: string,
+  rapidApiHost: string
+): Promise<any[]> {
+  try {
+    console.log('Searching flights with Kayak API via RapidAPI (POST)...');
+    
+    const travelers = [];
+    for (let i = 0; i < adults; i++) travelers.push("ADT");
+    for (let i = 0; i < children; i++) travelers.push("CHD");
+
+    const cabinMap: Record<string, string> = {
+      'ECONOMY': 'e',
+      'PREMIUM_ECONOMY': 'p',
+      'BUSINESS': 'b',
+      'FIRST': 'f'
+    };
+
+    const payload = {
+      origin: origin,
+      destination: destination,
+      departure_date: departureDate,
+      return_date: returnDate,
+      searchMetaData: {
+        pageNumber: 1,
+        priceMode: "per-person"
+      },
+      userSearchParams: {
+        sortMode: "price_a",
+        passengers: travelers
+      },
+      filterParams: {
+        fs: `cabin=${cabinMap[travelClass] || 'e'}`
+      }
+    };
+    
+    const response = await fetch(
+      `https://${rapidApiHost}/search-flights`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RapidAPI-Key': rapidApiKey,
+          'X-RapidAPI-Host': rapidApiHost
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Kayak Flights API error:', response.status, errorText.substring(0, 300));
+      return [];
+    }
+    
+    const data = await response.json();
+    // The specific Kayak API results might be in data.itineraries or data.data
+    const flightsArray = data.data || data.results || data.itineraries || [];
+    
+    if (Array.isArray(flightsArray) && flightsArray.length > 0) {
+      console.log(`Kayak found ${flightsArray.length} flights`);
+      
+      return flightsArray.slice(0, 15).map((flight: any, index: number) => {
+        // Handle varying response structures
+        const price = flight.price?.total || flight.price?.raw || flight.price || 0;
+        const legs = flight.legs || flight.itineraries?.[0]?.segments || [flight];
+        const firstLeg = legs[0] || {};
+        const lastLeg = legs[legs.length - 1] || firstLeg;
+        
+        const carrierCode = firstLeg.airline?.code || firstLeg.carrierCode || 'XX';
+        const carrierName = firstLeg.airline?.name || firstLeg.carrierName || carrierCode;
+        
+        return {
+          id: `KAYAK-${origin}-${destination}-${index}`,
+          itineraries: [{
+            segments: [{
+              departure: {
+                iataCode: firstLeg.origin || origin,
+                at: firstLeg.departureTime || '',
+              },
+              arrival: {
+                iataCode: lastLeg.destination || destination,
+                at: lastLeg.arrivalTime || '',
+              },
+              carrierCode: carrierCode,
+              carrierName: carrierName,
+              number: firstLeg.flightNumber || '',
+              duration: firstLeg.duration || 'PT0H',
+            }],
+            duration: flight.duration || 'PT0H',
+          }],
+          price: {
+            grandTotal: price.toString(),
+            currency: 'EUR',
+          },
+          validatingAirlineCodes: [carrierCode],
+          carrierName: carrierName,
+          travelerPricings: [{
+            fareDetailsBySegment: [{
+              cabin: travelClass || 'ECONOMY',
+            }],
+          }],
+          source: 'kayak',
+          deepLink: flight.deepLink || flight.url
+        };
+      });
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Kayak Flights API exception:', error instanceof Error ? error.message : String(error));
+    return [];
+  }
+}
+

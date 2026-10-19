@@ -1,90 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { refundBookingPayment } from "../_shared/cinetpayRefund.ts";
+import { scheduleAgencyPayout } from "../_shared/agencyPayouts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface PNRRequest {
-  booking_id: string;
-}
-
-// Get Amadeus access token
-async function getAmadeusToken(): Promise<string> {
-  const apiKey = Deno.env.get('AMADEUS_API_KEY');
-  const apiSecret = Deno.env.get('AMADEUS_API_SECRET');
-  
-  if (!apiKey || !apiSecret) {
-    throw new Error('Amadeus credentials not configured');
-  }
-
-  const response = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: apiKey,
-      client_secret: apiSecret,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to get Amadeus token');
-  }
-
-  const data = await response.json();
-  return data.access_token;
-}
-
-// Create PNR via Amadeus API
-async function createAmadeusPNR(booking: any, token: string): Promise<string> {
-  // Security: Only log booking ID (truncated for privacy)
-  console.log('Creating PNR for booking');
-  
-  // Build traveler information from passengers
-  const travelers = booking.passengers?.map((passenger: any, index: number) => ({
-    id: `${index + 1}`,
-    dateOfBirth: passenger.date_of_birth,
-    name: {
-      firstName: passenger.first_name,
-      lastName: passenger.last_name,
-    },
-    gender: 'MALE', // Default, should be added to passenger data
-    contact: {
-      emailAddress: booking.customer_email,
-      phones: [{
-        deviceType: 'MOBILE',
-        countryCallingCode: '225',
-        number: booking.customer_phone,
-      }],
-    },
-    documents: passenger.document_number ? [{
-      documentType: passenger.document_type || 'PASSPORT',
-      number: passenger.document_number,
-      nationality: passenger.nationality || 'CI',
-      issuanceDate: new Date().toISOString().split('T')[0],
-      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    }] : undefined,
-  })) || [];
-
-  // For flight bookings, we'd use the real Amadeus Flight Create Orders API
-  // For other services, we generate a reference PNR format
-  if (booking.services.type === 'flight') {
-    // This would be a real Amadeus Flight Create Orders API call
-    // For now, we generate a valid PNR format
-    const pnr = `BR${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    console.log('Flight PNR generated');
-    return pnr;
-  } else {
-    // For non-flight services (hotels, tours, etc.), generate a booking reference
-    const pnr = `${booking.services.type.substring(0, 2).toUpperCase()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    console.log('Service PNR generated');
-    return pnr;
-  }
-}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -92,173 +14,315 @@ serve(async (req) => {
   }
 
   try {
-    console.log('=== CREATE PNR START ===');
-    
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
-    const requestData: PNRRequest = await req.json();
-    
-    // Security: Don't log full booking ID
-    console.log('Processing PNR request');
-
-    if (!requestData.booking_id) {
-      throw new Error('Missing booking_id');
+    if (!supabaseUrl || !supabaseServiceKey || !supabaseAnonKey) {
+      console.error('Supabase configuration missing');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Server configuration error' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
     }
 
-    // Get booking details with passengers
+    // ================================================================
+    // AUTH: this endpoint can trigger a real ticket purchase/refund, so it
+    // is never left open. Two legitimate callers:
+    // - payment-callback, server-to-server, presenting the service role
+    //   key itself as the bearer token.
+    // - an admin, manually re-triggering ticketing from the admin UI.
+    // ================================================================
+    const authHeader = req.headers.get('Authorization') || '';
+    const isInternalCall = authHeader === `Bearer ${supabaseServiceKey}`;
+
+    if (!isInternalCall) {
+      const callerSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      const { data: { user }, error: userError } = await callerSupabase.auth.getUser();
+
+      if (userError || !user) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Unauthorized' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
+      }
+
+      const { data: isAdmin } = await callerSupabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Forbidden' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        );
+      }
+    }
+
+    const { booking_id } = await req.json();
+
+    const amadeusKey = Deno.env.get('AMADEUS_API_KEY');
+    const amadeusSecret = Deno.env.get('AMADEUS_API_SECRET');
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch booking details, joined to services to know what we're actually
+    // ticketing - a hotel/car/stay booking has nothing to do here.
     const { data: booking, error: bookingError } = await supabase
       .from('bookings')
-      .select(`
-        *,
-        services (*),
-        passengers (*)
-      `)
-      .eq('id', requestData.booking_id)
+      .select('*, services(type)')
+      .eq('id', booking_id)
       .single();
 
     if (bookingError || !booking) {
-      // Security: Don't log full error details
-      console.error('Booking lookup failed');
-      throw new Error('Booking not found');
+      console.error('Booking not found:', bookingError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Booking not found' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
+      );
     }
 
-    console.log('Booking status:', booking.status);
-    console.log('Payment status:', booking.payment_status);
+    if (booking.services?.type !== 'flight') {
+      // Nothing to ticket with a GDS for non-flight services - payment-callback
+      // already confirms these directly.
+      return new Response(
+        JSON.stringify({ success: true, skipped: true, reason: 'Not a flight booking' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Only create PNR if payment is successful
-    if (booking.payment_status !== 'paid' && booking.payment_status !== 'completed') {
-      console.log('Payment not completed yet, skipping PNR creation');
+    // Check if payment is completed
+    if (booking.payment_status !== 'paid') {
+      console.error('Payment not completed for booking:', booking_id);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Payment not completed' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Idempotency: a real PNR was already issued for this booking (e.g. a
+    // retried call) - don't re-issue or re-charge the supplier.
+    if (booking.external_ref && booking.status === 'confirmed') {
+      console.log('PNR already issued for booking, skipping:', booking_id, booking.external_ref);
+      return new Response(
+        JSON.stringify({ success: true, pnr: booking.external_ref, booking_id, status: 'confirmed', already_issued: true }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Fetch passengers
+    const { data: passengers } = await supabase
+      .from('passengers')
+      .select('*')
+      .eq('booking_id', booking_id);
+
+    // ================================================================
+    // CRITICAL: a real ticket requires a real, confirmed order with the
+    // GDS/airline. If Amadeus isn't configured, or the order call fails,
+    // this booking must NOT be silently confirmed with a fabricated PNR -
+    // that would be charging a customer for a flight that doesn't exist.
+    // Instead, the payment is automatically refunded and the booking is
+    // cancelled, with the failure clearly logged for manual follow-up.
+    // ================================================================
+    let pnr: string | null = null;
+
+    if (amadeusKey && amadeusSecret) {
+      console.log('Creating PNR with Amadeus API for booking:', booking_id);
+      pnr = await createAmadeusPNR(booking, passengers || [], amadeusKey, amadeusSecret);
+    } else {
+      console.error('❌ AMADEUS_API_KEY not configured - cannot issue a real ticket for booking:', booking_id);
+    }
+
+    if (!pnr) {
+      console.error('❌ Supplier ticketing failed for booking:', booking_id, '- refunding automatically');
+      const refundResult = await refundBookingPayment(
+        supabase,
+        booking_id,
+        'Émission du billet impossible auprès du fournisseur (Amadeus non configuré ou échec de la commande)'
+      );
+
+      if (!refundResult.success) {
+        console.error('❌ Automatic refund ALSO failed for booking:', booking_id, refundResult.error);
+        // Leave the booking in 'pending'/'paid' rather than silently
+        // confirming it - this state needs manual admin intervention, but
+        // at least it's honestly "unresolved" rather than falsely "confirmed".
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: 'Émission du billet impossible et le remboursement automatique a également échoué. Intervention manuelle requise.',
+            booking_id,
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        );
+      }
+
+      // La part partenaire est annulée par refundBookingPayment.
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Payment not completed',
+          error: 'Émission du billet impossible auprès du fournisseur. Le client a été automatiquement remboursé.',
+          booking_id,
+          refunded: refundResult.refunded,
         }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
-    // Check if PNR already exists
-    if (booking.external_ref) {
-      console.log('PNR already exists');
+    // Update booking with the real PNR
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({
+        external_ref: pnr,
+        status: 'confirmed',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', booking_id);
+
+    if (updateError) {
+      console.error('Error updating booking:', updateError);
       return new Response(
-        JSON.stringify({
-          success: true,
-          pnr: booking.external_ref,
-          booking_id: booking.id,
-          status: booking.status,
-          message: 'PNR already exists',
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
+        JSON.stringify({ success: false, error: 'Failed to update booking' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
 
-    try {
-      // Get Amadeus token
-      const token = await getAmadeusToken();
-      console.log('✓ Amadeus token obtained');
+    await scheduleAgencyPayout({ supabase, supabaseUrl, supabaseServiceKey, bookingId: booking_id });
 
-      // Create PNR via Amadeus
-      const pnr = await createAmadeusPNR(booking, token);
-      console.log('✓ PNR created successfully');
+    console.log('PNR created successfully:', pnr);
 
-      // Update booking with PNR and confirmed status
-      const { error: updateError } = await supabase
-        .from('bookings')
-        .update({
-          external_ref: pnr,
-          status: 'confirmed',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', booking.id);
-
-      if (updateError) {
-        // Security: Don't log full error details
-        console.error('Failed to update booking with PNR');
-        throw new Error('Failed to update booking with PNR');
-      }
-
-      console.log('✅ Booking updated with PNR');
-
-      // Send confirmation email with PNR
+    // Only now - with a real, confirmed PNR - send the flight-specific
+    // confirmation email (includes the real PNR) and generate the invoice
+    // (deferred from payment-callback). Both run after the response is
+    // built but must still be seen through to completion: a bare
+    // fire-and-forget fetch()/invoke() only rejects on a network error, so
+    // a 4xx/5xx from the downstream function used to pass completely
+    // unnoticed, and Deno's edge runtime does not guarantee an unawaited
+    // promise survives past the point the response is returned. Wrapping
+    // in EdgeRuntime.waitUntil() (falling back to a plain await if that API
+    // isn't available) fixes both: real failures are logged, and the work
+    // is guaranteed to run without delaying the booking response.
+    const notifyBackground = (async () => {
       try {
-        await supabase.functions.invoke('send-pnr-confirmation', {
-          body: { 
-            booking_id: booking.id,
-            pnr: pnr,
-          },
+        const res = await fetch(`${supabaseUrl}/functions/v1/send-flight-confirmation`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${supabaseServiceKey}` },
+          body: JSON.stringify({ bookingId: booking_id }),
         });
-        console.log('✓ Confirmation email sent');
-      } catch (emailError) {
-        // Security: Don't log full error details
-        console.error('Failed to send confirmation email');
-        // Don't fail the PNR creation if email fails
+        if (!res.ok) {
+          const body = await res.text().catch(() => '');
+          console.error(`⚠️ Email de confirmation vol non envoyé (HTTP ${res.status}) pour ${booking_id}:`, body);
+        }
+      } catch (e) {
+        console.error(`⚠️ Email de confirmation vol non envoyé pour ${booking_id}:`, e instanceof Error ? e.message : e);
       }
 
-      console.log('=== CREATE PNR SUCCESS ===');
+      const { error: invoiceError } = await supabase.functions
+        .invoke('generate-invoice', { body: { bookingId: booking_id } })
+        .catch((e) => ({ error: e }));
+      if (invoiceError) {
+        console.error(`⚠️ Facture non générée pour ${booking_id}:`, invoiceError.message || invoiceError);
+      }
+    })();
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          pnr: pnr,
-          booking_id: booking.id,
-          status: 'confirmed',
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-
-    } catch (apiError: any) {
-      // Security: Only log error type, not full error details
-      console.error('❌ PNR creation failed:', apiError instanceof Error ? apiError.constructor.name : 'Unknown');
-      
-      // Update booking status to failed
-      await supabase
-        .from('bookings')
-        .update({
-          status: 'failed',
-          notes: booking.notes 
-            ? `${booking.notes}\n\nPNR creation failed`
-            : `PNR creation failed`,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', booking.id);
-
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'PNR creation failed',
-          booking_id: booking.id,
-          status: 'failed',
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+    // deno-lint-ignore no-explicit-any
+    const edgeRuntime = (globalThis as any).EdgeRuntime;
+    if (edgeRuntime && typeof edgeRuntime.waitUntil === 'function') {
+      edgeRuntime.waitUntil(notifyBackground);
+    } else {
+      await notifyBackground;
     }
-  } catch (error) {
-    // Security: Only log error type, not full error details
-    console.error('❌ ERROR in create-pnr:', error instanceof Error ? error.constructor.name : 'Unknown');
+
     return new Response(
       JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        success: true,
+        pnr,
+        booking_id,
+        status: 'confirmed'
       }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error('Error in create-pnr:', error);
+    return new Response(
+      JSON.stringify({ success: false, error: 'Internal server error' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
 });
+
+// Returns a real Amadeus order id on success, or null on ANY failure - the
+// caller must never fall back to a fabricated PNR.
+async function createAmadeusPNR(booking: any, passengers: any[], amadeusKey: string, amadeusSecret: string): Promise<string | null> {
+  try {
+    // Get Amadeus access token
+    const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `grant_type=client_credentials&client_id=${amadeusKey}&client_secret=${amadeusSecret}`,
+    });
+
+    if (!tokenResponse.ok) {
+      console.error('Failed to authenticate with Amadeus:', tokenResponse.status);
+      return null;
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    // Create PNR using Amadeus Order API
+    // This is a simplified example - actual implementation would require more detailed flight booking data
+    const orderResponse = await fetch('https://test.api.amadeus.com/v1/booking/flight-orders', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'flight-order',
+          flightOffers: booking.booking_details?.flightOffers || [],
+          travelers: passengers.map(p => ({
+            id: p.id,
+            dateOfBirth: p.date_of_birth,
+            name: {
+              firstName: p.first_name,
+              lastName: p.last_name
+            },
+            gender: 'MALE', // Would need to be in passenger data
+            contact: {
+              emailAddress: booking.customer_email,
+              phones: [{
+                deviceType: 'MOBILE',
+                countryCallingCode: '225',
+                number: booking.customer_phone.replace(/\D/g, '')
+              }]
+            },
+            documents: [{
+              documentType: p.document_type?.toUpperCase(),
+              birthPlace: 'Unknown', // Would need to be in passenger data
+              issuanceLocation: 'Unknown',
+              issuanceDate: '2020-01-01',
+              number: p.document_number,
+              expiryDate: '2030-01-01',
+              issuingCountryCode: p.nationality?.substring(0, 2).toUpperCase() || 'US',
+              validityPeriod: '2020-01-01/2030-01-01'
+            }]
+          }))
+        }
+      }),
+    });
+
+    if (orderResponse.ok) {
+      const orderData = await orderResponse.json();
+      return orderData.data?.id || null;
+    } else {
+      const errorText = await orderResponse.text();
+      console.error('Amadeus order creation failed:', orderResponse.status, errorText.substring(0, 300));
+      return null;
+    }
+  } catch (error) {
+    console.error('Amadeus API error:', error);
+    return null;
+  }
+}

@@ -1,7 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
-import { Shield, Lock, Eye, Database, UserCheck, Globe, Bell, Trash2, Mail } from "lucide-react";
+import { Lock, Eye, Database, UserCheck, Globe, Bell, Trash2, Mail, Handshake } from "lucide-react";
+import { currentLocaleTag } from "@/lib/dateLocale";
+import { PageHero } from "@/components/PageHero";
+import heroImage from "@/assets/hero-slide-2.webp";
 
 const PrivacyPolicy = () => {
   const { config } = useSiteConfigContext();
@@ -19,6 +22,7 @@ const PrivacyPolicy = () => {
         "• **Données de réservation** : détails des vols, hôtels, locations de voiture, activités et séjours réservés.",
         "• **Données de navigation** : adresse IP, type de navigateur, pages visitées, durée de visite, cookies techniques.",
         "• **Données de communication** : messages envoyés au support, avis et commentaires.",
+        "• **Données de candidature partenaire** : nom de l'établissement ou de l'agence, description de l'activité, e-mail et téléphone de contact, logo transmis, type de partenariat et, pour la location de voitures, le forfait souhaité.",
       ],
     },
     {
@@ -33,6 +37,7 @@ const PrivacyPolicy = () => {
         "• **Amélioration des services** : analyse statistique anonymisée pour améliorer l'expérience utilisateur.",
         "• **Obligations légales** : conformité aux réglementations aériennes, fiscales et douanières.",
         "• **Sécurité** : prévention de la fraude, protection contre les accès non autorisés.",
+        "• **Gestion des partenariats** : étude des candidatures partenaires et, en cas d'acceptation, création et administration de l'espace agence correspondant.",
       ],
     },
     {
@@ -55,7 +60,7 @@ const PrivacyPolicy = () => {
       content: [
         "Vos données peuvent être partagées avec :",
         "• **Compagnies aériennes et hôtels** : pour l'exécution de vos réservations (transmission des informations passagers obligatoires).",
-        "• **Prestataires de paiement** : pour le traitement sécurisé des transactions (CinetPay, Lygos).",
+        "• **Prestataires de paiement** : pour le traitement sécurisé des transactions Jèko.",
         "• **Sous-agences partenaires** : uniquement les données nécessaires à l'exécution du service réservé.",
         "• **Autorités compétentes** : en cas d'obligation légale (réglementations aériennes, fiscales, judiciaires).",
         "",
@@ -65,10 +70,22 @@ const PrivacyPolicy = () => {
       ],
     },
     {
-      icon: UserCheck,
-      title: "5. Vos droits",
+      icon: Handshake,
+      title: "5. Données des candidatures partenaires",
       content: [
-        "Conformément aux lois applicables en matière de protection des données, vous disposez des droits suivants :",
+        "Lorsque vous soumettez une candidature via la page « Devenir partenaire », des règles spécifiques s'appliquent :",
+        "• **Accès restreint pendant l'étude** : tant que votre candidature est en attente, seules les équipes administratives y ont accès pour l'étudier.",
+        "• **Logo transmis** : le fichier logo que vous téléversez est stocké sur un espace de stockage public et devient accessible via son lien direct dès son envoi, y compris avant toute décision sur votre candidature. Ne transmettez pas de fichier contenant des informations que vous souhaitez garder confidentielles.",
+        `• **Rapprochement automatique de compte** : si votre candidature est retenue, l'adresse e-mail indiquée est utilisée pour la rattacher automatiquement à un compte ${siteName} existant portant la même adresse, afin de vous donner accès à votre espace agence. Si aucun compte ne correspond, vous devrez en créer un avec cette même adresse.`,
+        "• **Publication après validation** : en cas d'acceptation, le nom, la description et le logo de votre établissement deviennent visibles publiquement sur la plateforme, dans le cadre normal du référencement de votre offre.",
+        "• **Candidatures rejetées ou sans suite** : les données associées sont conservées 12 mois à compter de la décision, puis supprimées, sauf obligation légale contraire.",
+      ],
+    },
+    {
+      icon: UserCheck,
+      title: "6. Vos droits",
+      content: [
+        "Conformément à la loi ivoirienne n°2013-450 relative à la protection des données à caractère personnel et, pour les personnes situées dans l'Union européenne, au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :",
         "• **Droit d'accès** : obtenir une copie de toutes les données personnelles que nous détenons sur vous.",
         "• **Droit de rectification** : corriger toute donnée inexacte ou incomplète.",
         "• **Droit de suppression** : demander l'effacement de vos données personnelles (sous réserve des obligations légales de conservation).",
@@ -81,19 +98,19 @@ const PrivacyPolicy = () => {
     },
     {
       icon: Bell,
-      title: "6. Cookies et technologies de suivi",
+      title: "7. Cookies et technologies de suivi",
       content: [
         "Nous utilisons des cookies et technologies similaires pour :",
-        "• **Cookies essentiels** : nécessaires au fonctionnement du site (authentification, panier de réservation, préférences de langue).",
-        "• **Cookies de performance** : collecte anonyme de données de navigation pour améliorer nos services.",
-        "• **Cookies de préférence** : mémorisation de vos préférences (langue, devise, mode sombre).",
+        "• **Cookies essentiels** : nécessaires au fonctionnement du site (authentification, panier de réservation, préférences de langue). Toujours actifs.",
+        "• **Cookies de performance** : collecte anonyme de données de navigation pour améliorer nos services. Soumis à votre consentement.",
+        "• **Cookies de préférence** : mémorisation de vos préférences (langue, devise, mode sombre). Soumis à votre consentement.",
         "",
-        "Vous pouvez gérer vos préférences de cookies via les paramètres de votre navigateur. La désactivation de certains cookies peut affecter le fonctionnement du site.",
+        "Lors de votre première visite, un bandeau vous permet d'accepter, refuser ou personnaliser ces catégories. Vous pouvez revoir votre choix à tout moment depuis notre **Politique des Cookies**, qui détaille chaque catégorie, sa durée de conservation et la procédure de retrait du consentement.",
       ],
     },
     {
       icon: Trash2,
-      title: "7. Conservation des données",
+      title: "8. Conservation des données",
       content: [
         "Nous conservons vos données personnelles pour les durées suivantes :",
         "• **Données de compte** : pendant toute la durée de votre inscription, puis 3 ans après la dernière activité.",
@@ -101,64 +118,56 @@ const PrivacyPolicy = () => {
         "• **Données de paiement** : selon les obligations légales du prestataire de paiement (maximum 13 mois après la transaction).",
         "• **Données de navigation** : 13 mois maximum.",
         "• **Communications support** : 3 ans après la dernière interaction.",
+        "• **Candidatures partenaires** : voir la section « Données des candidatures partenaires » ci-dessus.",
         "",
         "À l'expiration de ces délais, vos données sont supprimées ou anonymisées de manière irréversible.",
       ],
     },
     {
       icon: Mail,
-      title: "8. Contact et réclamations",
+      title: "9. Contact et réclamations",
       content: [
         "Pour toute question relative à la protection de vos données personnelles :",
         "",
         `**${siteName}**`,
-        "E-mail : privacy@yamousso.com",
+        "E-mail : privacy@bossiz.com",
         "Support : via la page Contact de notre site",
         "",
-        "Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de l'autorité de protection des données compétente de votre pays.",
+        "Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation :",
+        "• **En Côte d'Ivoire** : auprès de l'ARTCI (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire), autorité compétente en matière de protection des données personnelles.",
+        "• **Dans l'Union européenne** : auprès de l'autorité de protection des données de votre pays de résidence.",
         "",
-        `Dernière mise à jour : ${new Date().toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}`,
+        `Dernière mise à jour : ${new Date().toLocaleDateString(currentLocaleTag(), { year: "numeric", month: "long", day: "numeric" })}`,
       ],
     },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       <Navbar />
-      <main className="pt-32 pb-16">
+      <PageHero
+        image={heroImage}
+        title={<>Politique de Confidentialité</>}
+        subtitle={<>Chez {siteName}, la protection de vos données personnelles est une priorité absolue. 
+              Cette politique détaille comment nous collectons, utilisons et protégeons vos informations.</>}
+      />
+      <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Shield className="w-8 h-8 text-primary" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Politique de Confidentialité
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Chez {siteName}, la protection de vos données personnelles est une priorité absolue. 
-              Cette politique détaille comment nous collectons, utilisons et protégeons vos informations.
-            </p>
-          </div>
 
           {/* Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => {
-              const Icon = section.icon;
               return (
                 <section
                   key={index}
                   className="bg-card border border-border rounded-xl p-6 md:p-8"
                 >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-bold text-foreground pt-1.5">
+                  <div className="mb-4">
+                    <h2 className="text-xl font-bold text-foreground">
                       {section.title}
                     </h2>
                   </div>
-                  <div className="pl-14 space-y-2">
+                  <div className="space-y-2">
                     {section.content.map((line, i) => (
                       <p
                         key={i}

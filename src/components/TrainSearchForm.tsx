@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Train, AlertCircle } from "lucide-react";
+import { Train, AlertCircle, ArrowRightLeft } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import { trainSearchSchema, type TrainSearchInput } from "@/lib/validationSchema
 import { safeValidate } from "@/lib/formHelpers";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const TrainSearchForm = () => {
   const { t } = useTranslation();
@@ -66,6 +67,12 @@ export const TrainSearchForm = () => {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
 
+  const handleSwap = () => {
+    const temp = origin;
+    setOrigin(destination);
+    setDestination(temp);
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -96,8 +103,8 @@ export const TrainSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
@@ -136,14 +143,14 @@ export const TrainSearchForm = () => {
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Veuillez corriger les erreurs dans le formulaire
+              {t("ux.trainSearch.fixErrors")}
             </AlertDescription>
           </Alert>
         )}
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-start">
+            <div className="md:col-span-5 space-y-1">
               <UnifiedAutocomplete
                 label={t('search.from')}
                 value={origin}
@@ -163,7 +170,20 @@ export const TrainSearchForm = () => {
               )}
             </div>
 
-            <div className="space-y-1">
+            <div className="md:col-span-1 flex justify-center items-center pt-6">
+              <Button
+                aria-label="Inverser le départ et l'arrivée"
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSwap}
+                className="h-10 w-10 rounded-full border-2 hover:border-primary hover:bg-primary/5 transition-all"
+              >
+                <ArrowRightLeft className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="md:col-span-5 space-y-1">
               <UnifiedAutocomplete
                 label={t('search.to')}
                 value={destination}
@@ -285,8 +305,8 @@ export const TrainSearchForm = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="economy">Économique</SelectItem>
-                  <SelectItem value="first">Première</SelectItem>
+                  <SelectItem value="economy">{t("ux.trainSearch.economy")}</SelectItem>
+                  <SelectItem value="first">{t("ux.trainSearch.first")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.travelClass && touched.travelClass && (
@@ -301,7 +321,7 @@ export const TrainSearchForm = () => {
             className={cn("mt-6", hasErrors && "opacity-50 cursor-not-allowed")}
             disabled={hasErrors || loading}
           >
-            Rechercher des trains
+            {t("ux.trainSearch.search")}
           </UnifiedSubmitButton>
         </div>
       </UnifiedForm>

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { User, Users, Calendar, Globe, FileText } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -5,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { NationalitySelect } from "@/components/NationalitySelect";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,6 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 interface Passenger {
   firstName: string;
@@ -31,61 +35,64 @@ interface Passenger {
 }
 
 // Schema de validation des passagers avec dates de document
-const passengerSchema = z.object({
-  firstName: z.string()
-    .trim()
-    .min(2, "Le prénom doit contenir au moins 2 caractères")
-    .max(50, "Le prénom doit contenir moins de 50 caractères")
-    .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, "Le prénom ne peut contenir que des lettres"),
-  lastName: z.string()
-    .trim()
-    .min(2, "Le nom doit contenir au moins 2 caractères")
-    .max(50, "Le nom doit contenir moins de 50 caractères")
-    .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, "Le nom ne peut contenir que des lettres"),
-  dateOfBirth: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "La date doit être au format AAAA-MM-JJ")
-    .refine((date) => {
-      const birthDate = new Date(date);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      return age >= 0 && age <= 120;
-    }, "Date de naissance invalide"),
-  nationality: z.string()
-    .trim()
-    .min(2, "La nationalité est requise"),
-  documentType: z.enum(["passport", "id_card"], {
-    errorMap: () => ({ message: "Type de document invalide" }),
-  }),
-  documentNumber: z.string()
-    .trim()
-    .min(5, "Le numéro de document doit contenir au moins 5 caractères")
-    .max(30, "Le numéro de document doit contenir moins de 30 caractères")
-    .regex(/^[A-Z0-9\-]+$/i, "Le numéro ne peut contenir que des lettres, chiffres et tirets"),
-  documentIssueDate: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "La date doit être au format AAAA-MM-JJ")
-    .optional()
-    .or(z.literal("")),
-  documentExpiryDate: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "La date doit être au format AAAA-MM-JJ")
-    .refine((date) => {
-      if (!date) return true;
-      const expiryDate = new Date(date);
-      const today = new Date();
-      // Le document doit être valide au moins 6 mois après la date du voyage
-      const sixMonthsFromNow = new Date();
-      sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
-      return expiryDate > sixMonthsFromNow;
-    }, "Le document doit être valide au moins 6 mois après le voyage")
-    .optional()
-    .or(z.literal("")),
-});
+// Messages traduits : le schéma est construit avec la fonction t courante.
+const createPassengersFormSchema = (t: TFunction) => {
+  const passengerSchema = z.object({
+    firstName: z.string()
+      .trim()
+      .min(2, t("ux.passenger.errFirstNameMin"))
+      .max(50, t("ux.passenger.errFirstNameMax"))
+      .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, t("ux.passenger.errFirstNameChars")),
+    lastName: z.string()
+      .trim()
+      .min(2, t("ux.passenger.errLastNameMin"))
+      .max(50, t("ux.passenger.errLastNameMax"))
+      .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, t("ux.passenger.errLastNameChars")),
+    dateOfBirth: z.string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, t("ux.passenger.errDateFormat"))
+      .refine((date) => {
+        const birthDate = new Date(date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age >= 0 && age <= 120;
+      }, t("ux.passenger.errBirthDate")),
+    nationality: z.string()
+      .trim()
+      .min(2, t("ux.passenger.errNationality")),
+    documentType: z.enum(["passport", "id_card"], {
+      errorMap: () => ({ message: t("ux.passenger.errDocType") }),
+    }),
+    documentNumber: z.string()
+      .trim()
+      .min(5, t("ux.passenger.errDocMin"))
+      .max(30, t("ux.passenger.errDocMax"))
+      .regex(/^[A-Z0-9-]+$/i, t("ux.passenger.errDocChars")),
+    documentIssueDate: z.string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, t("ux.passenger.errDateFormat"))
+      .optional()
+      .or(z.literal("")),
+    documentExpiryDate: z.string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, t("ux.passenger.errDateFormat"))
+      .refine((date) => {
+        if (!date) return true;
+        const expiryDate = new Date(date);
+        const today = new Date();
+        // Le document doit être valide au moins 6 mois après la date du voyage
+        const sixMonthsFromNow = new Date();
+        sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+        return expiryDate > sixMonthsFromNow;
+      }, t("ux.passenger.errDocExpiry"))
+      .optional()
+      .or(z.literal("")),
+  });
 
-const passengersFormSchema = z.object({
-  passengers: z.array(passengerSchema).min(1, "Au moins un passager est requis"),
-  termsAccepted: z.boolean().refine((val) => val === true, {
-    message: "Vous devez accepter les conditions générales",
-  }),
-});
+  return z.object({
+    passengers: z.array(passengerSchema).min(1, t("ux.passenger.errPassengers")),
+    termsAccepted: z.boolean().refine((val) => val === true, {
+      message: t("ux.passenger.errTerms"),
+    }),
+  });
+};
 
 interface PassengerStepProps {
   passengers: Passenger[];
@@ -96,7 +103,7 @@ interface PassengerStepProps {
   serviceType?: string;
 }
 
-type PassengersFormValues = z.infer<typeof passengersFormSchema>;
+type PassengersFormValues = z.infer<ReturnType<typeof createPassengersFormSchema>>;
 
 export const PassengerStep = ({
   passengers,
@@ -106,6 +113,8 @@ export const PassengerStep = ({
   onNext,
   serviceType = "flight",
 }: PassengerStepProps) => {
+  const { t } = useTranslation();
+  const passengersFormSchema = useMemo(() => createPassengersFormSchema(t), [t]);
   const totalPassengers = adultsCount + childrenCount;
 
   // Initialize form with react-hook-form and zod validation
@@ -143,14 +152,14 @@ export const PassengerStep = ({
 
   const getParticipantLabel = () => {
     switch (serviceType) {
-      case "flight": return { title: "Informations des passagers", main: "Passager principal (Adulte)", other: "Passager" };
+      case "flight": return { title: t("ux.passenger.flightTitle"), main: t("ux.passenger.flightMain"), other: t("ux.passenger.flightOther") };
       case "hotel":
-      case "stay": return { title: "Informations des voyageurs", main: "Voyageur principal (Adulte)", other: "Voyageur" };
-      case "car": return { title: "Informations du conducteur", main: "Conducteur principal", other: "Conducteur additionnel" };
+      case "stay": return { title: t("ux.passenger.stayTitle"), main: t("ux.passenger.stayMain"), other: t("ux.passenger.stayOther") };
+      case "car": return { title: t("ux.passenger.carTitle"), main: t("ux.passenger.carMain"), other: t("ux.passenger.carOther") };
       case "tour":
       case "event":
-      case "destination": return { title: "Informations des participants", main: "Participant principal (Adulte)", other: "Participant" };
-      default: return { title: "Informations des participants", main: "Contact principal", other: "Participant" };
+      case "destination": return { title: t("ux.passenger.tourTitle"), main: t("ux.passenger.tourMain"), other: t("ux.passenger.otherLabel") };
+      default: return { title: t("ux.passenger.tourTitle"), main: t("ux.passenger.defaultMain"), other: t("ux.passenger.otherLabel") };
     }
   };
 
@@ -158,11 +167,11 @@ export const PassengerStep = ({
 
   const getNextButtonText = () => {
     switch (serviceType) {
-      case "flight": return "Continuer vers les bagages";
+      case "flight": return t("ux.passenger.continueBaggage");
       case "hotel":
-      case "stay": return "Continuer vers les options";
-      case "car": return "Continuer vers les assurances";
-      default: return "Continuer vers les extras";
+      case "stay": return t("ux.passenger.continueOptions");
+      case "car": return t("ux.passenger.continueInsurance");
+      default: return t("ux.passenger.continueExtras");
     }
   };
 
@@ -170,30 +179,45 @@ export const PassengerStep = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-6 md:space-y-7"
     >
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border border-primary/20">
-        <h2 className="text-2xl font-bold text-primary mb-2">{labels.title}</h2>
-        <p className="text-muted-foreground">
-          Veuillez renseigner les informations exactement comme indiqué sur les documents d'identité
-        </p>
+      <div className="flex flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm md:flex-row md:items-center md:justify-between md:p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <Users className="h-6 w-6" />
+          </div>
+          <div>
+            <Badge variant="secondary" className="mb-2 rounded-full px-3 text-[11px]">
+              {t("ux.passenger.stepBadge")}
+            </Badge>
+            <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl">{labels.title}</h2>
+            <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              {t("ux.passenger.stepIntro")}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 self-start rounded-full bg-muted/70 px-3 py-2 text-xs font-medium text-muted-foreground md:self-center">
+          <Users className="h-4 w-4 text-primary" />
+          {t("ux.passenger.count", { count: totalPassengers })}
+        </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-7">
           {/* Participant principal */}
-          <Card className="p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <User className="h-5 w-5 text-white" />
+          <Card className="overflow-hidden rounded-2xl border shadow-sm">
+            <div className="flex items-center gap-4 border-b bg-muted/20 px-5 py-4 md:px-7 md:py-5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                <User className="h-5 w-5" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">{labels.main}</h3>
-                <p className="text-sm text-muted-foreground">Contact de réservation</p>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-foreground">{labels.main}</h3>
+                <p className="mt-0.5 text-sm text-muted-foreground">{t("ux.passenger.bookingContact")}</p>
               </div>
+              <Badge variant="outline" className="shrink-0 rounded-full bg-background">{t("ux.passenger.main")}</Badge>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-6 p-5 md:p-8 lg:grid-cols-2">
               <FormField
                 control={form.control}
                 name="passengers.0.firstName"
@@ -201,13 +225,13 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <User className="w-4 h-4 text-primary" />
-                      Prénom *
+                      {t('passengerStep.firstNameLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Prénom"
-                        className="h-12 border-2"
+                        placeholder={t('passengerStep.firstNamePlaceholder')}
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -222,13 +246,13 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <User className="w-4 h-4 text-primary" />
-                      Nom *
+                      {t("ux.passenger.lastName")}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Nom"
-                        className="h-12 border-2"
+                        placeholder={t("ux.passenger.lastNamePlaceholder")}
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -243,13 +267,13 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-primary" />
-                      Date de naissance *
+                      {t("ux.passenger.birthDate")}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="date"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -262,7 +286,7 @@ export const PassengerStep = ({
                 name="passengers.0.nationality"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nationalité *</FormLabel>
+                    <FormLabel>{t("ux.passenger.nationality")}</FormLabel>
                     <FormControl>
                       <NationalitySelect
                         value={field.value}
@@ -279,15 +303,15 @@ export const PassengerStep = ({
                 name="passengers.0.documentType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type de document *</FormLabel>
+                    <FormLabel>{t("ux.passenger.docType")}</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="h-12 border-2">
+                        <SelectTrigger className="h-11 rounded-xl bg-background">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="passport">Passeport</SelectItem>
-                          <SelectItem value="id_card">Carte d'identité</SelectItem>
+                          <SelectItem value="passport">{t("ux.passenger.passport")}</SelectItem>
+                          <SelectItem value="id_card">{t("ux.passenger.idCard")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -303,13 +327,13 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Globe className="w-4 h-4 text-primary" />
-                      Numéro de document *
+                      {t('passengerStep.documentNumberLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Ex: 123456789"
-                        className="h-12 border-2"
+                        placeholder={t("ux.passenger.docPlaceholder")}
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -324,13 +348,13 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-primary" />
-                      Date d'émission
+                      {t('passengerStep.documentIssueDateLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="date"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -345,13 +369,13 @@ export const PassengerStep = ({
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-primary" />
-                      Date d'expiration *
+                      {t("ux.passenger.expiry")}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="date"
-                        className="h-12 border-2"
+                        className="h-11 rounded-xl bg-background"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -365,19 +389,23 @@ export const PassengerStep = ({
           {totalPassengers > 1 && (
             <div className="space-y-4">
               {Array.from({ length: totalPassengers - 1 }, (_, i) => i + 1).map((index) => (
-                <Card key={index} className="p-6 border border-border/50">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                      <Users className="h-5 w-5 text-primary" />
+                <Card key={index} className="overflow-hidden rounded-2xl border shadow-sm">
+                  <div className="flex items-center gap-4 border-b bg-muted/20 px-5 py-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-primary">
+                      <Users className="h-5 w-5" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {labels.other} {index + 1} ({index < adultsCount ? "Adulte" : "Enfant"})
-                      </h3>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-foreground">{labels.other} {index + 1}</h3>
+                      <p className="mt-0.5 text-sm text-muted-foreground">
+                        Participant {index < adultsCount ? "adulte" : "enfant"}
+                      </p>
                     </div>
+                    <Badge variant="outline" className="shrink-0 rounded-full bg-background">
+                      {index < adultsCount ? t("ux.passenger.adult") : t("ux.passenger.child")}
+                    </Badge>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-x-6 gap-y-6 p-5 md:p-7 lg:grid-cols-2">
                     <FormField
                       control={form.control}
                       name={`passengers.${index}.firstName`}
@@ -385,13 +413,13 @@ export const PassengerStep = ({
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
                             <User className="w-4 h-4 text-primary" />
-                            Prénom *
+                            {t('passengerStep.firstNameLabel')}
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Prénom"
-                              className="h-12 border-2"
+                              placeholder={t('passengerStep.firstNamePlaceholder')}
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -406,13 +434,13 @@ export const PassengerStep = ({
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
                             <User className="w-4 h-4 text-primary" />
-                            Nom *
+                            {t("ux.passenger.lastName")}
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Nom"
-                              className="h-12 border-2"
+                              placeholder={t("ux.passenger.lastNamePlaceholder")}
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -427,13 +455,13 @@ export const PassengerStep = ({
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-primary" />
-                            Date de naissance *
+                            {t("ux.passenger.birthDate")}
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               type="date"
-                              className="h-12 border-2"
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -446,7 +474,7 @@ export const PassengerStep = ({
                       name={`passengers.${index}.nationality`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nationalité *</FormLabel>
+                          <FormLabel>{t("ux.passenger.nationality")}</FormLabel>
                           <FormControl>
                             <NationalitySelect
                               value={field.value}
@@ -463,15 +491,15 @@ export const PassengerStep = ({
                       name={`passengers.${index}.documentType`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Type de document *</FormLabel>
+                          <FormLabel>{t("ux.passenger.docType")}</FormLabel>
                           <FormControl>
                             <Select value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger className="h-12 border-2">
+                              <SelectTrigger className="h-11 rounded-xl bg-background">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="passport">Passeport</SelectItem>
-                                <SelectItem value="id_card">Carte d'identité</SelectItem>
+                                <SelectItem value="passport">{t("ux.passenger.passport")}</SelectItem>
+                                <SelectItem value="id_card">{t("ux.passenger.idCard")}</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -487,13 +515,13 @@ export const PassengerStep = ({
                         <FormItem>
                           <FormLabel className="flex items-center gap-2">
                             <Globe className="w-4 h-4 text-primary" />
-                            Numéro de document *
+                            {t('passengerStep.documentNumberLabel')}
                           </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Ex: 123456789"
-                              className="h-12 border-2"
+                              placeholder={t("ux.passenger.docPlaceholder")}
+                              className="h-11 rounded-xl bg-background"
                             />
                           </FormControl>
                           <FormMessage className="text-xs" />
@@ -510,7 +538,7 @@ export const PassengerStep = ({
             control={form.control}
             name="termsAccepted"
             render={({ field }) => (
-              <FormItem className="flex items-start space-x-2 p-4 bg-muted/50 rounded-lg">
+              <FormItem className="flex items-start space-x-3 rounded-xl border bg-card p-4 shadow-sm">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -519,7 +547,7 @@ export const PassengerStep = ({
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="text-sm font-normal cursor-pointer">
-                    J'accepte les conditions générales de vente et la politique de confidentialité de B-reserve
+                    {t("ux.passenger.terms")}
                   </FormLabel>
                   <FormMessage className="text-xs" />
                 </div>
@@ -527,13 +555,14 @@ export const PassengerStep = ({
             )}
           />
 
-          <div className="mt-8">
+          <div className="booking-actions md:mt-8">
             <Button
               type="submit"
-              className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
+              size="lg"
+              className="w-full font-semibold"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Vérification..." : getNextButtonText()}
+              {form.formState.isSubmitting ? t("ux.passenger.checking") : getNextButtonText()}
             </Button>
           </div>
         </form>

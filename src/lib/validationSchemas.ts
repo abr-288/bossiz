@@ -204,10 +204,10 @@ export const paymentSchema = z.object({
     .max(100, "Le nom est trop long")
     .trim(),
   customerEmail: z.string()
-    .email("Adresse email invalide")
-    .max(255, "L'email est trop long")
     .trim()
-    .toLowerCase(),
+    .toLowerCase()
+    .email("Adresse email invalide")
+    .max(255, "L'email est trop long"),
   customerPhone: phoneNumber,
   customerAddress: z.string()
     .max(200, "L'adresse est trop longue")
@@ -217,7 +217,7 @@ export const paymentSchema = z.object({
     .min(2, "La ville doit contenir au moins 2 caractères")
     .max(100, "La ville est trop longue")
     .trim(),
-  paymentMethod: z.enum(["wave", "mobile_money", "card", "bank_transfer"], {
+  paymentMethod: z.enum(["jeko"], {
     errorMap: () => ({ message: "Méthode de paiement invalide" })
   })
 });

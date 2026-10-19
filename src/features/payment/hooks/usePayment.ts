@@ -1,33 +1,42 @@
-import { useState } from "react";
+// Hook pour la gestion des paiements
+// Gère le traitement des paiements via Jèko et la validation des données
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { paymentSchema, type PaymentInput } from "@/lib/validationSchemas";
 import { validateWithSchema, getUserFriendlyErrorMessage } from "@/lib/formHelpers";
+import { useTranslation } from "react-i18next";
+import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 
 export const usePayment = () => {
-  const [processing, setProcessing] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [generalError, setGeneralError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false); // État de traitement du paiement
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({}); // Erreurs de validation
+  const [generalError, setGeneralError] = useState<string | null>(null); // Erreur générale
   const { toast } = useToast();
+  const { t } = useTranslation();
+  const processingRef = useRef(false);
 
+  // Fonction pour traiter un paiement
   const processPayment = async (
-    bookingId: string,
-    booking: any,
-    paymentData: PaymentInput
+    bookingId: string, // ID de la réservation
+    booking: any, // Données de la réservation
+    paymentData: PaymentInput // Données de paiement
   ) => {
     setValidationErrors({});
     setGeneralError(null);
 
+    // Validation des données de paiement
     const validation = validateWithSchema(paymentSchema, paymentData);
 
     if (validation.success === false) {
       setValidationErrors(validation.errors);
       toast({
-        title: "Erreur de validation",
-        description: "Veuillez corriger les erreurs dans le formulaire",
+        title: t('validation.errorTitle'),
+        description: t('validation.errorDescription'),
         variant: "destructive",
       });
       
+      // Focus sur le premier champ en erreur
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.focus();
       return { success: false };
@@ -35,21 +44,26 @@ export const usePayment = () => {
 
     const validatedData = validation.data;
 
-    if (processing) return { success: false };
+    // Empêcher les traitements multiples
+    if (processingRef.current) return { success: false };
 
+    processingRef.current = true;
     setProcessing(true);
 
+    // Timeout de 30 secondes pour le traitement du paiement
     const timeoutId = setTimeout(() => {
+      processingRef.current = false;
       setProcessing(false);
-      setGeneralError("Le délai de traitement du paiement a expiré. Veuillez réessayer.");
+      setGeneralError(t('payment.errors.timeoutDescription'));
       toast({
-        title: "Délai dépassé",
-        description: "Le traitement du paiement a pris trop de temps. Veuillez réessayer.",
+        title: t('payment.errors.timeoutTitle'),
+        description: t('payment.errors.timeoutDescription'),
         variant: "destructive",
       });
     }, 30000);
 
     try {
+      // Vérification de l'état actuel de la réservation
       const { data: currentBooking, error: checkError } = await supabase
         .from("bookings")
         .select("payment_status, status")
@@ -71,6 +85,7 @@ export const usePayment = () => {
       }
 
       // XOF - devise unique de la plateforme
+      // Appel de la fonction Supabase pour traiter le paiement
       const { data, error } = await supabase.functions.invoke("process-payment", {
         body: {
           bookingId: bookingId,
@@ -91,7 +106,7 @@ export const usePayment = () => {
 
       if (error) {
         console.error("Payment error:", error);
-        throw error;
+        throw new Error(await getEdgeFunctionErrorMessage(error, "Impossible d'initialiser le paiement Jèko."));
       }
 
       if (!data?.success) {
@@ -111,12 +126,17 @@ export const usePayment = () => {
       setGeneralError(userMessage);
       
       toast({
-        title: "Erreur de paiement",
+        title: t('payment.errors.paymentErrorTitle'),
         description: userMessage,
         variant: "destructive",
       });
+      processingRef.current = false;
       setProcessing(false);
       return { success: false };
+    } finally {
+      clearTimeout(timeoutId);
+      processingRef.current = false;
+      setProcessing(false);
     }
   };
 

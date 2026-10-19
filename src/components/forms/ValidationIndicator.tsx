@@ -1,11 +1,14 @@
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export interface ValidationIndicatorProps {
   status: "idle" | "validating" | "valid" | "invalid";
   message?: string;
   className?: string;
+  /** Référencé par aria-describedby sur le champ */
+  id?: string;
 }
 
 /**
@@ -15,9 +18,12 @@ export interface ValidationIndicatorProps {
 export const ValidationIndicator = ({
   status,
   message,
-  className
+  className,
+  id,
 }: ValidationIndicatorProps) => {
+  const { t } = useTranslation();
   return (
+    <div id={id} aria-live="polite">
     <AnimatePresence mode="wait">
       {status !== "idle" && (
         <motion.div
@@ -29,15 +35,15 @@ export const ValidationIndicator = ({
           {status === "validating" && (
             <>
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Validation...</span>
+              <span className="text-sm text-muted-foreground">{t("ux.form.validating")}</span>
             </>
           )}
           
           {status === "valid" && (
             <>
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 text-success" />
               {message && (
-                <span className="text-xs text-green-600 dark:text-green-400">
+                <span className="text-sm text-success">
                   {message}
                 </span>
               )}
@@ -47,11 +53,12 @@ export const ValidationIndicator = ({
           {status === "invalid" && message && (
             <>
               <XCircle className="h-4 w-4 text-destructive" />
-              <span className="text-xs text-destructive">{message}</span>
+              <span role="alert" className="text-sm text-destructive">{message}</span>
             </>
           )}
         </motion.div>
       )}
     </AnimatePresence>
+    </div>
   );
 };

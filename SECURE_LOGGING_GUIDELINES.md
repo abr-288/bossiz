@@ -1,4 +1,4 @@
-# Guide de Logging Sécurisé - B-Reserve
+# Guide de Logging Sécurisé - Bossiz+
 
 ## 🔒 Principe Fondamental
 

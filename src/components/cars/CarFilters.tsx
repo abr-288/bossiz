@@ -20,6 +20,7 @@ import {
   Clock,
   Shield
 } from "lucide-react";
+import { carLabel } from "@/lib/carLabels";
 
 interface CarFiltersProps {
   filterLocation: string;
@@ -28,6 +29,7 @@ interface CarFiltersProps {
   setFilterCategory: (value: string) => void;
   priceRange: number[];
   setPriceRange: (value: number[]) => void;
+  maxPrice: number;
   selectedTransmissions: string[];
   setSelectedTransmissions: (value: string[]) => void;
   selectedFuelTypes: string[];
@@ -50,6 +52,7 @@ export const CarFilters = ({
   setFilterCategory,
   priceRange,
   setPriceRange,
+  maxPrice,
   selectedTransmissions,
   setSelectedTransmissions,
   selectedFuelTypes,
@@ -68,14 +71,14 @@ export const CarFilters = ({
   const { formatPrice } = useCurrency();
 
   const categories = [
-    { value: 'all', label: 'Toutes catégories' },
+    { value: 'all', label: t('ux.car.allCategories') },
     { value: 'mini', label: 'Mini' },
-    { value: 'economy', label: 'Économique' },
-    { value: 'compact', label: 'Compacte' },
-    { value: 'sedan', label: 'Berline' },
-    { value: 'suv', label: 'SUV / 4x4' },
-    { value: 'luxury', label: 'Luxe / Premium' },
-    { value: 'minivan', label: 'Monospace' },
+    { value: 'economy', label: t('ux.car.economy') },
+    { value: 'compact', label: t('ux.car.compact') },
+    { value: 'sedan', label: t('ux.car.sedan') },
+    { value: 'suv', label: t('ux.car.suv') },
+    { value: 'luxury', label: t('ux.car.luxury') },
+    { value: 'minivan', label: t('ux.car.minivan') },
   ];
 
   const transmissions = ['Automatique', 'Manuelle'];
@@ -110,7 +113,7 @@ export const CarFilters = ({
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Filtres</h2>
+          <h2 className="text-lg font-semibold">{t('cars.filters')}</h2>
           {activeFiltersCount > 0 && (
             <Badge variant="secondary" className="ml-2">
               {activeFiltersCount}
@@ -120,7 +123,7 @@ export const CarFilters = ({
         {activeFiltersCount > 0 && (
           <Button variant="ghost" size="sm" onClick={onReset} className="text-muted-foreground hover:text-foreground">
             <X className="w-4 h-4 mr-1" />
-            Réinitialiser
+            {t("ux.carFilters.reset")}
           </Button>
         )}
       </div>
@@ -130,10 +133,10 @@ export const CarFilters = ({
         <div>
           <Label className="text-sm font-medium mb-2 flex items-center gap-2">
             <Search className="w-4 h-4" />
-            Rechercher
+            {t("ux.carFilters.search")}
           </Label>
           <Input
-            placeholder="Marque, modèle..."
+            placeholder={t('carFilters.brandModelPlaceholder')}
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
             className="mt-2"
@@ -146,7 +149,7 @@ export const CarFilters = ({
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center gap-2">
             <Car className="w-4 h-4" />
-            Type de véhicule
+            {t("ux.carFilters.vehicleType")}
           </Label>
           <div className="grid grid-cols-2 gap-2 mt-2">
             {categories.map((cat) => (
@@ -168,22 +171,22 @@ export const CarFilters = ({
         {/* Price Range */}
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center justify-between">
-            <span>Prix par jour</span>
+            <span>{t('cars.pricePerDay')}</span>
             <span className="text-primary font-semibold">
               {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
             </span>
           </Label>
           <Slider
             min={0}
-            max={200}
-            step={5}
+            max={maxPrice}
+            step={Math.max(5, Math.round(maxPrice / 40))}
             value={priceRange}
             onValueChange={setPriceRange}
             className="mt-4"
           />
           <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-            <span>0 €</span>
-            <span>200 €+</span>
+            <span>{formatPrice(0)}</span>
+            <span>{formatPrice(maxPrice)}+</span>
           </div>
         </div>
 
@@ -193,7 +196,7 @@ export const CarFilters = ({
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center gap-2">
             <Settings className="w-4 h-4" />
-            Transmission
+            {t("ux.carFilters.transmission")}
           </Label>
           <div className="space-y-2 mt-2">
             {transmissions.map((trans) => (
@@ -207,7 +210,7 @@ export const CarFilters = ({
                   htmlFor={`trans-${trans}`}
                   className="text-sm cursor-pointer flex-1"
                 >
-                  {trans}
+                  {carLabel(t, trans)}
                 </label>
               </div>
             ))}
@@ -220,7 +223,7 @@ export const CarFilters = ({
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center gap-2">
             <Fuel className="w-4 h-4" />
-            Carburant
+            {t("ux.carFilters.fuel")}
           </Label>
           <div className="space-y-2 mt-2">
             {fuelTypes.map((fuel) => (
@@ -234,7 +237,7 @@ export const CarFilters = ({
                   htmlFor={`fuel-${fuel}`}
                   className="text-sm cursor-pointer flex-1"
                 >
-                  {fuel}
+                  {carLabel(t, fuel)}
                 </label>
               </div>
             ))}
@@ -247,7 +250,7 @@ export const CarFilters = ({
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center gap-2">
             <Shield className="w-4 h-4" />
-            Options
+            {t("ux.carFilters.options")}
           </Label>
           <div className="space-y-3 mt-2">
             <div className="flex items-center gap-3">
@@ -257,8 +260,8 @@ export const CarFilters = ({
                 onCheckedChange={(checked) => setUnlimitedMileageOnly(checked as boolean)}
               />
               <label htmlFor="unlimited-mileage" className="text-sm cursor-pointer flex items-center gap-2">
-                <Gauge className="w-4 h-4 text-green-500" />
-                Kilométrage illimité
+                <Gauge className="w-4 h-4 text-success" />
+                {t("ux.carFilters.unlimitedKm")}
               </label>
             </div>
             <div className="flex items-center gap-3">
@@ -268,8 +271,8 @@ export const CarFilters = ({
                 onCheckedChange={(checked) => setFreeCancellationOnly(checked as boolean)}
               />
               <label htmlFor="free-cancellation" className="text-sm cursor-pointer flex items-center gap-2">
-                <Clock className="w-4 h-4 text-green-500" />
-                Annulation gratuite
+                <Clock className="w-4 h-4 text-success" />
+                {t("ux.carFilters.freeCancel")}
               </label>
             </div>
           </div>
@@ -282,7 +285,7 @@ export const CarFilters = ({
             <div>
               <Label className="text-sm font-medium mb-3 flex items-center gap-2">
                 <Building2 className="w-4 h-4" />
-                Agences
+                {t("ux.carFilters.agencies")}
               </Label>
               <div className="space-y-2 mt-2 max-h-40 overflow-y-auto">
                 {availableProviders.slice(0, 10).map((provider) => (
