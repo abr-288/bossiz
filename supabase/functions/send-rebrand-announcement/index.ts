@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
 import { renderEmailTemplate } from "../_shared/emailTemplates.ts";
 
@@ -168,8 +168,7 @@ serve(async (req) => {
 });
 
 async function buildEmail(
-  // deno-lint-ignore no-explicit-any
-  supabase: any,
+  supabase: SupabaseClient,
   role: string,
   greeting: string
 ): Promise<{ subject: string; html: string }> {

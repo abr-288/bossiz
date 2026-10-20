@@ -102,7 +102,7 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
           setCoversBySlot({});
         } else {
           const map: Record<string, number> = {};
-          (data || []).forEach((row: any) => {
+          (data || []).forEach((row) => {
             map[row.reservation_time.slice(0, 5)] = row.covers_booked;
           });
           setCoversBySlot(map);

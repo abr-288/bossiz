@@ -1,6 +1,9 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { FlightOffer } from "@/hooks/useFlightSearch";
+import type { BookingPreferences } from "@/components/booking-steps/PreferencesStep";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 // ============================================================
 // SECURE FLIGHT BOOKING HOOK
@@ -22,7 +25,7 @@ export interface FlightData {
   stops: number;
   fare: string;
   provider?: string;
-  baggage?: any;
+  baggage?: FlightOffer["baggage"];
 }
 
 export interface PassengerData {
@@ -89,7 +92,7 @@ export const useSecureFlightBooking = () => {
     adultsCount: number,
     childrenCount: number,
     options?: Record<string, number>,
-    preferences?: Record<string, any>
+    preferences?: BookingPreferences
   ): Promise<PrebookingResult> => {
     setLoading(true);
     setError(null);
@@ -130,8 +133,8 @@ export const useSecureFlightBooking = () => {
       console.log('✅ Pre-booking successful:', result.booking_reference);
       
       return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to pre-book flight';
+    } catch (err) {
+      const errorMessage = getErrorMessage(err) || 'Failed to pre-book flight';
       setError(errorMessage);
       console.error('❌ Pre-booking error:', errorMessage);
       
@@ -191,13 +194,13 @@ export const useSecureFlightBooking = () => {
       console.log('✅ Checkout successful');
       
       return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Checkout failed';
+    } catch (err) {
+      const errorMessage = getErrorMessage(err) || 'Checkout failed';
       setError(errorMessage);
       console.error('❌ Checkout error:', errorMessage);
       
       // Handle specific error codes
-      if (err.message?.includes('EXPIRED')) {
+      if (getErrorMessage(err)?.includes('EXPIRED')) {
         toast.error("Pré-réservation expirée", {
           description: "Votre réservation a expiré. Veuillez recommencer.",
         });

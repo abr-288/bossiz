@@ -3,8 +3,7 @@
 // le site propose réellement (nom, ville, prix), jamais sur une invention.
 // Lecture seule, colonnes publiques uniquement, offres actives seulement.
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export const CATALOG_TOOL = {
   name: "rechercher_catalogue",

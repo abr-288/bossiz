@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { PassengerStep } from "@/components/booking-steps/PassengerStep";
 import { OptionsStep } from "@/components/booking-steps/OptionsStep";
-import { PreferencesStep } from "@/components/booking-steps/PreferencesStep";
+import { PreferencesStep, type BookingPreferences } from "@/components/booking-steps/PreferencesStep";
 import { SummaryStep } from "@/components/booking-steps/SummaryStep";
 import { Price } from "@/components/ui/price";
 import { validateAndCorrectFlightTimes, formatFlightDate } from "@/utils/flightUtils";
@@ -89,7 +89,7 @@ const FlightBookingProcess = () => {
   // États pour le processus de réservation
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, number>>({});
-  const [selectedPreferences, setSelectedPreferences] = useState<Record<string, any>>({});
+  const [selectedPreferences, setSelectedPreferences] = useState<BookingPreferences>({});
 
   const steps = [
     { number: 1, title: t("ux.flightBooking.stepPassengers"), completed: currentStep > 1 },

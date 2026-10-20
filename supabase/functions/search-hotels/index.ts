@@ -7,6 +7,232 @@ import { applyMarkup } from "../_shared/pricing.ts";
 
 const OFFER_VALIDITY_MINUTES = 30;
 
+// Hôtel normalisé renvoyé au client, quelle que soit la source.
+interface HotelResult {
+  id: string | number;
+  name: string;
+  location: string;
+  address?: string;
+  price: number | { grandTotal?: number | string; total?: number | string };
+  currency?: string;
+  rating: number;
+  stars?: number;
+  reviews: number;
+  image: string;
+  images: string[];
+  description: string;
+  amenities: string[];
+  freeCancellation?: boolean;
+  breakfast?: boolean;
+  source?: string;
+  deepLink?: string;
+  offer_expires_at?: string;
+  offer_signature?: string;
+}
+
+// Réponses des fournisseurs : seuls les champs lus ici sont décrits, tous
+// optionnels car leur présence varie d'une API (et d'une réponse) à l'autre.
+interface BookingHotel {
+  hotel_id?: string | number;
+  id?: string | number;
+  hotelId?: string | number;
+  hotel_name?: string;
+  name?: string;
+  hotel_name_trans?: string;
+  property_name?: string;
+  hotelName?: string;
+  title?: string;
+  property?: {
+    id?: string | number;
+    name?: string;
+    description?: string;
+    photoUrls?: string[];
+    address?: { city?: string; streetAddress?: string };
+    priceBreakdown?: { grossPrice?: { value?: number } };
+    reviewScore?: number;
+    reviewCount?: number;
+    propertyClass?: number;
+    facilities?: string[];
+  };
+  city?: string;
+  address?: string;
+  city_in_trans?: string;
+  city_name_en?: string;
+  cityName?: string;
+  location?: string;
+  countrycode?: string;
+  max_1280_photo_url?: string;
+  max_photo_url?: string;
+  main_photo_url?: string;
+  photo_main_url?: string;
+  imageUrl?: string;
+  heroImage?: string;
+  mainImage?: string;
+  thumbnail?: string;
+  image?: string;
+  photos?: Array<{ url_original?: string } | string>;
+  images?: string[];
+  photo_urls?: string[];
+  min_total_price?: number;
+  composite_price_breakdown?: { gross_amount_per_night?: { value?: number } };
+  price_breakdown?: { gross_price?: { value?: number } };
+  price?: number | { amount?: number };
+  minPrice?: number;
+  rate?: number;
+  review_score?: number;
+  rating?: number;
+  stars?: number;
+  starRating?: number;
+  guestRating?: number;
+  review_nr?: number;
+  reviews_count?: number;
+  review_count?: number;
+  reviewsCount?: number;
+  totalReviews?: number;
+  class?: number;
+  hotel_facilities_ids?: unknown;
+  hotel_facilities?: string[];
+  facilities?: string[];
+  amenities?: string[];
+  currency_code?: string;
+  currency?: string;
+  hotel_description?: string;
+  description?: string;
+  is_free_cancellable?: boolean;
+  free_cancellation?: boolean;
+  has_free_breakfast?: boolean;
+  breakfast_included?: boolean;
+}
+
+interface TripAdvisorPhoto {
+  images?: { large?: { url?: string }; medium?: { url?: string }; original?: { url?: string } };
+}
+
+interface TripAdvisorHotel {
+  location_id?: string;
+  id?: string;
+  name?: string;
+  location_string?: string;
+  title?: string;
+  address_obj?: { city?: string; street1?: string };
+  address?: string;
+  photo?: TripAdvisorPhoto;
+  image?: string;
+  thumbnail?: string;
+  photos?: TripAdvisorPhoto[];
+  price?: string | { amount?: number };
+  price_level?: number;
+  rating?: number;
+  hotel_class?: string;
+  num_reviews?: number;
+  review_count?: number;
+  description?: string;
+  ranking_data?: { ranking_string?: string };
+  amenities?: string[];
+}
+
+interface XoteloHotel {
+  hotel_key?: string;
+  id?: string;
+  name?: string;
+  hotel_name?: string;
+  city?: string;
+  location?: string;
+  address?: string;
+  photo?: string;
+  image?: string;
+  thumbnail?: string;
+  price?: number;
+  min_price?: number;
+  rate?: number;
+  rating?: number;
+  score?: number;
+  stars?: number;
+  class?: number;
+  reviews_count?: number;
+  num_reviews?: number;
+  description?: string;
+  amenities?: string[];
+}
+
+interface PricelineHotel {
+  hotelId?: string;
+  id?: string;
+  name?: string;
+  hotelName?: string;
+  location?: string;
+  cityName?: string;
+  address?: string | { city?: string; streetAddress?: string };
+  thumbnailUrl?: string;
+  thumbnail?: string;
+  images?: Array<{ url?: string } | string>;
+  hotelPhotos?: string[];
+  photo?: string;
+  ratesSummary?: { minPrice?: number | string };
+  price?: { amount?: number };
+  totalPrice?: number | string;
+  rate?: number | string;
+  overallGuestRating?: number;
+  rating?: number;
+  starRating?: number;
+  stars?: number;
+  reviewCount?: number;
+  reviews?: number;
+  description?: string;
+  amenities?: Array<{ name?: string } | string>;
+  freeCancel?: boolean;
+  breakfast?: boolean;
+}
+
+interface AmadeusHotelOffer {
+  hotel: {
+    hotelId: string;
+    name?: string;
+    rating?: string;
+    address?: { cityName?: string; countryCode?: string };
+    description?: { text?: string };
+    amenities?: string[];
+  };
+  offers?: Array<{ price?: { total?: string } }>;
+}
+
+interface KayakHotel {
+  hotelId?: string;
+  id?: string;
+  hotelName?: string;
+  name?: string;
+  rating?: number;
+  image?: string;
+  thumbnail?: string;
+  imageUrl?: string;
+  city?: string;
+  location?: string;
+  address?: string;
+  price?: number;
+  stars?: number;
+  reviewCount?: number;
+  description?: string;
+  deepLink?: string;
+  url?: string;
+}
+
+// Ligne de la table services (hôtels des agences partenaires).
+interface PartnerServiceRow {
+  id: string;
+  name: string;
+  location: string | null;
+  destination?: string | null;
+  image_url?: string | null;
+  images?: string[] | null;
+  amenities?: string[] | Record<string, string> | null;
+  rating?: number | null;
+  specifications?: { stars?: number } | null;
+  price_per_unit?: number | null;
+  currency?: string | null;
+  total_reviews?: number | null;
+  description?: string | null;
+}
+
 // Extract a plain numeric price regardless of the provider's price shape
 // (number, or { grandTotal|total }), apply the retail markup on top of the
 // raw supplier price, then attach a server-signed offer so create-booking
@@ -15,15 +241,15 @@ const OFFER_VALIDITY_MINUTES = 30;
 // hotel.price is overwritten with the marked-up value so what the customer
 // sees is exactly what they'll be charged. `noMarkupSources` skips the
 // markup step (partner listings already show their own final retail price).
-async function signHotelResults(results: Record<string, any[]>, fallbackLocation: string, noMarkupSources: Set<string> = new Set()) {
+async function signHotelResults(results: Record<string, HotelResult[] | undefined>, fallbackLocation: string, noMarkupSources: Set<string> = new Set()) {
   const expiresAt = new Date(Date.now() + OFFER_VALIDITY_MINUTES * 60 * 1000).toISOString();
 
   for (const [sourceKey, providerHotels] of Object.entries(results)) {
     const skipMarkup = noMarkupSources.has(sourceKey);
-    for (const hotel of providerHotels) {
+    for (const hotel of providerHotels ?? []) {
       const rawPrice = hotel.price;
       const supplierPrice = typeof rawPrice === 'object' && rawPrice !== null
-        ? parseFloat(rawPrice.grandTotal ?? rawPrice.total ?? '0')
+        ? parseFloat(String(rawPrice.grandTotal ?? rawPrice.total ?? '0'))
         : typeof rawPrice === 'number'
         ? rawPrice
         : parseFloat(rawPrice || '0');
@@ -93,7 +319,7 @@ const getCityPlaceholder = (location: string): string => {
 };
 
 // Validate if URL is a real image URL
-const isValidImageUrl = (url: string | undefined | null): boolean => {
+const isValidImageUrl = (url: string | undefined | null): url is string => {
   if (!url || typeof url !== 'string') return false;
   if (url.includes('placeholder') || url.includes('no-image') || url.includes('default')) return false;
   return url.startsWith('http') && (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png') || url.includes('.webp') || url.includes('images.unsplash') || url.includes('cf.bstatic.com') || url.includes('exp.cdn-hotels') || url.includes('tripadvisor') || url.includes('agoda') || url.includes('expedia'));
@@ -104,7 +330,7 @@ const isValidImageUrl = (url: string | undefined | null): boolean => {
 // by everyone" WHERE available = true) already permits this read with the
 // anon key - no service-role key needed. Pass `location: null` to return
 // every available partner hotel unfiltered.
-async function fetchPartnerHotels(location: string | null): Promise<any[]> {
+async function fetchPartnerHotels(location: string | null): Promise<HotelResult[]> {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
@@ -123,17 +349,18 @@ async function fetchPartnerHotels(location: string | null): Promise<any[]> {
     }
 
     // Same loose "lowercase + includes()" matching style as getCityPlaceholder().
+    const services = data as PartnerServiceRow[];
     const rows = location
-      ? data.filter((s: any) => {
+      ? services.filter((s) => {
           const needle = location.toLowerCase().trim();
           const loc = (s.location || '').toLowerCase();
           const dest = (s.destination || '').toLowerCase();
           return loc.includes(needle) || needle.includes(loc) ||
                  (dest && (dest.includes(needle) || needle.includes(dest)));
         })
-      : data;
+      : services;
 
-    return rows.map((s: any) => {
+    return rows.map((s): HotelResult => {
       let imageUrl = s.image_url || (Array.isArray(s.images) && s.images[0]) || null;
       if (!isValidImageUrl(imageUrl)) imageUrl = getCityPlaceholder(s.location || location || '');
       const images = Array.isArray(s.images) && s.images.length > 0 ? s.images : [imageUrl];
@@ -170,7 +397,11 @@ async function fetchPartnerHotels(location: string | null): Promise<any[]> {
 }
 
 // Transform Booking.com data to our format
-const transformBookingData = (hotels: any[], searchLocation: string) => {
+// Photo Booking.com : URL directe ou objet { url_original }.
+const bookingPhotoUrl = (photo: { url_original?: string } | string | undefined) =>
+  typeof photo === 'string' ? photo : photo?.url_original;
+
+const transformBookingData = (hotels: BookingHotel[], searchLocation: string): HotelResult[] => {
   return hotels.map(hotel => {
     // Extract official hotel name - prioritize all name fields
     const hotelName = hotel.hotel_name || 
@@ -204,8 +435,7 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
                    hotel.mainImage ||
                    hotel.thumbnail ||
                    hotel.image ||
-                   (hotel.photos && Array.isArray(hotel.photos) && hotel.photos[0]?.url_original) ||
-                   (hotel.photos && Array.isArray(hotel.photos) && hotel.photos[0]) ||
+                   (hotel.photos && Array.isArray(hotel.photos) && bookingPhotoUrl(hotel.photos[0])) ||
                    (hotel.images && Array.isArray(hotel.images) && hotel.images[0]) ||
                    null;
     
@@ -217,7 +447,7 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
     // Extract all photo URLs
     const allImages = hotel.photo_urls || 
                       hotel.property?.photoUrls ||
-                      hotel.photos?.map((p: any) => p.url_original || p) || 
+                      hotel.photos?.map(bookingPhotoUrl) || 
                       hotel.images || 
                       [imageUrl];
     
@@ -226,9 +456,9 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
                        hotel.composite_price_breakdown?.gross_amount_per_night?.value ||
                        hotel.price_breakdown?.gross_price?.value ||
                        hotel.property?.priceBreakdown?.grossPrice?.value ||
-                       hotel.price?.amount ||
+                       (typeof hotel.price === 'object' ? hotel.price.amount : undefined) ||
                        hotel.minPrice ||
-                       hotel.price ||
+                       (typeof hotel.price === 'number' ? hotel.price : undefined) ||
                        hotel.rate ||
                        0;
 
@@ -281,7 +511,7 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
       stars: Math.min(stars, 5),
       reviews: reviewCount,
       image: imageUrl,
-      images: Array.isArray(allImages) ? allImages.filter(Boolean).slice(0, 10) : [imageUrl],
+      images: Array.isArray(allImages) ? allImages.filter((url): url is string => Boolean(url)).slice(0, 10) : [imageUrl],
       description: hotel.hotel_description || hotel.description || hotel.property?.description || `${hotelName} est un établissement de qualité offrant confort et services exceptionnels à ${location}.`,
       amenities: Array.isArray(amenities) ? amenities.slice(0, 8) : ['Wifi', 'Restaurant', 'Service de Chambre'],
       freeCancellation: hotel.is_free_cancellable || hotel.free_cancellation || false,
@@ -291,7 +521,7 @@ const transformBookingData = (hotels: any[], searchLocation: string) => {
 };
 
 // Transform TripAdvisor data to our format
-const transformTripAdvisorData = (hotels: any[], searchLocation: string) => {
+const transformTripAdvisorData = (hotels: TripAdvisorHotel[], searchLocation: string): HotelResult[] => {
   return hotels.map(hotel => {
     // Extract name from various TripAdvisor fields
     const hotelName = hotel.name || 
@@ -319,9 +549,10 @@ const transformTripAdvisorData = (hotels: any[], searchLocation: string) => {
     }
     
     // Extract price
-    const price = hotel.price?.amount ||
+    const rawPrice = hotel.price;
+    const price = (typeof rawPrice === 'object' ? rawPrice.amount : undefined) ||
                   hotel.price_level ||
-                  parseFloat(hotel.price?.replace(/[^0-9.]/g, '')) ||
+                  parseFloat(typeof rawPrice === 'string' ? rawPrice.replace(/[^0-9.]/g, '') : '') ||
                   0;
 
     // Extract rating (TripAdvisor uses 0-5 scale)
@@ -338,68 +569,11 @@ const transformTripAdvisorData = (hotels: any[], searchLocation: string) => {
       stars: hotel.hotel_class ? parseInt(hotel.hotel_class) : Math.floor(rating / 2),
       reviews: hotel.num_reviews || hotel.review_count || 0,
       image: imageUrl,
-      images: hotel.photos?.map((p: any) => p.images?.large?.url).filter(Boolean) || [imageUrl],
+      images: hotel.photos?.map((p) => p.images?.large?.url).filter((url): url is string => Boolean(url)) || [imageUrl],
       description: hotel.description || hotel.ranking_data?.ranking_string || `${hotelName} à ${location}`,
       amenities: hotel.amenities || ['Wifi', 'Restaurant'],
       freeCancellation: false,
       breakfast: false,
-    };
-  });
-};
-
-// Transform Hotels.com Provider data
-const transformHotelsComData = (hotels: any[], searchLocation: string) => {
-  return hotels.map(hotel => {
-    const hotelName = hotel.name || 
-                      hotel.hotelName ||
-                      hotel.property?.name ||
-                      'Hôtel';
-    
-    // Hotels.com specific image extraction
-    let imageUrl = hotel.optimizedThumbUrls?.srpDesktop ||
-                   hotel.thumbnailUrl ||
-                   hotel.thumbnail ||
-                   hotel.property?.image?.url ||
-                   (hotel.gallery && hotel.gallery[0]?.url) ||
-                   (hotel.images && hotel.images[0]) ||
-                   null;
-    
-    if (!isValidImageUrl(imageUrl)) {
-      imageUrl = getCityPlaceholder(searchLocation);
-    }
-    
-    const location = hotel.address?.locality || 
-                     hotel.neighbourhood ||
-                     hotel.location ||
-                     searchLocation;
-    
-    const price = hotel.ratePlan?.price?.current?.amount ||
-                  hotel.ratePlan?.price?.exactCurrent ||
-                  hotel.price?.lead?.amount ||
-                  hotel.price ||
-                  0;
-
-    const rating = hotel.guestRating ||
-                   hotel.starRating ||
-                   hotel.reviews?.score ||
-                   0;
-
-    return {
-      id: hotel.id || hotel.hotelId || Math.random().toString(36),
-      name: hotelName,
-      location: location,
-      address: hotel.address?.streetAddress || '',
-      price: { grandTotal: Math.round(typeof price === 'number' ? price : parseFloat(price) || 0) },
-      currency: hotel.ratePlan?.price?.current?.currencyCode || 'EUR',
-      rating: rating <= 5 ? rating * 2 : rating,
-      stars: hotel.starRating || Math.floor(rating),
-      reviews: hotel.guestReviews?.total || hotel.reviews?.total || 0,
-      image: imageUrl,
-      images: hotel.gallery?.map((g: any) => g.url).filter(Boolean) || [imageUrl],
-      description: hotel.tagline || `${hotelName} à ${location}`,
-      amenities: hotel.amenities?.map((a: any) => a.text || a) || ['Wifi', 'Restaurant'],
-      freeCancellation: hotel.ratePlan?.features?.freeCancellation || false,
-      breakfast: hotel.ratePlan?.features?.paymentPreference?.includes('breakfast') || false,
     };
   });
 };
@@ -448,12 +622,14 @@ serve(async (req) => {
 
 
 const results: {
-      booking: any[];
-      xotelo: any[];
-      tripadvisor: any[];
-      amadeus: any[];
-      priceline: any[];
-      services: any[];
+      booking: HotelResult[];
+      xotelo: HotelResult[];
+      tripadvisor: HotelResult[];
+      amadeus: HotelResult[];
+      priceline: HotelResult[];
+      services: HotelResult[];
+      kayak: HotelResult[];
+      worldwide?: HotelResult[];
     } = {
       booking: [],
       xotelo: [],
@@ -501,7 +677,7 @@ const results: {
         
         const hotels = xoteloData.result?.hotels || xoteloData.hotels || xoteloData.data || [];
         if (Array.isArray(hotels) && hotels.length > 0) {
-          results.xotelo = hotels.slice(0, 15).map((hotel: any) => {
+          results.xotelo = hotels.slice(0, 15).map((hotel: XoteloHotel): HotelResult => {
             let imageUrl = hotel.photo || hotel.image || hotel.thumbnail || null;
             if (!isValidImageUrl(imageUrl)) {
               imageUrl = getCityPlaceholder(location);
@@ -615,7 +791,7 @@ const results: {
                 name: firstHotel.name,
                 image: firstHotel.image.substring(0, 80) + '...',
                 location: firstHotel.location,
-                price: firstHotel.price.grandTotal
+                price: typeof firstHotel.price === 'object' ? firstHotel.price.grandTotal : firstHotel.price
               });
             }
           } else {
@@ -718,7 +894,7 @@ const results: {
           console.log('Worldwide Hotels raw response:', JSON.stringify(worldwideData).substring(0, 500));
           
           if (worldwideData.hotels && Array.isArray(worldwideData.hotels)) {
-            results.worldwide = transformBookingData(worldwideData.hotels.slice(0, 10));
+            results.worldwide = transformBookingData(worldwideData.hotels.slice(0, 10), location);
             apiSuccess = true;
             console.log('Worldwide Hotels results transformed:', results.worldwide.length);
           } else {
@@ -883,7 +1059,7 @@ const results: {
               console.log('Priceline hotels raw response:', JSON.stringify(pricelineData).substring(0, 500));
               
               // Extract hotels from various response structures
-              let pricelineHotels: any[] = [];
+              let pricelineHotels: PricelineHotel[] = [];
               if (pricelineData.hotels && Array.isArray(pricelineData.hotels)) {
                 pricelineHotels = pricelineData.hotels;
               } else if (pricelineData.data && Array.isArray(pricelineData.data)) {
@@ -893,10 +1069,10 @@ const results: {
               }
 
               if (pricelineHotels.length > 0) {
-                results.priceline = pricelineHotels.slice(0, 15).map((hotel: any) => {
+                results.priceline = pricelineHotels.slice(0, 15).map((hotel): HotelResult => {
                   let imageUrl = hotel.thumbnailUrl || 
                                  hotel.thumbnail || 
-                                 hotel.images?.[0]?.url ||
+                                 (typeof hotel.images?.[0] === 'object' ? hotel.images[0].url : undefined) ||
                                  hotel.hotelPhotos?.[0] ||
                                  hotel.photo ||
                                  null;
@@ -906,7 +1082,8 @@ const results: {
                   }
 
                   const hotelName = hotel.name || hotel.hotelName || 'Hôtel';
-                  const hotelLocation = hotel.location || hotel.address?.city || hotel.cityName || location;
+                  const address = hotel.address;
+                  const hotelLocation = hotel.location || (typeof address === 'object' ? address.city : undefined) || hotel.cityName || location;
                   const price = hotel.ratesSummary?.minPrice ||
                                hotel.price?.amount ||
                                hotel.totalPrice ||
@@ -920,16 +1097,16 @@ const results: {
                     id: hotel.hotelId || hotel.id || Math.random().toString(36),
                     name: hotelName,
                     location: hotelLocation,
-                    address: hotel.address?.streetAddress || hotel.address || '',
+                    address: (typeof address === 'object' ? address.streetAddress : address) || '',
                     price: { grandTotal: Math.round(parseFloat(price.toString()) || 0) },
                     currency: 'EUR',
                     rating: Math.min(rating, 10),
                     stars: hotel.starRating || hotel.stars || Math.floor(rating / 2),
                     reviews: hotel.reviewCount || hotel.reviews || 0,
                     image: imageUrl,
-                    images: hotel.images?.map((i: any) => i.url || i).filter(Boolean) || [imageUrl],
+                    images: hotel.images?.map((i) => (typeof i === 'string' ? i : i.url)).filter((url): url is string => Boolean(url)) || [imageUrl],
                     description: hotel.description || `${hotelName} à ${hotelLocation}`,
-                    amenities: hotel.amenities?.map((a: any) => a.name || a) || ['WiFi', 'Restaurant'],
+                    amenities: hotel.amenities?.map((a) => (typeof a === 'string' ? a : a.name)).filter((name): name is string => Boolean(name)) || ['WiFi', 'Restaurant'],
                     freeCancellation: hotel.freeCancel || false,
                     breakfast: hotel.breakfast || false,
                     source: 'priceline',
@@ -1005,7 +1182,7 @@ const results: {
 
             if (hotelListData.data && Array.isArray(hotelListData.data) && hotelListData.data.length > 0) {
               // Get hotel IDs (limit to 50 for performance)
-              const hotelIds = hotelListData.data.slice(0, 50).map((h: any) => h.hotelId).join(',');
+              const hotelIds = hotelListData.data.slice(0, 50).map((h: { hotelId: string }) => h.hotelId).join(',');
               console.log('Step 3: Searching offers for hotels:', hotelIds.split(',').length, 'hotels');
 
               // Step 3: Get hotel offers
@@ -1035,7 +1212,7 @@ const results: {
                 console.log('Amadeus offers count:', offersData.data?.length || 0);
 
                 if (offersData.data && Array.isArray(offersData.data)) {
-                  results.amadeus = offersData.data.slice(0, 20).map((offer: any) => {
+                  results.amadeus = offersData.data.slice(0, 20).map((offer: AmadeusHotelOffer): HotelResult => {
                     const hotel = offer.hotel;
                     const firstOffer = offer.offers?.[0];
                     const price = firstOffer?.price?.total || 0;
@@ -1044,7 +1221,7 @@ const results: {
                       id: hotel.hotelId,
                       name: hotel.name || 'Hotel',
                       location: `${hotel.address?.cityName || location}, ${hotel.address?.countryCode || ''}`,
-                      price: { grandTotal: Math.round(parseFloat(price)) }, // Keep USD price (convert to EUR later if needed)
+                      price: { grandTotal: Math.round(parseFloat(String(price))) }, // Keep USD price (convert to EUR later if needed)
                       rating: hotel.rating ? parseFloat(hotel.rating) : 0,
                       reviews: 0,
                       image: getCityPlaceholder(location),
@@ -1159,7 +1336,7 @@ async function searchKayakHotels(
   rooms: number,
   apiKey: string,
   apiHost: string
-): Promise<any[]> {
+): Promise<HotelResult[]> {
   try {
     console.log(`Resolving Kayak location ID for: ${location}`);
     
@@ -1224,7 +1401,7 @@ async function searchKayakHotels(
     const hotels = data.data || data.results || data.hotels || [];
 
     if (Array.isArray(hotels) && hotels.length > 0) {
-      return hotels.map((hotel: any) => {
+      return hotels.map((hotel: KayakHotel): HotelResult => {
         const hotelName = hotel.hotelName || hotel.name || 'Hôtel';
         const rating = hotel.rating || 0;
         let imageUrl = hotel.image || hotel.thumbnail || hotel.imageUrl || null;

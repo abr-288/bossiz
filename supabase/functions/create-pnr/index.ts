@@ -223,8 +223,7 @@ serve(async (req) => {
       }
     })();
 
-    // deno-lint-ignore no-explicit-any
-    const edgeRuntime = (globalThis as any).EdgeRuntime;
+    const edgeRuntime = (globalThis as { EdgeRuntime?: { waitUntil?: (promise: Promise<unknown>) => void } }).EdgeRuntime;
     if (edgeRuntime && typeof edgeRuntime.waitUntil === 'function') {
       edgeRuntime.waitUntil(notifyBackground);
     } else {
@@ -251,7 +250,24 @@ serve(async (req) => {
 
 // Returns a real Amadeus order id on success, or null on ANY failure - the
 // caller must never fall back to a fabricated PNR.
-async function createAmadeusPNR(booking: any, passengers: any[], amadeusKey: string, amadeusSecret: string): Promise<string | null> {
+// Réservation et passagers lus pour créer la commande Amadeus.
+interface PnrBooking {
+  customer_email: string;
+  customer_phone: string;
+  booking_details?: { flightOffers?: unknown[] } | null;
+}
+
+interface PnrPassenger {
+  id: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth?: string | null;
+  document_type?: string | null;
+  document_number?: string | null;
+  nationality?: string | null;
+}
+
+async function createAmadeusPNR(booking: PnrBooking, passengers: PnrPassenger[], amadeusKey: string, amadeusSecret: string): Promise<string | null> {
   try {
     // Get Amadeus access token
     const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {

@@ -177,11 +177,7 @@ sudo docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter cadd
 
 ### Autres méthodes de déploiement présentes dans le repo (non utilisées actuellement)
 
-- `netlify.toml` — déploiement Netlify (build automatique sur push si le repo
-  est connecté à Netlify)
 - `vercel.json` — déploiement Vercel
-- `deploy-ftp.js` — upload FTP du dossier `dist/` (nécessite un `.env.deploy`
-  non versionné avec `FTP_HOST`/`FTP_USER`/`FTP_PASSWORD`)
 - `Dockerfile` / `docker-compose.yml` (racine du repo) — image Docker
   générique orientée développement (Postgres/Redis locaux), différente de la
   config de prod minimaliste dans `deploy-vps/`

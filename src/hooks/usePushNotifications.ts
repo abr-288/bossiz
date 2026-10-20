@@ -18,7 +18,7 @@ export const usePushNotifications = () => {
       
       // Get existing subscription
       navigator.serviceWorker.ready.then((registration) => {
-        (registration as any).pushManager?.getSubscription().then((sub: PushSubscription | null) => {
+        registration.pushManager?.getSubscription().then((sub: PushSubscription | null) => {
           setSubscription(sub);
         });
       });
@@ -51,7 +51,7 @@ export const usePushNotifications = () => {
       const registration = await navigator.serviceWorker.ready;
       
       // Check for existing subscription
-      const existingSubscription = await (registration as any).pushManager?.getSubscription();
+      const existingSubscription = await registration.pushManager?.getSubscription();
       if (existingSubscription) {
         setSubscription(existingSubscription);
         await savePushSubscription(existingSubscription);
@@ -65,7 +65,7 @@ export const usePushNotifications = () => {
       }
 
       // Create a subscription
-      const sub = await (registration as any).pushManager.subscribe({
+      const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
       });
@@ -142,7 +142,7 @@ export const usePushNotifications = () => {
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
+    .replace(/-/g, '+')
     .replace(/_/g, '/');
 
   const rawData = window.atob(base64);

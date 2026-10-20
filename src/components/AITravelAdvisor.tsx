@@ -35,7 +35,7 @@ export const AITravelAdvisor = () => {
     });
 
     if (result?.success) {
-      setRecommendations(result.recommendations);
+      setRecommendations(result.recommendations ?? "");
       toast.success(t('aiTravelAdvisor.success'));
     } else {
       toast.error(result?.error || t('aiTravelAdvisor.errors.generic'));

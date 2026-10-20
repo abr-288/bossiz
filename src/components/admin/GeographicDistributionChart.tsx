@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, type TooltipProps } from "recharts";
 import { useTranslation } from "react-i18next";
 
 interface GeographicDistributionChartProps {
@@ -23,13 +23,13 @@ export function GeographicDistributionChart({ data }: GeographicDistributionChar
     );
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="font-medium">{payload[0].payload.location}</p>
           <p className="text-sm text-primary">
-            Revenus: {payload[0].value.toLocaleString()} EUR
+            Revenus: {payload[0].value?.toLocaleString()} EUR
           </p>
           <p className="text-sm text-muted-foreground">
             {payload[0].payload.bookings} réservations

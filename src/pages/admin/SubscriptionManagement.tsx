@@ -49,7 +49,7 @@ interface SubscriptionPlan {
   is_popular: boolean;
   is_active: boolean;
   sort_order: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 interface SubscriptionFeature {
@@ -443,17 +443,17 @@ export default function SubscriptionManagement() {
 
               {/* Onglets */}
               <div className="flex space-x-1 bg-muted p-1 rounded-lg">
-                {[
+                {([
                   { key: 'plans', label: t("ux.bo.plan2"), icon: <Settings className="w-4 h-4" /> },
                   { key: 'features', label: t("ux.bo.features"), icon: <CheckCircle2 className="w-4 h-4" /> },
                   { key: 'testimonials', label: t("ux.bo.testimonials"), icon: <Users className="w-4 h-4" /> },
                   { key: 'faqs', label: 'FAQ', icon: <Eye className="w-4 h-4" /> }
-                ].map((tab) => (
+                ] as const).map((tab) => (
                   <Button
                     key={tab.key}
                     variant={activeTab === tab.key ? 'default' : 'ghost'}
                     size="sm"
-                    onClick={() => setActiveTab(tab.key as any)}
+                    onClick={() => setActiveTab(tab.key)}
                     className="flex items-center space-x-2"
                   >
                     {tab.icon}
@@ -664,7 +664,7 @@ export default function SubscriptionManagement() {
               </div>
               <div>
                 <Label htmlFor="billing_cycle">{t("ux.bo.cycle")}</Label>
-                <Select value={formData.billing_cycle} onValueChange={(value: any) => setFormData(prev => ({ ...prev, billing_cycle: value }))}>
+                <Select value={formData.billing_cycle} onValueChange={(value) => setFormData(prev => ({ ...prev, billing_cycle: value as SubscriptionPlan['billing_cycle'] }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

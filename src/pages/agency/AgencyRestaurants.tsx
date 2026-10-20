@@ -35,6 +35,8 @@ import { LocationPicker, type PartnerLocation } from "@/components/agency/Locati
 import { Plus, Pencil, Trash2, UtensilsCrossed, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
+import { toRestaurant } from "@/hooks/useRestaurants";
 
 interface Restaurant {
   id: string;
@@ -129,7 +131,7 @@ export default function AgencyRestaurants() {
     if (error) {
       console.error("Error fetching restaurants:", error);
     } else {
-      setRestaurants((data || []) as any);
+      setRestaurants((data || []).map(toRestaurant));
     }
     setLoading(false);
   };
@@ -177,8 +179,8 @@ export default function AgencyRestaurants() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndRestaurants();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 

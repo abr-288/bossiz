@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Star, Sparkles, Phone } from "lucide-react";
-import { useWellnessServices } from "@/hooks/useWellnessServices";
+import { useWellnessServices, type WellnessService } from "@/hooks/useWellnessServices";
 import { WellnessBookingDialog } from "@/components/wellness/WellnessBookingDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerWellness from "@/assets/banner-wellness.webp";
@@ -30,7 +30,7 @@ const WellnessBeauty = () => {
   const { wellnessServices, loading, error } = useWellnessServices();
   const [locationFilter, setLocationFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<WellnessService | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const filtered = useMemo(() => {

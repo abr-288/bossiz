@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface PartnerApplication {
   id: string;
@@ -137,11 +138,11 @@ export default function AdminPartnerApplications() {
         .then(({ error: emailError }) => {
           if (emailError) console.error("Partner rejection email error:", emailError);
         });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error rejecting application:", error);
       toast({
         title: t("ux.bo.error"),
-        description: error.message || t("ux.bo.errorWhileRejecting"),
+        description: getErrorMessage(error) || t("ux.bo.errorWhileRejecting"),
         variant: "destructive",
       });
     }

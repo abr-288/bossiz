@@ -52,7 +52,7 @@ export async function notifyCompanyApprovers(companyId: string, message: string)
       .in("role", ["admin", "approver"]);
 
     for (const approver of approvers || []) {
-      const phone = (approver as any).profiles?.phone;
+      const phone = (approver as { profiles?: { phone?: string | null } | null }).profiles?.phone;
       if (phone) await notifyPhone(phone, message);
     }
   } catch (error) {

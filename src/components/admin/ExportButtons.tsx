@@ -4,7 +4,7 @@ import { useExport } from "@/hooks/useExport";
 import { useTranslation } from "react-i18next";
 
 interface ExportButtonsProps {
-  data: any[];
+  data: object[];
   filename: string;
 }
 

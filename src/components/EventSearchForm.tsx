@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
-import { useEventSearch } from "@/hooks/useEventSearch";
+import { useEventSearch, type EventSearchResponse } from "@/hooks/useEventSearch";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { UnifiedForm, UnifiedAutocomplete, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
 interface EventSearchFormProps {
-  onResults: (results: any) => void;
+  onResults: (results: EventSearchResponse) => void;
 }
 
 export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {

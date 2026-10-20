@@ -23,7 +23,7 @@ function getCacheKey(query?: string | null, category?: string | null): string {
 }
 
 // Get cached destinations from database
-async function getCachedDestinations(cacheKey: string): Promise<{ destinations: any[]; source: string } | null> {
+async function getCachedDestinations(cacheKey: string): Promise<{ destinations: Destination[]; source: string } | null> {
   try {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
@@ -47,7 +47,7 @@ async function getCachedDestinations(cacheKey: string): Promise<{ destinations: 
 }
 
 // Store destinations in cache
-async function setCachedDestinations(cacheKey: string, destinations: any[], source: string): Promise<void> {
+async function setCachedDestinations(cacheKey: string, destinations: Destination[], source: string): Promise<void> {
   try {
     const supabase = getSupabaseClient();
     const expiresAt = new Date();
@@ -84,6 +84,43 @@ async function cleanExpiredCache(): Promise<void> {
   } catch (e) {
     console.log('Cache cleanup skipped:', e);
   }
+}
+
+// Réponses TripAdvisor (travel-advisor) : seuls les champs lus ici sont décrits.
+interface TaAddress {
+  city?: string;
+  state?: string;
+  country?: string;
+}
+
+interface TaSubcategory {
+  name?: string;
+}
+
+interface TaLocation {
+  location_id?: string;
+  name?: string;
+  location_type?: string;
+  location_string?: string;
+  subcategory?: TaSubcategory[];
+  address_obj?: TaAddress;
+  ancestors?: Array<{ level?: string; name?: string }>;
+  photo?: { images?: { large?: { url?: string } } };
+  rating?: string;
+  num_reviews?: string;
+  description?: string;
+}
+
+interface TaDetails {
+  address_obj?: TaAddress;
+  rating?: string;
+  num_reviews?: string;
+  description?: string;
+  subcategory?: TaSubcategory[];
+}
+
+interface TaPhoto {
+  images?: { large?: { url?: string }; original?: { url?: string } };
 }
 
 interface Destination {
@@ -136,12 +173,12 @@ async function searchTripAdvisorLocation(
     
     if (searchData.data && Array.isArray(searchData.data)) {
       for (const item of searchData.data.slice(0, 3)) {
-        const loc = item.result_object;
+        const loc: TaLocation | undefined = item.result_object;
         if (!loc) continue;
 
         const locationId = loc.location_id;
         let photos: string[] = [];
-        let details: any = null;
+        let details: TaDetails | null = null;
 
         // Step 2: Get location photos
         try {
@@ -160,8 +197,8 @@ async function searchTripAdvisorLocation(
             if (photosData.data && Array.isArray(photosData.data)) {
               photos = photosData.data
                 .slice(0, 5)
-                .map((p: any) => p.images?.large?.url || p.images?.original?.url)
-                .filter(Boolean);
+                .map((p: TaPhoto) => p.images?.large?.url || p.images?.original?.url)
+                .filter((url: string | undefined): url is string => Boolean(url));
             }
           }
         } catch (e) {
@@ -208,7 +245,7 @@ async function searchTripAdvisorLocation(
           description: details?.description || loc.description || '',
           category,
           amenities: [],
-          highlights: details?.subcategory?.map((s: any) => s.name).filter(Boolean) || [],
+          highlights: details?.subcategory?.map((s) => s.name).filter((name): name is string => Boolean(name)) || [],
           temperature: undefined,
           bestTime: undefined,
           trending: false,
@@ -266,7 +303,7 @@ async function searchTripAdvisorAttractions(
     const results: Destination[] = [];
 
     if (attractionsData.data && Array.isArray(attractionsData.data)) {
-      for (const attraction of attractionsData.data.slice(0, 3)) {
+      for (const attraction of attractionsData.data.slice(0, 3) as TaLocation[]) {
         if (!attraction.name) continue;
 
         results.push({
@@ -283,7 +320,7 @@ async function searchTripAdvisorAttractions(
           description: attraction.description || '',
           category: 'Attraction',
           amenities: [],
-          highlights: attraction.subcategory?.map((s: any) => s.name).filter(Boolean) || [],
+          highlights: attraction.subcategory?.map((s) => s.name).filter((name): name is string => Boolean(name)) || [],
           temperature: undefined,
           bestTime: undefined,
           trending: false,
@@ -299,7 +336,7 @@ async function searchTripAdvisorAttractions(
   }
 }
 
-function getLocationString(loc: any): string {
+function getLocationString(loc: TaLocation): string {
   if (loc.location_string) return loc.location_string;
   if (loc.address_obj) {
     const parts = [loc.address_obj.city, loc.address_obj.state, loc.address_obj.country].filter(Boolean);
@@ -308,25 +345,25 @@ function getLocationString(loc: any): string {
   return 'Destination populaire';
 }
 
-function getCountryFromLocation(loc: any, details: any): string {
+function getCountryFromLocation(loc: TaLocation, details: TaDetails | null): string {
   if (details?.address_obj?.country) return details.address_obj.country;
   if (loc.address_obj?.country) return loc.address_obj.country;
   if (loc.ancestors && Array.isArray(loc.ancestors)) {
-    const country = loc.ancestors.find((a: any) => a.level === 'Country');
-    if (country) return country.name;
+    const country = loc.ancestors.find((a) => a.level === 'Country');
+    if (country?.name) return country.name;
   }
   return 'International';
 }
 
-function getCountryFromAttraction(attraction: any): string {
+function getCountryFromAttraction(attraction: TaLocation): string {
   if (attraction.address_obj?.country) return attraction.address_obj.country;
   const locationParts = (attraction.location_string || '').split(', ');
   return locationParts[locationParts.length - 1] || 'International';
 }
 
-function getCategoryFromType(locationType: string, subcategory?: any[]): string {
+function getCategoryFromType(locationType: string | undefined, subcategory?: TaSubcategory[]): string {
   const type = (locationType || '').toLowerCase();
-  const subNames = subcategory?.map((s: any) => (s.name || '').toLowerCase()).join(' ') || '';
+  const subNames = subcategory?.map((s) => (s.name || '').toLowerCase()).join(' ') || '';
   
   if (type.includes('beach') || subNames.includes('beach') || subNames.includes('plage')) return 'Plage';
   if (type.includes('mountain') || subNames.includes('mountain') || subNames.includes('ski')) return 'Montagne';

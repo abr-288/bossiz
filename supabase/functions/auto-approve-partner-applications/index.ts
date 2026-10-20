@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { findOrCreatePartnerAccount, sendPartnerApprovedEmail } from "../_shared/partnerAccount.ts";
 import { rejectIfNotCron } from "../_shared/cronAuth.ts";
 
@@ -120,8 +120,7 @@ serve(async (req) => {
 
 // Même enchaînement que la création d'agence dans AdminAgencies.tsx.
 // Renvoie un message d'erreur lisible par l'admin, ou null si tout est fait.
-// deno-lint-ignore no-explicit-any
-async function approve(supabase: any, application: PartnerApplication): Promise<string | null> {
+async function approve(supabase: SupabaseClient, application: PartnerApplication): Promise<string | null> {
   const email = application.contact_email.trim().toLowerCase();
   const account = await findOrCreatePartnerAccount(supabase, email, application.name.trim().slice(0, 120));
   if (!account) return "Impossible de créer le compte du partenaire";

@@ -49,7 +49,7 @@ export const OptionsStep = ({
   // re-converted as if they were EUR (~656x too high on display).
   const getOptionsForService = (): { title: string; subtitle: string; currency: "EUR" | "XOF"; options: Option[] } => {
     switch (serviceType) {
-      case "flight":
+      case "flight": {
         // Get real baggage allowance for the airline
         const allowance = getBaggageAllowance(airline || "Air France", fareType, cabinClass);
         const additionalBagPrice = allowance.additionalBagPrice || 30;
@@ -69,6 +69,7 @@ export const OptionsStep = ({
             },
           ],
         };
+      }
       case "hotel":
       case "stay":
         return {

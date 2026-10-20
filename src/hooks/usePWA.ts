@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface BeforeInstallPromptEvent extends Event {
+export interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
@@ -13,7 +13,7 @@ export const usePWA = () => {
   useEffect(() => {
     // Check if app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone === true) {
+        (window.navigator as Navigator & { standalone?: boolean }).standalone === true) {
       setIsInstalled(true);
     }
 

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getErrorMessage } from "../_shared/errorMessage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -77,7 +78,24 @@ const getTemplateColors = (serviceType: string) => {
   return templates[serviceType as keyof typeof templates] || templates.flight;
 };
 
-const generatePDFHTML = (booking: any, qrCodeSvg: string): string => {
+// Réservation lue avec son service (name, type, location) pour le PDF.
+interface PdfBooking {
+  id: string;
+  status: string;
+  payment_status: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  start_date: string;
+  end_date: string | null;
+  guests: number;
+  notes: string | null;
+  total_price: number;
+  currency: string;
+  services: { name: string; type: string; location: string };
+}
+
+const generatePDFHTML = (booking: PdfBooking, qrCodeSvg: string): string => {
   const startDate = new Date(booking.start_date).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "short",
@@ -493,10 +511,10 @@ const handler = async (req: Request): Promise<Response> => {
         },
       }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error generating booking PDF:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: getErrorMessage(error) }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

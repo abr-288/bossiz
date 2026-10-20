@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getErrorMessage } from "../_shared/errorMessage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,9 +41,29 @@ const formatDate = (date: Date): string => {
   });
 };
 
-const generateReceiptHTML = (subscription: any, plan: any, qrCodeSvg: string, overrides?: ReceiptOverrides): string => {
+// Client affiché sur le reçu : demande d'abonnement ou abonnement payé.
+interface ReceiptSubject {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  company?: string | null;
+  plan_id: string;
+  plan_name: string;
+  updated_at?: string | null;
+}
+
+// Formule (subscription_plans) : seuls les champs affichés.
+interface ReceiptPlan {
+  name?: string;
+  subtitle?: string | null;
+  price?: string | null;
+  features?: string[] | null;
+}
+
+const generateReceiptHTML = (subscription: ReceiptSubject, plan: ReceiptPlan | null, qrCodeSvg: string, overrides?: ReceiptOverrides): string => {
   const receiptNumber = `REC-${subscription.id.substring(0, 8).toUpperCase()}`;
-  const paymentDate = formatDate(new Date(overrides?.paidAt ?? subscription.updated_at));
+  const paymentDate = formatDate(new Date(overrides?.paidAt ?? subscription.updated_at ?? Date.now()));
   
   // Extraire le montant du prix du plan (demande sur devis) ; un abonnement
   // payé en ligne fournit le montant réellement encaissé.
@@ -463,10 +484,10 @@ const handler = async (req: Request): Promise<Response> => {
         },
       }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error generating subscription receipt:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: getErrorMessage(error) }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -477,7 +498,7 @@ const handler = async (req: Request): Promise<Response> => {
 
 // Reçu d'un abonnement payé en ligne. Client scopé au JWT de l'appelant :
 // la RLS de user_subscriptions limite la lecture au titulaire (ou à un admin).
-async function paidSubscriptionReceipt(supabase: any, userSubscriptionId: string): Promise<Response> {
+async function paidSubscriptionReceipt(supabase: SupabaseClient, userSubscriptionId: string): Promise<Response> {
   const json = (body: object, status = 200) =>
     new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...corsHeaders } });
 

@@ -62,7 +62,7 @@ serve(async (req) => {
       return errorResponse('Non autorisé - Veuillez vous connecter', 401);
     }
 
-    let body: any;
+    let body: { booking_id?: unknown };
     try {
       body = await req.json();
     } catch {

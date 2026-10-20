@@ -140,14 +140,12 @@ erDiagram
 
 Détail fichier par fichier disponible sur demande (74 entrées, rythme d'évolution très actif sur septembre 2026 — cohérent avec le développement en cours de fonctionnalités business travel/marketplace local).
 
-## 6. Fichiers SQL orphelins hors du pipeline de migration officiel
+## 6. Fichier SQL orphelin hors du pipeline de migration officiel
 
-Trois fichiers SQL existent en dehors de [supabase/migrations/](../../supabase/migrations/) et **ne font pas partie du pipeline de migration Supabase** :
+Un fichier SQL existe en dehors de [supabase/migrations/](../../supabase/migrations/) et **ne fait pas partie du pipeline de migration Supabase** :
 
 | Fichier | Statut |
 |---|---|
-| [database/migrations/add_majestic_plans.sql](../../database/migrations/add_majestic_plans.sql) | Script d'insertion de données pour 3 plans Majestic. **Orphelin et obsolète** — le module Majestic a été explicitement purgé (`DELETE FROM subscription_plans WHERE subscription_type = 'majestic'`) et le `CHECK` restreint à `'standard'` uniquement par [20260805000000_drop_majestic_club.sql](../../supabase/migrations/20260805000000_drop_majestic_club.sql). Ce script échouerait s'il était rejoué aujourd'hui. |
-| [migrate-majestic.sql](../../migrate-majestic.sql) (racine) | Script de création complète du schéma Majestic (quasi-doublon de `20250101120000`/`20250101120001`, avec des différences mineures de schéma). **Redondant et obsolète** — les tables qu'il crée ont depuis été supprimées par la migration officielle. |
 | [supabase/create_missing_tables.sql](../../supabase/create_missing_tables.sql) | Script de secours (`CREATE TABLE IF NOT EXISTS`) recréant `user_subscriptions`, `payment_transactions`, `subscription_plans`, `subscription_pricing`. **Entièrement redondant** avec les migrations officielles de 2024-04 ; n'introduit rien de nouveau. |
 
 **Recommandation** : ces trois fichiers devraient être supprimés du dépôt ou déplacés vers une archive clairement identifiée (`archive/` ou équivalent), pour éviter toute confusion future ou exécution accidentelle contre une contrainte `CHECK` désormais incompatible.

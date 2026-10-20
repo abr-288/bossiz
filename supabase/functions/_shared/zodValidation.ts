@@ -147,7 +147,7 @@ export const paymentProcessSchema = z.object({
       .max(255, "Email is too long")
       .transform(val => val.trim().toLowerCase()),
     phone: z.preprocess(
-      (val) => typeof val === 'string' ? val.replace(/[\s\-\(\)]/g, '') : val,
+      (val) => typeof val === 'string' ? val.replace(/[\s\-()]/g, '') : val,
       z.string()
         .regex(/^\+?[0-9]{8,15}$/, "Phone must be 8-15 digits")
         .optional()

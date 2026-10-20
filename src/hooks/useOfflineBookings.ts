@@ -7,12 +7,13 @@ import {
   getSyncQueue,
   clearSyncQueue,
   removeSyncQueueItem,
-  getStorageStats
+  getStorageStats,
+  type BookingData
 } from '@/lib/offlineStorage';
 import { useToast } from '@/hooks/use-toast';
 
 export const useOfflineBookings = (userId: string | undefined) => {
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<BookingData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -69,7 +70,7 @@ export const useOfflineBookings = (userId: string | undefined) => {
         // Try to fetch from Supabase
         const { data, error } = await supabase
           .from('bookings')
-          .select('*')
+          .select('*, services(name, type, location)')
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
@@ -136,9 +137,9 @@ export const useOfflineBookings = (userId: string | undefined) => {
             if (item.action === 'create') {
               await supabase.from('bookings').insert(item.data);
             } else if (item.action === 'update') {
-              await supabase.from('bookings').update(item.data).eq('id', item.data.id);
+              await supabase.from('bookings').update(item.data).eq('id', item.data.id ?? '');
             } else if (item.action === 'delete') {
-              await supabase.from('bookings').delete().eq('id', item.data.id);
+              await supabase.from('bookings').delete().eq('id', item.data.id ?? '');
             }
           }
           

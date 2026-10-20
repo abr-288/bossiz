@@ -34,7 +34,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
     }
   };
 
-  const updateLeg = (id: string, field: keyof FlightLeg, value: any) => {
+  const updateLeg = <K extends keyof FlightLeg>(id: string, field: K, value: FlightLeg[K]) => {
     setLegs(legs.map(leg => leg.id === id ? { ...leg, [field]: value } : leg));
   };
 

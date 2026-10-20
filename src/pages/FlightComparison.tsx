@@ -38,6 +38,15 @@ interface PriceByDate {
   [airline: string]: number | string;
 }
 
+interface AirlineStat {
+  airline: string;
+  prices: number[];
+  avgPrice: number;
+  minPrice: number;
+  maxPrice: number;
+  count: number;
+}
+
 const CHART_COLORS = [
   "hsl(var(--primary))",
   "hsl(var(--secondary))",
@@ -84,11 +93,11 @@ const FlightComparison = () => {
     });
 
     if (result?.success && Array.isArray(result.data)) {
-      const mapped: FlightData[] = result.data.map((offer: any) => {
+      const mapped: FlightData[] = result.data.map((offer) => {
         const firstItinerary = offer.itineraries?.[0];
         const airlineCode = offer.validatingAirlineCodes?.[0] || "XX";
         const airline = getAirlineName(airlineCode);
-        const price = typeof offer.price === "object" ? parseFloat(offer.price.total) : offer.price || 0;
+        const price = typeof offer.price === "object" ? parseFloat(offer.price.total ?? "") : offer.price || 0;
         const duration = firstItinerary?.duration || "N/A";
         const stops = (firstItinerary?.segments?.length || 1) - 1;
 
@@ -136,11 +145,11 @@ const FlightComparison = () => {
       });
 
       if (result?.success && Array.isArray(result.data)) {
-        const mapped: FlightData[] = result.data.map((offer: any) => {
+        const mapped: FlightData[] = result.data.map((offer) => {
           const firstItinerary = offer.itineraries?.[0];
           const airlineCode = offer.validatingAirlineCodes?.[0] || "XX";
           const airline = getAirlineName(airlineCode);
-          const price = typeof offer.price === "object" ? parseFloat(offer.price.total) : offer.price || 0;
+          const price = typeof offer.price === "object" ? parseFloat(offer.price.total ?? "") : offer.price || 0;
           const duration = firstItinerary?.duration || "N/A";
           const stops = (firstItinerary?.segments?.length || 1) - 1;
 
@@ -178,12 +187,12 @@ const FlightComparison = () => {
       acc[flight.airline].minPrice = Math.min(acc[flight.airline].minPrice, flight.price);
       acc[flight.airline].maxPrice = Math.max(acc[flight.airline].maxPrice, flight.price);
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, AirlineStat>);
 
-    return Object.values(grouped).map((stat: any) => ({
+    return Object.values(grouped).map((stat) => ({
       ...stat,
       avgPrice: Math.round(stat.prices.reduce((a: number, b: number) => a + b, 0) / stat.prices.length),
-    })).sort((a: any, b: any) => a.avgPrice - b.avgPrice);
+    })).sort((a, b) => a.avgPrice - b.avgPrice);
   }, [flights]);
 
   // Price evolution by date
@@ -413,7 +422,7 @@ const FlightComparison = () => {
                               border: "1px solid hsl(var(--border))",
                               borderRadius: "8px"
                             }}
-                            formatter={(value: any) => `${value.toLocaleString()} EUR`}
+                            formatter={(value) => `${value.toLocaleString()} EUR`}
                           />
                           <Legend />
                           <Bar dataKey="avgPrice" name={t("ux.compare.avg")} fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
@@ -449,7 +458,7 @@ const FlightComparison = () => {
                                 border: "1px solid hsl(var(--border))",
                                 borderRadius: "8px"
                               }}
-                              formatter={(value: any) => `${value.toLocaleString()} EUR`}
+                              formatter={(value) => `${value.toLocaleString()} EUR`}
                             />
                             <Legend />
                             {topAirlines.map((airline, index) => (
@@ -504,7 +513,7 @@ const FlightComparison = () => {
                               border: "1px solid hsl(var(--border))",
                               borderRadius: "8px"
                             }}
-                            formatter={(value: any) => `${value.toLocaleString()} EUR`}
+                            formatter={(value) => `${value.toLocaleString()} EUR`}
                           />
                           <Legend />
                           <Line 

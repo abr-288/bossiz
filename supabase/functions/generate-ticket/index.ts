@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/integrations.ts";
-import { renderEmailTemplate, escapeHtml } from "../_shared/emailTemplates.ts";
+import { renderEmailTemplate, escapeHtml, type FallbackEmailBooking, type FallbackEmailPassenger } from "../_shared/emailTemplates.ts";
 import { getCaller, canAccessBooking, isStaff } from "../_shared/auth.ts";
 
 const corsHeaders = {
@@ -150,7 +150,7 @@ serve(async (req) => {
   }
 });
 
-function generateTicketEmailHtml(booking: any, passengers: any[]) {
+function generateTicketEmailHtml(booking: FallbackEmailBooking, passengers: FallbackEmailPassenger[]) {
   const passengerList = passengers.map((p, index) => 
     `<li>Passenger ${index + 1}: ${p.first_name} ${p.last_name} (${p.document_type}: ${p.document_number})</li>`
   ).join('');

@@ -39,6 +39,7 @@ import { Plus, Pencil, Trash2, Building2, Search, Eye, EyeOff } from "lucide-rea
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface Agency {
   id: string;
@@ -380,11 +381,11 @@ export default function AdminAgencies() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencies();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving agency:", error);
       toast({
         title: t("ux.bo.error"),
-        description: error.message || t("ux.bo.errorWhileSaving"),
+        description: getErrorMessage(error) || t("ux.bo.errorWhileSaving"),
         variant: "destructive",
       });
     }
@@ -417,7 +418,7 @@ export default function AdminAgencies() {
         .from("user_roles")
         .delete()
         .eq("user_id", ownerId)
-        .eq("role", "sub_agency" as any);
+        .eq("role", "sub_agency");
 
       const { error } = await supabase.from("agencies").delete().eq("id", id);
 
@@ -428,11 +429,11 @@ export default function AdminAgencies() {
         description: t("ux.bo.agencyDeletedSuccessfully"),
       });
       fetchAgencies();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting agency:", error);
       toast({
         title: t("ux.bo.error"),
-        description: error.message || t("ux.bo.errorWhileDeleting"),
+        description: getErrorMessage(error) || t("ux.bo.errorWhileDeleting"),
         variant: "destructive",
       });
     }

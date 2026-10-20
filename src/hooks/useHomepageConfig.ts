@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { ContentTranslations } from "@/lib/translatableContent";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface HomepageFeature {
   id: string;
@@ -222,11 +223,11 @@ export const useHomepageConfig = () => {
         title: "Succès",
         description: "Fonctionnalité mise à jour",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating feature:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour la fonctionnalité",
+        description: getErrorMessage(error) || "Impossible de mettre à jour la fonctionnalité",
         variant: "destructive",
       });
     }
@@ -256,11 +257,11 @@ export const useHomepageConfig = () => {
         title: "Succès",
         description: "Section mise à jour",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating section:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour la section",
+        description: getErrorMessage(error) || "Impossible de mettre à jour la section",
         variant: "destructive",
       });
     }

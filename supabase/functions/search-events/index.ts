@@ -21,6 +21,20 @@ interface EventResult {
   source: string;
 }
 
+// Événement de l'API Real-Time Events Search : seuls les champs lus ici.
+interface RealTimeEvent {
+  event_id?: string;
+  name?: string;
+  description?: string;
+  venue?: { name?: string; address?: string };
+  start_time?: string;
+  end_time?: string;
+  ticket_price?: string;
+  thumbnail?: string;
+  category?: string[];
+  link?: string;
+}
+
 // Search using Real-Time Events Search API (seule API disponible sur RapidAPI)
 async function searchRealTimeEvents(
   location: string,
@@ -55,7 +69,7 @@ async function searchRealTimeEvents(
     const data = await response.json();
     console.log('Real-Time Events found:', data.data?.length || 0);
 
-    return (data.data || []).slice(0, 15).map((event: any, index: number) => ({
+    return (data.data || []).slice(0, 15).map((event: RealTimeEvent, index: number) => ({
       id: `realtime-${event.event_id || index}`,
       name: event.name || 'Événement',
       description: event.description || '',

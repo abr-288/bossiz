@@ -72,12 +72,22 @@ serve(async (req) => {
       .select("id, start_date, end_date, guests, total_price, customer_name, customer_email, customer_phone, notes, booking_details, payment_status, services(name, location, maps_url, agency_id, specifications)")
       .eq("id", bookingId)
       .single();
-    // deno-lint-ignore no-explicit-any
-    const details = (booking?.booking_details ?? {}) as any;
+    const details = (booking?.booking_details ?? {}) as {
+      kind?: string;
+      items?: unknown;
+      payAtProperty?: boolean;
+      nights?: number;
+      cancellation?: { fee?: number; refund?: number; feeDueToHotel?: number } | null;
+    };
     if (!booking || details.kind !== "partner_hotel") return json({ success: false, error: "Réservation introuvable" }, 404);
 
-    // deno-lint-ignore no-explicit-any
-    const service = booking.services as any;
+    const service = booking.services as {
+      name?: string;
+      location?: string | null;
+      maps_url?: string | null;
+      agency_id?: string | null;
+      specifications?: { checkInFrom?: string; checkOutUntil?: string } | null;
+    } | null;
     const items = (Array.isArray(details.items) ? details.items : []) as Item[];
     const payAtProperty = details.payAtProperty === true;
     const nights = Number(details.nights) || 1;
@@ -114,7 +124,7 @@ serve(async (req) => {
       <p>Bon séjour,<br>L'équipe Bossiz+</p>`);
 
     const isCancellation = event === "cancelled";
-    const cancelInfo = (details.cancellation ?? {}) as { fee?: number; refund?: number; feeDueToHotel?: number };
+    const cancelInfo = details.cancellation ?? {};
     const cancelFee = Number(cancelInfo.fee || 0);
     const cancelRefund = Number(cancelInfo.refund || 0);
     const cancelSummary = `

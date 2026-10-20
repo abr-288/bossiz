@@ -73,7 +73,7 @@ serve(async (req) => {
     const kayakRapidApiHost = Deno.env.get('KAYAK_RAPIDAPI_HOST') || 'kayak-api.p.rapidapi.com';
 
     
-    const results: any[] = [];
+    const results: FlightOffer[] = [];
     
     // Try all APIs in parallel
     const apiPromises = [];
@@ -153,6 +153,172 @@ serve(async (req) => {
   }
 });
 
+// Offre de vol au format Amadeus, renvoyée au client pour toutes les sources.
+interface BaggageAllowance {
+  pieces: number;
+  weightKg: number;
+  included: boolean;
+}
+
+interface FlightOffer {
+  id: string;
+  itineraries: Array<{
+    segments: Array<{
+      departure: { iataCode: string; at: string };
+      arrival: { iataCode: string; at: string };
+      carrierCode: string;
+      carrierName?: string;
+      number: string;
+      duration: string;
+    }>;
+    duration: string;
+  }>;
+  price: { grandTotal: string; currency: string };
+  validatingAirlineCodes: string[];
+  carrierName?: string;
+  travelerPricings: Array<{ fareDetailsBySegment: Array<{ cabin: string }> }>;
+  baggage?: { cabin: BaggageAllowance; checked: BaggageAllowance; personalItem: boolean };
+  numberOfChanges?: number;
+  source?: string;
+  deepLink?: string;
+  link?: string;
+}
+
+// Réponses des fournisseurs : seuls les champs lus ici sont décrits, tous
+// optionnels car leur présence varie d'une API (et d'une réponse) à l'autre.
+interface KiwiPlace {
+  id?: string;
+  station?: { code?: string };
+  localTime?: string;
+}
+
+interface KiwiSegment {
+  source?: KiwiPlace;
+  destination?: KiwiPlace;
+  origin?: KiwiPlace;
+  flyFrom?: string;
+  flyTo?: string;
+  departure?: string;
+  arrival?: string;
+  local_departure?: string;
+  local_arrival?: string;
+  carrier?: { code?: string; name?: string };
+  marketingCarrier?: { code?: string; name?: string };
+  operatingCarrier?: { code?: string };
+  airline?: string;
+  flightNumber?: number | string;
+  flight_no?: number | string;
+  number?: number | string;
+}
+
+type KiwiSectorSegment = KiwiSegment & { segment?: KiwiSegment };
+
+interface KiwiBaggage {
+  pieces?: number;
+  quantity?: number;
+  weight?: number;
+  kilos?: number;
+}
+
+interface KiwiBaggageAllowances {
+  hold?: KiwiBaggage;
+  checkedBag?: KiwiBaggage;
+  cabin?: KiwiBaggage;
+  carryOn?: KiwiBaggage;
+}
+
+interface KiwiItinerary {
+  sector?: { sectorSegments?: KiwiSectorSegment[]; duration?: number };
+  legs?: KiwiSectorSegment[];
+  route?: KiwiSectorSegment[];
+  priceEur?: { amount?: number | string };
+  price?: number | string | { amount?: number | string };
+  duration?: { total?: number };
+  carriers?: Array<{ code?: string; name?: string }>;
+  airlines?: Array<{ code?: string; name?: string }>;
+  baggageAllowances?: KiwiBaggageAllowances;
+  baggage?: KiwiBaggageAllowances;
+  deepLink?: string;
+  shareId?: string;
+}
+
+interface SkyCarrier {
+  alternateId?: string;
+  id?: string | number;
+  code?: string;
+  name?: string;
+}
+
+interface SkySegment {
+  origin?: { flightPlaceId?: string };
+  destination?: { flightPlaceId?: string };
+  departure?: string;
+  arrival?: string;
+  marketingCarrier?: SkyCarrier;
+  operatingCarrier?: SkyCarrier;
+  flightNumber?: string;
+  number?: string;
+}
+
+interface SkyLeg {
+  origin?: { id?: string };
+  destination?: { id?: string };
+  departure?: string;
+  arrival?: string;
+  carriers?: SkyCarrier[] | { marketing?: SkyCarrier[] };
+  segments?: SkySegment[];
+  durationInMinutes?: number;
+}
+
+interface SkyFareItem {
+  id?: string;
+  quantity?: number;
+  weight?: number;
+  included?: boolean;
+}
+
+interface SkyItinerary {
+  price?: { raw?: number; formatted?: string };
+  legs?: SkyLeg[];
+  pricingOptions?: Array<{ items?: SkyFareItem[] }>;
+  deepLink?: string;
+}
+
+interface TravelpayoutsFlight {
+  price?: number;
+  airline?: string;
+  departure_at?: string;
+  duration_to?: number;
+  duration?: number;
+  origin_airport?: string;
+  origin?: string;
+  destination_airport?: string;
+  destination?: string;
+  flight_number?: string | number;
+  transfers?: number;
+  link?: string;
+}
+
+interface KayakLeg {
+  airline?: { code?: string; name?: string };
+  carrierCode?: string;
+  carrierName?: string;
+  origin?: string;
+  destination?: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  flightNumber?: string;
+  duration?: string;
+}
+
+interface KayakFlight extends KayakLeg {
+  price?: number | string | { total?: number | string; raw?: number | string };
+  legs?: KayakLeg[];
+  itineraries?: Array<{ segments?: KayakLeg[] }>;
+  deepLink?: string;
+  url?: string;
+}
+
 // getMockFlights was removed - it fabricated a full page of "flights" for
 // nonexistent airline schedules whenever no provider credential was
 // configured or every real API call failed. No fictitious fallback now:
@@ -169,7 +335,7 @@ async function searchAmadeus(
   travelClass: string,
   amadeusKey: string,
   amadeusSecret: string
-): Promise<any[]> {
+): Promise<FlightOffer[]> {
   try {
     console.log('Getting Amadeus access token...');
     const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
@@ -235,152 +401,6 @@ async function searchAmadeus(
   return [];
 }
 
-// Flight Fare Search API via RapidAPI
-async function searchFlightFare(
-  origin: string,
-  destination: string,
-  departureDate: string,
-  returnDate: string | undefined,
-  adults: number,
-  children: number,
-  travelClass: string,
-  rapidApiKey: string
-): Promise<any[]> {
-  try {
-    console.log('Searching flights with Flight Fare Search API via RapidAPI...');
-    
-    // Total travellers
-    const totalTravellers = adults + children;
-    
-    // Build search parameters - API uses city names, not IATA codes
-    // But we'll try with IATA codes first as that's what we have
-    const searchParams = new URLSearchParams({
-      departureCity: origin,
-      destinationCity: destination,
-      departureDate: departureDate,
-      travellers: totalTravellers.toString()
-    });
-    
-    if (returnDate) {
-      searchParams.append('returnDate', returnDate);
-    }
-    
-    // Try with the documented host from publicapi.dev
-    const searchResponse = await fetch(
-      `https://farish-flight-fare-search.p.rapidapi.com/searchFlights?${searchParams}`,
-      {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': rapidApiKey,
-          'X-RapidAPI-Host': 'farish-flight-fare-search.p.rapidapi.com'
-        }
-      }
-    );
-
-    if (!searchResponse.ok) {
-      const errorText = await searchResponse.text();
-      console.error('Flight Fare Search API error:', searchResponse.status, errorText.substring(0, 300));
-      return [];
-    }
-
-    const searchData = await searchResponse.json();
-    console.log('Flight Fare Search API response received, keys:', Object.keys(searchData));
-    
-    // Handle response - try different possible structures
-    const flightsArray = searchData.data || searchData.flights || searchData.results || searchData.offers || [];
-    
-    if (Array.isArray(flightsArray) && flightsArray.length > 0) {
-      console.log('Flight Fare Search first item:', JSON.stringify(flightsArray[0])?.substring(0, 500));
-      
-      const flights = flightsArray.slice(0, 15).map((flight: any, index: number) => {
-        // Try to extract data from various possible structures
-        const price = flight.price?.amount || flight.fare?.total || flight.totalPrice || flight.price || 0;
-        const currency = flight.price?.currency || flight.fare?.currency || 'EUR';
-        
-        // Get itinerary/segment info
-        const segments = flight.itineraries?.[0]?.segments || 
-                        flight.segments || 
-                        flight.legs || 
-                        [flight];
-        const firstSegment = segments[0] || {};
-        const lastSegment = segments[segments.length - 1] || firstSegment;
-        
-        const departureCode = firstSegment.departure?.iataCode || 
-                             firstSegment.origin?.code || 
-                             firstSegment.from || 
-                             origin;
-        const arrivalCode = lastSegment.arrival?.iataCode || 
-                           lastSegment.destination?.code || 
-                           lastSegment.to || 
-                           destination;
-        
-        const departureTime = firstSegment.departure?.at ||
-                             firstSegment.departureTime ||
-                             '';
-        const arrivalTime = lastSegment.arrival?.at ||
-                           lastSegment.arrivalTime ||
-                           '';
-
-        const carrierCode = firstSegment.carrierCode ||
-                           firstSegment.airline?.code ||
-                           firstSegment.airline ||
-                           flight.validatingAirlineCodes?.[0] ||
-                           'XX';
-        const flightNumber = firstSegment.number ||
-                            firstSegment.flightNumber ||
-                            '';
-        
-        // Calculate duration
-        const duration = firstSegment.duration || flight.duration || 'PT0H';
-        
-        // Keep price in EUR (or original currency)
-        const priceValue = parseFloat(price.toString()) || 0;
-        const priceEur = currency === 'EUR' ? priceValue : Math.round(priceValue / 655);
-        
-        return {
-          id: `FFS-${origin}-${destination}-${index}`,
-          itineraries: [{
-            segments: [{
-              departure: {
-                iataCode: departureCode,
-                at: departureTime,
-              },
-              arrival: {
-                iataCode: arrivalCode,
-                at: arrivalTime,
-              },
-              carrierCode: carrierCode,
-              number: flightNumber.toString(),
-              duration: duration,
-            }],
-            duration: duration,
-          }],
-          price: {
-            grandTotal: priceEur.toString(),
-            currency: 'EUR',
-          },
-          validatingAirlineCodes: [carrierCode],
-          travelerPricings: [{
-            fareDetailsBySegment: [{
-              cabin: travelClass || 'ECONOMY',
-            }],
-          }],
-          source: 'flightfare'
-        };
-      });
-      
-      console.log(`Found ${flights.length} flights from Flight Fare Search`);
-      return flights;
-    }
-    
-    console.log('No flights found in Flight Fare Search response');
-    return [];
-  } catch (error) {
-    console.error('Flight Fare Search API exception:', error instanceof Error ? error.message : String(error));
-    return [];
-  }
-}
-
 // Kiwi.com API via RapidAPI
 async function searchKiwi(
   origin: string,
@@ -391,7 +411,7 @@ async function searchKiwi(
   children: number,
   travelClass: string,
   rapidApiKey: string
-): Promise<any[]> {
+): Promise<FlightOffer[]> {
   try {
     console.log('Searching flights with Kiwi.com API via RapidAPI...');
     
@@ -474,20 +494,20 @@ async function searchKiwi(
         console.log('Kiwi priceEur:', firstItem.priceEur);
       }
       
-      const flights = flightsArray.slice(0, 15).map((flight: any, index: number) => {
+      const flights = flightsArray.slice(0, 15).map((flight: KiwiItinerary, index: number): FlightOffer => {
         // Handle Kiwi RapidAPI structure (sector contains segments)
-        const sector = flight.sector || {};
-        const sectorSegments = sector.sectorSegments || flight.legs || flight.route || [];
-        const firstSectorSegment = sectorSegments[0] || {};
-        const firstSegment = firstSectorSegment.segment || firstSectorSegment || {};
-        const lastSectorSegment = sectorSegments[sectorSegments.length - 1] || {};
-        const lastSegment = lastSectorSegment.segment || lastSectorSegment || {};
-        
+        const sectorSegments = flight.sector?.sectorSegments || flight.legs || flight.route || [];
+        const firstSectorSegment: KiwiSectorSegment = sectorSegments[0] || {};
+        const firstSegment: KiwiSegment = firstSectorSegment.segment || firstSectorSegment;
+        const lastSectorSegment: KiwiSectorSegment = sectorSegments[sectorSegments.length - 1] || {};
+        const lastSegment: KiwiSegment = lastSectorSegment.segment || lastSectorSegment;
+
         // Get price - priceEur.amount is the main price in this API
-        const priceEur = flight.priceEur?.amount || flight.price?.amount || flight.price || 0;
-        
+        const rawPrice = flight.price;
+        const priceEur = flight.priceEur?.amount || (typeof rawPrice === 'object' ? rawPrice.amount : rawPrice) || 0;
+
         // Get duration from sector
-        const durationSeconds = sector.duration || flight.duration?.total || 0;
+        const durationSeconds = flight.sector?.duration || flight.duration?.total || 0;
         const durationMinutes = Math.floor(durationSeconds / 60);
         
         // Get departure info from first segment
@@ -531,9 +551,9 @@ async function searchKiwi(
         console.log(`Kiwi flight ${index}: carrier=${carrierCode}, segment keys:`, Object.keys(firstSegment));
         
         // Extract baggage information from API
-        const baggageAllowances = flight.baggageAllowances || flight.baggage || {};
-        const holdBaggage = baggageAllowances.hold || baggageAllowances.checkedBag || {};
-        const cabinBaggage = baggageAllowances.cabin || baggageAllowances.carryOn || {};
+        const baggageAllowances: KiwiBaggageAllowances = flight.baggageAllowances || flight.baggage || {};
+        const holdBaggage: KiwiBaggage = baggageAllowances.hold || baggageAllowances.checkedBag || {};
+        const cabinBaggage: KiwiBaggage = baggageAllowances.cabin || baggageAllowances.carryOn || {};
         
         const baggageInfo = {
           cabin: {
@@ -607,7 +627,7 @@ async function searchSkyScrapper(
   children: number,
   travelClass: string,
   rapidApiKey: string
-): Promise<any[]> {
+): Promise<FlightOffer[]> {
   try {
     console.log('Searching flights with Sky-Scrapper API via RapidAPI...');
     
@@ -736,15 +756,15 @@ async function searchSkyScrapper(
     if (Array.isArray(itineraries) && itineraries.length > 0) {
       console.log('Sky-Scrapper found', itineraries.length, 'itineraries');
       
-      const flights = itineraries.slice(0, 15).map((itinerary: any, index: number) => {
+      const flights = itineraries.slice(0, 15).map((itinerary: SkyItinerary, index: number): FlightOffer => {
         // Get price
         const price = itinerary.price?.raw || itinerary.price?.formatted?.replace(/[^0-9.]/g, '') || 0;
         
         // Get legs/segments
         const legs = itinerary.legs || [];
-        const firstLeg = legs[0] || {};
+        const firstLeg: SkyLeg = legs[0] || {};
         const segments = firstLeg.segments || [];
-        const firstSegment = segments[0] || {};
+        const firstSegment: SkySegment = segments[0] || {};
         
         // Get departure/arrival info
         const departureCode = firstLeg.origin?.id || firstSegment.origin?.flightPlaceId || origin;
@@ -753,9 +773,10 @@ async function searchSkyScrapper(
         const arrivalTime = firstLeg.arrival || firstSegment.arrival || '';
         
         // Get carrier info - try multiple paths
-        const carriers = firstLeg.carriers?.marketing || firstLeg.carriers || [];
-        const carrierCode = carriers[0]?.alternateId || 
-          carriers[0]?.id ||
+        const legCarriers = firstLeg.carriers;
+        const carriers: SkyCarrier[] = (Array.isArray(legCarriers) ? legCarriers : legCarriers?.marketing) || [];
+        const carrierCode = carriers[0]?.alternateId ||
+          (carriers[0]?.id != null ? String(carriers[0].id) : undefined) ||
           carriers[0]?.code ||
           firstSegment.marketingCarrier?.alternateId || 
           firstSegment.marketingCarrier?.code ||
@@ -776,14 +797,14 @@ async function searchSkyScrapper(
         
         // Extract baggage information from API
         const fareOptions = itinerary.pricingOptions || [];
-        const firstFareOption = fareOptions[0] || {};
+        const firstFareOption: { items?: SkyFareItem[] } = fareOptions[0] || {};
         const baggageOptions = firstFareOption.items || [];
         
         // Parse baggage data from fare options
         let cabinBaggage = { pieces: 1, weightKg: 8, included: true };
         let checkedBaggage = { pieces: 0, weightKg: 0, included: false };
         
-        baggageOptions.forEach((item: any) => {
+        baggageOptions.forEach((item) => {
           if (item.id?.includes('cabin') || item.id?.includes('carry_on')) {
             cabinBaggage = {
               pieces: item.quantity || 1,
@@ -863,7 +884,7 @@ async function searchTravelpayouts(
   children: number,
   travelClass: string,
   token: string
-): Promise<any[]> {
+): Promise<FlightOffer[]> {
   try {
     console.log('Searching flights with Travelpayouts API v3...');
     
@@ -943,7 +964,7 @@ async function searchTravelpayouts(
         'UA': 'United Airlines'
       };
       
-      const flights = data.data.slice(0, 15).map((flight: any, index: number) => {
+      const flights = data.data.slice(0, 15).map((flight: TravelpayoutsFlight, index: number): FlightOffer => {
         // Price is in EUR
         const priceEur = flight.price || 0;
         
@@ -976,7 +997,7 @@ async function searchTravelpayouts(
               },
               carrierCode: carrierCode,
               carrierName: carrierName,
-              number: flight.flight_number || '',
+              number: String(flight.flight_number || ''),
               duration: durationMinutes ? `PT${hours}H${minutes}M` : '',
             }],
             duration: durationMinutes ? `PT${hours}H${minutes}M` : '',
@@ -1021,7 +1042,7 @@ async function searchKayak(
   travelClass: string,
   rapidApiKey: string,
   rapidApiHost: string
-): Promise<any[]> {
+): Promise<FlightOffer[]> {
   try {
     console.log('Searching flights with Kayak API via RapidAPI (POST)...');
     
@@ -1080,12 +1101,13 @@ async function searchKayak(
     if (Array.isArray(flightsArray) && flightsArray.length > 0) {
       console.log(`Kayak found ${flightsArray.length} flights`);
       
-      return flightsArray.slice(0, 15).map((flight: any, index: number) => {
+      return flightsArray.slice(0, 15).map((flight: KayakFlight, index: number): FlightOffer => {
         // Handle varying response structures
-        const price = flight.price?.total || flight.price?.raw || flight.price || 0;
-        const legs = flight.legs || flight.itineraries?.[0]?.segments || [flight];
-        const firstLeg = legs[0] || {};
-        const lastLeg = legs[legs.length - 1] || firstLeg;
+        const rawPrice = flight.price;
+        const price = (typeof rawPrice === 'object' ? rawPrice.total || rawPrice.raw : rawPrice) || 0;
+        const legs: KayakLeg[] = flight.legs || flight.itineraries?.[0]?.segments || [flight];
+        const firstLeg: KayakLeg = legs[0] || {};
+        const lastLeg: KayakLeg = legs[legs.length - 1] || firstLeg;
         
         const carrierCode = firstLeg.airline?.code || firstLeg.carrierCode || 'XX';
         const carrierName = firstLeg.airline?.name || firstLeg.carrierName || carrierCode;

@@ -156,7 +156,7 @@ Voir détail complet dans [technique/07-roles-permissions.md](technique/07-roles
 ### 5.6 Conformité aux données personnelles (Côte d'Ivoire — ARTCI, loi n°2013-450)
 - **Droit à l'effacement implémenté** (EF-043), avec anonymisation plutôt que suppression physique des données transactionnelles — cohérent avec une obligation de conservation comptable, mais la durée précise de conservation légale n'est pas documentée dans le code.
 - **Aucune mention explicite de déclaration ARTCI, de politique de confidentialité alignée sur la loi ivoirienne de protection des données personnelles, ni de registre de traitement n'a été trouvée dans le code** — une page `/privacy` (PrivacyPolicy.tsx) existe mais son contenu texte n'a pas été audité dans le cadre de cette documentation technique. **[déduction]** Une revue juridique dédiée de cette page et des pratiques de traitement de données (finalité, base légale, durée de conservation par table) est recommandée avant toute certification de conformité formelle.
-- Logging : une charte de logging sécurisé existe ([SECURE_LOGGING_GUIDELINES.md](../SECURE_LOGGING_GUIDELINES.md)) interdisant explicitement la journalisation de données personnelles — bonne pratique déclarée, non vérifiée techniquement (voir [technique/10-deploiement-exploitation.md](technique/10-deploiement-exploitation.md) §6).
+- Logging : une charte de logging sécurisé existe ([SECURE_LOGGING_GUIDELINES.md](archive/SECURE_LOGGING_GUIDELINES.md)) interdisant explicitement la journalisation de données personnelles — bonne pratique déclarée, non vérifiée techniquement (voir [technique/10-deploiement-exploitation.md](technique/10-deploiement-exploitation.md) §6).
 
 ## 6. Contraintes techniques et intégrations
 

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import type { BossizCountry } from "@/components/bossiz/BossizSiteLayout";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface BossizMicrositeContent {
   tagline: string;
@@ -109,17 +111,17 @@ export const useBossizMicrositeContent = (country: BossizCountry) => {
     try {
       const { error } = await supabase
         .from("site_config")
-        .update({ config_value: updates as any })
+        .update({ config_value: updates as unknown as Json })
         .eq("config_key", configKeyFor(country));
 
       if (error) throw error;
       setContent(updates);
       toast({ title: "Succès", description: "Contenu mis à jour" });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating Bossiz microsite content:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour le contenu",
+        description: getErrorMessage(error) || "Impossible de mettre à jour le contenu",
         variant: "destructive",
       });
     }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface EmailTemplate {
   id: string;
@@ -37,10 +38,10 @@ export const useEmailTemplates = () => {
       }));
       
       return templates as EmailTemplate[];
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       return [];
@@ -63,10 +64,10 @@ export const useEmailTemplates = () => {
         description: "Template créé avec succès",
       });
       return true;
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       return false;
@@ -90,10 +91,10 @@ export const useEmailTemplates = () => {
         description: "Template mis à jour avec succès",
       });
       return true;
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       return false;
@@ -117,10 +118,10 @@ export const useEmailTemplates = () => {
         description: "Template supprimé avec succès",
       });
       return true;
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       return false;

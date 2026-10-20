@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "13.0.5"
   }
   graphql_public: {
     Tables: {
@@ -42,11 +42,8 @@ export type Database = {
       activities: {
         Row: {
           agency_id: string | null
-          available_dates: string[]
-          latitude: number | null
-          longitude: number | null
-          maps_url: string | null
           available: boolean | null
+          available_dates: string[]
           category: string
           created_at: string
           currency: string
@@ -57,20 +54,21 @@ export type Database = {
           id: string
           image_url: string | null
           included: string[] | null
+          latitude: number | null
           location: string
+          longitude: number | null
+          maps_url: string | null
           name: string
           price_per_unit: number
           rating: number | null
           reviews: number | null
+          translations: Json
           updated_at: string
         }
         Insert: {
           agency_id?: string | null
-          available_dates?: string[]
-          latitude?: number | null
-          longitude?: number | null
-          maps_url?: string | null
           available?: boolean | null
+          available_dates?: string[]
           category: string
           created_at?: string
           currency?: string
@@ -81,20 +79,21 @@ export type Database = {
           id?: string
           image_url?: string | null
           included?: string[] | null
+          latitude?: number | null
           location: string
+          longitude?: number | null
+          maps_url?: string | null
           name: string
           price_per_unit: number
           rating?: number | null
           reviews?: number | null
+          translations?: Json
           updated_at?: string
         }
         Update: {
           agency_id?: string | null
-          available_dates?: string[]
-          latitude?: number | null
-          longitude?: number | null
-          maps_url?: string | null
           available?: boolean | null
+          available_dates?: string[]
           category?: string
           created_at?: string
           currency?: string
@@ -105,11 +104,15 @@ export type Database = {
           id?: string
           image_url?: string | null
           included?: string[] | null
+          latitude?: number | null
           location?: string
+          longitude?: number | null
+          maps_url?: string | null
           name?: string
           price_per_unit?: number
           rating?: number | null
           reviews?: number | null
+          translations?: Json
           updated_at?: string
         }
         Relationships: [
@@ -138,6 +141,7 @@ export type Database = {
           starts_at: string | null
           text_color: string | null
           title: string
+          translations: Json
           updated_at: string
         }
         Insert: {
@@ -155,6 +159,7 @@ export type Database = {
           starts_at?: string | null
           text_color?: string | null
           title: string
+          translations?: Json
           updated_at?: string
         }
         Update: {
@@ -172,13 +177,13 @@ export type Database = {
           starts_at?: string | null
           text_color?: string | null
           title?: string
+          translations?: Json
           updated_at?: string
         }
         Relationships: []
       }
       agencies: {
         Row: {
-          enabled_features: Json
           car_plan_id: string | null
           car_plan_started_at: string | null
           commission_rate: number | null
@@ -186,6 +191,7 @@ export type Database = {
           contact_phone: string | null
           created_at: string
           description: string | null
+          enabled_features: Json
           id: string
           is_active: boolean | null
           is_visible: boolean | null
@@ -195,7 +201,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          enabled_features?: Json
           car_plan_id?: string | null
           car_plan_started_at?: string | null
           commission_rate?: number | null
@@ -203,6 +208,7 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           description?: string | null
+          enabled_features?: Json
           id?: string
           is_active?: boolean | null
           is_visible?: boolean | null
@@ -212,7 +218,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          enabled_features?: Json
           car_plan_id?: string | null
           car_plan_started_at?: string | null
           commission_rate?: number | null
@@ -220,6 +225,7 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           description?: string | null
+          enabled_features?: Json
           id?: string
           is_active?: boolean | null
           is_visible?: boolean | null
@@ -235,6 +241,233 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "car_partner_plans"
             referencedColumns: ["plan_id"]
+          },
+        ]
+      }
+      agency_branding_subscriptions: {
+        Row: {
+          agency_id: string
+          amount_due: number
+          created_at: string
+          currency: string
+          ends_at: string | null
+          id: string
+          paid_at: string | null
+          starts_at: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          amount_due?: number
+          created_at?: string
+          currency?: string
+          ends_at?: string | null
+          id?: string
+          paid_at?: string | null
+          starts_at?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          amount_due?: number
+          created_at?: string
+          currency?: string
+          ends_at?: string | null
+          id?: string
+          paid_at?: string | null
+          starts_at?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_branding_subscriptions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agency_payout_details: {
+        Row: {
+          agency_id: string
+          bank_details: Json | null
+          beneficiary_name: string | null
+          mobile_money_number: string | null
+          payment_method: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          bank_details?: Json | null
+          beneficiary_name?: string | null
+          mobile_money_number?: string | null
+          payment_method: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          bank_details?: Json | null
+          beneficiary_name?: string | null
+          mobile_money_number?: string | null
+          payment_method?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_payout_details_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artisan_orders: {
+        Row: {
+          artisan_id: string
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          message: string | null
+          product_name: string
+          quantity: number
+          status: string
+          total_amount: number | null
+          unit_price: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          artisan_id: string
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          message?: string | null
+          product_name: string
+          quantity?: number
+          status?: string
+          total_amount?: number | null
+          unit_price: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          artisan_id?: string
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          message?: string | null
+          product_name?: string
+          quantity?: number
+          status?: string
+          total_amount?: number | null
+          unit_price?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisan_orders_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artisans: {
+        Row: {
+          address: string | null
+          agency_id: string
+          bio: string | null
+          craft_type: string
+          created_at: string
+          gallery: string[]
+          id: string
+          image_url: string | null
+          is_active: boolean
+          latitude: number | null
+          location: string
+          longitude: number | null
+          maps_url: string | null
+          name: string
+          phone: string | null
+          products: Json
+          rating: number
+          total_reviews: number
+          translations: Json
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          agency_id: string
+          bio?: string | null
+          craft_type: string
+          created_at?: string
+          gallery?: string[]
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          maps_url?: string | null
+          name: string
+          phone?: string | null
+          products?: Json
+          rating?: number
+          total_reviews?: number
+          translations?: Json
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          agency_id?: string
+          bio?: string | null
+          craft_type?: string
+          created_at?: string
+          gallery?: string[]
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          maps_url?: string | null
+          name?: string
+          phone?: string | null
+          products?: Json
+          rating?: number
+          total_reviews?: number
+          translations?: Json
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisans_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -367,25 +600,29 @@ export type Database = {
         Row: {
           amount_due_now: number
           amount_paid: number
+          approval_status: string | null
+          approved_at: string | null
+          approved_by: string | null
           balance_due: number
           balance_paid_at: string | null
           balance_paid_by: string | null
           balance_paid_on_site: boolean
           booking_details: Json | null
+          company_id: string | null
           created_at: string
           currency: string
           customer_email: string
           customer_name: string
           customer_phone: string
+          deposit_percent: number
           end_date: string | null
           external_ref: string | null
           flight_status: string | null
           guests: number
           id: string
           notes: string | null
-          payment_status: Database["public"]["Enums"]["payment_status"]
           payment_plan: string
-          deposit_percent: number
+          payment_status: Database["public"]["Enums"]["payment_status"]
           pnr: string | null
           prebooking_id: string | null
           service_id: string
@@ -400,25 +637,29 @@ export type Database = {
         Insert: {
           amount_due_now?: number
           amount_paid?: number
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           balance_due?: number
           balance_paid_at?: string | null
           balance_paid_by?: string | null
           balance_paid_on_site?: boolean
           booking_details?: Json | null
+          company_id?: string | null
           created_at?: string
           currency?: string
           customer_email: string
           customer_name: string
           customer_phone: string
+          deposit_percent?: number
           end_date?: string | null
           external_ref?: string | null
           flight_status?: string | null
           guests?: number
           id?: string
           notes?: string | null
-          payment_status?: Database["public"]["Enums"]["payment_status"]
           payment_plan?: string
-          deposit_percent?: number
+          payment_status?: Database["public"]["Enums"]["payment_status"]
           pnr?: string | null
           prebooking_id?: string | null
           service_id: string
@@ -433,25 +674,29 @@ export type Database = {
         Update: {
           amount_due_now?: number
           amount_paid?: number
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           balance_due?: number
           balance_paid_at?: string | null
           balance_paid_by?: string | null
           balance_paid_on_site?: boolean
           booking_details?: Json | null
+          company_id?: string | null
           created_at?: string
           currency?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string
+          deposit_percent?: number
           end_date?: string | null
           external_ref?: string | null
           flight_status?: string | null
           guests?: number
           id?: string
           notes?: string | null
-          payment_status?: Database["public"]["Enums"]["payment_status"]
           payment_plan?: string
-          deposit_percent?: number
+          payment_status?: Database["public"]["Enums"]["payment_status"]
           pnr?: string | null
           prebooking_id?: string | null
           service_id?: string
@@ -464,6 +709,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_service_id_fkey"
             columns: ["service_id"]
@@ -570,6 +822,7 @@ export type Database = {
           sort_order: number
           support_level: string
           tagline: string | null
+          translations: Json
           updated_at: string
           yearly_price: number
         }
@@ -588,6 +841,7 @@ export type Database = {
           sort_order?: number
           support_level?: string
           tagline?: string | null
+          translations?: Json
           updated_at?: string
           yearly_price?: number
         }
@@ -606,6 +860,7 @@ export type Database = {
           sort_order?: number
           support_level?: string
           tagline?: string | null
+          translations?: Json
           updated_at?: string
           yearly_price?: number
         }
@@ -629,7 +884,7 @@ export type Database = {
         }
         Insert: {
           agency_id: string
-          amount_due?: number
+          amount_due: number
           billing_cycle: string
           created_at?: string
           currency?: string
@@ -671,56 +926,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "car_partner_plans"
             referencedColumns: ["plan_id"]
-          },
-        ]
-      }
-      agency_branding_subscriptions: {
-        Row: {
-          agency_id: string
-          amount_due: number
-          created_at: string
-          currency: string
-          ends_at: string | null
-          id: string
-          paid_at: string | null
-          starts_at: string | null
-          status: string
-          transaction_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          agency_id: string
-          amount_due?: number
-          created_at?: string
-          currency?: string
-          ends_at?: string | null
-          id?: string
-          paid_at?: string | null
-          starts_at?: string | null
-          status?: string
-          transaction_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          agency_id?: string
-          amount_due?: number
-          created_at?: string
-          currency?: string
-          ends_at?: string | null
-          id?: string
-          paid_at?: string | null
-          starts_at?: string | null
-          status?: string
-          transaction_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "agency_branding_subscriptions_agency_id_fkey"
-            columns: ["agency_id"]
-            isOneToOne: false
-            referencedRelation: "agencies"
-            referencedColumns: ["id"]
           },
         ]
       }
@@ -793,43 +998,82 @@ export type Database = {
           {
             foreignKeyName: "commissions_booking_id_fkey"
             columns: ["booking_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
       }
-      agency_payout_details: {
+      companies: {
         Row: {
-          agency_id: string
-          bank_details: Json | null
-          beneficiary_name: string | null
-          mobile_money_number: string | null
-          payment_method: string
+          billing_email: string | null
+          billing_phone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          invite_code: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          owner_id: string
           updated_at: string
         }
         Insert: {
-          agency_id: string
-          bank_details?: Json | null
-          beneficiary_name?: string | null
-          mobile_money_number?: string | null
-          payment_method: string
+          billing_email?: string | null
+          billing_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          invite_code?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          owner_id: string
           updated_at?: string
         }
         Update: {
-          agency_id?: string
-          bank_details?: Json | null
-          beneficiary_name?: string | null
-          mobile_money_number?: string | null
-          payment_method?: string
+          billing_email?: string | null
+          billing_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          invite_code?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      company_members: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "agency_payout_details_agency_id_fkey"
-            columns: ["agency_id"]
-            isOneToOne: true
-            referencedRelation: "agencies"
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -957,6 +1201,72 @@ export type Database = {
           specialization?: string[] | null
           timezone?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      culture_entries: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string
+          featured: boolean
+          gallery: Json
+          id: string
+          image_caption: string | null
+          image_credit: string | null
+          image_source_url: string | null
+          image_url: string | null
+          link_url: string | null
+          location: string | null
+          period: string | null
+          published: boolean
+          slug: string | null
+          sort_order: number
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content?: string | null
+          created_at?: string
+          featured?: boolean
+          gallery?: Json
+          id?: string
+          image_caption?: string | null
+          image_credit?: string | null
+          image_source_url?: string | null
+          image_url?: string | null
+          link_url?: string | null
+          location?: string | null
+          period?: string | null
+          published?: boolean
+          slug?: string | null
+          sort_order?: number
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          featured?: boolean
+          gallery?: Json
+          id?: string
+          image_caption?: string | null
+          image_credit?: string | null
+          image_source_url?: string | null
+          image_url?: string | null
+          link_url?: string | null
+          location?: string | null
+          period?: string | null
+          published?: boolean
+          slug?: string | null
+          sort_order?: number
+          summary?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1098,6 +1408,126 @@ export type Database = {
           type?: string
           updated_at?: string | null
           variables?: Json | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          ai_tags: string[]
+          category: string
+          city: string | null
+          country: string | null
+          country_code: string | null
+          created_at: string
+          curated_at: string | null
+          external_id: string | null
+          genre: string | null
+          highlight_score: number | null
+          id: string
+          image_url: string | null
+          info: string | null
+          is_featured: boolean
+          is_published: boolean
+          latitude: number | null
+          local_date: string
+          local_time: string | null
+          longitude: number | null
+          name: string
+          onsale_start: string | null
+          price_currency: string | null
+          price_max: number | null
+          price_max_xof: number | null
+          price_min: number | null
+          price_min_xof: number | null
+          slug: string
+          source: string
+          starts_at: string | null
+          status: string
+          summary_fr: string | null
+          synced_at: string | null
+          ticket_url: string | null
+          timezone: string | null
+          updated_at: string
+          venue_address: string | null
+          venue_name: string | null
+        }
+        Insert: {
+          ai_tags?: string[]
+          category?: string
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          curated_at?: string | null
+          external_id?: string | null
+          genre?: string | null
+          highlight_score?: number | null
+          id?: string
+          image_url?: string | null
+          info?: string | null
+          is_featured?: boolean
+          is_published?: boolean
+          latitude?: number | null
+          local_date: string
+          local_time?: string | null
+          longitude?: number | null
+          name: string
+          onsale_start?: string | null
+          price_currency?: string | null
+          price_max?: number | null
+          price_max_xof?: number | null
+          price_min?: number | null
+          price_min_xof?: number | null
+          slug: string
+          source: string
+          starts_at?: string | null
+          status?: string
+          summary_fr?: string | null
+          synced_at?: string | null
+          ticket_url?: string | null
+          timezone?: string | null
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
+        }
+        Update: {
+          ai_tags?: string[]
+          category?: string
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          curated_at?: string | null
+          external_id?: string | null
+          genre?: string | null
+          highlight_score?: number | null
+          id?: string
+          image_url?: string | null
+          info?: string | null
+          is_featured?: boolean
+          is_published?: boolean
+          latitude?: number | null
+          local_date?: string
+          local_time?: string | null
+          longitude?: number | null
+          name?: string
+          onsale_start?: string | null
+          price_currency?: string | null
+          price_max?: number | null
+          price_max_xof?: number | null
+          price_min?: number | null
+          price_min_xof?: number | null
+          slug?: string
+          source?: string
+          starts_at?: string | null
+          status?: string
+          summary_fr?: string | null
+          synced_at?: string | null
+          ticket_url?: string | null
+          timezone?: string | null
+          updated_at?: string
+          venue_address?: string | null
+          venue_name?: string | null
         }
         Relationships: []
       }
@@ -1252,6 +1682,7 @@ export type Database = {
           id: string
           order_num: number | null
           title: string
+          translations: Json
           updated_at: string
         }
         Insert: {
@@ -1263,6 +1694,7 @@ export type Database = {
           id?: string
           order_num?: number | null
           title: string
+          translations?: Json
           updated_at?: string
         }
         Update: {
@@ -1274,6 +1706,7 @@ export type Database = {
           id?: string
           order_num?: number | null
           title?: string
+          translations?: Json
           updated_at?: string
         }
         Relationships: []
@@ -1305,72 +1738,6 @@ export type Database = {
           title?: string
           updated_at?: string
           visible?: boolean | null
-        }
-        Relationships: []
-      }
-      culture_entries: {
-        Row: {
-          category: string
-          content: string | null
-          created_at: string
-          featured: boolean
-          gallery: Json
-          id: string
-          image_caption: string | null
-          image_credit: string | null
-          image_source_url: string | null
-          image_url: string | null
-          link_url: string | null
-          location: string | null
-          period: string | null
-          published: boolean
-          slug: string | null
-          sort_order: number
-          summary: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          category: string
-          content?: string | null
-          created_at?: string
-          featured?: boolean
-          gallery?: Json
-          id?: string
-          image_caption?: string | null
-          image_credit?: string | null
-          image_source_url?: string | null
-          image_url?: string | null
-          link_url?: string | null
-          location?: string | null
-          period?: string | null
-          published?: boolean
-          slug?: string | null
-          sort_order?: number
-          summary: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          category?: string
-          content?: string | null
-          created_at?: string
-          featured?: boolean
-          gallery?: Json
-          id?: string
-          image_caption?: string | null
-          image_credit?: string | null
-          image_source_url?: string | null
-          image_url?: string | null
-          link_url?: string | null
-          location?: string | null
-          period?: string | null
-          published?: boolean
-          slug?: string | null
-          sort_order?: number
-          summary?: string
-          title?: string
-          updated_at?: string
         }
         Relationships: []
       }
@@ -1414,7 +1781,29 @@ export type Database = {
           rate_snapshot?: Json
           room_type_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hotel_booking_rooms_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hotel_booking_rooms_rate_id_fkey"
+            columns: ["rate_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_rates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hotel_booking_rooms_room_type_id_fkey"
+            columns: ["room_type_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_room_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hotel_onsite_commission_invoices: {
         Row: {
@@ -1471,7 +1860,15 @@ export type Database = {
           stays_count?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hotel_onsite_commission_invoices_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hotel_rates: {
         Row: {
@@ -1519,7 +1916,15 @@ export type Database = {
           sort_order?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hotel_rates_room_type_id_fkey"
+            columns: ["room_type_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_room_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hotel_room_types: {
         Row: {
@@ -1570,7 +1975,15 @@ export type Database = {
           total_units?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hotel_room_types_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       integration_credentials: {
         Row: {
@@ -1676,6 +2089,138 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      loyalty_accounts: {
+        Row: {
+          checkin_streak: number
+          created_at: string
+          last_checkin_date: string | null
+          referral_code: string
+          referral_rewarded: boolean
+          referred_by: string | null
+          user_id: string
+        }
+        Insert: {
+          checkin_streak?: number
+          created_at?: string
+          last_checkin_date?: string | null
+          referral_code: string
+          referral_rewarded?: boolean
+          referred_by?: string | null
+          user_id: string
+        }
+        Update: {
+          checkin_streak?: number
+          created_at?: string
+          last_checkin_date?: string | null
+          referral_code?: string
+          referral_rewarded?: boolean
+          referred_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loyalty_settings: {
+        Row: {
+          daily_checkin_points: number
+          id: boolean
+          max_redeem_ratio: number
+          min_redeem_points: number
+          point_value_xof: number
+          points_per_100_xof: number
+          points_validity_months: number
+          referral_referee_points: number
+          referral_referrer_points: number
+          streak_bonus_points: number
+          streak_days: number
+          updated_at: string
+        }
+        Insert: {
+          daily_checkin_points?: number
+          id?: boolean
+          max_redeem_ratio?: number
+          min_redeem_points?: number
+          point_value_xof?: number
+          points_per_100_xof?: number
+          points_validity_months?: number
+          referral_referee_points?: number
+          referral_referrer_points?: number
+          streak_bonus_points?: number
+          streak_days?: number
+          updated_at?: string
+        }
+        Update: {
+          daily_checkin_points?: number
+          id?: boolean
+          max_redeem_ratio?: number
+          min_redeem_points?: number
+          point_value_xof?: number
+          points_per_100_xof?: number
+          points_validity_months?: number
+          referral_referee_points?: number
+          referral_referrer_points?: number
+          streak_bonus_points?: number
+          streak_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      loyalty_tiers: {
+        Row: {
+          code: string
+          min_points: number
+          multiplier: number
+          name: string
+        }
+        Insert: {
+          code: string
+          min_points: number
+          multiplier?: number
+          name: string
+        }
+        Update: {
+          code?: string
+          min_points?: number
+          multiplier?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      loyalty_transactions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          kind: string
+          points: number
+          reference_id: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          kind: string
+          points: number
+          reference_id?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          kind?: string
+          points?: number
+          reference_id?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       luxe_properties: {
         Row: {
@@ -2588,14 +3133,16 @@ export type Database = {
       }
       payments: {
         Row: {
-          amount: number
           agency_branding_subscription_id: string | null
+          amount: number
           booking_id: string | null
           car_partner_subscription_id: string | null
           created_at: string | null
           currency: string
           id: string
           ip_address: string | null
+          loyalty_discount_xof: number
+          loyalty_points_used: number
           payment_data: Json | null
           payment_method: string
           payment_provider: string
@@ -2609,14 +3156,16 @@ export type Database = {
           verified_at: string | null
         }
         Insert: {
-          amount: number
           agency_branding_subscription_id?: string | null
+          amount: number
           booking_id?: string | null
           car_partner_subscription_id?: string | null
           created_at?: string | null
           currency?: string
           id?: string
           ip_address?: string | null
+          loyalty_discount_xof?: number
+          loyalty_points_used?: number
           payment_data?: Json | null
           payment_method: string
           payment_provider?: string
@@ -2630,14 +3179,16 @@ export type Database = {
           verified_at?: string | null
         }
         Update: {
-          amount?: number
           agency_branding_subscription_id?: string | null
+          amount?: number
           booking_id?: string | null
           car_partner_subscription_id?: string | null
           created_at?: string | null
           currency?: string
           id?: string
           ip_address?: string | null
+          loyalty_discount_xof?: number
+          loyalty_points_used?: number
           payment_data?: Json | null
           payment_method?: string
           payment_provider?: string
@@ -2652,17 +3203,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "payments_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "payments_agency_branding_subscription_id_fkey"
             columns: ["agency_branding_subscription_id"]
             isOneToOne: false
             referencedRelation: "agency_branding_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
           {
@@ -2748,105 +3299,6 @@ export type Database = {
         }
         Relationships: []
       }
-      loyalty_settings: {
-        Row: {
-          daily_checkin_points: number
-          id: boolean
-          max_redeem_ratio: number
-          min_redeem_points: number
-          point_value_xof: number
-          points_per_100_xof: number
-          points_validity_months: number
-          referral_referee_points: number
-          referral_referrer_points: number
-          streak_bonus_points: number
-          streak_days: number
-          updated_at: string
-        }
-        Insert: {
-          daily_checkin_points?: number
-          id?: boolean
-          max_redeem_ratio?: number
-          min_redeem_points?: number
-          point_value_xof?: number
-          points_per_100_xof?: number
-          points_validity_months?: number
-          referral_referee_points?: number
-          referral_referrer_points?: number
-          streak_bonus_points?: number
-          streak_days?: number
-          updated_at?: string
-        }
-        Update: {
-          daily_checkin_points?: number
-          id?: boolean
-          max_redeem_ratio?: number
-          min_redeem_points?: number
-          point_value_xof?: number
-          points_per_100_xof?: number
-          points_validity_months?: number
-          referral_referee_points?: number
-          referral_referrer_points?: number
-          streak_bonus_points?: number
-          streak_days?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      loyalty_tiers: {
-        Row: {
-          code: string
-          min_points: number
-          multiplier: number
-          name: string
-        }
-        Insert: {
-          code?: string
-          min_points?: number
-          multiplier?: number
-          name?: string
-        }
-        Update: {
-          code?: string
-          min_points?: number
-          multiplier?: number
-          name?: string
-        }
-        Relationships: []
-      }
-      loyalty_transactions: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          kind: string
-          points: number
-          reference_id: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          kind: string
-          points: number
-          reference_id?: string | null
-          status?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          kind?: string
-          points?: number
-          reference_id?: string | null
-          status?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -2892,6 +3344,7 @@ export type Database = {
           name: string
           original_price: number
           rating: number | null
+          translations: Json
           updated_at: string | null
         }
         Insert: {
@@ -2908,6 +3361,7 @@ export type Database = {
           name: string
           original_price: number
           rating?: number | null
+          translations?: Json
           updated_at?: string | null
         }
         Update: {
@@ -2924,6 +3378,7 @@ export type Database = {
           name?: string
           original_price?: number
           rating?: number | null
+          translations?: Json
           updated_at?: string | null
         }
         Relationships: [
@@ -2962,6 +3417,151 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      restaurant_reservations: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          party_size: number
+          reservation_date: string
+          reservation_time: string
+          restaurant_id: string
+          special_requests: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          party_size: number
+          reservation_date: string
+          reservation_time: string
+          restaurant_id: string
+          special_requests?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          party_size?: number
+          reservation_date?: string
+          reservation_time?: string
+          restaurant_id?: string
+          special_requests?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_reservations_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurants: {
+        Row: {
+          address: string | null
+          agency_id: string
+          average_ticket_price: number | null
+          created_at: string
+          cuisine_type: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          images: string[] | null
+          is_active: boolean
+          latitude: number | null
+          location: string
+          longitude: number | null
+          maps_url: string | null
+          max_covers_per_slot: number
+          name: string
+          opening_hours: Json
+          phone: string | null
+          price_range: string
+          rating: number
+          slot_interval_minutes: number
+          total_reviews: number
+          translations: Json
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          agency_id: string
+          average_ticket_price?: number | null
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          images?: string[] | null
+          is_active?: boolean
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          maps_url?: string | null
+          max_covers_per_slot?: number
+          name: string
+          opening_hours?: Json
+          phone?: string | null
+          price_range?: string
+          rating?: number
+          slot_interval_minutes?: number
+          total_reviews?: number
+          translations?: Json
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          agency_id?: string
+          average_ticket_price?: number | null
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          images?: string[] | null
+          is_active?: boolean
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          maps_url?: string | null
+          max_covers_per_slot?: number
+          name?: string
+          opening_hours?: Json
+          phone?: string | null
+          price_range?: string
+          rating?: number
+          slot_interval_minutes?: number
+          total_reviews?: number
+          translations?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurants_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -3082,12 +3682,9 @@ export type Database = {
       services: {
         Row: {
           agency_id: string | null
-          available_dates: string[]
-          latitude: number | null
-          longitude: number | null
-          maps_url: string | null
           amenities: Json | null
           available: boolean | null
+          available_dates: string[]
           created_at: string
           currency: string
           description: string | null
@@ -3096,23 +3693,24 @@ export type Database = {
           id: string
           image_url: string | null
           images: string[] | null
+          latitude: number | null
           location: string
+          longitude: number | null
+          maps_url: string | null
           name: string
           price_per_unit: number
           rating: number | null
           specifications: Json | null
           total_reviews: number | null
+          translations: Json
           type: Database["public"]["Enums"]["service_type"]
           updated_at: string
         }
         Insert: {
           agency_id?: string | null
-          available_dates?: string[]
-          latitude?: number | null
-          longitude?: number | null
-          maps_url?: string | null
           amenities?: Json | null
           available?: boolean | null
+          available_dates?: string[]
           created_at?: string
           currency?: string
           description?: string | null
@@ -3121,23 +3719,24 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: string[] | null
+          latitude?: number | null
           location: string
+          longitude?: number | null
+          maps_url?: string | null
           name: string
           price_per_unit: number
           rating?: number | null
           specifications?: Json | null
           total_reviews?: number | null
+          translations?: Json
           type: Database["public"]["Enums"]["service_type"]
           updated_at?: string
         }
         Update: {
           agency_id?: string | null
-          available_dates?: string[]
-          latitude?: number | null
-          longitude?: number | null
-          maps_url?: string | null
           amenities?: Json | null
           available?: boolean | null
+          available_dates?: string[]
           created_at?: string
           currency?: string
           description?: string | null
@@ -3146,12 +3745,16 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: string[] | null
+          latitude?: number | null
           location?: string
+          longitude?: number | null
+          maps_url?: string | null
           name?: string
           price_per_unit?: number
           rating?: number | null
           specifications?: Json | null
           total_reviews?: number | null
+          translations?: Json
           type?: Database["public"]["Enums"]["service_type"]
           updated_at?: string
         }
@@ -3198,11 +3801,8 @@ export type Database = {
       stays: {
         Row: {
           agency_id: string | null
-          available_dates: string[]
-          latitude: number | null
-          longitude: number | null
-          maps_url: string | null
           available: boolean | null
+          available_dates: string[]
           created_at: string
           currency: string
           description: string | null
@@ -3211,21 +3811,22 @@ export type Database = {
           highlights: string[] | null
           id: string
           image_url: string | null
+          latitude: number | null
           location: string
+          longitude: number | null
+          maps_url: string | null
           name: string
           price_per_unit: number
           rating: number | null
           reviews: number | null
+          translations: Json
           type: string
           updated_at: string
         }
         Insert: {
           agency_id?: string | null
-          available_dates?: string[]
-          latitude?: number | null
-          longitude?: number | null
-          maps_url?: string | null
           available?: boolean | null
+          available_dates?: string[]
           created_at?: string
           currency?: string
           description?: string | null
@@ -3234,21 +3835,22 @@ export type Database = {
           highlights?: string[] | null
           id?: string
           image_url?: string | null
+          latitude?: number | null
           location: string
+          longitude?: number | null
+          maps_url?: string | null
           name: string
           price_per_unit: number
           rating?: number | null
           reviews?: number | null
+          translations?: Json
           type: string
           updated_at?: string
         }
         Update: {
           agency_id?: string | null
-          available_dates?: string[]
-          latitude?: number | null
-          longitude?: number | null
-          maps_url?: string | null
           available?: boolean | null
+          available_dates?: string[]
           created_at?: string
           currency?: string
           description?: string | null
@@ -3257,11 +3859,15 @@ export type Database = {
           highlights?: string[] | null
           id?: string
           image_url?: string | null
+          latitude?: number | null
           location?: string
+          longitude?: number | null
+          maps_url?: string | null
           name?: string
           price_per_unit?: number
           rating?: number | null
           reviews?: number | null
+          translations?: Json
           type?: string
           updated_at?: string
         }
@@ -3300,6 +3906,7 @@ export type Database = {
           sort_order: number | null
           subscription_type: string
           subtitle: string | null
+          translations: Json
           trial_days: number | null
           updated_at: string | null
         }
@@ -3327,6 +3934,7 @@ export type Database = {
           sort_order?: number | null
           subscription_type?: string
           subtitle?: string | null
+          translations?: Json
           trial_days?: number | null
           updated_at?: string | null
         }
@@ -3354,6 +3962,7 @@ export type Database = {
           sort_order?: number | null
           subscription_type?: string
           subtitle?: string | null
+          translations?: Json
           trial_days?: number | null
           updated_at?: string | null
         }
@@ -3490,6 +4099,47 @@ export type Database = {
         }
         Relationships: []
       }
+      travel_policies: {
+        Row: {
+          company_id: string
+          created_at: string
+          currency: string
+          id: string
+          max_amount: number
+          requires_approval: boolean
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          max_amount: number
+          requires_approval?: boolean
+          service_type: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          max_amount?: number
+          requires_approval?: boolean
+          service_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "travel_policies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -3532,6 +4182,7 @@ export type Database = {
           plan_id: string
           plan_name: string
           price: number
+          renewal_reminder_sent_at: string | null
           start_date: string
           status: string
           subscription_type: string | null
@@ -3560,6 +4211,7 @@ export type Database = {
           plan_id: string
           plan_name: string
           price: number
+          renewal_reminder_sent_at?: string | null
           start_date?: string
           status?: string
           subscription_type?: string | null
@@ -3588,6 +4240,7 @@ export type Database = {
           plan_id?: string
           plan_name?: string
           price?: number
+          renewal_reminder_sent_at?: string | null
           start_date?: string
           status?: string
           subscription_type?: string | null
@@ -3725,6 +4378,160 @@ export type Database = {
         }
         Relationships: []
       }
+      wellness_bookings: {
+        Row: {
+          booking_date: string
+          booking_time: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          party_size: number
+          special_requests: string | null
+          status: string
+          treatment_currency: string | null
+          treatment_name: string
+          treatment_price: number | null
+          updated_at: string
+          user_id: string | null
+          wellness_service_id: string
+        }
+        Insert: {
+          booking_date: string
+          booking_time: string
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          party_size?: number
+          special_requests?: string | null
+          status?: string
+          treatment_currency?: string | null
+          treatment_name: string
+          treatment_price?: number | null
+          updated_at?: string
+          user_id?: string | null
+          wellness_service_id: string
+        }
+        Update: {
+          booking_date?: string
+          booking_time?: string
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          party_size?: number
+          special_requests?: string | null
+          status?: string
+          treatment_currency?: string | null
+          treatment_name?: string
+          treatment_price?: number | null
+          updated_at?: string
+          user_id?: string | null
+          wellness_service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_bookings_wellness_service_id_fkey"
+            columns: ["wellness_service_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_services: {
+        Row: {
+          address: string | null
+          agency_id: string
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          images: string[]
+          is_active: boolean
+          latitude: number | null
+          location: string
+          longitude: number | null
+          maps_url: string | null
+          max_capacity_per_slot: number
+          name: string
+          opening_hours: Json
+          phone: string | null
+          rating: number
+          slot_interval_minutes: number
+          total_reviews: number
+          translations: Json
+          treatments: Json
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          agency_id: string
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          images?: string[]
+          is_active?: boolean
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          maps_url?: string | null
+          max_capacity_per_slot?: number
+          name: string
+          opening_hours?: Json
+          phone?: string | null
+          rating?: number
+          slot_interval_minutes?: number
+          total_reviews?: number
+          translations?: Json
+          treatments?: Json
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          agency_id?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          images?: string[]
+          is_active?: boolean
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          maps_url?: string | null
+          max_capacity_per_slot?: number
+          name?: string
+          opening_hours?: Json
+          phone?: string | null
+          rating?: number
+          slot_interval_minutes?: number
+          total_reviews?: number
+          translations?: Json
+          treatments?: Json
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_services_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       active_subscriptions: {
@@ -3756,70 +4563,42 @@ export type Database = {
       }
     }
     Functions: {
-      loyalty_admin_adjust: {
-        Args: { p_points: number; p_reason: string; p_user: string }
-        Returns: Json
-      }
-      loyalty_admin_members: {
-        Args: { p_limit?: number; p_search?: string }
+      admin_hotel_onsite_commissions: {
+        Args: { p_period: string }
         Returns: {
-          balance: number
-          email: string
-          full_name: string | null
-          last_activity: string | null
-          lifetime: number
-          referral_code: string | null
-          user_id: string
+          agency_id: string
+          agency_name: string
+          bookings: Json
+          commission_amount: number
+          invoice_due_at: string
+          invoice_id: string
+          invoice_status: string
+          invoiced_amount: number
+          stays_amount: number
+          stays_count: number
         }[]
       }
-      loyalty_admin_stats: { Args: never; Returns: Json }
-      loyalty_apply_referral: {
-        Args: { p_code: string }
-        Returns: Json
-      }
-      loyalty_daily_checkin: { Args: never; Returns: Json }
-      loyalty_get_summary: { Args: never; Returns: Json }
-      verify_member_card: {
-        Args: { p_code: string }
-        Returns: {
-          holder_name: string
-          is_valid: boolean
-          plan_id: string | null
-          plan_name: string | null
-          valid_until: string | null
-        }[]
-      }
-      calculate_next_billing_date: {
-        Args: { billing_cycle: string; p_current_date: string }
+      admin_issue_hotel_onsite_invoice: {
+        Args: { p_agency_id: string; p_period: string }
         Returns: string
       }
-      clean_expired_destinations_cache: { Args: never; Returns: undefined }
-      create_billing_period: {
-        Args: { p_start_date?: string; p_user_subscription_id: string }
-        Returns: string
+      admin_mark_booking_balance_paid: {
+        Args: { p_booking_id: string }
+        Returns: undefined
       }
-      expire_old_prebookings: { Args: never; Returns: undefined }
-      get_default_pricing: {
-        Args: { p_billing_cycle: string; p_plan_id: string }
-        Returns: {
-          currency: string
-          discount_percentage: number
-          price: number
-          setup_fee: number
-          trial_days: number
-        }[]
+      admin_set_hotel_onsite_invoice_status: {
+        Args: { p_invoice_id: string; p_status: string }
+        Returns: undefined
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
+      agency_feature_enabled: {
+        Args: { _agency_id: string; _feature: string }
         Returns: boolean
       }
       agency_hotel_bookings: {
         Args: never
         Returns: {
           booking_id: string
+          cancellation: Json
           check_in: string
           check_out: string
           created_at: string
@@ -3827,10 +4606,9 @@ export type Database = {
           customer_name: string
           customer_phone: string
           guests: number
-          cancellation: Json | null
           hotel_name: string
           no_show: boolean
-          notes: string | null
+          notes: string
           pay_at_property: boolean
           payment_status: string
           rooms: Json
@@ -3842,44 +4620,213 @@ export type Database = {
         Args: { p_booking_id: string }
         Returns: undefined
       }
-      admin_hotel_onsite_commissions: {
+      calculate_next_billing_date: {
+        Args: { billing_cycle: string; p_current_date: string }
+        Returns: string
+      }
+      car_plan_payments_enabled: { Args: never; Returns: boolean }
+      claim_agency_payout: {
+        Args: { p_commission_id: string }
+        Returns: boolean
+      }
+      clean_expired_destinations_cache: { Args: never; Returns: undefined }
+      create_billing_period: {
+        Args: { p_start_date?: string; p_user_subscription_id: string }
+        Returns: string
+      }
+      create_company: {
+        Args: {
+          p_billing_email?: string
+          p_billing_phone?: string
+          p_description?: string
+          p_name: string
+        }
+        Returns: {
+          id: string
+          invite_code: string
+          name: string
+        }[]
+      }
+      create_partner_hotel_booking: {
+        Args: {
+          p_check_in: string
+          p_check_out: string
+          p_customer_email: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_guests: number
+          p_items: Json
+          p_notes: string
+          p_service_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      expire_agency_branding_subscriptions: { Args: never; Returns: undefined }
+      expire_old_prebookings: { Args: never; Returns: undefined }
+      expire_user_subscriptions: { Args: never; Returns: undefined }
+      get_default_pricing: {
+        Args: { p_billing_cycle: string; p_plan_id: string }
+        Returns: {
+          currency: string
+          discount_percentage: number
+          price: number
+          setup_fee: number
+          trial_days: number
+        }[]
+      }
+      get_restaurant_slot_covers: {
+        Args: { p_date: string; p_restaurant_id: string }
+        Returns: {
+          covers_booked: number
+          reservation_time: string
+        }[]
+      }
+      get_wellness_slot_bookings: {
+        Args: { p_date: string; p_wellness_service_id: string }
+        Returns: {
+          booking_time: string
+          spots_booked: number
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      hotel_onsite_billable_bookings: {
         Args: { p_period: string }
         Returns: {
           agency_id: string
-          agency_name: string
-          bookings: Json
-          commission_amount: number
-          invoice_due_at: string | null
-          invoice_id: string | null
-          invoice_status: string | null
-          invoiced_amount: number | null
-          stays_amount: number
-          stays_count: number
+          booking_id: string
+          check_in: string
+          check_out: string
+          customer_name: string
+          hotel_name: string
+          total_price: number
         }[]
-      }
-      admin_issue_hotel_onsite_invoice: {
-        Args: { p_agency_id: string; p_period: string }
-        Returns: string
-      }
-      admin_set_hotel_onsite_invoice_status: {
-        Args: { p_invoice_id: string; p_status: string }
-        Returns: undefined
       }
       hotel_room_availability: {
         Args: { p_check_in: string; p_check_out: string; p_service_id: string }
-        Returns: { available_units: number; room_type_id: string }[]
+        Returns: {
+          available_units: number
+          room_type_id: string
+        }[]
       }
       is_agency_owner: {
         Args: { _agency_id: string; _user_id: string }
         Returns: boolean
       }
-      admin_mark_booking_balance_paid: {
-        Args: { p_booking_id: string }
+      is_company_admin: {
+        Args: { _company_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_company_approver: {
+        Args: { _company_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_company_member: {
+        Args: { _company_id: string; _user_id: string }
+        Returns: boolean
+      }
+      join_company: {
+        Args: { p_invite_code: string }
+        Returns: {
+          company_id: string
+          company_name: string
+        }[]
+      }
+      loyalty_admin_adjust: {
+        Args: { p_points: number; p_reason: string; p_user: string }
+        Returns: Json
+      }
+      loyalty_admin_members: {
+        Args: { p_limit?: number; p_search?: string }
+        Returns: {
+          balance: number
+          email: string
+          full_name: string
+          last_activity: string
+          lifetime: number
+          referral_code: string
+          user_id: string
+        }[]
+      }
+      loyalty_admin_stats: { Args: never; Returns: Json }
+      loyalty_apply_referral: { Args: { p_code: string }; Returns: Json }
+      loyalty_award_purchase: {
+        Args: {
+          p_amount_xof: number
+          p_label: string
+          p_reference: string
+          p_user: string
+        }
+        Returns: number
+      }
+      loyalty_balance: { Args: { p_user: string }; Returns: number }
+      loyalty_confirm_redemption: {
+        Args: { p_points: number; p_reference: string; p_user: string }
+        Returns: undefined
+      }
+      loyalty_daily_checkin: { Args: never; Returns: Json }
+      loyalty_ensure_account: {
+        Args: { p_user: string }
+        Returns: {
+          checkin_streak: number
+          created_at: string
+          last_checkin_date: string | null
+          referral_code: string
+          referral_rewarded: boolean
+          referred_by: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "loyalty_accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      loyalty_expirable: {
+        Args: { p_cutoff: string; p_user: string }
+        Returns: number
+      }
+      loyalty_expire_points: { Args: never; Returns: number }
+      loyalty_get_summary: { Args: never; Returns: Json }
+      loyalty_lifetime: { Args: { p_user: string }; Returns: number }
+      loyalty_release_redemption: {
+        Args: { p_reference: string; p_user: string }
+        Returns: undefined
+      }
+      loyalty_release_stale_redemptions: { Args: never; Returns: undefined }
+      loyalty_require_admin: { Args: never; Returns: undefined }
+      loyalty_reserve_redemption: {
+        Args: { p_points: number; p_reference: string; p_user: string }
+        Returns: boolean
+      }
+      owns_hotel_service: {
+        Args: { _require_enabled: boolean; _service_id: string }
+        Returns: boolean
+      }
+      refresh_hotel_starting_price: {
+        Args: { _service_id: string }
         Returns: undefined
       }
       renew_subscription: {
         Args: { p_user_subscription_id: string }
         Returns: boolean
+      }
+      verify_member_card: {
+        Args: { p_code: string }
+        Returns: {
+          holder_name: string
+          is_valid: boolean
+          plan_id: string
+          plan_name: string
+          valid_until: string
+        }[]
       }
     }
     Enums: {
@@ -3894,7 +4841,13 @@ export type Database = {
         | "FAILED"
         | "REFUNDED"
         | "EXPIRED"
-      payment_status: "pending" | "paid" | "partially_paid" | "refunded" | "failed" | "processing"
+      payment_status:
+        | "pending"
+        | "paid"
+        | "refunded"
+        | "failed"
+        | "processing"
+        | "partially_paid"
       service_type:
         | "hotel"
         | "flight"
@@ -4047,7 +5000,14 @@ export const Constants = {
         "REFUNDED",
         "EXPIRED",
       ],
-      payment_status: ["pending", "paid", "partially_paid", "refunded", "failed", "processing"],
+      payment_status: [
+        "pending",
+        "paid",
+        "refunded",
+        "failed",
+        "processing",
+        "partially_paid",
+      ],
       service_type: [
         "hotel",
         "flight",

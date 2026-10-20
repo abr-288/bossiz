@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Star, Tag, Activity } from "lucide-react";
 import { useState, useEffect } from "react";
-import { BookingDialog } from "@/components/BookingDialog";
+import { BookingDialog, type BookableService } from "@/components/BookingDialog";
 import { ActivitySearchForm } from "@/components/ActivitySearchForm";
 import { Price } from "@/components/ui/price";
 import { useActivitySearch } from "@/hooks/useActivitySearch";
@@ -16,7 +16,7 @@ import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 const Activities = () => {
   const { t } = useTranslation();
-  const [selectedActivity, setSelectedActivity] = useState<any>(null);
+  const [selectedActivity, setSelectedActivity] = useState<BookableService | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { activities, loading, searchActivities } = useActivitySearch();
 

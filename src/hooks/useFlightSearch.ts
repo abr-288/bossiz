@@ -11,11 +11,44 @@ export interface FlightSearchParams {
   travelClass?: string;
 }
 
+export interface FlightOfferSegment {
+  departure?: { iataCode?: string; at?: string };
+  arrival?: { iataCode?: string; at?: string };
+  carrierCode?: string;
+  carrierName?: string;
+  number?: string;
+  flightNumber?: string;
+  duration?: string;
+}
+
+/** Offre de vol renvoyée par l'Edge Function search-flights (format Amadeus). */
+export interface FlightOffer {
+  id?: string;
+  itineraries?: Array<{ segments?: FlightOfferSegment[]; duration?: string }>;
+  price?: number | { grandTotal?: string; total?: string; currency?: string };
+  validatingAirlineCodes?: string[];
+  carrierName?: string;
+  travelerPricings?: Array<{ fareDetailsBySegment?: Array<{ cabin?: string }> }>;
+  baggage?: {
+    cabin: { pieces: number; weightKg: number; included: boolean };
+    checked: { pieces: number; weightKg: number; included: boolean };
+    personalItem: boolean;
+  };
+  source?: string;
+  deepLink?: string;
+}
+
+export interface FlightSearchResponse {
+  success: boolean;
+  data?: FlightOffer[];
+  error?: string;
+}
+
 export const useFlightSearch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchFlights = useCallback(async (params: FlightSearchParams) => {
+  const searchFlights = useCallback(async (params: FlightSearchParams): Promise<FlightSearchResponse | null> => {
     setLoading(true);
     setError(null);
 

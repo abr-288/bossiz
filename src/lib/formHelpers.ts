@@ -75,8 +75,8 @@ export const logFormErrors = (errors: Record<string, string>, formName: string) 
 /**
  * Nettoie les données du formulaire avant validation
  */
-export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
-  const sanitized: Record<string, any> = { ...data };
+export const sanitizeFormData = <T extends object>(data: T): T => {
+  const sanitized = { ...data } as Record<string, unknown>;
   
   Object.keys(sanitized).forEach((key) => {
     const value = sanitized[key];

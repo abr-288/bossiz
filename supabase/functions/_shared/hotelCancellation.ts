@@ -53,8 +53,7 @@ export function quoteHotelCancellation(
     amount_paid: number | string | null;
     total_price: number | string;
     start_date: string;
-    // deno-lint-ignore no-explicit-any
-    booking_details: any;
+    booking_details: Record<string, unknown> | null;
   },
   today = todayInAbidjan(),
 ): CancellationQuote {

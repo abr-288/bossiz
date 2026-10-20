@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export const useBookingPDF = () => {
   const { toast } = useToast();
@@ -44,11 +45,11 @@ export const useBookingPDF = () => {
       });
 
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error generating PDF:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de générer le PDF",
+        description: getErrorMessage(error) || "Impossible de générer le PDF",
         variant: "destructive",
       });
       return false;
@@ -92,11 +93,11 @@ export const useBookingPDF = () => {
       });
 
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error downloading PDF:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de télécharger le PDF",
+        description: getErrorMessage(error) || "Impossible de télécharger le PDF",
         variant: "destructive",
       });
       return false;

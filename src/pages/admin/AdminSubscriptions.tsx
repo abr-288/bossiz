@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface SubscriptionRequest {
   id: string;
@@ -93,10 +94,10 @@ export default function AdminSubscriptions() {
 
       if (error) throw error;
       setRequests(data || []);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: t("ux.bo.error"),
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -125,10 +126,10 @@ export default function AdminSubscriptions() {
 
       fetchRequests();
       setSelectedRequest(null);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: t("ux.bo.error"),
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {

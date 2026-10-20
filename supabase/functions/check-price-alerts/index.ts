@@ -65,7 +65,7 @@ serve(async (req) => {
 
           if (flightData?.flights && flightData.flights.length > 0) {
             // Get the cheapest flight
-            currentPrice = Math.min(...flightData.flights.map((f: any) => f.price));
+            currentPrice = Math.min(...flightData.flights.map((f: { price: number }) => f.price));
           }
         } else if (alert.service_type === 'hotel' && alert.destination && alert.departure_date && alert.return_date) {
           // Call search-hotels function
@@ -81,7 +81,7 @@ serve(async (req) => {
 
           if (hotelData?.hotels && hotelData.hotels.length > 0) {
             // Get the cheapest hotel
-            currentPrice = Math.min(...hotelData.hotels.map((h: any) => h.price));
+            currentPrice = Math.min(...hotelData.hotels.map((h: { price: number }) => h.price));
           }
         }
 

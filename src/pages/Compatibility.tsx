@@ -27,9 +27,26 @@ import { useTranslation } from "react-i18next";
 import { PageHero } from "@/components/PageHero";
 import heroImage from "@/assets/hero-slide-1.webp";
 
+// API non standard (Chrome/Android) absentes des types du DOM.
+type NavigatorExtras = Navigator & {
+  connection?: { effectiveType?: string };
+  deviceMemory?: number;
+};
+
+interface DeviceInfo {
+  userAgent: string;
+  platform: string;
+  language: string;
+  cookieEnabled: boolean;
+  jsEnabled: boolean;
+  screenResolution: string;
+  connectionType: string;
+  memory: string;
+}
+
 const Compatibility = () => {
   const { t } = useTranslation();
-  const [deviceInfo, setDeviceInfo] = useState({
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
     userAgent: '',
     platform: '',
     language: '',
@@ -48,15 +65,16 @@ const Compatibility = () => {
 
   useEffect(() => {
     // Collect device information
-    const info = {
+    const nav = navigator as NavigatorExtras;
+    const info: DeviceInfo = {
       userAgent: navigator.userAgent,
       platform: navigator.platform,
       language: navigator.language,
       cookieEnabled: navigator.cookieEnabled,
       jsEnabled: true,
       screenResolution: `${screen.width}x${screen.height}`,
-      connectionType: (navigator as any).connection?.effectiveType || 'Unknown',
-      memory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory}GB` : 'Unknown'
+      connectionType: nav.connection?.effectiveType || 'Unknown',
+      memory: nav.deviceMemory ? `${nav.deviceMemory}GB` : 'Unknown'
     };
     setDeviceInfo(info);
 
@@ -64,7 +82,7 @@ const Compatibility = () => {
     checkCompatibility(info);
   }, []);
 
-  const checkCompatibility = (info: any) => {
+  const checkCompatibility = (info: DeviceInfo) => {
     const issues: string[] = [];
     const recommendations: string[] = [];
 

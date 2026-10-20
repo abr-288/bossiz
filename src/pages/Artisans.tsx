@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPin, Hammer, Phone, MessageCircle, ShoppingBag } from "lucide-react";
-import { useArtisans } from "@/hooks/useArtisans";
+import { useArtisans, type Artisan } from "@/hooks/useArtisans";
 import { Price } from "@/components/ui/price";
-import { ArtisanOrderDialog } from "@/components/artisans/ArtisanOrderDialog";
+import { ArtisanOrderDialog, type ArtisanProduct } from "@/components/artisans/ArtisanOrderDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerArtisans from "@/assets/banner-artisans.webp";
 import { useTranslation } from "react-i18next";
@@ -27,8 +27,8 @@ const Artisans = () => {
   const { artisans, loading, error } = useArtisans();
   const [search, setSearch] = useState("");
   const [craftFilter, setCraftFilter] = useState("all");
-  const [selectedArtisan, setSelectedArtisan] = useState<any>(null);
-  const [orderingProduct, setOrderingProduct] = useState<any>(null);
+  const [selectedArtisan, setSelectedArtisan] = useState<Artisan | null>(null);
+  const [orderingProduct, setOrderingProduct] = useState<ArtisanProduct | null>(null);
 
   const filtered = useMemo(() => {
     let result = artisans;
@@ -120,7 +120,7 @@ const Artisans = () => {
                   {artisan.bio && (
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{artisan.bio}</p>
                   )}
-                  {artisan.products?.length > 0 && (
+                  {artisan.products.length > 0 && (
                     <p className="text-xs text-muted-foreground mb-3">
                       {artisan.products.length} création{artisan.products.length > 1 ? "s" : ""} à découvrir
                     </p>
@@ -179,11 +179,11 @@ const Artisans = () => {
                 </div>
               </div>
 
-              {selectedArtisan.products?.length > 0 && (
+              {selectedArtisan.products.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="font-semibold">{t("ux.artisans.creations")}</h4>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {selectedArtisan.products.map((product: any, i: number) => (
+                    {selectedArtisan.products.map((product, i) => (
                       <Card key={i} className="overflow-hidden">
                         {product.image_url && (
                           <img src={product.image_url} alt={product.name} className="w-full h-32 object-cover" loading="lazy" />
@@ -193,9 +193,9 @@ const Artisans = () => {
                           {product.description && (
                             <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{product.description}</p>
                           )}
-                          {product.price > 0 && (
+                          {(product.price ?? 0) > 0 && (
                             <p className="text-sm font-semibold text-primary mt-2">
-                              <Price amount={product.price} fromCurrency={product.currency || "XOF"} />
+                              <Price amount={product.price ?? 0} fromCurrency={product.currency || "XOF"} />
                             </p>
                           )}
                           <Button

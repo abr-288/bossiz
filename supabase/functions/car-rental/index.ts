@@ -44,6 +44,39 @@ async function signCarResults(cars: CarResult[], fallbackLocation: string) {
 // ("Services are viewable by everyone" WHERE available = true) already
 // permits this read with the anon key - no service-role key needed. Pass
 // `pickupLocation: null` to return every available partner car unfiltered.
+// Caractéristiques saisies par l'agence (colonne JSON specifications).
+interface PartnerCarSpecs {
+  brand?: string;
+  model?: string;
+  category?: string;
+  seats?: number;
+  transmission?: string;
+  fuel?: string;
+  luggage?: number;
+  unlimitedMileage?: boolean;
+  freeCancellation?: boolean;
+  fuelPolicy?: string;
+  doors?: number;
+  engineSize?: string;
+  year?: number;
+  features?: string[];
+}
+
+// Ligne de la table services (voitures des agences partenaires).
+interface PartnerCarRow {
+  id: string;
+  name: string;
+  location: string | null;
+  destination?: string | null;
+  image_url?: string | null;
+  images?: string[] | null;
+  specifications?: PartnerCarSpecs | null;
+  price_per_unit?: number | null;
+  currency?: string | null;
+  rating?: number | null;
+  total_reviews?: number | null;
+}
+
 async function fetchPartnerCars(pickupLocation: string | null): Promise<CarResult[]> {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -62,18 +95,19 @@ async function fetchPartnerCars(pickupLocation: string | null): Promise<CarResul
       return [];
     }
 
+    const services = data as PartnerCarRow[];
     const rows = pickupLocation
-      ? data.filter((s: any) => {
+      ? services.filter((s) => {
           const needle = pickupLocation.toLowerCase().trim();
           const loc = (s.location || '').toLowerCase();
           const dest = (s.destination || '').toLowerCase();
           return loc.includes(needle) || needle.includes(loc) ||
                  (dest && (dest.includes(needle) || needle.includes(dest)));
         })
-      : data;
+      : services;
 
-    return rows.map((s: any) => {
-      const specs = (s.specifications && typeof s.specifications === 'object') ? s.specifications : {};
+    return rows.map((s) => {
+      const specs: PartnerCarSpecs = (s.specifications && typeof s.specifications === 'object') ? s.specifications : {};
       const imageUrl = s.image_url || (Array.isArray(s.images) && s.images[0]) || getCarImage(specs.category || 'Standard', specs.brand, specs.model);
 
       return {

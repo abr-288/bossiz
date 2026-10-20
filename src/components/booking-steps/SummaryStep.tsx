@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import { CurrencyConverter } from "@/utils/currencyConverter";
+import type { BookingPreferences } from "@/components/booking-steps/PreferencesStep";
 
 interface Passenger {
   firstName: string;
@@ -58,7 +59,7 @@ interface SummaryStepProps {
   endDate?: string;
   passengers: Passenger[];
   selectedOptions: Record<string, number>;
-  selectedPreferences: Record<string, any>;
+  selectedPreferences: BookingPreferences;
   adultsCount: number;
   childrenCount: number;
   onBack: () => void;
@@ -110,7 +111,7 @@ export const SummaryStep = ({
       .eq("config_key", "booking_payment_policy")
       .maybeSingle()
       .then(({ data }) => {
-        const policy = data?.config_value as any;
+        const policy = data?.config_value as { enabledServiceTypes?: unknown; depositEnabled?: boolean; depositPercent?: number } | null;
         const allowedTypes = Array.isArray(policy?.enabledServiceTypes) ? policy.enabledServiceTypes : [];
         const isAllowed = policy?.depositEnabled !== false && allowedTypes.includes(serviceType);
         setDepositAvailable(isAllowed);
@@ -167,7 +168,7 @@ export const SummaryStep = ({
         .from("company_members")
         .select("company_id, companies(name)")
         .eq("user_id", user.id);
-      setMyCompanies((data || []).map((m: any) => ({ id: m.company_id, name: m.companies?.name || t("ux.summary.company") })));
+      setMyCompanies((data || []).map((m) => ({ id: m.company_id, name: m.companies?.name || t("ux.summary.company") })));
     }
   };
 
@@ -332,7 +333,7 @@ export const SummaryStep = ({
 
         const bookingId = await createBooking({
           service_id: verifiableServiceId,
-          service_type: serviceType as any,
+          service_type: serviceType,
           service_name: serviceName,
           service_description: serviceLocation,
           location: serviceLocation,
@@ -414,7 +415,7 @@ export const SummaryStep = ({
   };
 
   const getPreferencesPrice = () => {
-    const selectedSeats = (selectedPreferences.seats as string[]) || [];
+    const selectedSeats = selectedPreferences.seats || [];
     return selectedSeats.length * 7500;
   };
 
@@ -623,14 +624,14 @@ export const SummaryStep = ({
           )}
 
           {/* Préférences */}
-          {serviceType === "flight" && (selectedPreferences.seats as string[] || []).length > 0 && (
+          {serviceType === "flight" && (selectedPreferences.seats || []).length > 0 && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Armchair className="h-5 w-5 text-primary" />
                 {t("ux.summary.selectedSeats")}
               </h3>
               <div className="flex flex-wrap gap-2">
-                {((selectedPreferences.seats as string[]) || []).map((seat) => (
+                {(selectedPreferences.seats || []).map((seat) => (
                   <Badge key={seat} variant="secondary" className="px-3 py-1">
                     {seat}
                   </Badge>

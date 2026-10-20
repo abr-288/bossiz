@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { usePayment } from './usePayment';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,13 +34,18 @@ vi.mock('@/lib/formHelpers', () => ({
 
 import { validateWithSchema, getUserFriendlyErrorMessage } from '@/lib/formHelpers';
 
+// Accès typé aux fonctions simulées ci-dessus.
+const fromMock = supabase.from as unknown as Mock;
+const invokeMock = supabase.functions.invoke as unknown as Mock;
+const validateMock = validateWithSchema as unknown as Mock;
+
 describe('usePayment', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should process payment successfully', async () => {
-    (validateWithSchema as any).mockReturnValue({
+    validateMock.mockReturnValue({
       success: true,
       data: {
         paymentMethod: 'jeko',
@@ -52,7 +57,7 @@ describe('usePayment', () => {
       },
     });
 
-    (supabase.from as any).mockReturnValue({
+    fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() => Promise.resolve({
@@ -63,7 +68,7 @@ describe('usePayment', () => {
       })),
     });
 
-    (supabase.functions.invoke as any).mockResolvedValue({
+    invokeMock.mockResolvedValue({
       data: { success: true, payment_url: 'https://checkout.jeko.africa/payment/123' },
       error: null,
     });
@@ -90,7 +95,7 @@ describe('usePayment', () => {
   });
 
   it('should validate payment data before processing', async () => {
-    (validateWithSchema as any).mockReturnValue({
+    validateMock.mockReturnValue({
       success: false,
       errors: { customerEmail: 'Email invalide' },
     });
@@ -116,7 +121,7 @@ describe('usePayment', () => {
   });
 
   it('should prevent payment if already paid', async () => {
-    (validateWithSchema as any).mockReturnValue({
+    validateMock.mockReturnValue({
       success: true,
       data: {
         paymentMethod: 'jeko',
@@ -127,7 +132,7 @@ describe('usePayment', () => {
       },
     });
 
-    (supabase.from as any).mockReturnValue({
+    fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() => Promise.resolve({
@@ -159,7 +164,7 @@ describe('usePayment', () => {
   });
 
   it('should prevent payment if booking is cancelled', async () => {
-    (validateWithSchema as any).mockReturnValue({
+    validateMock.mockReturnValue({
       success: true,
       data: {
         paymentMethod: 'jeko',
@@ -170,7 +175,7 @@ describe('usePayment', () => {
       },
     });
 
-    (supabase.from as any).mockReturnValue({
+    fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() => Promise.resolve({
@@ -202,7 +207,7 @@ describe('usePayment', () => {
   });
 
   it('should prevent multiple simultaneous payments', async () => {
-    (validateWithSchema as any).mockReturnValue({
+    validateMock.mockReturnValue({
       success: true,
       data: {
         paymentMethod: 'jeko',
@@ -213,7 +218,7 @@ describe('usePayment', () => {
       },
     });
 
-    (supabase.from as any).mockReturnValue({
+    fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() => Promise.resolve({
@@ -223,7 +228,7 @@ describe('usePayment', () => {
         })),
       })),
     });
-    (supabase.functions.invoke as any).mockResolvedValue({
+    invokeMock.mockResolvedValue({
       data: { success: true, payment_url: 'https://checkout.jeko.africa/payment/123' },
       error: null,
     });
@@ -252,7 +257,7 @@ describe('usePayment', () => {
   });
 
   it('should handle payment timeout', async () => {
-    (validateWithSchema as any).mockReturnValue({
+    validateMock.mockReturnValue({
       success: true,
       data: {
         paymentMethod: 'jeko',
@@ -263,7 +268,7 @@ describe('usePayment', () => {
       },
     });
 
-    (supabase.from as any).mockReturnValue({
+    fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() => new Promise(() => {})), // Never resolves

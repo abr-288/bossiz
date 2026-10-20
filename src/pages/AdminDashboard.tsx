@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables, TablesUpdate } from "@/integrations/supabase/types";
+
+type DashboardBooking = Tables<"bookings"> & { services: Pick<Tables<"services">, "name" | "type"> | null };
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import Navbar from "@/components/Navbar";
@@ -40,9 +43,9 @@ const AdminDashboard = () => {
     totalServices: 0,
     totalUsers: 0,
   });
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [services, setServices] = useState<any[]>([]);
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [bookings, setBookings] = useState<DashboardBooking[]>([]);
+  const [services, setServices] = useState<Tables<"services">[]>([]);
+  const [selectedService, setSelectedService] = useState<Tables<"services"> | null>(null);
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -108,9 +111,13 @@ const AdminDashboard = () => {
     }
   };
 
-  const updateBookingStatus = async (bookingId: string, status: string, paymentStatus?: string) => {
+  const updateBookingStatus = async (
+    bookingId: string,
+    status: Tables<"bookings">["status"],
+    paymentStatus?: Tables<"bookings">["payment_status"],
+  ) => {
     try {
-      const updateData: any = { status };
+      const updateData: TablesUpdate<"bookings"> = { status };
       if (paymentStatus) updateData.payment_status = paymentStatus;
 
       const { error } = await supabase
@@ -303,7 +310,7 @@ const AdminDashboard = () => {
                         <TableCell>
                           <Select
                             value={booking.status}
-                            onValueChange={(value) => updateBookingStatus(booking.id, value)}
+                            onValueChange={(value) => updateBookingStatus(booking.id, value as Tables<"bookings">["status"])}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
@@ -319,7 +326,7 @@ const AdminDashboard = () => {
                         <TableCell>
                           <Select
                             value={booking.payment_status}
-                            onValueChange={(value) => updateBookingStatus(booking.id, booking.status, value)}
+                            onValueChange={(value) => updateBookingStatus(booking.id, booking.status, value as Tables<"bookings">["payment_status"])}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
@@ -377,7 +384,7 @@ const AdminDashboard = () => {
                           <label className="text-sm font-medium block">Description</label>
                           <Textarea
                             name="description"
-                            defaultValue={selectedService?.description}
+                            defaultValue={selectedService?.description ?? undefined}
                             rows={3}
                           />
                         </div>

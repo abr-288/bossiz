@@ -23,6 +23,15 @@ import { Badge } from "@/components/ui/badge";
 // Popular locations for default car results
 const DEFAULT_CAR_LOCATIONS = ['Paris', 'Nice', 'Lyon', 'Marseille', 'Bordeaux'];
 
+// Véhicule renvoyé par car-rental : champs optionnels selon le fournisseur,
+// prix parfois en texte, offre signée en snake_case.
+type RawCar = Partial<Omit<CarData, "id" | "price">> & {
+  id: string;
+  price?: number | string;
+  offer_signature?: string;
+  offer_expires_at?: string;
+};
+
 const Cars = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -96,14 +105,14 @@ const Cars = () => {
       results.forEach((result, index) => {
         if (result?.success && result?.data) {
           const carsArray = Array.isArray(result.data) ? result.data : [result.data];
-          carsArray.slice(0, 4).forEach((car: any) => {
+          (carsArray as RawCar[]).slice(0, 4).forEach((car) => {
             allCars.push({
               id: car.id || `${DEFAULT_CAR_LOCATIONS[index]}-${Math.random().toString()}`,
               name: car.name || 'Véhicule',
               brand: car.brand,
               model: car.model,
               category: car.category || 'Standard',
-              price: typeof car.price === 'number' ? car.price : parseFloat(car.price || 0),
+              price: typeof car.price === 'number' ? car.price : parseFloat(String(car.price || 0)),
               currency: car.currency || 'EUR',
               rating: car.rating || 0,
               reviews: car.reviews || 0,
@@ -146,14 +155,14 @@ const Cars = () => {
         });
 
         if (partnerResult?.success && Array.isArray(partnerResult.data)) {
-          partnerResult.data.forEach((car: any) => {
+          (partnerResult.data as RawCar[]).forEach((car) => {
             allCars.push({
               id: car.id,
               name: car.name || 'Véhicule',
               brand: car.brand,
               model: car.model,
               category: car.category || 'Standard',
-              price: typeof car.price === 'number' ? car.price : parseFloat(car.price || 0),
+              price: typeof car.price === 'number' ? car.price : parseFloat(String(car.price || 0)),
               currency: car.currency || 'EUR',
               rating: car.rating || 0,
               reviews: car.reviews || 0,
@@ -205,13 +214,13 @@ const Cars = () => {
 
     if (result?.success && result?.data) {
       const carsArray = Array.isArray(result.data) ? result.data : [result.data];
-      setApiCars(carsArray.map((car: any) => ({
+      setApiCars((carsArray as RawCar[]).map((car) => ({
         id: car.id || Math.random().toString(),
         name: car.name || 'Véhicule',
         brand: car.brand,
         model: car.model,
         category: car.category || 'Standard',
-        price: typeof car.price === 'number' ? car.price : parseFloat(car.price || 0),
+        price: typeof car.price === 'number' ? car.price : parseFloat(String(car.price || 0)),
         currency: car.currency || 'EUR',
         rating: car.rating || 0,
         reviews: car.reviews || 0,

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 import { bookingSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
@@ -69,8 +70,8 @@ export const HotelBookingDialog = ({ open, onOpenChange, hotel }: HotelBookingDi
         customerPhone,
         notes: notes || null,
       });
-    } catch (error: any) {
-      toast.error(error.errors?.[0]?.message || t('booking.validation.checkInfo'));
+    } catch (error) {
+      toast.error((error instanceof ZodError ? error.errors[0]?.message : undefined) || t('booking.validation.checkInfo'));
       return;
     }
 

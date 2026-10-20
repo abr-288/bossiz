@@ -28,6 +28,7 @@ import { Plus, Pencil, Trash2, Percent, Search } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface Promotion {
   id: string;
@@ -133,10 +134,10 @@ export default function AgencyPromotions() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndPromotions();
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: t("ux.bo.error"),
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }

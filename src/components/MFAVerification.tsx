@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Shield, ArrowLeft, Loader2, X, Check } from "lucide-react";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface MFAVerificationProps {
   onSuccess?: () => void;
@@ -77,8 +78,8 @@ export function MFAVerification({ onSuccess, onBack }: MFAVerificationProps) {
       } else {
         navigate("/");
       }
-    } catch (err: any) {
-      setError(err.message || "Code invalide");
+    } catch (err) {
+      setError(getErrorMessage(err) || "Code invalide");
     } finally {
       setLoading(false);
     }

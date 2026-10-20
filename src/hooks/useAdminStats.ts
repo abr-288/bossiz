@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-interface AdminStats {
+// Réservation avec le service lié (type, lieu, nom), telle que lue ci-dessous.
+export type AdminBooking = Tables<"bookings"> & {
+  services: Pick<Tables<"services">, "type" | "location" | "name"> | null;
+};
+
+export interface AdminStats {
   totalRevenue: number;
   totalSupplierCost: number;
   totalMargin: number;
@@ -16,7 +22,7 @@ interface AdminStats {
   bookingsByStatus: { status: string; count: number }[];
   bookingsByService: { name: string; value: number }[];
   geographicData: { location: string; revenue: number; bookings: number }[];
-  recentBookings: any[];
+  recentBookings: AdminBooking[];
 }
 
 export const useAdminStats = () => {
@@ -107,7 +113,7 @@ export const useAdminStats = () => {
 
           // Bookings by service type
           const serviceTypeMap = new Map();
-          bookings.forEach((b: any) => {
+          bookings.forEach((b) => {
             const serviceType = b.services?.type || 'other';
             const count = serviceTypeMap.get(serviceType) || 0;
             serviceTypeMap.set(serviceType, count + 1);
@@ -130,7 +136,7 @@ export const useAdminStats = () => {
 
           // Geographic distribution
           const locationMap = new Map();
-          bookings.forEach((b: any) => {
+          bookings.forEach((b) => {
             const location = b.services?.location || 'Non défini';
             const revenue = locationMap.get(location) || 0;
             locationMap.set(location, revenue + Number(b.total_price));
@@ -140,7 +146,7 @@ export const useAdminStats = () => {
             .map(([location, revenue]) => ({
               location,
               revenue,
-              bookings: bookings.filter((b: any) => b.services?.location === location).length,
+              bookings: bookings.filter((b) => b.services?.location === location).length,
             }))
             .sort((a, b) => b.revenue - a.revenue)
             .slice(0, 10);

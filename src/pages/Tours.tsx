@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Star, MapPin, Clock, Users, Map, ExternalLink, CalendarDays } from "lucide-react";
-import { BookingDialog } from "@/components/BookingDialog";
+import { BookingDialog, type BookableService } from "@/components/BookingDialog";
 import { TourSearchForm } from "@/components/TourSearchForm";
 import { Pagination } from "@/components/Pagination";
 import { LazyImage } from "@/components/ui/lazy-image";
@@ -47,7 +47,7 @@ const Tours = () => {
   const [durationFilter, setDurationFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
-  const [selectedTour, setSelectedTour] = useState<any>(null);
+  const [selectedTour, setSelectedTour] = useState<BookableService | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;

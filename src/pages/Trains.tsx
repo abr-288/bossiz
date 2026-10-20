@@ -22,6 +22,24 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 
+/** Train renvoyé par search-trains : les champs varient selon l'opérateur. */
+interface RawTrain {
+  id?: string;
+  operator?: string;
+  carrier?: string;
+  departure?: { station?: string; time?: string };
+  arrival?: { station?: string; time?: string };
+  departureTime?: string;
+  arrivalTime?: string;
+  duration?: string;
+  price?: number | { total?: number | string; amount?: number | string };
+  trainType?: string;
+  type?: string;
+  class?: string;
+  amenities?: string[];
+  stops?: number;
+}
+
 interface MappedTrain {
   id: string;
   operator: string;
@@ -35,7 +53,7 @@ interface MappedTrain {
   class: string;
   amenities: string[];
   stops: number;
-  raw: any;
+  raw: RawTrain;
 }
 
 const Trains = () => {
@@ -74,10 +92,10 @@ const Trains = () => {
       });
 
       if (result) {
-        const trainsData = Array.isArray((result as any).data)
-          ? (result as any).data
-          : Array.isArray((result as any).trains)
-          ? (result as any).trains
+        const trainsData: RawTrain[] = Array.isArray(result.data)
+          ? result.data
+          : Array.isArray(result.trains)
+          ? result.trains
           : [];
 
         if (trainsData.length === 0) {
@@ -85,9 +103,9 @@ const Trains = () => {
           return;
         }
 
-        const mapped: MappedTrain[] = trainsData.map((train: any) => {
+        const mapped: MappedTrain[] = trainsData.map((train) => {
           const price = typeof train.price === "object" 
-            ? parseFloat(train.price.total || train.price.amount || 0)
+            ? parseFloat(String(train.price.total || train.price.amount || 0))
             : typeof train.price === "number"
             ? train.price
             : 0;
@@ -156,7 +174,7 @@ const Trains = () => {
 
   // Filter and sort trains
   const filteredAndSortedTrains = useMemo(() => {
-    let filtered = trains.filter(train => {
+    const filtered = trains.filter(train => {
       // Price filter
       if (train.price < priceRange[0] || train.price > priceRange[1]) return false;
 

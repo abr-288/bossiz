@@ -9,8 +9,7 @@
 
 import { scheduleAgencyPayout } from "./agencyPayouts.ts";
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export interface HandlePaymentSuccessParams {
   supabase: SupabaseClient;

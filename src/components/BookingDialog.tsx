@@ -22,6 +22,9 @@ interface BookingDialogProps {
   };
 }
 
+/** Prestation réservable via ce dialogue (circuit, activité, séjour…). */
+export type BookableService = BookingDialogProps["service"];
+
 export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();

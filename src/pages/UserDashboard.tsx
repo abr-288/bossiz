@@ -14,6 +14,7 @@ import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { useOfflineBookings } from "@/hooks/useOfflineBookings";
 import { useTranslation } from "react-i18next";
 import { UserDashboardLayout } from "@/components/dashboard/UserDashboardLayout";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 const UserDashboard = () => {
   const { t } = useTranslation();
@@ -86,8 +87,9 @@ const UserDashboard = () => {
   const loadNotifications = () => {
     const saved = localStorage.getItem("dashboard_notifications");
     if (saved) {
-      const parsed = JSON.parse(saved);
-      setNotifications(parsed.map((n: any) => ({
+      // Notifications sauvegardées en JSON : la date y est une chaîne.
+      const parsed: (Omit<Notification, "timestamp"> & { timestamp: string })[] = JSON.parse(saved);
+      setNotifications(parsed.map((n) => ({
         ...n,
         timestamp: new Date(n.timestamp)
       })));
@@ -150,8 +152,8 @@ const UserDashboard = () => {
         title: t('common.success'),
         message: t('dashboardPage.notifications.emailSent'),
       });
-    } catch (error: any) {
-      toast({ title: t('common.error'), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t('common.error'), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -189,8 +191,8 @@ const UserDashboard = () => {
           ? t('dashboardPage.notifications.cancelledRefund')
           : t('dashboardPage.notifications.cancelled'),
       });
-    } catch (error: any) {
-      toast({ title: t('common.error'), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t('common.error'), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -225,8 +227,8 @@ const UserDashboard = () => {
         title: t('dashboardPage.notifications.deleteSuccess'),
         message: t('dashboardPage.notifications.deleted'),
       });
-    } catch (error: any) {
-      toast({ title: t('common.error'), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t('common.error'), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 

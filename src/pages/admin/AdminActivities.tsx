@@ -9,17 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function AdminActivities() {
   const { t } = useTranslation();
-  const [activities, setActivities] = useState<any[]>([]);
+  const [activities, setActivities] = useState<Tables<"activities">[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<any>(null);
+  const [editingActivity, setEditingActivity] = useState<Tables<"activities"> | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -108,7 +109,7 @@ export default function AdminActivities() {
     }
   };
 
-  const handleEdit = (activity: any) => {
+  const handleEdit = (activity: Tables<"activities">) => {
     setEditingActivity(activity);
     setFormData({
       name: activity.name,
@@ -118,8 +119,8 @@ export default function AdminActivities() {
       duration: activity.duration,
       price_per_unit: activity.price_per_unit,
       currency: activity.currency,
-      available: activity.available,
-      featured: activity.featured,
+      available: activity.available ?? false,
+      featured: activity.featured ?? false,
     });
     setDialogOpen(true);
   };

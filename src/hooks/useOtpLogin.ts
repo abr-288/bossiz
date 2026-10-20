@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export type OtpChannel = "email" | "sms";
 export type OtpPurpose = "login" | "signup" | "verify_phone";
@@ -16,8 +17,8 @@ export const useOtpLogin = () => {
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || "Échec de l'envoi du code");
       return { success: true as const };
-    } catch (error: any) {
-      return { success: false as const, error: error.message || "Échec de l'envoi du code" };
+    } catch (error) {
+      return { success: false as const, error: getErrorMessage(error) || "Échec de l'envoi du code" };
     } finally {
       setLoading(false);
     }
@@ -42,8 +43,8 @@ export const useOtpLogin = () => {
       }
 
       return { success: true as const };
-    } catch (error: any) {
-      return { success: false as const, error: error.message || "Code invalide" };
+    } catch (error) {
+      return { success: false as const, error: getErrorMessage(error) || "Code invalide" };
     } finally {
       setLoading(false);
     }

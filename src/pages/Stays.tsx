@@ -7,7 +7,7 @@ import { MapPin, Calendar, Star, Palmtree, Wifi, Coffee, Car, Waves, Shield, Clo
 import { WeatherWidget } from "@/components/WeatherWidget";
 
 import { StaySearchForm } from "@/components/StaySearchForm";
-import { BookingDialog } from "@/components/BookingDialog";
+import { BookingDialog, type BookableService } from "@/components/BookingDialog";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Price } from "@/components/ui/price";
@@ -44,7 +44,7 @@ const Stays = () => {
     { icon: CheckCircle, title: t('pages.stays.features.quality.title'), description: t('pages.stays.features.quality.description') },
   ];
   const [searchParams] = useSearchParams();
-  const [selectedStay, setSelectedStay] = useState<any>(null);
+  const [selectedStay, setSelectedStay] = useState<BookableService | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(searchParams.get("type"));
   const [favorites, setFavorites] = useState<string[]>([]);

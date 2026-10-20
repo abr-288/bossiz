@@ -62,7 +62,7 @@ serve(async (req) => {
     // ================================================================
     console.log('\n📋 Étape 1: Parsing des données du callback...');
     
-    let requestData: any;
+    let requestData: { cpm_trans_id?: string; cpm_site_id?: string };
     
     try {
       requestData = await req.json();
@@ -151,7 +151,7 @@ serve(async (req) => {
     // ================================================================
     console.log('\n📋 Étape 5: Vérification du statut auprès de CinetPay...');
     
-    let verifyData: any;
+    let verifyData: { code?: string; message?: string; data?: { status?: string; metadata?: string } };
     
     try {
       const verifyResponse = await fetch('https://api-checkout.cinetpay.com/v2/payment/check', {

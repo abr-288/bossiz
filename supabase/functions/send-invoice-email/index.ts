@@ -38,7 +38,7 @@ serve(async (req) => {
 
     console.log('Sending invoice email to:', customerEmail);
 
-    const itemsHtml = (items || []).map((item: any) => `
+    const itemsHtml = ((items || []) as InvoiceItem[]).map((item) => `
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(String(item.description))}</td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
@@ -101,10 +101,18 @@ serve(async (req) => {
   }
 });
 
-function generateInvoiceEmailHtml(customerName: string, invoiceNumber: string, invoiceDate: string, items: any[], subtotal: number, tax: number, total: number, currency: string, paymentMethod: string) {
-  const itemsList = items.map((item: any) => `
+// Ligne de facture envoyée par l'appelant.
+interface InvoiceItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+function generateInvoiceEmailHtml(customerName: string, invoiceNumber: string, invoiceDate: string, items: InvoiceItem[], subtotal: number, tax: number, total: number, currency: string, paymentMethod: string) {
+  const itemsList = items.map((item) => `
     <tr>
-      <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.description}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(String(item.description))}</td>
       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.unitPrice} ${currency}</td>
       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;">${item.total} ${currency}</td>

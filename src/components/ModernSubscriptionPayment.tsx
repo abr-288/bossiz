@@ -43,6 +43,8 @@ import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { MOTION } from "@/lib/motion";
 import { RedeemSmiles } from "@/components/RedeemSmiles";
+import { getErrorMessage } from "@/lib/errorMessage";
+import type { Tables } from "@/integrations/supabase/types";
 
 // Fonctions utilitaires pour les prix par défaut (en XOF/FCFA pour le marché africain)
 const getDefaultPrice = (planId: string): number => {
@@ -88,6 +90,30 @@ interface PricingOption {
   trial_days: number;
   setup_fee: number;
 }
+
+// Lignes de la base -> formes utilisées par la page (valeurs nulles remplacées).
+const toPlan = (row: Tables<'subscription_plans'>): SubscriptionPlan => ({
+  id: row.id,
+  plan_id: row.plan_id,
+  name: row.name,
+  subtitle: row.subtitle,
+  icon: row.icon ?? '',
+  features: Array.isArray(row.features)
+    ? row.features.filter((f): f is string => typeof f === 'string')
+    : null,
+  subscription_type: row.subscription_type,
+  assigned_role: row.assigned_role ?? '',
+  assistance_level: row.assistance_level ?? '',
+});
+
+const toPricing = (row: Tables<'subscription_pricing'>): PricingOption => ({
+  billing_cycle: row.billing_cycle === 'yearly' ? 'yearly' : 'monthly',
+  price: row.price,
+  currency: row.currency,
+  discount_percentage: row.discount_percentage ?? undefined,
+  trial_days: row.trial_days ?? 0,
+  setup_fee: row.setup_fee ?? 0,
+});
 
 interface PaymentData {
   plan: SubscriptionPlan;
@@ -160,7 +186,7 @@ const ModernSubscriptionPayment = () => {
         
         // Fetch plan details
         const { data: plan, error: planError } = await supabase
-          .from('subscription_plans' as any)
+          .from('subscription_plans')
           .select('*')
           .eq('plan_id', planId)
           .single();
@@ -174,22 +200,22 @@ const ModernSubscriptionPayment = () => {
 
         // Fetch pricing options
         const { data: pricing, error: pricingError } = await supabase
-          .from('subscription_pricing' as any)
+          .from('subscription_pricing')
           .select('*')
           .eq('plan_id', planId);
 
         // Si aucune tarification n'existe, utiliser les valeurs par défaut
-        if (pricingError || !pricing || (pricing as any[]).length === 0) {
+        if (pricingError || !pricing || pricing.length === 0) {
           console.log('Tarifications non trouvées, utilisation des valeurs par défaut pour:', planId);
           
           // Utiliser la fonction SQL pour obtenir les tarifications par défaut
           const { data: defaultPricing, error: defaultError } = await supabase
-            .rpc('get_default_pricing' as any, { 
+            .rpc('get_default_pricing', { 
               p_plan_id: planId, 
               p_billing_cycle: 'monthly' 
             });
 
-          if (defaultError || !defaultPricing || (defaultPricing as any[]).length === 0) {
+          if (defaultError || !defaultPricing || defaultPricing.length === 0) {
             // Si même la fonction par défaut échoue, utiliser des valeurs codées en dur
             const defaultMonthlyPricing = {
               id: 'default-monthly',
@@ -205,15 +231,15 @@ const ModernSubscriptionPayment = () => {
             };
 
             setPlanData({
-              plan: plan as any,
+              plan: toPlan(plan),
               pricing: defaultMonthlyPricing,
               billingCycle: 'monthly'
             });
           } else {
             // Utiliser les tarifications par défaut de la fonction SQL
-            const monthlyPricing = (defaultPricing as any[])[0];
+            const monthlyPricing = defaultPricing[0];
             setPlanData({
-              plan: plan as any,
+              plan: toPlan(plan),
               pricing: {
                 plan_id: planId,
                 billing_cycle: 'monthly' as 'monthly' | 'yearly',
@@ -232,23 +258,24 @@ const ModernSubscriptionPayment = () => {
         }
 
         // Get default pricing (monthly)
-        const defaultPricing = (pricing as any[]).find((p: any) => p.billing_cycle === 'monthly') || (pricing as any[])[0];
+        const options = pricing.map(toPricing);
+        const defaultPricing = options.find((p) => p.billing_cycle === 'monthly') || options[0];
         setPricingOptions({
-          monthly: (pricing as any[]).find((p: any) => p.billing_cycle === 'monthly'),
-          yearly: (pricing as any[]).find((p: any) => p.billing_cycle === 'yearly'),
+          monthly: options.find((p) => p.billing_cycle === 'monthly'),
+          yearly: options.find((p) => p.billing_cycle === 'yearly'),
         });
 
         setPlanData({
-          plan: plan as any,
+          plan: toPlan(plan),
           pricing: defaultPricing,
           billingCycle: 'monthly'
         });
 
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error fetching plan data:', error);
         toast({
           title: 'Erreur',
-          description: error.message || t("ux.subPayment.loadError"),
+          description: getErrorMessage(error) || t("ux.subPayment.loadError"),
           variant: 'destructive',
         });
         navigate('/');
@@ -265,11 +292,11 @@ const ModernSubscriptionPayment = () => {
 
     const checkStatus = async () => {
       const { data } = await supabase
-        .from('user_subscriptions' as any)
+        .from('user_subscriptions')
         .select('status')
         .eq('id', checkout.subscriptionId)
         .maybeSingle();
-      if ((data as any)?.status === 'active') setActivated(true);
+      if (data?.status === 'active') setActivated(true);
     };
 
     const interval = setInterval(checkStatus, 5000);
@@ -288,7 +315,7 @@ const ModernSubscriptionPayment = () => {
 
     try {
       const { data: pricing, error } = await supabase
-        .from('subscription_pricing' as any)
+        .from('subscription_pricing')
         .select('*')
         .eq('plan_id', planId)
         .eq('billing_cycle', cycle)
@@ -322,15 +349,15 @@ const ModernSubscriptionPayment = () => {
         setBillingCycle(cycle);
         setPlanData({
           ...planData,
-          pricing: pricing as any
+          pricing: toPricing(pricing)
         });
       }
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error changing billing cycle:', error);
       toast({
         title: 'Erreur',
-        description: error.message,
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
@@ -350,7 +377,7 @@ const ModernSubscriptionPayment = () => {
       // ignoré : la base le remet à 0 et process-payment fixe le prix dû à
       // partir de subscription_pricing (formule + cycle de facturation).
       const { data: subscription, error: subscriptionError } = await supabase
-        .from('user_subscriptions' as any)
+        .from('user_subscriptions')
         .insert({
           user_id: user.id,
           plan_id: planData.plan.plan_id,
@@ -373,20 +400,20 @@ const ModernSubscriptionPayment = () => {
 
       // Get customer info from user profile
       const { data: profile } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .select('full_name, phone')
         .eq('id', user.id)
         .single();
 
       const { data, error } = await supabase.functions.invoke('process-payment', {
         body: {
-          subscriptionId: (subscription as any).id,
+          subscriptionId: subscription.id,
           paymentMethod: 'jeko',
           redeemPoints: smiles.points,
           customerInfo: {
-            name: (profile as any)?.full_name || user.email?.split('@')[0] || 'Client',
+            name: profile?.full_name || user.email?.split('@')[0] || 'Client',
             email: user.email || '',
-            phone: (profile as any)?.phone || '',
+            phone: profile?.phone || '',
           },
         },
       });
@@ -397,16 +424,16 @@ const ModernSubscriptionPayment = () => {
           : data?.error || 'Impossible d\'initier le paiement Jèko.');
       }
 
-      setCheckout({ subscriptionId: (subscription as any).id, paymentUrl: data.payment_url });
+      setCheckout({ subscriptionId: subscription.id, paymentUrl: data.payment_url });
       // Peut être bloqué par le navigateur (appel après une requête réseau) :
       // l'écran d'attente propose aussi un bouton pour ouvrir le paiement.
       window.open(data.payment_url, '_blank', 'noopener');
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Payment error:', error);
       toast({
         title: t("ux.subPayment.error"),
-        description: error.message || t("ux.subPayment.errorDesc"),
+        description: getErrorMessage(error) || t("ux.subPayment.errorDesc"),
         variant: 'destructive',
       });
     } finally {

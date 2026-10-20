@@ -20,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { Search, DollarSign, Clock, CheckCircle, Building2, Settings, Car } from "lucide-react";
@@ -131,7 +132,7 @@ export default function AdminCommissions() {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const updateData: any = { status };
+      const updateData: TablesUpdate<"commissions"> = { status };
       if (status === "paid") {
         updateData.paid_at = new Date().toISOString();
         updateData.payout_status = "paid";

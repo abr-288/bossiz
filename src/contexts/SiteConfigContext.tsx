@@ -6,7 +6,7 @@ import { singletonContext } from "@/lib/singletonContext";
 interface SiteConfigContextType {
   config: SiteConfig;
   loading: boolean;
-  updateConfig: (key: keyof SiteConfig, value: any) => Promise<void>;
+  updateConfig: <K extends keyof SiteConfig>(key: K, value: SiteConfig[K]) => Promise<void>;
   refetch: () => Promise<void>;
 }
 

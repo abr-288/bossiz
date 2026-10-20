@@ -19,7 +19,7 @@ const detectOS = (): OS => {
  * Android, le bouton ouvre directement la fenêtre d'installation ; ailleurs
  * (Safari iPhone notamment), il déplie les étapes à suivre.
  */
-const iOSDownloadSection = () => {
+const IOSDownloadSection = () => {
   const { t } = useTranslation();
   const { isInstallable, install } = usePWA();
   const [os, setOS] = useState<OS>("desktop");
@@ -92,4 +92,4 @@ const iOSDownloadSection = () => {
   );
 };
 
-export default iOSDownloadSection;
+export default IOSDownloadSection;

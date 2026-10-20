@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface MFAFactor {
   id: string;
@@ -33,8 +34,8 @@ export function useMFA() {
       // Filter to only verified TOTP factors
       const verifiedFactors = data.totp.filter(f => f.status === 'verified');
       setFactors(verifiedFactors as MFAFactor[]);
-    } catch (err: any) {
-      setError(err.message || "Erreur lors de la récupération des facteurs MFA");
+    } catch (err) {
+      setError(getErrorMessage(err) || "Erreur lors de la récupération des facteurs MFA");
     } finally {
       setLoading(false);
     }
@@ -62,8 +63,8 @@ export function useMFA() {
       });
       
       return data;
-    } catch (err: any) {
-      setError(err.message || "Erreur lors de l'inscription TOTP");
+    } catch (err) {
+      setError(getErrorMessage(err) || "Erreur lors de l'inscription TOTP");
       throw err;
     } finally {
       setEnrolling(false);
@@ -100,8 +101,8 @@ export function useMFA() {
       await fetchFactors();
       
       return true;
-    } catch (err: any) {
-      setError(err.message || "Code invalide");
+    } catch (err) {
+      setError(getErrorMessage(err) || "Code invalide");
       return false;
     } finally {
       setVerifying(false);
@@ -125,8 +126,8 @@ export function useMFA() {
       
       await fetchFactors();
       return true;
-    } catch (err: any) {
-      setError(err.message || "Erreur lors de la désactivation");
+    } catch (err) {
+      setError(getErrorMessage(err) || "Erreur lors de la désactivation");
       return false;
     } finally {
       setLoading(false);
@@ -138,7 +139,7 @@ export function useMFA() {
       const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (error) throw error;
       return data;
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error getting AAL:", err);
       return null;
     }

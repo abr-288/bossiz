@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getErrorMessage } from '@/lib/errorMessage';
 
 export interface PriceAlert {
   id: string;
@@ -44,10 +45,10 @@ export const usePriceAlerts = () => {
       });
 
       return data;
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       throw error;
@@ -70,10 +71,10 @@ export const usePriceAlerts = () => {
 
       if (error) throw error;
       return data as PriceAlert[];
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       return [];
@@ -96,10 +97,10 @@ export const usePriceAlerts = () => {
         title: "Alerte mise à jour",
         description: "L'alerte a été modifiée avec succès",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       throw error;
@@ -122,10 +123,10 @@ export const usePriceAlerts = () => {
         title: "Alerte supprimée",
         description: "L'alerte de prix a été supprimée",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       throw error;

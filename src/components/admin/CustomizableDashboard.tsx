@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { WidgetConfig } from "@/hooks/useDashboardPreferences";
+import type { AdminStats } from "@/hooks/useAdminStats";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 
@@ -20,7 +21,7 @@ const COLORS = {
 
 interface CustomizableDashboardProps {
   widgetsConfig: WidgetConfig[];
-  stats: any;
+  stats: AdminStats;
 }
 
 export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDashboardProps) {
@@ -92,7 +93,7 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {stats.bookingsByStatus.map((entry: any, index: number) => (
+                      {stats.bookingsByStatus.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[entry.status as keyof typeof COLORS] || "#8884d8"} />
                       ))}
                     </Pie>
@@ -115,7 +116,7 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {stats.recentBookings.map((booking: any) => (
+                  {stats.recentBookings.map((booking) => (
                     <div key={booking.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <p className="font-medium">{booking.customer_name}</p>

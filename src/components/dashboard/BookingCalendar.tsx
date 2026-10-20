@@ -42,7 +42,7 @@ interface Booking {
     name: string;
     type: string;
     location: string;
-  };
+  } | null;
 }
 
 interface BookingCalendarProps {
@@ -61,7 +61,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
   const filteredBookings = useMemo(() => {
     return bookings.filter((booking) => {
       if (filterStatus !== "all" && booking.status !== filterStatus) return false;
-      if (filterType !== "all" && booking.services.type !== filterType) return false;
+      if (filterType !== "all" && booking.services?.type !== filterType) return false;
       return true;
     });
   }, [bookings, filterStatus, filterType]);
@@ -230,10 +230,10 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h4 className="font-semibold">{booking.services.name}</h4>
+                        <h4 className="font-semibold">{booking.services?.name}</h4>
                         <p className="text-sm text-muted-foreground flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
-                          {booking.services.location}
+                          {booking.services?.location}
                         </p>
                       </div>
                       <BookingStatusBadge status={booking.status} />
@@ -269,17 +269,17 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Service</label>
-                  <p className="font-semibold">{selectedBooking.services.name}</p>
+                  <p className="font-semibold">{selectedBooking.services?.name}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Type</label>
                   <p className="font-semibold">
-                    {getServiceTypeLabel(selectedBooking.services.type)}
+                    {getServiceTypeLabel(selectedBooking.services?.type ?? "")}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Destination</label>
-                  <p className="font-semibold">{selectedBooking.services.location}</p>
+                  <p className="font-semibold">{selectedBooking.services?.location}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Statut</label>

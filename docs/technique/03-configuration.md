@@ -1,6 +1,6 @@
 # 03 — Configuration (variables d'environnement)
 
-> Aucune valeur réelle n'est reproduite dans ce document — uniquement les noms de variables et leur rôle déduit de leur usage dans le code. Sources : [.env.example](../../.env.example), [.env.deploy.example](../../.env.deploy.example), recherche exhaustive de `import.meta.env.VITE_*` dans `src/` et `Deno.env.get(...)` dans `supabase/functions/`.
+> Aucune valeur réelle n'est reproduite dans ce document — uniquement les noms de variables et leur rôle déduit de leur usage dans le code. Sources : [.env.example](../../.env.example), recherche exhaustive de `import.meta.env.VITE_*` dans `src/` et `Deno.env.get(...)` dans `supabase/functions/`.
 
 ## 1. Frontend (Vite, préfixe `VITE_`)
 
@@ -35,17 +35,7 @@
 | `SUPPORT_INBOX_EMAIL` | `send-support-email` | Adresse de réception du formulaire de contact | Non (défaut `support@bossiz.com`) | Non — absente |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | `send-push-notification` | Clés serveur Web Push (la publique doit correspondre à `VITE_VAPID_PUBLIC_KEY`) | Non (bascule en notification mock) | Mentionnées en commentaire seulement (volontaire) |
 
-## 3. Déploiement FTP ([.env.deploy.example](../../.env.deploy.example), utilisé par [deploy-ftp.js](../../deploy-ftp.js))
-
-| Variable | Rôle | Obligatoire |
-|---|---|---|
-| `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD` | Identifiants serveur FTP | **Oui** (`process.exit(1)` si absent) |
-| `FTP_PORT` | Port FTP | Non (défaut 21) |
-| `FTP_REMOTE_DIR` | Répertoire distant | Non (défaut `/public_html`) |
-
-**Note** : ce mécanisme de déploiement FTP coexiste avec le déploiement VPS réel ([deploy-vps/redeploy.sh](../../deploy-vps/redeploy.sh)) — voir [10-deploiement-exploitation.md](10-deploiement-exploitation.md) pour la clarification de ce qui est effectivement utilisé en production.
-
-## 4. `supabase/config.toml` — configuration CLI locale
+## 3. `supabase/config.toml` — configuration CLI locale
 
 Fichier de boilerplate généré par `supabase init`. Les variables suivantes pointent vers des fonctionnalités **désactivées** (`enabled = false`) ou vers l'outillage Supabase Studio local — hors périmètre des secrets applicatifs :
 
@@ -56,7 +46,7 @@ Fichier de boilerplate généré par `supabase init`. Les variables suivantes po
 | `SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN` | `[auth.sms.twilio]` | SMS d'authentification Twilio | Provider désactivé |
 | `SUPABASE_AUTH_EXTERNAL_APPLE_SECRET` | `[auth.external.apple]` | OAuth Apple | Provider désactivé |
 
-## 5. Incohérences constatées entre `.env.example` et le code réel
+## 4. Incohérences constatées entre `.env.example` et le code réel
 
 **Documentées dans `.env.example` mais jamais utilisées dans le code (obsolètes probables)** :
 - `LOVABLE_API_KEY` — aucun usage trouvé (`Deno.env.get`/`import.meta.env`) ; seules des URLs `lovable.app` codées en dur existent. L'IA utilise en réalité `ANTHROPIC_API_KEY`.
@@ -69,6 +59,6 @@ Fichier de boilerplate généré par `supabase init`. Les variables suivantes po
 - `SUPPORT_INBOX_EMAIL` — utilisée dans `send-support-email`, absente.
 - `VITE_API_BASE_URL`, `VITE_WEB_BASE_URL`, alias `REACT_APP_SUPABASE_*` — impact mineur (valeurs par défaut existent).
 
-## 6. Recommandation
+## 5. Recommandation
 
 Mettre à jour [.env.example](../../.env.example) pour : ajouter `ANTHROPIC_API_KEY` et `KAYAK_RAPIDAPI_*` (secrets actifs et nécessaires), retirer ou clairement marquer comme obsolètes `LOVABLE_API_KEY`, `AERODATABOX_*`, `TRAVEL_ADVISOR_*`, `FLIGHT_FARE_SEARCH_*`, `SMTP_*`. **[déduction]** Cet écart suggère que la documentation de configuration n'a pas suivi les dernières évolutions du code (probablement lors du passage à Anthropic/Resend/Kayak).

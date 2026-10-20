@@ -46,6 +46,80 @@ interface FlightOffer {
   source: string;
 }
 
+// Réponses des fournisseurs : seuls les champs lus ici sont décrits, tous
+// optionnels car leur présence varie d'une réponse à l'autre.
+interface TravelpayoutsPackageFlight {
+  airline?: string;
+  flight_number?: string | number;
+  price?: number;
+  departure_at?: string;
+  duration?: number;
+  transfers?: number;
+}
+
+interface KiwiRoute {
+  airline?: string;
+  flight_no?: string | number;
+  local_departure?: string;
+  local_arrival?: string;
+  flyFrom?: string;
+  flyTo?: string;
+}
+
+interface KiwiPackageFlight {
+  route?: KiwiRoute[];
+  airlines?: string[];
+  bags_price?: Record<string, number>;
+  price?: number;
+  local_departure?: string;
+  local_arrival?: string;
+  cityFrom?: string;
+  cityTo?: string;
+  fly_duration?: string;
+  duration?: number;
+  availability?: { seats?: number };
+}
+
+interface BookingPackageHotel {
+  main_photo_url?: string;
+  max_photo_url?: string;
+  photos?: string[];
+  hotel_name?: string;
+  name?: string;
+  class?: number;
+  review_score?: number;
+  review_nr?: number;
+  min_total_price?: number;
+  composite_price_breakdown?: { gross_amount?: { value?: number } };
+  address?: string;
+  district?: string;
+  city?: string;
+  hotel_facilities?: unknown;
+  unit_configuration_label?: string;
+  hotel_include_breakfast?: boolean;
+  is_free_cancellable?: boolean;
+}
+
+interface HotelsComPackageHotel {
+  name?: string;
+  hotel_name?: string;
+  star?: number;
+  star_rating?: number;
+  reviews?: { score?: number; total?: number };
+  guestReviews?: { rating?: number; total?: number };
+  price?: { lead?: { amount?: number } };
+  ratePlan?: { price?: { current?: number } };
+  propertyImage?: { image?: { url?: string } };
+  image?: string;
+  neighborhood?: { name?: string };
+  address?: string;
+  amenities?: string[];
+  tagline?: string;
+  offerSummary?: { messages?: Array<{ type?: string }> };
+}
+
+const isPresent = (value: string | undefined): value is string => Boolean(value);
+
 interface HotelOffer {
   id: string;
   name: string;
@@ -130,7 +204,7 @@ async function searchTravelpayoutsFlights(
     const data = await response.json();
     if (!data.data || !Array.isArray(data.data)) return [];
 
-    return data.data.slice(0, 8).map((flight: any, index: number) => {
+    return data.data.slice(0, 8).map((flight: TravelpayoutsPackageFlight, index: number): FlightOffer => {
       const airlineCode = flight.airline || 'XX';
       const airline = getAirlineName(airlineCode);
       const baggage = getDefaultBaggage(airline, travelClass);
@@ -165,7 +239,7 @@ async function searchTravelpayoutsFlights(
         } : undefined,
         duration: formatDuration(flight.duration || 180),
         stops: flight.transfers || 0,
-        stopCities: flight.transfers > 0 ? ['Transit'] : [],
+        stopCities: (flight.transfers ?? 0) > 0 ? ['Transit'] : [],
         travelClass: travelClass,
         baggage: baggage,
         fareType: 'Standard',
@@ -218,8 +292,8 @@ async function searchKiwiFlights(
     
     if (!data.data || !Array.isArray(data.data)) return [];
 
-    return data.data.slice(0, 8).map((flight: any, index: number) => {
-      const route = flight.route?.[0] || {};
+    return data.data.slice(0, 8).map((flight: KiwiPackageFlight, index: number): FlightOffer => {
+      const route: KiwiRoute = flight.route?.[0] || {};
       const airlineCode = route.airline || flight.airlines?.[0] || 'XX';
       const airline = getAirlineName(airlineCode);
       const baggage = flight.bags_price ? {
@@ -254,8 +328,8 @@ async function searchKiwiFlights(
           departureAirport: destination,
           arrivalAirport: origin,
         } : undefined,
-        duration: formatDuration(flight.fly_duration || flight.duration / 60 || 0),
-        stops: flight.route?.length > 2 ? Math.floor(flight.route.length / 2) - 1 : 0,
+        duration: formatDuration(flight.fly_duration || (flight.duration ?? 0) / 60 || 0),
+        stops: flight.route && flight.route.length > 2 ? Math.floor(flight.route.length / 2) - 1 : 0,
         stopCities: [],
         travelClass: travelClass,
         baggage: baggage,
@@ -324,11 +398,11 @@ async function searchBookingHotels(
     const data = await response.json();
     
     if (data.data?.hotels && Array.isArray(data.data.hotels)) {
-      return data.data.hotels.slice(0, 8).map((hotel: any, index: number) => {
+      return data.data.hotels.slice(0, 8).map((hotel: BookingPackageHotel, index: number): HotelOffer => {
         const photos = [
           hotel.main_photo_url || hotel.max_photo_url,
           ...(hotel.photos || []).slice(0, 4),
-        ].filter(Boolean);
+        ].filter(isPresent);
         
         return {
           id: `booking-hotel-${index}`,
@@ -394,7 +468,7 @@ async function searchHotelsComProvider(
 
     const hotels = data.properties || data.hotels || [];
     if (Array.isArray(hotels)) {
-      return hotels.slice(0, 6).map((hotel: any, index: number) => ({
+      return hotels.slice(0, 6).map((hotel: HotelsComPackageHotel, index: number): HotelOffer => ({
         id: `hotelscom-hotel-${index}`,
         name: hotel.name || hotel.hotel_name || 'Hôtel',
         rating: hotel.star || hotel.star_rating || 0,
@@ -403,14 +477,14 @@ async function searchHotelsComProvider(
         price: Math.round(hotel.price?.lead?.amount || hotel.ratePlan?.price?.current || 0),
         currency: 'EUR',
         image: hotel.propertyImage?.image?.url || hotel.image || getHotelPlaceholder(destination),
-        images: [hotel.propertyImage?.image?.url || hotel.image].filter(Boolean),
+        images: [hotel.propertyImage?.image?.url || hotel.image].filter(isPresent),
         address: hotel.neighborhood?.name || hotel.address || destination,
         city: destination,
         amenities: hotel.amenities?.slice(0, 5) || ['WiFi', 'Piscine', 'Restaurant'],
         description: hotel.tagline || 'Hôtel de qualité',
         roomType: 'Chambre Double',
         breakfast: false,
-        freeCancellation: hotel.offerSummary?.messages?.some((m: any) => m.type === 'FREE_CANCELLATION') || false,
+        freeCancellation: hotel.offerSummary?.messages?.some((m) => m.type === 'FREE_CANCELLATION') || false,
         source: 'hotels-com',
       }));
     }
@@ -456,9 +530,9 @@ function calculateArrivalTime(departure: string, durationMinutes: number): strin
   return `${arrHours.toString().padStart(2, '0')}:${arrMinutes.toString().padStart(2, '0')}`;
 }
 
-function extractAmenities(facilities: any): string[] {
+function extractAmenities(facilities: unknown): string[] {
   if (Array.isArray(facilities)) {
-    return facilities.slice(0, 6).map((f: any) => typeof f === 'string' ? f : f.name || 'WiFi');
+    return (facilities as Array<string | { name?: string }>).slice(0, 6).map((f) => typeof f === 'string' ? f : f.name || 'WiFi');
   }
   return ['WiFi', 'Climatisation', 'Restaurant', 'Parking', 'Piscine'];
 }

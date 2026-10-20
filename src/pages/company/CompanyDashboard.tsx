@@ -102,16 +102,18 @@ const CompanyDashboard = () => {
 
     const membersQuery = isApprover
       ? supabase.from("company_members").select("id, user_id, role, profiles(full_name)").eq("company_id", company.id)
-      : Promise.resolve({ data: [] as any[] });
+      : Promise.resolve({ data: [] as Member[] });
 
     const policiesQuery = isAdmin
       ? supabase.from("travel_policies").select("id, service_type, max_amount, currency").eq("company_id", company.id)
-      : Promise.resolve({ data: [] as any[] });
+      : Promise.resolve({ data: [] as TravelPolicy[] });
 
     const [{ data: bookingsData }, membersRes, policiesRes] = await Promise.all([bookingsQuery, membersQuery, policiesQuery]);
-    setBookings((bookingsData || []) as any);
-    setMembers(((membersRes as any).data || []) as any);
-    setPolicies(((policiesRes as any).data || []) as any);
+    setBookings(bookingsData || []);
+    // Aucune clé étrangère ne relie company_members à profiles : la jointure
+    // profiles(full_name) n'est pas résolue par PostgREST (noms absents).
+    setMembers((membersRes.data || []) as unknown as Member[]);
+    setPolicies(policiesRes.data || []);
     setLoadingData(false);
   };
 

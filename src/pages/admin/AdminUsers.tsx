@@ -9,21 +9,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+
+// Profil accompagné de son rôle (user_roles).
+type AppRole = Tables<"user_roles">["role"];
+type UserWithRole = Tables<"profiles"> & { role: AppRole };
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, Search, Shield, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function AdminUsers() {
   const { t } = useTranslation();
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<UserWithRole | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    role: "user" as "admin" | "user",
+    role: "user" as AppRole,
   });
 
   useEffect(() => {
@@ -119,7 +124,7 @@ export default function AdminUsers() {
     }
   };
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: UserWithRole) => {
     setEditingUser(user);
     setFormData({
       role: user.role || "user",

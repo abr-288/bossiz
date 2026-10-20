@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface SiteConfig {
   branding: {
@@ -139,7 +141,7 @@ export const useSiteConfig = () => {
       data?.forEach((item) => {
         const key = item.config_key as keyof SiteConfig;
         if (key in newConfig) {
-          (newConfig as any)[key] = item.config_value;
+          (newConfig as Record<keyof SiteConfig, unknown>)[key] = item.config_value;
         }
       });
 
@@ -155,11 +157,11 @@ export const useSiteConfig = () => {
     fetchConfig();
   }, [fetchConfig]);
 
-  const updateConfig = async (key: keyof SiteConfig, value: any) => {
+  const updateConfig = async <K extends keyof SiteConfig>(key: K, value: SiteConfig[K]) => {
     try {
       const { error } = await supabase
         .from("site_config")
-        .update({ config_value: value })
+        .update({ config_value: value as unknown as Json })
         .eq("config_key", key);
 
       if (error) throw error;
@@ -169,11 +171,11 @@ export const useSiteConfig = () => {
         title: "Succès",
         description: "Configuration mise à jour",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating config:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour",
+        description: getErrorMessage(error) || "Impossible de mettre à jour",
         variant: "destructive",
       });
     }

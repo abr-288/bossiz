@@ -113,7 +113,7 @@ export const WellnessBookingDialog = ({ open, onOpenChange, wellnessService }: W
           setSpotsBySlot({});
         } else {
           const map: Record<string, number> = {};
-          (data || []).forEach((row: any) => {
+          (data || []).forEach((row) => {
             map[row.booking_time.slice(0, 5)] = row.spots_booked;
           });
           setSpotsBySlot(map);

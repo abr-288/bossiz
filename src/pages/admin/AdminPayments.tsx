@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,7 +16,7 @@ import { useTranslation } from "react-i18next";
 
 const AdminPayments = () => {
   const { t } = useTranslation();
-  const [payments, setPayments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<Tables<"payments">[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -151,7 +152,7 @@ const AdminPayments = () => {
                       <TableCell>{p.payment_provider}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{p.ip_address || "-"}</TableCell>
                       <TableCell>{statusBadge(p.status)}</TableCell>
-                      <TableCell>{format(new Date(p.created_at), "dd MMM yyyy HH:mm", { locale: fr })}</TableCell>
+                      <TableCell>{p.created_at ? format(new Date(p.created_at), "dd MMM yyyy HH:mm", { locale: fr }) : "—"}</TableCell>
                     </TableRow>
                   ))
                 )}

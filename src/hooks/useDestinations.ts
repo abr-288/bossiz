@@ -41,7 +41,6 @@ export const useDestinations = (options: UseDestinationsOptions = {}) => {
       if (category && category !== 'all') params.append('category', category);
       
       const { data, error } = await supabase.functions.invoke('search-destinations', {
-        body: null,
         headers: {},
       });
       

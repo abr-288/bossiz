@@ -28,6 +28,7 @@ import {
   ArrowDown
 } from "lucide-react";
 import { useHomepageConfigContext } from "@/contexts/HomepageConfigContext";
+import type { HomepageFeature, HomepageSection } from "@/hooks/useHomepageConfig";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
@@ -38,12 +39,12 @@ const AdminHomepageConfig = () => {
   const [activeTab, setActiveTab] = useState("sections");
   const [editingFeature, setEditingFeature] = useState<string | null>(null);
 
-  const handleFeatureUpdate = async (featureId: string, field: string, value: any) => {
-    await updateFeature(featureId, { [field]: value });
+  const handleFeatureUpdate = async <K extends keyof HomepageFeature>(featureId: string, field: K, value: HomepageFeature[K]) => {
+    await updateFeature(featureId, { [field]: value } as Partial<HomepageFeature>);
   };
 
-  const handleSectionUpdate = async (sectionId: string, field: string, value: any) => {
-    await updateSection(sectionId, { [field]: value });
+  const handleSectionUpdate = async <K extends keyof HomepageSection>(sectionId: string, field: K, value: HomepageSection[K]) => {
+    await updateSection(sectionId, { [field]: value } as Partial<HomepageSection>);
   };
 
   const moveFeature = async (featureId: string, direction: 'up' | 'down') => {

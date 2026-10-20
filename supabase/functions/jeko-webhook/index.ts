@@ -79,7 +79,18 @@ serve(async (req) => {
 
     console.log('✅ Signature vérifiée');
 
-    let payload: any;
+    // Transaction envoyée par Jèko : seuls les champs lus ici sont décrits.
+    let payload: {
+      id?: string;
+      status: string;
+      transactionType?: string;
+      storeId?: string;
+      amount?: { amount?: number | string; currency?: string };
+      paymentMethod?: string;
+      counterpartLabel?: string | null;
+      counterpartIdentifier?: string | null;
+      transactionDetails?: { reference?: string; paymentLinkId?: string };
+    };
     try {
       payload = JSON.parse(rawBody);
     } catch {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getErrorMessage } from '@/lib/errorMessage';
 
 export interface PageSection {
   id: string;
@@ -79,8 +80,8 @@ export const useContentManagement = () => {
       
       if (error) throw error;
       setPageSections(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
     } finally {
       setLoading(false);
     }
@@ -100,8 +101,8 @@ export const useContentManagement = () => {
           section.id === id ? { ...section, ...updates } : section
         )
       );
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -118,8 +119,8 @@ export const useContentManagement = () => {
       
       setPageSections(prev => [...prev, data]);
       return data;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -134,8 +135,8 @@ export const useContentManagement = () => {
       if (error) throw error;
       
       setPageSections(prev => prev.filter(section => section.id !== id));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -153,8 +154,8 @@ export const useContentManagement = () => {
       
       if (error) throw error;
       setCustomizablePlans(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
     } finally {
       setLoading(false);
     }
@@ -174,8 +175,8 @@ export const useContentManagement = () => {
           plan.id === id ? { ...plan, ...updates } : plan
         )
       );
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -192,8 +193,8 @@ export const useContentManagement = () => {
       
       setCustomizablePlans(prev => [...prev, data]);
       return data;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -208,8 +209,8 @@ export const useContentManagement = () => {
       if (error) throw error;
       
       setCustomizablePlans(prev => prev.filter(plan => plan.id !== id));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -227,8 +228,8 @@ export const useContentManagement = () => {
       
       if (error) throw error;
       setTestimonials(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
     } finally {
       setLoading(false);
     }
@@ -248,8 +249,8 @@ export const useContentManagement = () => {
           testimonial.id === id ? { ...testimonial, ...updates } : testimonial
         )
       );
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -266,8 +267,8 @@ export const useContentManagement = () => {
       
       setTestimonials(prev => [...prev, data]);
       return data;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -282,8 +283,8 @@ export const useContentManagement = () => {
       if (error) throw error;
       
       setTestimonials(prev => prev.filter(testimonial => testimonial.id !== id));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -301,8 +302,8 @@ export const useContentManagement = () => {
       
       if (error) throw error;
       setValuePropositions(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
     } finally {
       setLoading(false);
     }
@@ -322,8 +323,8 @@ export const useContentManagement = () => {
           proposition.id === id ? { ...proposition, ...updates } : proposition
         )
       );
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -340,8 +341,8 @@ export const useContentManagement = () => {
       
       setValuePropositions(prev => [...prev, data]);
       return data;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -356,8 +357,8 @@ export const useContentManagement = () => {
       if (error) throw error;
       
       setValuePropositions(prev => prev.filter(proposition => proposition.id !== id));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
@@ -374,8 +375,8 @@ export const useContentManagement = () => {
       
       if (error) throw error;
       setGlobalSettings(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
     } finally {
       setLoading(false);
     }
@@ -395,8 +396,8 @@ export const useContentManagement = () => {
           setting.setting_key === key ? { ...setting, setting_value: value } : setting
         )
       );
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };

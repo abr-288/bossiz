@@ -70,7 +70,7 @@ serve(async (req) => {
       });
     }
 
-    const serviceName = (booking as any).services?.name || 'votre réservation';
+    const serviceName = (booking as { services?: { name?: string } | null }).services?.name || 'votre réservation';
     const message = decision === 'approved'
       ? `Bossiz+: ${serviceName} (${booking.total_price} ${booking.currency}) a été approuvée. Le paiement va être traité par votre entreprise.`
       : `Bossiz+: ${serviceName} (${booking.total_price} ${booking.currency}) a été rejetée par votre entreprise.`;

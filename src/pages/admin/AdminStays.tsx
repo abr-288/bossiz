@@ -9,17 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function AdminStays() {
   const { t } = useTranslation();
-  const [stays, setStays] = useState<any[]>([]);
+  const [stays, setStays] = useState<Tables<"stays">[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingStay, setEditingStay] = useState<any>(null);
+  const [editingStay, setEditingStay] = useState<Tables<"stays"> | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -108,7 +109,7 @@ export default function AdminStays() {
     }
   };
 
-  const handleEdit = (stay: any) => {
+  const handleEdit = (stay: Tables<"stays">) => {
     setEditingStay(stay);
     setFormData({
       name: stay.name,
@@ -118,8 +119,8 @@ export default function AdminStays() {
       duration: stay.duration,
       price_per_unit: stay.price_per_unit,
       currency: stay.currency,
-      available: stay.available,
-      featured: stay.featured,
+      available: stay.available ?? false,
+      featured: stay.featured ?? false,
     });
     setDialogOpen(true);
   };

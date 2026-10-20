@@ -1,5 +1,4 @@
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export async function scheduleAgencyPayout(params: {
   supabase: SupabaseClient;

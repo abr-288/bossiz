@@ -11,7 +11,8 @@ import {
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FlightHotelSearchForm } from "@/components/FlightHotelSearchForm";
-import { useFlightHotelSearch } from "@/hooks/useFlightHotelSearch";
+import type { LucideIcon } from "lucide-react";
+import { useFlightHotelSearch, type FlightHotelSearchParams } from "@/hooks/useFlightHotelSearch";
 import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerFlightHotel from "@/assets/banner-flight-hotel.webp";
@@ -56,7 +57,7 @@ interface HotelOffer {
   freeCancellation: boolean;
 }
 
-const amenityIcons: Record<string, any> = {
+const amenityIcons: Record<string, LucideIcon> = {
   'wifi': Wifi, 'wifi gratuit': Wifi, 'free wifi': Wifi,
   'piscine': Waves, 'pool': Waves, 'swimming': Waves,
   'restaurant': UtensilsCrossed, 'dining': UtensilsCrossed,
@@ -80,12 +81,12 @@ const FlightHotel = () => {
   const [selectedHotel, setSelectedHotel] = useState<HotelOffer | null>(null);
   const [flights, setFlights] = useState<FlightOffer[]>([]);
   const [hotels, setHotels] = useState<HotelOffer[]>([]);
-  const [searchParams, setSearchParams] = useState<any>(null);
+  const [searchParams, setSearchParams] = useState<FlightHotelSearchParams | null>(null);
   const [flightSort, setFlightSort] = useState<string>('price');
   const [hotelSort, setHotelSort] = useState<string>('price');
   const { searchPackages, loading } = useFlightHotelSearch();
 
-  const handleSearch = async (params: any) => {
+  const handleSearch = async (params: FlightHotelSearchParams) => {
     setSearchParams(params);
     const results = await searchPackages(params);
     
@@ -133,7 +134,7 @@ const FlightHotel = () => {
   };
 
   const calculateTotal = () => {
-    if (!selectedFlight || !selectedHotel) return { flightTotal: 0, hotelTotal: 0, total: 0 };
+    if (!selectedFlight || !selectedHotel) return { flightTotal: 0, hotelTotal: 0, total: 0, nights: 0, rooms: 0, passengers: 0 };
     const nights = calculateNights();
     const rooms = searchParams?.rooms || 1;
     const passengers = (searchParams?.adults || 1) + (searchParams?.children || 0);

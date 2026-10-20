@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 const AdminDestinations = () => {
   const { t } = useTranslation();
-  const [cache, setCache] = useState<any[]>([]);
+  const [cache, setCache] = useState<Tables<"destinations_cache">[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchCache = async () => {

@@ -21,10 +21,27 @@ interface Seat {
   available: boolean;
 }
 
+/** Préférences saisies à l'étape « Préférences » (sièges, horaires, demandes). */
+export type BookingPreferences = {
+  seats?: string[];
+  bedType?: string;
+  floorPreference?: string;
+  arrivalTime?: string;
+  specialRequests?: string;
+  fuelPolicy?: string;
+  pickupTime?: string;
+  returnTime?: string;
+  notes?: string;
+  departureTime?: string;
+  dietaryPreference?: string;
+};
+
+type TextPreference = Exclude<keyof BookingPreferences, "seats">;
+
 interface PreferencesStepProps {
   serviceType: string;
-  selectedPreferences: Record<string, any>;
-  onPreferencesChange: (preferences: Record<string, any>) => void;
+  selectedPreferences: BookingPreferences;
+  onPreferencesChange: (preferences: BookingPreferences) => void;
   guestsCount: number;
   onNext: () => void;
   onBack: () => void;
@@ -76,7 +93,7 @@ export const PreferencesStep = ({
   };
 
   const [seats] = useState<Seat[]>(generateSeats());
-  const selectedSeats = (selectedPreferences.seats as string[]) || [];
+  const selectedSeats = selectedPreferences.seats || [];
 
   const handleSeatClick = (seatId: string) => {
     const seat = seats.find((s) => s.id === seatId);
@@ -108,7 +125,7 @@ export const PreferencesStep = ({
     return "bg-secondary text-foreground hover:bg-secondary/80";
   };
 
-  const handlePreferenceChange = (key: string, value: any) => {
+  const handlePreferenceChange = (key: TextPreference, value: string) => {
     onPreferencesChange({ ...selectedPreferences, [key]: value });
   };
 

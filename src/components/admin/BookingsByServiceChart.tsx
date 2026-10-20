@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, type TooltipProps } from "recharts";
 import { useTranslation } from "react-i18next";
 
 interface BookingsByServiceChartProps {
@@ -32,13 +32,13 @@ export function BookingsByServiceChart({ data }: BookingsByServiceChartProps) {
     );
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="font-medium">{payload[0].name}</p>
           <p className="text-sm text-muted-foreground">
-            {payload[0].value} réservations ({((payload[0].value / data.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%)
+            {payload[0].value} réservations ({((Number(payload[0].value) / data.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%)
           </p>
         </div>
       );

@@ -13,7 +13,7 @@ const futureDate = z.string().refine(
 
 const phoneNumber = z.string()
   .min(8, "Le numéro doit contenir au moins 8 chiffres")
-  .regex(/^[\d\s\-\+\(\)]{8,}$/, "Format de numéro invalide");
+  .regex(/^[\d\s\-+()]{8,}$/, "Format de numéro invalide");
 
 const iataCode = z.string()
   .min(3, "Code IATA invalide")

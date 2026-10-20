@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -38,13 +39,27 @@ import { useTranslation } from "react-i18next";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
 import { HotelBookingCancelCard } from "@/components/hotels/HotelBookingCancelCard";
 import { MOTION } from "@/lib/motion";
+import { getErrorMessage } from "@/lib/errorMessage";
+
+// booking_details (JSON) : contenu propre au type de réservation, lu par les
+// cartes « hôtel partenaire » et « billets d'événement ».
+type BookingDetails = Record<string, unknown> & {
+  kind?: string;
+  cancellation?: { fee?: number; refund?: number; feeDueToHotel?: number } | null;
+};
+
+type ConfirmationBooking = Omit<Tables<"bookings">, "booking_details"> & {
+  booking_details: BookingDetails | null;
+  services: Tables<"services"> | null;
+  passengers: Tables<"passengers">[];
+};
 
 const Confirmation = () => {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState<any>(null);
+  const [booking, setBooking] = useState<ConfirmationBooking | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -79,11 +94,11 @@ const Confirmation = () => {
         },
         (payload) => {
           console.log('Booking updated in real-time:', payload);
-          setBooking((prev: any) => ({
+          setBooking((prev) => prev && ({
             ...prev,
-            ...payload.new,
-            services: prev?.services,
-            passengers: prev?.passengers
+            ...(payload.new as Partial<ConfirmationBooking>),
+            services: prev.services,
+            passengers: prev.passengers
           }));
           
           // Show toast notification on status change
@@ -128,16 +143,16 @@ const Confirmation = () => {
         .single();
 
       if (error) throw error;
-      setBooking(data);
+      setBooking(data as unknown as ConfirmationBooking);
       const [{ data: existingReview }, { data: reviewConfig }] = await Promise.all([
         supabase.from("reviews").select("id").eq("booking_id", bookingId).maybeSingle(),
         supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle(),
       ]);
       setHasReview(!!existingReview);
-      setReviewPromptEnabled((reviewConfig?.config_value as any)?.reviewPromptEnabled !== false);
-    } catch (err: any) {
+      setReviewPromptEnabled((reviewConfig?.config_value as { reviewPromptEnabled?: boolean } | null)?.reviewPromptEnabled !== false);
+    } catch (err) {
       console.error("Error loading booking:", err);
-      setError(err.message);
+      setError(getErrorMessage(err) ?? null);
     } finally {
       setLoading(false);
     }
@@ -170,7 +185,7 @@ const Confirmation = () => {
         bgClass: "from-primary/10 to-primary/5",
         borderClass: "border-warning-foreground/20",
       };
-    } else if (booking?.status === 'failed' || booking?.payment_status === 'failed') {
+    } else if (booking?.payment_status === 'failed') {
       return {
         icon: <XCircle className="h-20 w-20 text-destructive" />,
         title: t('confirmation.failed'),
@@ -364,7 +379,7 @@ const Confirmation = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      {getServiceIcon(booking.services?.type)}
+                      {getServiceIcon(booking.services?.type ?? "")}
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">{booking.services?.name}</h2>
@@ -424,7 +439,7 @@ const Confirmation = () => {
                       {t('confirmation.participants')}
                     </h3>
                     <div className="space-y-2">
-                      {booking.passengers.map((passenger: any, index: number) => (
+                      {booking.passengers.map((passenger, index) => (
                         <div 
                           key={passenger.id} 
                           className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"

@@ -3,7 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { EventSearchForm } from "@/components/EventSearchForm";
 import { EventResults } from "@/components/EventResults";
-import { BookingDialog } from "@/components/BookingDialog";
+import { BookingDialog, type BookableService } from "@/components/BookingDialog";
+import type { EventSearchResponse } from "@/hooks/useEventSearch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Music, Trophy, Theater, PartyPopper, Star, Users, TrendingUp } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
@@ -20,10 +21,10 @@ const CATEGORY_ICONS = [
 const Events = () => {
   const { t } = useTranslation();
   const categories = CATEGORY_ICONS.map((c) => ({ ...c, name: t(`events.categoryNames.${c.id}`) }));
-  const [searchResults, setSearchResults] = useState<any>(null);
+  const [searchResults, setSearchResults] = useState<EventSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<BookableService | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleBookEvent = (event: { id: string; name: string; price: string; currency?: string; location: string }) => {

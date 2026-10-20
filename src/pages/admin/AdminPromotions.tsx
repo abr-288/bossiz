@@ -16,6 +16,7 @@ import { fr } from "date-fns/locale";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface Promotion {
   id: string;
@@ -65,8 +66,8 @@ export default function AdminPromotions() {
 
       if (error) throw error;
       setPromotions((data as Promotion[]) || []);
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -129,8 +130,8 @@ export default function AdminPromotions() {
 
       setIsDialogOpen(false);
       fetchPromotions();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -144,8 +145,8 @@ export default function AdminPromotions() {
       if (error) throw error;
       toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionDeleted") });
       fetchPromotions();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -157,8 +158,8 @@ export default function AdminPromotions() {
         .eq("id", promo.id);
       if (error) throw error;
       fetchPromotions();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 

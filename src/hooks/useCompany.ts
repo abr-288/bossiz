@@ -38,7 +38,7 @@ export const useCompany = () => {
 
     const membership = memberships?.[0];
     if (membership?.companies) {
-      setCompany(membership.companies as any);
+      setCompany(membership.companies);
       setRole(membership.role as CompanyRole);
     } else {
       setCompany(null);

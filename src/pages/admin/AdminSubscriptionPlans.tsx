@@ -16,6 +16,7 @@ import { Plus, Edit, Trash2, Loader2, RefreshCw, Star, GripVertical, Layers } fr
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface SubscriptionPlan {
   id: string;
@@ -83,8 +84,8 @@ export default function AdminSubscriptionPlans() {
 
       if (error) throw error;
       setPlans((data as SubscriptionPlan[]) || []);
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -138,8 +139,8 @@ export default function AdminSubscriptionPlans() {
 
       setIsDialogOpen(false);
       fetchPlans();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -153,8 +154,8 @@ export default function AdminSubscriptionPlans() {
       if (error) throw error;
       toast({ title: t("ux.bo.success"), description: t("ux.bo.planDeleted") });
       fetchPlans();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -166,8 +167,8 @@ export default function AdminSubscriptionPlans() {
         .eq("id", plan.id);
       if (error) throw error;
       fetchPlans();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -179,8 +180,8 @@ export default function AdminSubscriptionPlans() {
         .eq("id", plan.id);
       if (error) throw error;
       fetchPlans();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 

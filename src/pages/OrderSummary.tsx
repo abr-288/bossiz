@@ -67,7 +67,7 @@ const OrderSummary = () => {
         } else {
           throw new Error(t("ux.order.notFoundToast"));
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error fetching order:', error);
         toast({
           title: 'Erreur',

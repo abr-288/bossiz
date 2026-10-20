@@ -31,7 +31,7 @@
 ## Constats transversaux les plus importants
 
 - Le module de conciergerie **« Majestic »** a été supprimé de la base de données le 2026-08-05 mais reste présent dans le fichier de types générés (`types.ts`), ce qui désynchronise la documentation apparente du code frontend et l'état réel de la base — corrigé dans cette documentation, à corriger aussi dans le code (régénération des types).
-- Le déploiement de production (confirmé par le porteur du projet) passe par un script manuel ciblant un VPS ([deploy-vps/](../deploy-vps/)) — les configurations Docker/Netlify/FTP présentes ailleurs dans le dépôt ne sont **pas** utilisées en production actuelle.
+- Le déploiement de production (confirmé par le porteur du projet) passe par un script manuel ciblant un VPS ([deploy-vps/](../deploy-vps/)) — la configuration Docker présente ailleurs dans le dépôt n'est **pas** utilisée en production actuelle.
 - Un audit de sécurité détaillé ([technique/11-securite.md](technique/11-securite.md)) identifie plusieurs constats de criticité élevée à traiter avant une prochaine mise en production ou une diligence technique externe — voir aussi la dette technique priorisée dans [etat-avancement.md](etat-avancement.md).
 
 ## Portée et limites de cette documentation

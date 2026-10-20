@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Star, UtensilsCrossed, Phone } from "lucide-react";
-import { useRestaurants } from "@/hooks/useRestaurants";
+import { useRestaurants, type Restaurant } from "@/hooks/useRestaurants";
 import { RestaurantReservationDialog } from "@/components/restaurants/RestaurantReservationDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerRestaurants from "@/assets/banner-restaurants.webp";
@@ -20,7 +20,7 @@ const Restaurants = () => {
   const { restaurants, loading, error } = useRestaurants();
   const [locationFilter, setLocationFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("all");
-  const [selectedRestaurant, setSelectedRestaurant] = useState<any>(null);
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const filteredRestaurants = useMemo(() => {

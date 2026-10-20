@@ -3,8 +3,7 @@
 // et, si le visiteur est connecté, son prénom et ses dernières réservations.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 type Plan = { name?: string; detail?: string };
 type Service = { title?: string; name?: string; description?: string; detail?: string };
@@ -206,7 +205,22 @@ async function clientContext(admin: SupabaseClient, token: string): Promise<Clie
   if (bookingsError) console.error("Réservations du client indisponibles:", bookingsError.message);
 
   const firstName = (profile?.full_name ?? "").trim().split(/\s+/)[0] || null;
-  const list = (bookings ?? []).map((b: Record<string, any>) => {
+  // Réservation du client avec son service, telle que lue plus haut.
+  type ChatBooking = {
+    id: string;
+    services: { name?: string; type?: string } | null;
+    start_date: string;
+    end_date: string | null;
+    status: string;
+    payment_status: string;
+    approval_status: string | null;
+    total_price: number;
+    currency: string;
+    balance_due: number | null;
+    external_ref: string | null;
+    created_at: string;
+  };
+  const list = ((bookings ?? []) as ChatBooking[]).map((b) => {
     const parts = [
       `référence ${String(b.id).slice(0, 8).toUpperCase()}`,
       `${b.services?.name ?? "service"} (${b.services?.type ?? "?"})`,

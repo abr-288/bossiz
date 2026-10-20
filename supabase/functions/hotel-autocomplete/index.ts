@@ -22,7 +22,34 @@ serve(async (req) => {
     }
 
     const RAPIDAPI_KEY = Deno.env.get('RAPIDAPI_KEY');
-    const results: any[] = [];
+    // Suggestion renvoyée au client (Booking.com ou destinations populaires).
+    interface Suggestion {
+      id: string;
+      name: string;
+      type: string;
+      country: string;
+      region: string;
+      description: string;
+      image: string;
+      hotels_count: number;
+      average_price: number;
+      price_range: { min: number; max: number };
+    }
+
+    // Destination de l'API Booking.com searchDestination (champs lus ici).
+    interface BookingDestination {
+      dest_id?: string;
+      id?: string;
+      dest_name?: string;
+      name?: string;
+      search_type?: string;
+      country?: string;
+      region?: string;
+      nr_hotels?: number;
+      image_url?: string;
+    }
+
+    const results: Suggestion[] = [];
 
     // Search Booking.com for destinations
     if (RAPIDAPI_KEY) {
@@ -48,7 +75,7 @@ serve(async (req) => {
           console.log('Booking.com autocomplete response:', JSON.stringify(destData).substring(0, 300));
           
           if (destData.data && Array.isArray(destData.data)) {
-            const suggestions = destData.data.slice(0, 8).map((item: any) => {
+            const suggestions = destData.data.slice(0, 8).map((item: BookingDestination): Suggestion => {
               // Estimate average price based on destination type and location
               let avgPrice = 80; // Default price in EUR
               
@@ -63,10 +90,10 @@ serve(async (req) => {
               }
 
               return {
-                id: item.dest_id || item.id,
+                id: item.dest_id || item.id || '',
                 name: item.search_type === 'CITY' 
                   ? `${item.dest_name || item.name}`
-                  : item.dest_name || item.name,
+                  : item.dest_name || item.name || '',
                 type: item.search_type || 'CITY',
                 country: item.country || '',
                 region: item.region || '',

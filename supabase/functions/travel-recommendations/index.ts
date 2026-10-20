@@ -45,17 +45,17 @@ serve(async (req) => {
     // Transform the response to match our expected format
     const recommendations = {
       destination: destination,
-      top_attractions: data.data?.attractions?.slice(0, 5).map((attr: any) => ({
+      top_attractions: data.data?.attractions?.slice(0, 5).map((attr: { name?: string; description?: string; rating?: number }) => ({
         name: attr.name || 'Attraction',
         description: attr.description || 'Popular attraction',
         rating: attr.rating || 4.5
       })) || [],
-      hotels: data.data?.hotels?.slice(0, 5).map((hotel: any) => ({
+      hotels: data.data?.hotels?.slice(0, 5).map((hotel: { name?: string; rating?: number; price?: string }) => ({
         name: hotel.name || 'Hotel',
         rating: hotel.rating || 4.0,
         price: hotel.price || '$$'
       })) || [],
-      restaurants: data.data?.restaurants?.slice(0, 5).map((rest: any) => ({
+      restaurants: data.data?.restaurants?.slice(0, 5).map((rest: { name?: string; cuisine?: string; rating?: number }) => ({
         name: rest.name || 'Restaurant',
         cuisine: rest.cuisine || 'Local',
         rating: rest.rating || 4.0

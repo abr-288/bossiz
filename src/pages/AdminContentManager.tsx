@@ -26,6 +26,7 @@ import {
   MoveUp,
   MoveDown
 } from 'lucide-react';
+import { getErrorMessage } from '@/lib/errorMessage';
 
 const AdminContentManager = () => {
   const navigate = useNavigate();
@@ -78,10 +79,10 @@ const AdminContentManager = () => {
         title: 'Section mise à jour',
         description: 'Les modifications ont été enregistrées avec succès.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Erreur',
-        description: error.message,
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
@@ -96,10 +97,10 @@ const AdminContentManager = () => {
         title: 'Plan mis à jour',
         description: 'Les modifications ont été enregistrées avec succès.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Erreur',
-        description: error.message,
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
@@ -114,10 +115,10 @@ const AdminContentManager = () => {
         title: 'Témoignage mis à jour',
         description: 'Les modifications ont été enregistrées avec succès.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Erreur',
-        description: error.message,
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
@@ -132,10 +133,10 @@ const AdminContentManager = () => {
         title: 'Valeur mise à jour',
         description: 'Les modifications ont été enregistrées avec succès.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Erreur',
-        description: error.message,
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
@@ -148,10 +149,10 @@ const AdminContentManager = () => {
         title: 'Paramètre mis à jour',
         description: 'Le paramètre a été enregistré avec succès.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Erreur',
-        description: error.message,
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }

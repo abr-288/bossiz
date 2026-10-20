@@ -23,6 +23,9 @@ import { Plus, Pencil, Trash2, Hammer, Search, X, Check, ShoppingBag } from "luc
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/errorMessage";
+import { toArtisan } from "@/hooks/useArtisans";
+import type { ArtisanProduct } from "@/components/artisans/ArtisanOrderDialog";
 
 interface Product {
   name: string;
@@ -45,7 +48,7 @@ interface Artisan {
   phone: string | null;
   whatsapp: string | null;
   image_url: string | null;
-  products: Product[];
+  products: ArtisanProduct[];
   is_active: boolean;
   created_at: string;
 }
@@ -121,11 +124,11 @@ export default function AgencyArtisans() {
     if (error) {
       console.error("Error fetching artisans:", error);
     } else {
-      setArtisans((data || []) as any);
+      setArtisans((data || []).map(toArtisan));
     }
     setLoading(false);
 
-    fetchOrders((data || []) as Artisan[]);
+    fetchOrders((data || []).map(toArtisan));
   };
 
   const fetchOrders = async (agencyArtisans: Artisan[]) => {
@@ -203,8 +206,8 @@ export default function AgencyArtisans() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndArtisans();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -223,7 +226,13 @@ export default function AgencyArtisans() {
       whatsapp: artisan.whatsapp || "",
       image_url: artisan.image_url || "",
       available: artisan.is_active,
-      products: (artisan.products || []).map((p) => ({ ...p, price: p.price?.toString() || "" })) as any,
+      products: artisan.products.map((p) => ({
+        name: p.name,
+        description: p.description || "",
+        price: p.price?.toString() || "",
+        currency: p.currency || "XOF",
+        image_url: p.image_url || "",
+      })),
     });
     setIsDialogOpen(true);
   };

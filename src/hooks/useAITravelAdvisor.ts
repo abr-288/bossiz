@@ -8,11 +8,17 @@ export interface AITravelAdvisorParams {
   duration?: string;
 }
 
+export interface AITravelAdvisorResponse {
+  success: boolean;
+  recommendations?: string;
+  error?: string;
+}
+
 export const useAITravelAdvisor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getRecommendations = async (params: AITravelAdvisorParams) => {
+  const getRecommendations = async (params: AITravelAdvisorParams): Promise<AITravelAdvisorResponse | null> => {
     setLoading(true);
     setError(null);
 

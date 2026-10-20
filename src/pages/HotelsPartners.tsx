@@ -10,6 +10,17 @@ import { useHotelSearch } from "@/hooks/useHotelSearch";
 import bannerHotels from "@/assets/banner-hotels.webp";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
+// Hôtel partenaire tel que renvoyé par search-hotels (prix signé dans price.grandTotal).
+interface PartnerHotelResult {
+  id: string;
+  name: string;
+  location?: string;
+  price?: number | { grandTotal?: number };
+  currency?: string;
+  rating?: number;
+  image: string;
+}
+
 interface PartnerHotel {
   id: string;
   name: string;
@@ -47,11 +58,11 @@ const HotelsPartners = () => {
 
         if (result?.success && result.data?.services) {
           setPartnerHotels(
-            result.data.services.map((hotel: any) => ({
+            (result.data.services as PartnerHotelResult[]).map((hotel) => ({
               id: hotel.id,
               name: hotel.name,
               location: hotel.location || 'Abidjan',
-              price: Math.round(hotel.price?.grandTotal ?? hotel.price ?? 0),
+              price: Math.round((typeof hotel.price === 'object' ? hotel.price.grandTotal : hotel.price) ?? 0),
               currency: hotel.currency || 'FCFA',
               rating: hotel.rating ?? 0,
               image: hotel.image,

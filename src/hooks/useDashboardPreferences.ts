@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
-export interface WidgetConfig {
+export type WidgetConfig = {
   id: string;
   type: string;
   visible: boolean;
   order: number;
-}
+};
 
 export interface DashboardLayout {
   id?: string;
@@ -92,7 +93,7 @@ export const useDashboardPreferences = () => {
       const layoutData = {
         user_id: user.id,
         layout_name: layout.layoutName,
-        widgets_config: layout.widgetsConfig as any,
+        widgets_config: layout.widgetsConfig,
         is_active: layout.isActive,
       };
 
@@ -122,11 +123,11 @@ export const useDashboardPreferences = () => {
       });
 
       await fetchLayouts();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving layout:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de sauvegarder",
+        description: getErrorMessage(error) || "Impossible de sauvegarder",
         variant: "destructive",
       });
     }

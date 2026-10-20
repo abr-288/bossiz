@@ -10,23 +10,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ExportButtons } from "@/components/admin/ExportButtons";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function AdminServices() {
   const { t } = useTranslation();
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<Tables<"services">[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingService, setEditingService] = useState<any>(null);
+  const [editingService, setEditingService] = useState<Tables<"services"> | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState<{
     name: string;
-    type: "hotel" | "flight" | "car" | "tour" | "event" | "flight_hotel";
+    type: Tables<"services">["type"];
     location: string;
     destination: string;
     description: string;
@@ -120,7 +121,7 @@ export default function AdminServices() {
     }
   };
 
-  const handleEdit = (service: any) => {
+  const handleEdit = (service: Tables<"services">) => {
     setEditingService(service);
     setFormData({
       name: service.name,
@@ -130,8 +131,8 @@ export default function AdminServices() {
       description: service.description || "",
       price_per_unit: service.price_per_unit,
       currency: service.currency,
-      available: service.available,
-      featured: service.featured,
+      available: service.available ?? false,
+      featured: service.featured ?? false,
     });
     setDialogOpen(true);
   };

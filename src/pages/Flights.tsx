@@ -1,11 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, type ComponentProps } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { TrendingUp, Plane, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { FlightSearchForm } from "@/components/FlightSearchForm";
-import { useFlightSearch } from "@/hooks/useFlightSearch";
+import { useFlightSearch, type FlightOffer } from "@/hooks/useFlightSearch";
 import { FlightBookingDialog } from "@/components/FlightBookingDialog";
 import { getAirlineName } from "@/utils/airlineNames";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,8 +42,10 @@ interface MappedFlight {
     checked: { pieces: number; weightKg: number; included: boolean };
     personalItem: boolean;
   };
-  raw: any;
+  raw: FlightOffer;
 }
+
+type SelectedFlight = ComponentProps<typeof FlightBookingDialog>["flight"];
 
 const Flights = () => {
   const { t } = useTranslation();
@@ -51,7 +53,7 @@ const Flights = () => {
   const { searchFlights, loading, error } = useFlightSearch();
   const [flights, setFlights] = useState<MappedFlight[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [selectedFlight, setSelectedFlight] = useState<any>(null);
+  const [selectedFlight, setSelectedFlight] = useState<SelectedFlight | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isDefaultResults, setIsDefaultResults] = useState(false);
 
@@ -84,7 +86,7 @@ const Flights = () => {
             flag: getCountryFlag(dest.country)
           };
         })
-        .filter(Boolean) as any[];
+        .filter((route): route is NonNullable<typeof route> => route !== null);
     }
 
     // Default static routes as fallback
@@ -100,8 +102,8 @@ const Flights = () => {
     ];
   }, [trendingDestinations]);
 
-  const mapFlightData = (data: any[], from: string, to: string, date: string, returnDate?: string, travelClass: string = "ECONOMY"): MappedFlight[] => {
-    return data.map((offer: any) => {
+  const mapFlightData = (data: FlightOffer[], from: string, to: string, date: string, returnDate?: string, travelClass: string = "ECONOMY"): MappedFlight[] => {
+    return data.map((offer) => {
       const firstItinerary = offer.itineraries?.[0];
       const segments = firstItinerary?.segments || [];
       const firstSegment = segments[0];
@@ -115,7 +117,7 @@ const Flights = () => {
 
       const priceTotal =
         typeof offer.price === "object" && (offer.price?.grandTotal || offer.price?.total)
-          ? parseFloat(offer.price.grandTotal || offer.price.total)
+          ? parseFloat(offer.price.grandTotal || offer.price.total || "0")
           : typeof offer.price === "number"
           ? offer.price
           : 0;
@@ -217,7 +219,7 @@ const Flights = () => {
       flightNumber: flight.flightNumber,
       baggage: flight.baggage,
     };
-    setSelectedFlight(adaptedFlight as any);
+    setSelectedFlight(adaptedFlight);
     setDialogOpen(true);
   };
 

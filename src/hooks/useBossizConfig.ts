@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface BossizSiteConfig {
   id: string;
@@ -289,11 +290,11 @@ export const useBossizConfig = () => {
         title: "Succès",
         description: "Configuration du site mise à jour",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating site config:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour la configuration",
+        description: getErrorMessage(error) || "Impossible de mettre à jour la configuration",
         variant: "destructive",
       });
     }
@@ -314,11 +315,11 @@ export const useBossizConfig = () => {
         title: "Succès",
         description: "Configuration globale mise à jour",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating global config:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour la configuration",
+        description: getErrorMessage(error) || "Impossible de mettre à jour la configuration",
         variant: "destructive",
       });
     }

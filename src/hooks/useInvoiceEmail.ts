@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface InvoiceItem {
   description: string;
@@ -44,10 +45,10 @@ export const useInvoiceEmail = () => {
 
       toast.success("Facture envoyée par email avec succès");
       return { success: true, invoiceNumber };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error sending invoice:", error);
       toast.error("Erreur lors de l'envoi de la facture");
-      return { success: false, error: error.message };
+      return { success: false, error: getErrorMessage(error) };
     } finally {
       setLoading(false);
     }

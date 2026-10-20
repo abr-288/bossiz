@@ -1,6 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import type { Json, TablesInsert } from '@/integrations/supabase/types';
 
-interface BookingData {
+export interface BookingData {
   id: string;
   user_id: string;
   service_id: string;
@@ -10,7 +11,8 @@ interface BookingData {
   end_date: string | null;
   guests: number;
   total_price: number;
-  booking_details: any;
+  booking_details: Json;
+  services: { name: string; type: string; location: string } | null;
   created_at: string;
   updated_at: string;
   notes: string | null;
@@ -33,7 +35,7 @@ interface BReserveDB extends DBSchema {
       id?: number;
       action: 'create' | 'update' | 'delete';
       table: string;
-      data: any;
+      data: TablesInsert<'bookings'>;
       timestamp: string;
     };
   };
@@ -105,7 +107,7 @@ export const clearOfflineBookings = async () => {
 export const addToSyncQueue = async (
   action: 'create' | 'update' | 'delete',
   table: string,
-  data: any
+  data: TablesInsert<'bookings'>
 ) => {
   const db = await initOfflineDB();
   await db.add('sync_queue', {

@@ -6,6 +6,27 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Réponses des API trains (IRCTC, open data SNCF) : seuls les champs lus ici.
+interface IrctcTrain {
+  train_number?: string;
+  train_type?: string;
+  duration?: number;
+  from_station_name?: string;
+  to_station_name?: string;
+  from_std?: string;
+  to_std?: string;
+  available_seats?: number;
+}
+
+interface SncfTrain {
+  train_no?: string;
+  origine?: string;
+  destination?: string;
+  heure_depart?: string;
+  heure_arrivee?: string;
+  od_happy_card?: string;
+}
+
 interface TrainResult {
   id: string;
   operator: string;
@@ -53,7 +74,7 @@ async function searchIRCTC(
     console.log('IRCTC response:', JSON.stringify(data).substring(0, 500));
 
     if (data.status && data.data && Array.isArray(data.data)) {
-      return data.data.slice(0, 10).map((train: any, index: number) => {
+      return data.data.slice(0, 10).map((train: IrctcTrain, index: number) => {
         // Parse duration
         const durationMinutes = train.duration || 0;
         const hours = Math.floor(durationMinutes / 60);
@@ -125,15 +146,15 @@ async function searchSNCF(
     console.log('SNCF response:', JSON.stringify(data).substring(0, 500));
 
     if (data.results && Array.isArray(data.results)) {
-      return data.results.slice(0, 10).map((train: any, index: number) => {
+      return data.results.slice(0, 10).map((train: SncfTrain, index: number) => {
         const departureTime = train.heure_depart || '08:00';
         const arrivalTime = train.heure_arrivee || '12:00';
         
         // Calculate duration
         const depParts = departureTime.split(':');
         const arrParts = arrivalTime.split(':');
-        const depMinutes = parseInt(depParts[0]) * 60 + parseInt(depParts[1] || 0);
-        const arrMinutes = parseInt(arrParts[0]) * 60 + parseInt(arrParts[1] || 0);
+        const depMinutes = parseInt(depParts[0]) * 60 + parseInt(depParts[1] || '0');
+        const arrMinutes = parseInt(arrParts[0]) * 60 + parseInt(arrParts[1] || '0');
         const durationMinutes = arrMinutes > depMinutes ? arrMinutes - depMinutes : (24 * 60 - depMinutes + arrMinutes);
         const hours = Math.floor(durationMinutes / 60);
         const minutes = durationMinutes % 60;
@@ -206,7 +227,7 @@ serve(async (req) => {
     
     console.log('Detected region:', region);
 
-    let allTrains: TrainResult[] = [];
+    const allTrains: TrainResult[] = [];
 
     // Search based on detected region
     if (region === 'india' && rapidApiKey) {

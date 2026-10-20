@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 // "request" : demande d'abonnement sur devis (subscription_requests) ;
 // "paid" : abonnement payé en ligne (user_subscriptions).
@@ -52,12 +53,12 @@ export const useSubscriptionReceipt = () => {
       });
 
       return true;
-    } catch (error: any) {
+    } catch (error) {
       receiptWindow?.close();
       console.error("Error generating receipt:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de générer le reçu",
+        description: getErrorMessage(error) || "Impossible de générer le reçu",
         variant: "destructive",
       });
       return false;
@@ -101,11 +102,11 @@ export const useSubscriptionReceipt = () => {
       });
 
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error downloading receipt:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de télécharger le reçu",
+        description: getErrorMessage(error) || "Impossible de télécharger le reçu",
         variant: "destructive",
       });
       return false;

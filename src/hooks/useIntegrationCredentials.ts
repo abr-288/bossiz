@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
+import type { Tables } from "@/integrations/supabase/types";
 
 export interface IntegrationCredential {
   id: string;
@@ -12,6 +14,18 @@ export interface IntegrationCredential {
   updated_at: string;
 }
 
+// La colonne credentials (JSON) contient des paires clé/valeur texte, et la
+// catégorie est l'une de celles gérées par /admin/integrations.
+const toIntegration = (row: Tables<"integration_credentials">): IntegrationCredential => ({
+  id: row.id,
+  provider: row.provider,
+  category: row.category as IntegrationCredential["category"],
+  label: row.label,
+  credentials: (row.credentials ?? {}) as Record<string, string>,
+  is_active: row.is_active,
+  updated_at: row.updated_at,
+});
+
 export const useIntegrationCredentials = () => {
   const [integrations, setIntegrations] = useState<IntegrationCredential[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +36,7 @@ export const useIntegrationCredentials = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("integration_credentials" as any)
+        .from("integration_credentials")
         .select("*")
         .order("category");
 
@@ -45,7 +59,7 @@ export const useIntegrationCredentials = () => {
         throw error;
       }
       setTableMissing(false);
-      setIntegrations((data as any) || []);
+      setIntegrations((data || []).map(toIntegration));
     } catch (error) {
       console.error("Error fetching integration credentials:", error);
     } finally {
@@ -56,19 +70,19 @@ export const useIntegrationCredentials = () => {
   const updateIntegration = useCallback(async (id: string, updates: Partial<IntegrationCredential>) => {
     try {
       const { error } = await supabase
-        .from("integration_credentials" as any)
-        .update(updates as any)
+        .from("integration_credentials")
+        .update(updates)
         .eq("id", id);
 
       if (error) throw error;
 
       setIntegrations((prev) => prev.map((i) => (i.id === id ? { ...i, ...updates } : i)));
       toast({ title: "Succès", description: "Identifiants mis à jour" });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating integration credentials:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de mettre à jour",
+        description: getErrorMessage(error) || "Impossible de mettre à jour",
         variant: "destructive",
       });
     }
@@ -85,15 +99,15 @@ export const useIntegrationCredentials = () => {
 
       if (siblings.length > 0) {
         const { error: deactivateError } = await supabase
-          .from("integration_credentials" as any)
-          .update({ is_active: false } as any)
+          .from("integration_credentials")
+          .update({ is_active: false })
           .in("id", siblings.map((i) => i.id));
         if (deactivateError) throw deactivateError;
       }
 
       const { error } = await supabase
-        .from("integration_credentials" as any)
-        .update({ ...updates, is_active: true } as any)
+        .from("integration_credentials")
+        .update({ ...updates, is_active: true })
         .eq("id", id);
       if (error) throw error;
 
@@ -105,11 +119,11 @@ export const useIntegrationCredentials = () => {
         })
       );
       toast({ title: "Succès", description: "Prestataire activé" });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error activating integration exclusively:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible d'activer ce prestataire",
+        description: getErrorMessage(error) || "Impossible d'activer ce prestataire",
         variant: "destructive",
       });
     }

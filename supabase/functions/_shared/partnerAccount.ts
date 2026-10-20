@@ -6,8 +6,7 @@ import { renderEmailTemplate } from "./emailTemplates.ts";
 // et la validation automatique (auto-approve-partner-applications).
 // Toujours appelés avec un client service-role.
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SITE_URL = (Deno.env.get("SITE_URL") || "https://app.bossiz.com").replace(/\/+$/, "");
 const FROM = "Bossiz+ Partenaires <partenaires@bossiz.com>";

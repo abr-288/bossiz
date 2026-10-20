@@ -7,11 +7,34 @@ export interface EventSearchParams {
   category?: string;
 }
 
+/** Événement renvoyé par l'Edge Function search-events. */
+export interface EventResult {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  address: string;
+  date: string;
+  endDate: string;
+  price: string;
+  currency: string;
+  image: string;
+  category: string;
+  link: string;
+  source: string;
+}
+
+export interface EventSearchResponse {
+  success: boolean;
+  events: EventResult[];
+  error?: string;
+}
+
 export const useEventSearch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchEvents = async (params: EventSearchParams) => {
+  const searchEvents = async (params: EventSearchParams): Promise<EventSearchResponse | null> => {
     setLoading(true);
     setError(null);
 

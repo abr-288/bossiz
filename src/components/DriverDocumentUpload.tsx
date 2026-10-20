@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload, X, FileImage, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface DriverDocumentUploadProps {
   label: string;
@@ -71,9 +72,9 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
       setPreviewUrl(result.previewUrl || null);
 
       toast({ title: "Document envoyé", description: "Votre photo a bien été enregistrée" });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Driver document upload error:", error);
-      toast({ title: "Erreur d'upload", description: error.message || "Impossible d'envoyer le document", variant: "destructive" });
+      toast({ title: "Erreur d'upload", description: getErrorMessage(error) || "Impossible d'envoyer le document", variant: "destructive" });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

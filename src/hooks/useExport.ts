@@ -3,7 +3,8 @@ import { useToast } from "@/hooks/use-toast";
 export const useExport = () => {
   const { toast } = useToast();
 
-  const exportToCSV = (data: any[], filename: string) => {
+  // Lignes à exporter : n'importe quels objets, une colonne par clé.
+  const exportToCSV = (data: object[], filename: string) => {
     try {
       if (!data || data.length === 0) {
         toast({
@@ -22,7 +23,7 @@ export const useExport = () => {
         headers.join(","),
         ...data.map((row) =>
           headers.map((header) => {
-            const value = row[header];
+            const value = (row as Record<string, unknown>)[header];
             // Escape commas and quotes in values
             const stringValue = value !== null && value !== undefined ? String(value) : "";
             return `"${stringValue.replace(/"/g, '""')}"`;
@@ -57,7 +58,7 @@ export const useExport = () => {
     }
   };
 
-  const exportToPDF = async (data: any[], filename: string) => {
+  const exportToPDF = async (data: object[], filename: string) => {
     toast({
       title: "Export PDF",
       description: "Fonctionnalité à venir - utilisez CSV pour l'instant",

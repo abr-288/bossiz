@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 import { carBookingSchema } from "@/lib/validation";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
@@ -56,7 +57,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     setApplicantPhotoPath("");
     supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle()
       .then(({ data }) => {
-        const policy = data?.config_value as any;
+        const policy = data?.config_value as { depositPercent?: number; depositEnabled?: boolean; enabledServiceTypes?: string[] } | null;
         setDepositPercent(Math.min(99, Math.max(1, Number(policy?.depositPercent) || 30)));
         const available = policy?.depositEnabled !== false && (policy?.enabledServiceTypes || []).includes("car");
         setDepositAvailable(available);
@@ -99,8 +100,8 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
         dropoffLocation,
         notes: notes || null,
       });
-    } catch (error: any) {
-      toast.error(error.errors?.[0]?.message || t('booking.validation.checkInfo'));
+    } catch (error) {
+      toast.error((error instanceof ZodError ? error.errors[0]?.message : undefined) || t('booking.validation.checkInfo'));
       return;
     }
 

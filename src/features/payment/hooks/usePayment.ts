@@ -19,7 +19,7 @@ export const usePayment = () => {
   // Fonction pour traiter un paiement
   const processPayment = async (
     bookingId: string, // ID de la réservation
-    booking: any, // Données de la réservation
+    booking: { total_price: number }, // Données de la réservation
     paymentData: PaymentInput // Données de paiement
   ) => {
     setValidationErrors({});
@@ -118,7 +118,7 @@ export const usePayment = () => {
       }
 
       return { success: true, paymentUrl: data.payment_url };
-    } catch (error: any) {
+    } catch (error) {
       clearTimeout(timeoutId);
       console.error("Payment error:", error);
       

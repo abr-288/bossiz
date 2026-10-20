@@ -35,7 +35,7 @@ interface PrebookRequest {
     stops: number;
     fare: string;
     provider?: string;
-    baggage?: any;
+    baggage?: unknown;
   };
   passengers: Array<{
     first_name: string;
@@ -48,7 +48,7 @@ interface PrebookRequest {
   adults_count: number;
   children_count: number;
   selected_options?: Record<string, number>;
-  selected_preferences?: Record<string, any>;
+  selected_preferences?: Record<string, unknown>;
 }
 
 // Generate a unique booking reference

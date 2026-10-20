@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCaller, isStaff } from "../_shared/auth.ts";
 import webpush from "npm:web-push@3.6.7";
+import { getErrorMessage } from "../_shared/errorMessage.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,7 +30,7 @@ serve(async (req) => {
 
   // Body parsed once — reused in the catch handler too, since a Request
   // body can only be read a single time.
-  let payload: { userId?: string; title?: string; body?: string; data?: unknown; subscription?: any };
+  let payload: { userId?: string; title?: string; body?: string; data?: unknown; subscription?: unknown };
   try {
     payload = await req.json();
   } catch {
@@ -100,7 +101,7 @@ serve(async (req) => {
     // Send push notification to each subscription using the real,
     // VAPID-authenticated and encrypted Web Push protocol (RFC 8030/8291).
     const results = await Promise.allSettled(
-      subscriptions.map(async (sub: any) => {
+      subscriptions.map(async (sub: { id: string; endpoint: string; p256dh: string; auth: string }) => {
         const pushSubscription = {
           endpoint: sub.endpoint,
           keys: { p256dh: sub.p256dh, auth: sub.auth },
@@ -108,21 +109,22 @@ serve(async (req) => {
         try {
           await webpush.sendNotification(pushSubscription, notificationPayload);
           return { success: true, subscriptionId: sub.id };
-        } catch (error: any) {
+        } catch (error) {
           // 404/410 means the subscription is gone (browser unsubscribed, etc.)
-          if (error?.statusCode === 404 || error?.statusCode === 410) {
+          const statusCode = (error as { statusCode?: number } | null)?.statusCode;
+          if (statusCode === 404 || statusCode === 410) {
             await supabase
               .from('push_subscriptions')
               .update({ active: false })
               .eq('id', sub.id);
           }
-          console.error('Failed to send push notification:', error?.message || error);
-          return { success: false, subscriptionId: sub.id, error: error?.message };
+          console.error('Failed to send push notification:', getErrorMessage(error) || error);
+          return { success: false, subscriptionId: sub.id, error: getErrorMessage(error) };
         }
       })
     );
 
-    const successful = results.filter(r => r.status === 'fulfilled' && (r.value as any)?.success).length;
+    const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
     const failed = results.length - successful;
 
     console.log(`Push notification sent: ${successful} successful, ${failed} failed`);

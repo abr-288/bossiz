@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Activity, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface ActivityItem {
   id: string;
@@ -162,10 +163,10 @@ export default function AgencyActivities() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndActivities();
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: t("ux.bo.error"),
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }

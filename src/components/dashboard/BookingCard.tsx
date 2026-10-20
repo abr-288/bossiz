@@ -42,7 +42,7 @@ interface Booking {
     name: string;
     type: string;
     location: string;
-  };
+  } | null;
 }
 
 interface BookingCardProps {

@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Price } from "@/components/ui/price";
 
-interface Product {
+/** Création d'un artisan, telle que stockée dans artisans.products (JSON). */
+export interface ArtisanProduct {
   name: string;
   description?: string;
   price?: number;
@@ -23,7 +24,7 @@ interface ArtisanOrderDialogProps {
   onOpenChange: (open: boolean) => void;
   artisanId: string;
   artisanName: string;
-  product: Product;
+  product: ArtisanProduct;
 }
 
 export const ArtisanOrderDialog = ({ open, onOpenChange, artisanId, artisanName, product }: ArtisanOrderDialogProps) => {

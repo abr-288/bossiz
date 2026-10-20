@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Cloud, Bot, TrendingUp, MapPin, Search } from "lucide-react";
-import { useWeather } from "@/hooks/useWeather";
-import { useEventSearch } from "@/hooks/useEventSearch";
-import { useAITravelAdvisor } from "@/hooks/useAITravelAdvisor";
+import { useWeather, type WeatherData } from "@/hooks/useWeather";
+import { useEventSearch, type EventSearchResponse } from "@/hooks/useEventSearch";
+import { useAITravelAdvisor, type AITravelAdvisorResponse } from "@/hooks/useAITravelAdvisor";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
@@ -33,9 +33,9 @@ export const SeasonalSuggestions = () => {
   const { searchEvents, loading: eventsLoading } = useEventSearch();
   const { getRecommendations, loading: aiLoading } = useAITravelAdvisor();
   
-  const [weatherData, setWeatherData] = useState<any>(null);
-  const [eventsData, setEventsData] = useState<any>(null);
-  const [aiRecommendations, setAiRecommendations] = useState<any>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [eventsData, setEventsData] = useState<EventSearchResponse | null>(null);
+  const [aiRecommendations, setAiRecommendations] = useState<AITravelAdvisorResponse | null>(null);
 
   const handleSearch = async () => {
     if (!destination.trim()) return;
@@ -236,7 +236,7 @@ export const SeasonalSuggestions = () => {
               </Card>
             ) : eventsData?.events && eventsData.events.length > 0 ? (
               <div className="space-y-4">
-                {eventsData.events.slice(0, 6).map((event: any, index: number) => (
+                {eventsData.events.slice(0, 6).map((event, index) => (
                   <motion.div
                     key={event.id || index}
                     initial={{ opacity: 0, x: -20 }}
@@ -246,9 +246,9 @@ export const SeasonalSuggestions = () => {
                     <Card>
                       <CardContent className="pt-6">
                         <div className="flex gap-4">
-                          {event.thumbnail && (
+                          {event.image && (
                             <img
-                              src={event.thumbnail}
+                              src={event.image}
                               alt={event.name}
                               className="w-24 h-24 object-cover rounded-lg"
                               loading="lazy"

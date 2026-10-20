@@ -224,14 +224,14 @@ serve(async (req) => {
         continue;
       }
 
-      let transfer: Record<string, any>;
+      let transfer: { id?: string | number; status?: string };
       try {
         transfer = await response.json();
       } catch {
         transfer = {};
       }
 
-      if (!response.ok || !transfer.id || !["pending", "success"].includes(transfer.status)) {
+      if (!response.ok || !transfer.id || !["pending", "success"].includes(transfer.status ?? "")) {
         const ambiguous = response.status === 409 || response.status >= 500;
         const { error: transferError } = await supabase
           .from("commissions")

@@ -19,6 +19,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { whatsAppLink } from "@/lib/contactNumbers";
+import type { BeforeInstallPromptEvent } from "@/hooks/usePWA";
 
 const InstalliOS = () => {
   const { t } = useTranslation();
@@ -29,7 +30,7 @@ const InstalliOS = () => {
   const [isiOS, setIsiOS] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [installStatus, setInstallStatus] = useState<'checking' | 'compatible' | 'incompatible'>('checking');
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     // Détection du navigateur et de l'appareil
@@ -47,9 +48,9 @@ const InstalliOS = () => {
     }
 
     // Écouter l'événement beforeinstallprompt pour PWA
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useLocalizedRows } from "@/lib/translatableContent";
 
 type ServiceType = "car" | "event" | "flight" | "flight_hotel" | "hotel" | "tour";
 
 export const useServices = (type?: ServiceType) => {
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<Tables<"services">[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

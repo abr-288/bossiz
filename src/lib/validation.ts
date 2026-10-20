@@ -47,7 +47,7 @@ export const carBookingSchema = bookingSchema.extend({
     .trim()
     .min(5, "Le numéro de permis doit contenir au moins 5 caractères")
     .max(30, "Le numéro de permis doit contenir moins de 30 caractères")
-    .regex(/^[A-Z0-9\-]+$/, "Le permis ne peut contenir que des lettres majuscules, des chiffres et des tirets"),
+    .regex(/^[A-Z0-9-]+$/, "Le permis ne peut contenir que des lettres majuscules, des chiffres et des tirets"),
   pickupLocation: z.string()
     .trim()
     .min(3, "Le lieu de récupération doit contenir au moins 3 caractères")
@@ -146,7 +146,7 @@ export const passengerSchema = z.object({
     .trim()
     .min(5, "Le numéro de document doit contenir au moins 5 caractères")
     .max(30, "Le numéro de document doit contenir moins de 30 caractères")
-    .regex(/^[A-Z0-9\-]+$/i, "Le numéro ne peut contenir que des lettres, chiffres et tirets"),
+    .regex(/^[A-Z0-9-]+$/i, "Le numéro ne peut contenir que des lettres, chiffres et tirets"),
 });
 
 // Schéma de validation pour le formulaire multi-passagers

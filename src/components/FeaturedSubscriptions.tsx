@@ -197,7 +197,7 @@ const FeaturedSubscriptions = () => {
         message: ""
       });
       setSelectedRequestPlan(null);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error submitting subscription request:", error);
       toast({
         title: t("common.error", "Erreur"),

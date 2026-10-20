@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Home, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 interface Stay {
   id: string;
@@ -162,10 +163,10 @@ export default function AgencyStays() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndStays();
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: t("ux.bo.error"),
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }

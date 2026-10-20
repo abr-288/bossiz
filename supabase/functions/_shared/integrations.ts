@@ -5,8 +5,9 @@
 //
 // Usage: import { getResendApiKey, sendEmailViaResend, getActiveSmsCredential, sendSms } from "../_shared/integrations.ts";
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Import de type seulement : smtp.ts (nodemailer) reste chargé à la demande.
+import type { SmtpCredentials } from "./smtp.ts";
 
 interface IntegrationRow {
   provider: string;
@@ -126,7 +127,9 @@ export async function sendEmail(
     active.credentials?.from
   ) {
     const { sendEmailViaSmtp } = await import("./smtp.ts");
-    return sendEmailViaSmtp(active.credentials as any, params);
+    const { host, port, username, password, from } = active.credentials;
+    const smtp: SmtpCredentials = { host, port, username, password, from };
+    return sendEmailViaSmtp(smtp, params);
   }
 
   return sendEmailViaResend(supabase, params);

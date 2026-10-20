@@ -13,8 +13,7 @@
 
 import { sendJekoRefund } from "./jekoRefund.ts";
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export interface RefundResult {
   success: boolean;
@@ -94,7 +93,7 @@ export async function refundBookingPayment(
     return { success: false, refunded: false, error: 'Passerelle de paiement non configurée' };
   }
 
-  let refundData: any;
+  let refundData: { code?: string | number; message?: string };
   try {
     const refundResponse = await fetch('https://api-checkout.cinetpay.com/v2/payment/refund/add', {
       method: 'POST',

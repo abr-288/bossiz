@@ -51,8 +51,9 @@ serve(async (req) => {
     return json({ success: false, error: "Lecture impossible" }, 500);
   }
 
-  // deno-lint-ignore no-explicit-any
-  const hotelRows = (due ?? []).filter((row: any) => row.bookings?.booking_details?.kind === "partner_hotel").slice(0, BATCH_SIZE);
+  // Part hôtel due, avec la réservation liée (booking_details.kind).
+  type DueRow = { booking_id: string; bookings?: { booking_details?: { kind?: string } | null } | null };
+  const hotelRows = ((due ?? []) as DueRow[]).filter((row) => row.bookings?.booking_details?.kind === "partner_hotel").slice(0, BATCH_SIZE);
   let released = 0;
   for (const row of hotelRows) {
     await scheduleAgencyPayout({

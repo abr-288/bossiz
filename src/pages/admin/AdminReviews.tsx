@@ -1,6 +1,9 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+
+type ReviewRow = Tables<"reviews"> & { services: Pick<Tables<"services">, "name" | "type"> | null };
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +31,7 @@ const statusBadge = (status: ReviewStatus) => {
 
 const AdminReviews = () => {
   const { t } = useTranslation();
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -165,9 +168,9 @@ const AdminReviews = () => {
                 ) : (
                   reviews.map((r) => (
                     <TableRow key={r.id}>
-                      <TableCell className="font-medium">{(r.services as any)?.name || "—"}</TableCell>
+                      <TableCell className="font-medium">{r.services?.name || "—"}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{(r.services as any)?.type || "—"}</Badge>
+                        <Badge variant="outline">{r.services?.type || "—"}</Badge>
                       </TableCell>
                       <TableCell>{renderStars(r.rating)}</TableCell>
                       <TableCell className="max-w-xs truncate">{r.comment || "—"}</TableCell>

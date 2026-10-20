@@ -11,8 +11,29 @@
 // fragments HTML déjà construits par notre propre code (ex: une liste de
 // passagers), jamais à du texte saisi directement par un utilisateur.
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// Réservation et passagers lus par les emails de repli (quand aucun modèle
+// n'est configuré dans email_templates).
+export interface FallbackEmailBooking {
+  id: string;
+  customer_name: string;
+  start_date: string;
+  end_date: string | null;
+  total_price: number;
+  currency: string;
+  guests?: number;
+  external_ref?: string | null;
+  service_name?: string;
+  location?: string;
+}
+
+export interface FallbackEmailPassenger {
+  first_name: string;
+  last_name: string;
+  document_type?: string | null;
+  document_number?: string | null;
+}
 
 export interface RenderedEmail {
   subject: string;

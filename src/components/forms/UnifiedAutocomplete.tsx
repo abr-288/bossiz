@@ -93,9 +93,11 @@ export const UnifiedAutocomplete = ({
 
       if (error) throw error;
 
-      const formattedSuggestions: AutocompleteSuggestion[] = (data?.suggestions || []).map((s: any) => ({
+      // Suggestion brute des fonctions *-autocomplete (champs selon le type de recherche).
+      type RawSuggestion = { iata?: string; id?: string; code?: string; name?: string; city?: string; country?: string };
+      const formattedSuggestions: AutocompleteSuggestion[] = ((data?.suggestions || []) as RawSuggestion[]).map((s) => ({
         id: s.iata || s.id || s.code || `${s.name}-${Math.random()}`,
-        name: s.name || s.city,
+        name: s.name || s.city || "",
         code: s.iata || s.code,
         country: s.country,
         city: s.city,

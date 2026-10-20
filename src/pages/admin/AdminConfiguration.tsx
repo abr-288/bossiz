@@ -15,16 +15,50 @@ import { ThemeConfig } from "@/components/admin/ThemeConfig";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
+import type { Json, Tables } from "@/integrations/supabase/types";
 
-interface ConfigItem {
-  id: string;
-  config_key: string;
-  config_value: any;
-  category: string;
-  description: string | null;
-  created_at: string | null;
-  updated_at: string | null;
+type ConfigItem = Tables<"site_config">;
+
+interface SectionProps {
+  config?: ConfigItem;
+  onSave: (value: Json) => void;
+  saving: boolean;
 }
+
+// Valeur JSON d'une section, lue avec la forme attendue par son formulaire.
+function sectionValue<T>(config: ConfigItem | undefined, fallback: T): T {
+  return (config?.config_value as unknown as T | null) || fallback;
+}
+
+type BrandingValue = { siteName?: string; tagline?: string; logoLight?: string; logoDark?: string; favicon?: string };
+type ContactValue = { email?: string; phone?: string; whatsapp?: string; address?: string };
+type SocialValue = Record<string, string | undefined>;
+type HeroSlide = { image: string; title: string };
+type HeroValue = { title?: string; subtitle?: string; ctaText?: string; slides: HeroSlide[] };
+type FeatureItem = { icon: string; title: string; description: string };
+type FeaturesValue = { title?: string; items: FeatureItem[] };
+type SeoValue = { defaultTitle?: string; defaultDescription?: string; keywords?: string };
+type LocaleValue = {
+  defaultCurrency?: string;
+  availableCurrencies?: string[];
+  defaultLanguage?: string;
+  availableLanguages?: string[];
+};
+type BookingValue = {
+  minAdvanceHours?: number;
+  maxGuestsPerBooking?: number;
+  requirePhoneVerification?: boolean;
+  autoConfirmBookings?: boolean;
+};
+type PaymentPolicyValue = {
+  depositEnabled?: boolean;
+  depositPercent?: number;
+  enabledServiceTypes?: string[];
+  reviewPromptEnabled?: boolean;
+};
+type PricingValue = { showOriginalPrice?: boolean; discountBadgeColor?: string; currencyPosition?: string };
+type FooterValue = { copyright?: string; showNewsletter?: boolean; newsletterTitle?: string };
 
 export default function AdminConfiguration() {
   const { t } = useTranslation();
@@ -58,7 +92,7 @@ export default function AdminConfiguration() {
     }
   };
 
-  const updateConfig = async (id: string, configKey: string, value: any) => {
+  const updateConfig = async (id: string, configKey: string, value: Json) => {
     setSaving(id);
     try {
       const { error } = await supabase
@@ -76,10 +110,10 @@ export default function AdminConfiguration() {
         title: t("ux.bo.success"),
         description: `${configKey} mis à jour`,
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: t("ux.bo.error"),
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -269,12 +303,12 @@ export default function AdminConfiguration() {
 }
 
 // Sub-components for each config section
-function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function BrandingConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<BrandingValue>(sectionValue<BrandingValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<BrandingValue>(config, {}));
   }, [config]);
 
   return (
@@ -332,12 +366,12 @@ function BrandingConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
   );
 }
 
-function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function ContactConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<ContactValue>(sectionValue<ContactValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<ContactValue>(config, {}));
   }, [config]);
 
   return (
@@ -387,12 +421,12 @@ function ContactConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
   );
 }
 
-function SocialConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function SocialConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<SocialValue>(sectionValue<SocialValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<SocialValue>(config, {}));
   }, [config]);
 
   return (
@@ -423,12 +457,12 @@ function SocialConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
   );
 }
 
-function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function HeroConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || { slides: [] });
+  const [value, setValue] = useState<HeroValue>(sectionValue<HeroValue>(config, { slides: [] }));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<HeroValue>(config, { slides: [] }));
   }, [config]);
 
   const addSlide = () => {
@@ -441,7 +475,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
   const removeSlide = (index: number) => {
     setValue({
       ...value,
-      slides: value.slides.filter((_: any, i: number) => i !== index),
+      slides: value.slides.filter((_, i) => i !== index),
     });
   };
 
@@ -491,7 +525,7 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
           </div>
           
           <div className="space-y-4">
-            {value.slides?.map((slide: any, index: number) => (
+            {value.slides?.map((slide, index) => (
               <div key={index} className="p-4 border rounded-lg space-y-3 bg-muted/30">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Slide {index + 1}</span>
@@ -542,12 +576,12 @@ function HeroConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (
   );
 }
 
-function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function FeaturesConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || { items: [] });
+  const [value, setValue] = useState<FeaturesValue>(sectionValue<FeaturesValue>(config, { items: [] }));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<FeaturesValue>(config, { items: [] }));
   }, [config]);
 
   const addItem = () => {
@@ -560,7 +594,7 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
   const removeItem = (index: number) => {
     setValue({
       ...value,
-      items: value.items.filter((_: any, i: number) => i !== index),
+      items: value.items.filter((_, i) => i !== index),
     });
   };
 
@@ -593,7 +627,7 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
             </Button>
           </div>
           <div className="space-y-2">
-            {value.items?.map((item: any, index: number) => (
+            {value.items?.map((item, index) => (
               <div key={index} className="flex gap-2 items-center">
                 <Input
                   placeholder={t("ux.bo.iconShieldClockStar")}
@@ -636,11 +670,11 @@ function FeaturesConfig({ config, onSave, saving }: { config?: ConfigItem; onSav
   );
 }
 
-function SEOConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
-  const [value, setValue] = useState(config?.config_value || {});
+function SEOConfig({ config, onSave, saving }: SectionProps) {
+  const [value, setValue] = useState<SeoValue>(sectionValue<SeoValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<SeoValue>(config, {}));
   }, [config]);
 
   return (
@@ -681,12 +715,12 @@ function SEOConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (v
   );
 }
 
-function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function LocaleConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<LocaleValue>(sectionValue<LocaleValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<LocaleValue>(config, {}));
   }, [config]);
 
   return (
@@ -754,12 +788,12 @@ function LocaleConfig({ config, onSave, saving }: { config?: ConfigItem; onSave:
   );
 }
 
-function BookingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function BookingConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<BookingValue>(sectionValue<BookingValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<BookingValue>(config, {}));
   }, [config]);
 
   return (
@@ -824,17 +858,17 @@ const DEPOSIT_SERVICE_TYPES = [
   { value: "activity", get label() { return i18n.t("ux.bo.activities"); } },
 ];
 
-function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function PaymentPolicyConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {
+  const [value, setValue] = useState<PaymentPolicyValue>(sectionValue<PaymentPolicyValue>(config, {
     depositEnabled: true,
     depositPercent: 30,
     enabledServiceTypes: DEPOSIT_SERVICE_TYPES.map((item) => item.value),
     reviewPromptEnabled: true,
-  });
+  }));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<PaymentPolicyValue>(config, {}));
   }, [config]);
 
   const enabledTypes: string[] = value.enabledServiceTypes || [];
@@ -881,7 +915,7 @@ function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; 
           </div>
           <Switch checked={value.reviewPromptEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, reviewPromptEnabled: checked })} />
         </div>
-        <Button onClick={() => onSave(value)} disabled={saving || !Number.isFinite(Number(value.depositPercent)) || value.depositPercent < 1 || value.depositPercent > 99}>
+        <Button onClick={() => onSave(value)} disabled={saving || !Number.isFinite(Number(value.depositPercent)) || (value.depositPercent ?? 0) < 1 || (value.depositPercent ?? 0) > 99}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {t("ux.bo.save")}
         </Button>
@@ -890,12 +924,12 @@ function PaymentPolicyConfig({ config, onSave, saving }: { config?: ConfigItem; 
   );
 }
 
-function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function PricingConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<PricingValue>(sectionValue<PricingValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<PricingValue>(config, {}));
   }, [config]);
 
   return (
@@ -940,12 +974,12 @@ function PricingConfig({ config, onSave, saving }: { config?: ConfigItem; onSave
   );
 }
 
-function FooterConfig({ config, onSave, saving }: { config?: ConfigItem; onSave: (value: any) => void; saving: boolean }) {
+function FooterConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState(config?.config_value || {});
+  const [value, setValue] = useState<FooterValue>(sectionValue<FooterValue>(config, {}));
 
   useEffect(() => {
-    if (config) setValue(config.config_value);
+    if (config) setValue(sectionValue<FooterValue>(config, {}));
   }, [config]);
 
   return (

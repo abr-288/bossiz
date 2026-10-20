@@ -8,8 +8,7 @@
 // La confirmation arrive via webhook (`transaction.completed`), jamais en
 // synchrone : voir jeko-webhook/index.ts.
 
-// deno-lint-ignore no-explicit-any
-type SupabaseClient = any;
+import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const JEKO_API_BASE = "https://api.jeko.africa/partner_api";
 
@@ -96,7 +95,7 @@ export async function createJekoPaymentLink(
   });
 
   const text = await response.text();
-  let data: any;
+  let data: { id?: string; link?: string; errors?: unknown; details?: unknown; message?: unknown; error?: unknown } | null;
   try {
     data = JSON.parse(text);
   } catch {

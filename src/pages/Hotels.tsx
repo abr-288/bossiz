@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type ComponentProps } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -22,15 +22,75 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import bannerHotels from "@/assets/banner-hotels.webp";
 import { EmptyState } from "@/components/ui/empty-state";
 import { HotelCardSkeleton } from "@/components/ui/search-result-skeletons";
+
+/** Hôtel renvoyé par search-hotels : les champs varient selon la source. */
+interface RawHotel {
+  id?: string;
+  hotel_id?: string;
+  name?: string;
+  location?: string;
+  address?: string;
+  price?: number | string | { grandTotal?: number | string; total?: number | string };
+  currency?: string;
+  rating?: number;
+  review_score?: number;
+  stars?: number;
+  reviews?: number;
+  review_count?: number;
+  image?: string;
+  images?: string[];
+  amenities?: string[];
+  facilities?: string[];
+  description?: string;
+  freeCancellation?: boolean;
+  breakfast?: boolean;
+  offerSignature?: string;
+  offer_signature?: string;
+  offerExpiresAt?: string;
+  offer_expires_at?: string;
+}
+
+/** Hôtel affiché dans la liste, quelle que soit sa source. */
+interface DisplayHotel {
+  id: string;
+  name: string;
+  location: string;
+  address?: string;
+  price: number;
+  currency: string;
+  rating: number;
+  stars?: number;
+  reviews: number;
+  image: string;
+  images?: string[];
+  amenities: string[];
+  description?: string;
+  freeCancellation?: boolean;
+  breakfast?: boolean;
+  offerSignature?: string;
+  offerExpiresAt?: string;
+  source: string;
+}
+
+type SelectedHotel = ComponentProps<typeof HotelBookingDialog>["hotel"];
+
+// Prix d'un hôtel des API : nombre, texte ou objet { grandTotal, total }.
+const parseHotelPrice = (price: RawHotel["price"]): number => {
+  if (typeof price === "object" && price?.grandTotal) return parseFloat(String(price.grandTotal));
+  if (typeof price === "number") return price;
+  const value = typeof price === "object" ? price.total || price : price;
+  return parseFloat(String(value || 0));
+};
+
 const Hotels = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { searchHotels, loading } = useHotelSearch();
   const [priceRange, setPriceRange] = useState([0, 500000]);
-  const [selectedHotel, setSelectedHotel] = useState<any>(null);
+  const [selectedHotel, setSelectedHotel] = useState<SelectedHotel | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [apiHotels, setApiHotels] = useState<any[]>([]);
+  const [apiHotels, setApiHotels] = useState<DisplayHotel[]>([]);
   
   // Filter states
   const [filterDestination, setFilterDestination] = useState("");
@@ -42,7 +102,7 @@ const Hotels = () => {
   const itemsPerPage = 9;
   
   // Comparison state
-  const [selectedHotels, setSelectedHotels] = useState<any[]>([]);
+  const [selectedHotels, setSelectedHotels] = useState<DisplayHotel[]>([]);
   const [comparisonOpen, setComparisonOpen] = useState(false);
 
   // Load real hotels from around the world on component mount
@@ -54,7 +114,7 @@ const Hotels = () => {
       const checkIn = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       const checkOut = new Date(today.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-      const allHotels: any[] = [];
+      const allHotels: DisplayHotel[] = [];
 
       for (const destination of destinations) {
         try {
@@ -68,7 +128,7 @@ const Hotels = () => {
           });
 
           if (result?.success && result.data) {
-            const hotels = [
+            const hotels: RawHotel[] = [
               ...(result.data.booking || []),
               ...(result.data.xotelo || []),
               ...(result.data.amadeus || []),
@@ -76,12 +136,8 @@ const Hotels = () => {
               ...(result.data.priceline || [])
             ];
 
-            hotels.forEach((hotel: any) => {
-              const price = typeof hotel.price === 'object' && hotel.price?.grandTotal 
-                ? parseFloat(hotel.price.grandTotal) 
-                : typeof hotel.price === 'number' 
-                ? hotel.price 
-                : parseFloat(hotel.price?.total || hotel.price || 0);
+            hotels.forEach((hotel) => {
+              const price = parseHotelPrice(hotel.price);
               
               allHotels.push({
                 id: hotel.id || hotel.hotel_id || Math.random().toString(),
@@ -120,16 +176,17 @@ const Hotels = () => {
         });
 
         if (partnerResult?.success && partnerResult.data?.services) {
-          partnerResult.data.services.forEach((hotel: any) => {
+          (partnerResult.data.services as RawHotel[]).forEach((hotel) => {
+            const rawPrice = typeof hotel.price === 'object' ? hotel.price.grandTotal : hotel.price;
             allHotels.push({
-              id: hotel.id,
-              name: hotel.name,
-              location: hotel.location,
-              price: Math.round(hotel.price?.grandTotal ?? hotel.price ?? 0),
+              id: hotel.id ?? '',
+              name: hotel.name ?? '',
+              location: hotel.location ?? '',
+              price: Math.round(Number(rawPrice ?? 0)),
               currency: hotel.currency || 'EUR',
               rating: hotel.rating ?? 8.0,
               reviews: hotel.reviews ?? 0,
-              image: hotel.image,
+              image: hotel.image ?? '',
               amenities: hotel.amenities ?? ['Wifi', 'Restaurant'],
               offerSignature: hotel.offerSignature || hotel.offer_signature,
               offerExpiresAt: hotel.offerExpiresAt || hotel.offer_expires_at,
@@ -198,12 +255,8 @@ const Hotels = () => {
       }
       
       // Helper function to transform hotel data from any API source
-      const transformHotelData = (hotel: any, sourceName: string) => {
-        const price = typeof hotel.price === 'object' && hotel.price?.grandTotal 
-          ? parseFloat(hotel.price.grandTotal) 
-          : typeof hotel.price === 'number' 
-          ? hotel.price 
-          : parseFloat(hotel.price?.total || hotel.price || 0);
+      const transformHotelData = (hotel: RawHotel, sourceName: string): DisplayHotel => {
+        const price = parseHotelPrice(hotel.price);
         
         return {
           id: hotel.id || hotel.hotel_id || Math.random().toString(),
@@ -216,7 +269,7 @@ const Hotels = () => {
           stars: hotel.stars || Math.ceil((hotel.rating || 0) / 2),
           reviews: hotel.reviews || hotel.review_count || 0,
           image: hotel.image || hotel.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-          images: hotel.images || [hotel.image],
+          images: hotel.images || (hotel.image ? [hotel.image] : []),
           amenities: hotel.amenities || hotel.facilities || ['Wifi', 'Restaurant'],
           description: hotel.description || '',
           freeCancellation: hotel.freeCancellation || false,
@@ -228,12 +281,12 @@ const Hotels = () => {
       };
 
       // Transform API data to match display structure with source tracking
-      const bookingHotels = (result.data?.booking || []).map((hotel: any) => transformHotelData(hotel, 'Booking.com'));
-      const xoteloHotels = (result.data?.xotelo || []).map((hotel: any) => transformHotelData(hotel, 'Xotelo'));
-      const amadeusHotels = (result.data?.amadeus || []).map((hotel: any) => transformHotelData(hotel, 'Amadeus'));
-      const tripadvisorHotels = (result.data?.tripadvisor || []).map((hotel: any) => transformHotelData(hotel, 'TripAdvisor'));
-      const pricelineHotels = (result.data?.priceline || []).map((hotel: any) => transformHotelData(hotel, 'Priceline'));
-      const servicesHotels = (result.data?.services || []).map((hotel: any) => transformHotelData(hotel, 'Partenaire'));
+      const bookingHotels = ((result.data?.booking || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Booking.com'));
+      const xoteloHotels = ((result.data?.xotelo || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Xotelo'));
+      const amadeusHotels = ((result.data?.amadeus || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Amadeus'));
+      const tripadvisorHotels = ((result.data?.tripadvisor || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'TripAdvisor'));
+      const pricelineHotels = ((result.data?.priceline || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Priceline'));
+      const servicesHotels = ((result.data?.services || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Partenaire'));
 
       const transformedHotels = [
         ...bookingHotels,
@@ -246,7 +299,7 @@ const Hotels = () => {
       
       if (transformedHotels.length > 0) {
         setApiHotels(transformedHotels);
-        const sources = Array.from(new Set(transformedHotels.map((h: any) => h.source)));
+        const sources = Array.from(new Set(transformedHotels.map((h) => h.source)));
         toast.success(`${transformedHotels.length} hébergements trouvés depuis ${sources.length} source(s) API: ${sources.join(', ')}`);
       } else {
         setApiHotels([]);
@@ -332,7 +385,7 @@ const Hotels = () => {
   }, [filteredAndSortedHotels, currentPage, itemsPerPage]);
 
   // Toggle hotel selection for comparison
-  const toggleHotelSelection = (hotel: any) => {
+  const toggleHotelSelection = (hotel: DisplayHotel) => {
     setSelectedHotels((prev) => {
       const isSelected = prev.some((h) => h.id === hotel.id);
       if (isSelected) {
@@ -587,7 +640,7 @@ const Hotels = () => {
                 </div>
                 <p className="text-sm text-success mt-1">
                   {hasSearched 
-                    ? `Prix et disponibilité actualisés depuis ${new Set(apiHotels.map((h: any) => h.source)).size} source(s): ${Array.from(new Set(apiHotels.map((h: any) => h.source))).join(', ')}`
+                    ? `Prix et disponibilité actualisés depuis ${new Set(apiHotels.map((h) => h.source)).size} source(s): ${Array.from(new Set(apiHotels.map((h) => h.source))).join(', ')}`
                     : t("ux.hotels.loadedDesc", { count: apiHotels.length })
                   }
                 </p>
@@ -627,7 +680,7 @@ const Hotels = () => {
                   const ratingOn10 = hotel.rating > 5 ? hotel.rating : hotel.rating * 2;
                   const ratingDisplay = Math.min(ratingOn10, 10).toFixed(1);
                   // Hotel stars (classification)
-                  const hotelStars = (hotel as any).stars || Math.ceil(hotel.rating);
+                  const hotelStars = hotel.stars || Math.ceil(hotel.rating);
                   
                   // Rating qualifier based on 10 scale
                   const getRatingQualifier = (rating: number) => {
@@ -667,20 +720,20 @@ const Hotels = () => {
                             {t("ux.hotels.popularBadge")}
                           </Badge>
                         )}
-                        {(hotel as any).freeCancellation && (
+                        {hotel.freeCancellation && (
                           <Badge className="bg-success hover:bg-success/90 text-success-foreground border-0">
                             {t("ux.hotels.freeCancel")}
                           </Badge>
                         )}
-                        {(hotel as any).breakfast && (
+                        {hotel.breakfast && (
                           <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
                             {t("ux.hotels.breakfast")}
                           </Badge>
                         )}
-                        {(hotel as any).source && (
+                        {hotel.source && (
                           <Badge className="bg-background/90 text-foreground border">
                             <Globe className="w-3 h-3 mr-1" />
-                            {(hotel as any).source}
+                            {hotel.source}
                           </Badge>
                         )}
                       </div>
@@ -755,13 +808,13 @@ const Hotels = () => {
                             <p className="text-3xl font-bold text-primary">
                               {hotel.price.toLocaleString()}
                             </p>
-                            <span className="text-lg font-semibold text-muted-foreground">{(hotel as any).currency || 'EUR'}</span>
+                            <span className="text-lg font-semibold text-muted-foreground">{hotel.currency || 'EUR'}</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">{t("ux.hotels.perNight")}</p>
                         </div>
                         <Button size="lg" className="font-semibold" onClick={() => {
                           // Hôtel partenaire : fiche avec types de chambre et tarifs.
-                          if ((hotel as any).source === 'Partenaire') {
+                          if (hotel.source === 'Partenaire') {
                             const params = new URLSearchParams();
                             const checkIn = searchParams.get("checkIn");
                             const checkOut = searchParams.get("checkOut");
@@ -777,9 +830,9 @@ const Hotels = () => {
                             name: hotel.name,
                             location: hotel.location,
                             price: hotel.price,
-                            currency: (hotel as any).currency,
-                            offerSignature: (hotel as any).offerSignature,
-                            offerExpiresAt: (hotel as any).offerExpiresAt,
+                            currency: hotel.currency,
+                            offerSignature: hotel.offerSignature,
+                            offerExpiresAt: hotel.offerExpiresAt,
                           });
                           setDialogOpen(true);
                         }}>

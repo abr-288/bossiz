@@ -35,6 +35,8 @@ import { LocationPicker, type PartnerLocation } from "@/components/agency/Locati
 import { Plus, Pencil, Trash2, Sparkles, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { getErrorMessage } from "@/lib/errorMessage";
+import { toWellnessService } from "@/hooks/useWellnessServices";
 
 interface Treatment {
   name: string;
@@ -145,7 +147,7 @@ export default function AgencyWellness() {
     if (error) {
       console.error("Error fetching wellness services:", error);
     } else {
-      setItems((data || []) as any);
+      setItems((data || []).map(toWellnessService));
     }
     setLoading(false);
   };
@@ -218,8 +220,8 @@ export default function AgencyWellness() {
       setIsDialogOpen(false);
       resetForm();
       fetchAgencyAndItems();
-    } catch (error: any) {
-      toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("ux.bo.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
