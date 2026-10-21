@@ -16,14 +16,14 @@ import { i18nReady } from "./i18n/config";
 // un flag sessionStorage pour ne pas boucler si le déploiement est vraiment
 // cassé ; le flag est levé après un démarrage stable pour permettre un futur
 // rechargement si un nouveau déploiement survient plus tard dans le même onglet.
-window.addEventListener('vite:preloadError', () => {
-  const key = 'vite-preload-reload-attempted';
+window.addEventListener("vite:preloadError", () => {
+  const key = "vite-preload-reload-attempted";
   if (!sessionStorage.getItem(key)) {
-    sessionStorage.setItem(key, '1');
+    sessionStorage.setItem(key, "1");
     window.location.reload();
   }
 });
-setTimeout(() => sessionStorage.removeItem('vite-preload-reload-attempted'), 10000);
+setTimeout(() => sessionStorage.removeItem("vite-preload-reload-attempted"), 10000);
 
 // Enregistrement du service worker pour la PWA (Progressive Web App).
 // registerSW (registerType: 'autoUpdate') recharge automatiquement la page
@@ -35,19 +35,19 @@ setTimeout(() => sessionStorage.removeItem('vite-preload-reload-attempted'), 100
 // immediate: false -> l'enregistrement attend l'événement « load » : le
 // précache (tout le code de l'appli) ne concurrence pas le premier affichage
 // sur une connexion lente.
-if ('serviceWorker' in navigator) {
+if ("serviceWorker" in navigator) {
   registerSW({
     immediate: false,
     onRegisteredSW(_swUrl, registration) {
       if (!registration) return;
       setInterval(() => registration.update(), 60 * 60 * 1000);
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') registration.update();
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") registration.update();
       });
     },
     onRegisterError(error) {
-      console.log('SW registration failed:', error);
-    }
+      console.log("SW registration failed:", error);
+    },
   });
 }
 
@@ -59,6 +59,6 @@ const renderApp = () =>
   createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <App />
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 i18nReady.then(renderApp, renderApp);

@@ -18,13 +18,13 @@ interface DestinationCardProps {
 }
 
 const categoryColors: Record<string, string> = {
-  "Ville": "bg-info",
-  "Plage": "bg-cyan-500/90",
-  "Île": "bg-teal-500/90",
-  "Montagne": "bg-success",
-  "Culture": "bg-gold",
-  "Nature": "bg-success",
-  "Attraction": "bg-primary",
+  Ville: "bg-info",
+  Plage: "bg-cyan-500/90",
+  Île: "bg-teal-500/90",
+  Montagne: "bg-success",
+  Culture: "bg-gold",
+  Nature: "bg-success",
+  Attraction: "bg-primary",
 };
 
 export const DestinationCard = ({ destination, index = 0, variant = "default" }: DestinationCardProps) => {
@@ -90,10 +90,10 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
               className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-110"
               onError={() => setImageError(true)}
             />
-            
+
             {/* Overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            
+
             {/* Top badges */}
             <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
               <div className="flex gap-2 flex-wrap">
@@ -139,9 +139,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
                   <Star className="w-4 h-4 fill-gold text-gold" />
                   <span className="font-semibold text-sm">{destination.rating.toFixed(1)}</span>
                 </div>
-                <span className="text-muted-foreground text-xs">
-                  ({destination.reviews.toLocaleString()} avis)
-                </span>
+                <span className="text-muted-foreground text-xs">({destination.reviews.toLocaleString()} avis)</span>
               </div>
               {destination.temperature && (
                 <div className="flex items-center gap-1 text-muted-foreground text-sm">
@@ -152,9 +150,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
             </div>
 
             {/* Description */}
-            <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-1">
-              {destination.description}
-            </p>
+            <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-1">{destination.description}</p>
 
             {/* Highlights */}
             {destination.highlights && destination.highlights.length > 0 && (
@@ -185,19 +181,16 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
               <div>
                 <span className="text-xs text-muted-foreground">À partir de</span>
                 <div className="flex items-baseline gap-1">
-                  <Price 
-                    amount={destination.price} 
-                    fromCurrency={destination.currency || "EUR"} 
+                  <Price
+                    amount={destination.price}
+                    fromCurrency={destination.currency || "EUR"}
                     className="text-xl font-bold text-primary"
                   />
                   <span className="text-xs text-muted-foreground">/pers.</span>
                 </div>
               </div>
-              <Button 
-                onClick={handleViewDetails}
-                className="group/btn"
-              >
-                {t('common.viewDetails', 'Voir plus')}
+              <Button onClick={handleViewDetails} className="group/btn">
+                {t("common.viewDetails", "Voir plus")}
                 <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
               </Button>
             </div>
@@ -224,15 +217,13 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
             className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-110"
             onError={() => setImageError(true)}
           />
-          
+
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-          
+
           {/* Badges */}
           <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
-            <Badge className={`${categoryColor} text-white border-0 text-xs`}>
-              {destination.category}
-            </Badge>
+            <Badge className={`${categoryColor} text-white border-0 text-xs`}>{destination.category}</Badge>
             <Button
               aria-label="Ajouter aux favoris"
               variant="ghost"
@@ -273,9 +264,7 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
               <Star className="w-4 h-4 fill-gold text-gold" />
               <span className="font-semibold text-sm">{destination.rating.toFixed(1)}</span>
             </div>
-            <span className="text-muted-foreground text-xs">
-              ({destination.reviews.toLocaleString()} avis)
-            </span>
+            <span className="text-muted-foreground text-xs">({destination.reviews.toLocaleString()} avis)</span>
             {destination.temperature && (
               <div className="ml-auto flex items-center gap-1 text-muted-foreground text-xs">
                 <Thermometer className="w-3 h-3 text-warning-foreground" />
@@ -285,19 +274,17 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
           </div>
 
           {/* Description */}
-          <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-1">
-            {destination.description}
-          </p>
+          <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-1">{destination.description}</p>
 
           {/* Price & CTA */}
           <div className="flex items-center justify-between pt-2 border-t border-border/50 mt-auto">
             <div>
               <span className="text-xs text-muted-foreground">Dès</span>
-            <Price 
-              amount={destination.price} 
-              fromCurrency={destination.currency || "EUR"} 
-              className="text-lg font-bold text-primary"
-            />
+              <Price
+                amount={destination.price}
+                fromCurrency={destination.currency || "EUR"}
+                className="text-lg font-bold text-primary"
+              />
             </div>
             <Button size="sm" onClick={handleViewDetails}>
               Voir plus

@@ -22,9 +22,17 @@ import {
   FileText,
   Car,
   Languages,
-  Smile, Landmark, Receipt } from "lucide-react";
+  Smile,
+  Landmark,
+  Receipt,
+} from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
-import { SidebarBrandHeader, sidebarIconClass, sidebarLinkClass, sidebarWidthClass } from "@/components/dashboard/SidebarShell";
+import {
+  SidebarBrandHeader,
+  sidebarIconClass,
+  sidebarLinkClass,
+  sidebarWidthClass,
+} from "@/components/dashboard/SidebarShell";
 import {
   Sidebar,
   SidebarContent,
@@ -41,30 +49,132 @@ import i18n from "@/i18n/config";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { get title() { return i18n.t("ux.bo.bookings"); }, url: "/admin/bookings", icon: Calendar },
+  {
+    get title() {
+      return i18n.t("ux.bo.bookings");
+    },
+    url: "/admin/bookings",
+    icon: Calendar,
+  },
   { title: "Services", url: "/admin/services", icon: Package },
-  { get title() { return i18n.t("ux.bo.activities"); }, url: "/admin/activities", icon: Activity },
-  { get title() { return i18n.t("ux.bo.stays"); }, url: "/admin/stays", icon: Home },
-  { get title() { return i18n.t("ux.bo.subAgencies"); }, url: "/admin/agencies", icon: Building2 },
-  { get title() { return i18n.t("ux.bo.partnerApplications"); }, url: "/admin/partner-applications", icon: FileText },
+  {
+    get title() {
+      return i18n.t("ux.bo.activities");
+    },
+    url: "/admin/activities",
+    icon: Activity,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.stays");
+    },
+    url: "/admin/stays",
+    icon: Home,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.subAgencies");
+    },
+    url: "/admin/agencies",
+    icon: Building2,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.partnerApplications");
+    },
+    url: "/admin/partner-applications",
+    icon: FileText,
+  },
   { title: "Commissions", url: "/admin/commissions", icon: DollarSign },
   { title: "Commissions hôtels sur place", url: "/admin/hotel-commissions", icon: Receipt },
-  { get title() { return i18n.t("ux.bo.carPlans"); }, url: "/admin/car-partner-plans", icon: Car },
-  { get title() { return i18n.t("ux.bo.subscriptionRequests"); }, url: "/admin/subscriptions", icon: Crown },
-  { get title() { return i18n.t("ux.bo.subscriptionPlans"); }, url: "/admin/subscription-plans", icon: Tags },
-  { get title() { return i18n.t("ux.smilesAdmin.menu"); }, url: "/admin/smiles", icon: Smile },
+  {
+    get title() {
+      return i18n.t("ux.bo.carPlans");
+    },
+    url: "/admin/car-partner-plans",
+    icon: Car,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.subscriptionRequests");
+    },
+    url: "/admin/subscriptions",
+    icon: Crown,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.subscriptionPlans");
+    },
+    url: "/admin/subscription-plans",
+    icon: Tags,
+  },
+  {
+    get title() {
+      return i18n.t("ux.smilesAdmin.menu");
+    },
+    url: "/admin/smiles",
+    icon: Smile,
+  },
   { title: "Promotions", url: "/admin/promotions", icon: Percent },
-  { get title() { return i18n.t("ux.bo.advertisements"); }, url: "/admin/advertisements", icon: Megaphone },
-  { get title() { return i18n.t("ux.bo.payments"); }, url: "/admin/payments", icon: CreditCard },
-  { get title() { return i18n.t("ux.bo.customerReviews"); }, url: "/admin/reviews", icon: Star },
+  {
+    get title() {
+      return i18n.t("ux.bo.advertisements");
+    },
+    url: "/admin/advertisements",
+    icon: Megaphone,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.payments");
+    },
+    url: "/admin/payments",
+    icon: CreditCard,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.customerReviews");
+    },
+    url: "/admin/reviews",
+    icon: Star,
+  },
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
   { title: "Culture", url: "/admin/culture", icon: Landmark },
-  { get title() { return i18n.t("ux.bo.bossizContent"); }, url: "/admin/bossiz-microsites", icon: Globe },
-  { get title() { return i18n.t("ux.bo.integrationsEmailSmsPayment"); }, url: "/admin/integrations", icon: KeyRound },
-  { get title() { return i18n.t("ux.bo.users"); }, url: "/admin/users", icon: Users },
-  { get title() { return i18n.t("ux.bo.emailTemplates"); }, url: "/admin/email-templates", icon: Mail },
-  { get title() { return i18n.t("ux.translations.menu"); }, url: "/admin/translations", icon: Languages },
+  {
+    get title() {
+      return i18n.t("ux.bo.bossizContent");
+    },
+    url: "/admin/bossiz-microsites",
+    icon: Globe,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.integrationsEmailSmsPayment");
+    },
+    url: "/admin/integrations",
+    icon: KeyRound,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.users");
+    },
+    url: "/admin/users",
+    icon: Users,
+  },
+  {
+    get title() {
+      return i18n.t("ux.bo.emailTemplates");
+    },
+    url: "/admin/email-templates",
+    icon: Mail,
+  },
+  {
+    get title() {
+      return i18n.t("ux.translations.menu");
+    },
+    url: "/admin/translations",
+    icon: Languages,
+  },
   { title: "Configuration", url: "/admin/configuration", icon: Cog },
 ];
 

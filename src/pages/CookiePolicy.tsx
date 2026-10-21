@@ -88,7 +88,6 @@ const CookiePolicy = () => {
       />
       <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-
           <div className="space-y-8">
             {sections.map((section, index) => {
               return (
@@ -129,17 +128,23 @@ const CookiePolicy = () => {
                 </div>
                 <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
                   <div>
-                    <Label htmlFor="cp-pref" className="font-medium text-sm cursor-pointer">Préférences</Label>
+                    <Label htmlFor="cp-pref" className="font-medium text-sm cursor-pointer">
+                      Préférences
+                    </Label>
                   </div>
                   <Switch id="cp-pref" checked={preferences} onCheckedChange={setPreferences} />
                 </div>
                 <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
                   <div>
-                    <Label htmlFor="cp-analytics" className="font-medium text-sm cursor-pointer">Analytique</Label>
+                    <Label htmlFor="cp-analytics" className="font-medium text-sm cursor-pointer">
+                      Analytique
+                    </Label>
                   </div>
                   <Switch id="cp-analytics" checked={analytics} onCheckedChange={setAnalytics} />
                 </div>
-                <Button onClick={handleSave} className="mt-2">Enregistrer mes choix</Button>
+                <Button onClick={handleSave} className="mt-2">
+                  Enregistrer mes choix
+                </Button>
               </div>
             </section>
           </div>

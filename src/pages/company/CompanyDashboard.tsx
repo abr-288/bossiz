@@ -6,12 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, Copy, Users, Building2, Trash2, Check, X, ShieldCheck, Plus, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCompany } from "@/hooks/useCompany";
@@ -53,16 +49,40 @@ interface TravelPolicy {
 }
 
 const SERVICE_TYPES = [
-  { value: "flight", get label() { return i18n.t("ux.bo.flight"); } },
-  { value: "hotel", get label() { return i18n.t("ux.bo.hotel"); } },
-  { value: "car", get label() { return i18n.t("ux.bo.car"); } },
-  { value: "tour", get label() { return i18n.t("ux.bo.tour2"); } },
+  {
+    value: "flight",
+    get label() {
+      return i18n.t("ux.bo.flight");
+    },
+  },
+  {
+    value: "hotel",
+    get label() {
+      return i18n.t("ux.bo.hotel");
+    },
+  },
+  {
+    value: "car",
+    get label() {
+      return i18n.t("ux.bo.car");
+    },
+  },
+  {
+    value: "tour",
+    get label() {
+      return i18n.t("ux.bo.tour2");
+    },
+  },
 ];
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrateur (DAF)",
-  get approver() { return i18n.t("ux.bo.approver"); },
-  get employee() { return i18n.t("ux.bo.employee"); },
+  get approver() {
+    return i18n.t("ux.bo.approver");
+  },
+  get employee() {
+    return i18n.t("ux.bo.employee");
+  },
 };
 
 const CompanyDashboard = () => {
@@ -96,7 +116,9 @@ const CompanyDashboard = () => {
 
     const bookingsQuery = supabase
       .from("bookings")
-      .select("id, user_id, status, payment_status, approval_status, total_price, currency, start_date, customer_name, created_at, services(name, type)")
+      .select(
+        "id, user_id, status, payment_status, approval_status, total_price, currency, start_date, customer_name, created_at, services(name, type)",
+      )
       .eq("company_id", company.id)
       .order("created_at", { ascending: false });
 
@@ -108,7 +130,11 @@ const CompanyDashboard = () => {
       ? supabase.from("travel_policies").select("id, service_type, max_amount, currency").eq("company_id", company.id)
       : Promise.resolve({ data: [] as TravelPolicy[] });
 
-    const [{ data: bookingsData }, membersRes, policiesRes] = await Promise.all([bookingsQuery, membersQuery, policiesQuery]);
+    const [{ data: bookingsData }, membersRes, policiesRes] = await Promise.all([
+      bookingsQuery,
+      membersQuery,
+      policiesQuery,
+    ]);
     setBookings(bookingsData || []);
     // Aucune clé étrangère ne relie company_members à profiles : la jointure
     // profiles(full_name) n'est pas résolue par PostgREST (noms absents).
@@ -166,10 +192,17 @@ const CompanyDashboard = () => {
       toast.error(t("ux.bo.capMustGreaterThan0"));
       return;
     }
-    const { error } = await supabase.from("travel_policies").upsert(
-      { company_id: company.id, service_type: newPolicyType, max_amount: parseFloat(newPolicyAmount), currency: "XOF" },
-      { onConflict: "company_id,service_type" }
-    );
+    const { error } = await supabase
+      .from("travel_policies")
+      .upsert(
+        {
+          company_id: company.id,
+          service_type: newPolicyType,
+          max_amount: parseFloat(newPolicyAmount),
+          currency: "XOF",
+        },
+        { onConflict: "company_id,service_type" },
+      );
     if (error) {
       toast.error(t("ux.bo.unableSavePolicy"));
     } else {
@@ -203,7 +236,8 @@ const CompanyDashboard = () => {
     .reduce((sum, b) => sum + Number(b.total_price), 0);
 
   const approvalBadge = (status: string | null) => {
-    if (status === "approved") return <Badge className="bg-success/10 text-success hover:bg-success/10">{t("ux.bo.approved2")}</Badge>;
+    if (status === "approved")
+      return <Badge className="bg-success/10 text-success hover:bg-success/10">{t("ux.bo.approved2")}</Badge>;
     if (status === "rejected") return <Badge variant="destructive">{t("ux.bo.rejected2")}</Badge>;
     if (status === "pending_approval") return <Badge variant="secondary">{t("ux.bo.pending2")}</Badge>;
     return null;
@@ -225,27 +259,39 @@ const CompanyDashboard = () => {
           <div className="grid md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{t("ux.bo.awaitingApproval")}</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {t("ux.bo.awaitingApproval")}
+                </CardTitle>
               </CardHeader>
-              <CardContent><div className="text-2xl font-bold">{pendingApproval.length}</div></CardContent>
+              <CardContent>
+                <div className="text-2xl font-bold">{pendingApproval.length}</div>
+              </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{t("ux.bo.bookingsPay")}</CardTitle>
               </CardHeader>
-              <CardContent><div className="text-2xl font-bold">{payableCount}</div></CardContent>
+              <CardContent>
+                <div className="text-2xl font-bold">{payableCount}</div>
+              </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{t("ux.bo.pendingAmount")}</CardTitle>
               </CardHeader>
-              <CardContent><div className="text-2xl font-bold"><Price amount={totalPending} fromCurrency="XOF" /></div></CardContent>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  <Price amount={totalPending} fromCurrency="XOF" />
+                </div>
+              </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{t("ux.bo.teamMembers")}</CardTitle>
               </CardHeader>
-              <CardContent><div className="text-2xl font-bold">{members.length}</div></CardContent>
+              <CardContent>
+                <div className="text-2xl font-bold">{members.length}</div>
+              </CardContent>
             </Card>
           </div>
         )}
@@ -253,20 +299,30 @@ const CompanyDashboard = () => {
         {isApprover && pendingApproval.length > 0 && (
           <Card className="border-warning-foreground/20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-warning-foreground" /> {t("ux.bo.requestsAwaitingApproval")}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-warning-foreground" /> {t("ux.bo.requestsAwaitingApproval")}
+              </CardTitle>
               <CardDescription>{t("ux.bo.approveRejectTripsSubmittedTeam")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {pendingApproval.map((b) => (
                 <div key={b.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border">
                   <div>
-                    <p className="font-medium">{b.services?.name || "—"} — {b.customer_name}</p>
+                    <p className="font-medium">
+                      {b.services?.name || "—"} — {b.customer_name}
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      <Price amount={b.total_price} fromCurrency={b.currency} /> · {format(new Date(b.start_date), "dd MMM yyyy", { locale: fr })}
+                      <Price amount={b.total_price} fromCurrency={b.currency} /> ·{" "}
+                      {format(new Date(b.start_date), "dd MMM yyyy", { locale: fr })}
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => reviewBooking(b.id, "rejected")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive"
+                      onClick={() => reviewBooking(b.id, "rejected")}
+                    >
                       <X className="w-4 h-4 mr-1" /> Rejeter
                     </Button>
                     <Button size="sm" onClick={() => reviewBooking(b.id, "approved")}>
@@ -298,10 +354,19 @@ const CompanyDashboard = () => {
                   <TableBody>
                     {policies.map((p) => (
                       <TableRow key={p.id}>
-                        <TableCell>{SERVICE_TYPES.find((s) => s.value === p.service_type)?.label || p.service_type}</TableCell>
-                        <TableCell><Price amount={p.max_amount} fromCurrency={p.currency} /></TableCell>
+                        <TableCell>
+                          {SERVICE_TYPES.find((s) => s.value === p.service_type)?.label || p.service_type}
+                        </TableCell>
+                        <TableCell>
+                          <Price amount={p.max_amount} fromCurrency={p.currency} />
+                        </TableCell>
                         <TableCell className="text-right">
-                          <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => deletePolicy(p.id)}>
+                          <Button
+                            aria-label={t("ux.bo.delete")}
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deletePolicy(p.id)}
+                          >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </TableCell>
@@ -314,15 +379,27 @@ const CompanyDashboard = () => {
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground">{t("ux.bo.serviceType")}</label>
                   <Select value={newPolicyType} onValueChange={setNewPolicyType}>
-                    <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {SERVICE_TYPES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                      {SERVICE_TYPES.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>
+                          {s.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground">{t("ux.bo.capXof")}</label>
-                  <Input type="number" min="1" value={newPolicyAmount} onChange={(e) => setNewPolicyAmount(e.target.value)} className="w-40" />
+                  <Input
+                    type="number"
+                    min="1"
+                    value={newPolicyAmount}
+                    onChange={(e) => setNewPolicyAmount(e.target.value)}
+                    className="w-40"
+                  />
                 </div>
                 <Button onClick={savePolicy} disabled={!newPolicyAmount}>
                   <Plus className="w-4 h-4 mr-1" /> Enregistrer
@@ -335,10 +412,15 @@ const CompanyDashboard = () => {
         {isApprover && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Users className="w-5 h-5" /> {t("ux.bo.team")}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" /> {t("ux.bo.team")}
+              </CardTitle>
               <CardDescription>
                 Partagez ce code pour que vos employés rejoignent l'entreprise :{" "}
-                <button onClick={copyInviteCode} className="inline-flex items-center gap-1 font-mono font-bold text-primary hover:underline">
+                <button
+                  onClick={copyInviteCode}
+                  className="inline-flex items-center gap-1 font-mono font-bold text-primary hover:underline"
+                >
                   {company.invite_code} <Copy className="w-3.5 h-3.5" />
                 </button>
               </CardDescription>
@@ -359,7 +441,9 @@ const CompanyDashboard = () => {
                       <TableCell>
                         {isAdmin && m.role !== "admin" ? (
                           <Select value={m.role} onValueChange={(v) => updateMemberRole(m.id, v)}>
-                            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+                            <SelectTrigger className="w-44">
+                              <SelectValue />
+                            </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="employee">{t("ux.bo.employee")}</SelectItem>
                               <SelectItem value="approver">{t("ux.bo.approver")}</SelectItem>
@@ -372,7 +456,12 @@ const CompanyDashboard = () => {
                       {isAdmin && (
                         <TableCell className="text-right">
                           {m.role !== "admin" && (
-                            <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => removeMember(m.id)}>
+                            <Button
+                              aria-label={t("ux.bo.delete")}
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeMember(m.id)}
+                            >
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           )}
@@ -390,16 +479,20 @@ const CompanyDashboard = () => {
           <CardHeader>
             <CardTitle>{isApprover ? t("ux.bo.allCompanyBookings") : t("ux.bo.myBookingsBilledCompany")}</CardTitle>
             <CardDescription>
-              {isAdmin
-                ? t("ux.bo.payEmployeesApprovedBookings")
-                : t("ux.bo.chooseBillMyCompanyWhen")}
+              {isAdmin ? t("ux.bo.payEmployeesApprovedBookings") : t("ux.bo.chooseBillMyCompanyWhen")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loadingData ? (
-              <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              </div>
             ) : bookings.length === 0 ? (
-              <EmptyState icon={Briefcase} title={t("ux.bo.noBookingsYet")} description={t("ux.bo.tripsBookedCompanyMembersWill")} />
+              <EmptyState
+                icon={Briefcase}
+                title={t("ux.bo.noBookingsYet")}
+                description={t("ux.bo.tripsBookedCompanyMembersWill")}
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -419,7 +512,9 @@ const CompanyDashboard = () => {
                       <TableCell className="font-medium">{b.services?.name || "—"}</TableCell>
                       <TableCell>{b.customer_name}</TableCell>
                       <TableCell>{format(new Date(b.start_date), "dd MMM yyyy", { locale: fr })}</TableCell>
-                      <TableCell><Price amount={b.total_price} fromCurrency={b.currency} /></TableCell>
+                      <TableCell>
+                        <Price amount={b.total_price} fromCurrency={b.currency} />
+                      </TableCell>
                       <TableCell>{approvalBadge(b.approval_status)}</TableCell>
                       <TableCell>
                         <div className="flex gap-1.5">

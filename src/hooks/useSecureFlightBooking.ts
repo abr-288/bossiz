@@ -86,135 +86,138 @@ export const useSecureFlightBooking = () => {
    * This locks the fare and generates a booking reference
    * MUST be called before checkout/payment
    */
-  const prebook = useCallback(async (
-    flightData: FlightData,
-    passengers: PassengerData[],
-    adultsCount: number,
-    childrenCount: number,
-    options?: Record<string, number>,
-    preferences?: BookingPreferences
-  ): Promise<PrebookingResult> => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      console.log('📋 Starting pre-booking...');
-      
-      const { data, error: fnError } = await supabase.functions.invoke('prebook', {
-        body: {
-          flight_data: flightData,
-          passengers,
-          adults_count: adultsCount,
-          children_count: childrenCount,
-          selected_options: options,
-          selected_preferences: preferences,
-        },
-      });
+  const prebook = useCallback(
+    async (
+      flightData: FlightData,
+      passengers: PassengerData[],
+      adultsCount: number,
+      childrenCount: number,
+      options?: Record<string, number>,
+      preferences?: BookingPreferences,
+    ): Promise<PrebookingResult> => {
+      setLoading(true);
+      setError(null);
 
-      if (fnError) {
-        throw new Error(fnError.message || 'Pre-booking failed');
+      try {
+        console.log("📋 Starting pre-booking...");
+
+        const { data, error: fnError } = await supabase.functions.invoke("prebook", {
+          body: {
+            flight_data: flightData,
+            passengers,
+            adults_count: adultsCount,
+            children_count: childrenCount,
+            selected_options: options,
+            selected_preferences: preferences,
+          },
+        });
+
+        if (fnError) {
+          throw new Error(fnError.message || "Pre-booking failed");
+        }
+
+        if (!data?.success) {
+          throw new Error(data?.error || "Pre-booking failed");
+        }
+
+        const result: PrebookingResult = {
+          success: true,
+          prebooking_id: data.prebooking_id,
+          booking_reference: data.booking_reference,
+          price_breakdown: data.price_breakdown,
+          expires_at: data.expires_at,
+          expires_in_seconds: data.expires_in_seconds,
+          price_signature: data.price_signature,
+        };
+
+        setPrebookingData(result);
+        console.log("✅ Pre-booking successful:", result.booking_reference);
+
+        return result;
+      } catch (err) {
+        const errorMessage = getErrorMessage(err) || "Failed to pre-book flight";
+        setError(errorMessage);
+        console.error("❌ Pre-booking error:", errorMessage);
+
+        toast.error("Échec de la pré-réservation", {
+          description: errorMessage,
+        });
+
+        return { success: false, error: errorMessage };
+      } finally {
+        setLoading(false);
       }
-
-      if (!data?.success) {
-        throw new Error(data?.error || 'Pre-booking failed');
-      }
-
-      const result: PrebookingResult = {
-        success: true,
-        prebooking_id: data.prebooking_id,
-        booking_reference: data.booking_reference,
-        price_breakdown: data.price_breakdown,
-        expires_at: data.expires_at,
-        expires_in_seconds: data.expires_in_seconds,
-        price_signature: data.price_signature,
-      };
-
-      setPrebookingData(result);
-      console.log('✅ Pre-booking successful:', result.booking_reference);
-      
-      return result;
-    } catch (err) {
-      const errorMessage = getErrorMessage(err) || 'Failed to pre-book flight';
-      setError(errorMessage);
-      console.error('❌ Pre-booking error:', errorMessage);
-      
-      toast.error("Échec de la pré-réservation", {
-        description: errorMessage,
-      });
-      
-      return { success: false, error: errorMessage };
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   /**
    * STEP 2: Checkout - validate pre-booking and get signed price summary
    * MUST be called before payment
    */
-  const checkout = useCallback(async (
-    prebookingId?: string,
-    bookingReference?: string
-  ): Promise<CheckoutResult> => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Use stored prebooking if not provided
-      const id = prebookingId || prebookingData?.prebooking_id;
-      const ref = bookingReference || prebookingData?.booking_reference;
-      
-      if (!id && !ref) {
-        throw new Error('No pre-booking found. Please start the booking process again.');
-      }
+  const checkout = useCallback(
+    async (prebookingId?: string, bookingReference?: string): Promise<CheckoutResult> => {
+      setLoading(true);
+      setError(null);
 
-      console.log('📋 Starting checkout...');
-      
-      const { data, error: fnError } = await supabase.functions.invoke('checkout', {
-        body: {
-          prebooking_id: id,
-          booking_reference: ref,
-        },
-      });
+      try {
+        // Use stored prebooking if not provided
+        const id = prebookingId || prebookingData?.prebooking_id;
+        const ref = bookingReference || prebookingData?.booking_reference;
 
-      if (fnError) {
-        throw new Error(fnError.message || 'Checkout failed');
-      }
+        if (!id && !ref) {
+          throw new Error("No pre-booking found. Please start the booking process again.");
+        }
 
-      if (!data?.success) {
-        throw new Error(data?.error || 'Checkout failed');
-      }
+        console.log("📋 Starting checkout...");
 
-      const result: CheckoutResult = {
-        success: true,
-        checkout: data.checkout,
-      };
-
-      setCheckoutData(result);
-      console.log('✅ Checkout successful');
-      
-      return result;
-    } catch (err) {
-      const errorMessage = getErrorMessage(err) || 'Checkout failed';
-      setError(errorMessage);
-      console.error('❌ Checkout error:', errorMessage);
-      
-      // Handle specific error codes
-      if (getErrorMessage(err)?.includes('EXPIRED')) {
-        toast.error("Pré-réservation expirée", {
-          description: "Votre réservation a expiré. Veuillez recommencer.",
+        const { data, error: fnError } = await supabase.functions.invoke("checkout", {
+          body: {
+            prebooking_id: id,
+            booking_reference: ref,
+          },
         });
-      } else {
-        toast.error("Échec du checkout", {
-          description: errorMessage,
-        });
+
+        if (fnError) {
+          throw new Error(fnError.message || "Checkout failed");
+        }
+
+        if (!data?.success) {
+          throw new Error(data?.error || "Checkout failed");
+        }
+
+        const result: CheckoutResult = {
+          success: true,
+          checkout: data.checkout,
+        };
+
+        setCheckoutData(result);
+        console.log("✅ Checkout successful");
+
+        return result;
+      } catch (err) {
+        const errorMessage = getErrorMessage(err) || "Checkout failed";
+        setError(errorMessage);
+        console.error("❌ Checkout error:", errorMessage);
+
+        // Handle specific error codes
+        if (getErrorMessage(err)?.includes("EXPIRED")) {
+          toast.error("Pré-réservation expirée", {
+            description: "Votre réservation a expiré. Veuillez recommencer.",
+          });
+        } else {
+          toast.error("Échec du checkout", {
+            description: errorMessage,
+          });
+        }
+
+        return { success: false, error: errorMessage };
+      } finally {
+        setLoading(false);
       }
-      
-      return { success: false, error: errorMessage };
-    } finally {
-      setLoading(false);
-    }
-  }, [prebookingData]);
+    },
+    [prebookingData],
+  );
 
   /**
    * Check if prebooking is still valid (not expired)
@@ -229,9 +232,7 @@ export const useSecureFlightBooking = () => {
    */
   const getRemainingSeconds = useCallback((): number => {
     if (!prebookingData?.expires_at) return 0;
-    const remaining = Math.floor(
-      (new Date(prebookingData.expires_at).getTime() - Date.now()) / 1000
-    );
+    const remaining = Math.floor((new Date(prebookingData.expires_at).getTime() - Date.now()) / 1000);
     return Math.max(0, remaining);
   }, [prebookingData]);
 
@@ -250,12 +251,12 @@ export const useSecureFlightBooking = () => {
     error,
     prebookingData,
     checkoutData,
-    
+
     // Actions
     prebook,
     checkout,
     reset,
-    
+
     // Helpers
     isPrebookingValid,
     getRemainingSeconds,

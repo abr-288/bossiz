@@ -51,27 +51,37 @@ export const useAdminStats = () => {
         // Fetch bookings with service info
         const { data: bookings } = await supabase
           .from("bookings")
-          .select(`
+          .select(
+            `
             *,
             services:service_id (
               type,
               location,
               name
             )
-          `)
+          `,
+          )
           .order("created_at", { ascending: false });
 
         if (bookings) {
           const paidBookings = bookings.filter((b) => ["paid", "partially_paid"].includes(b.payment_status));
-          const totalRevenue = paidBookings.reduce((sum, b) => sum + Number(b.amount_paid ?? (b.payment_status === "paid" ? b.total_price : 0)), 0);
+          const totalRevenue = paidBookings.reduce(
+            (sum, b) => sum + Number(b.amount_paid ?? (b.payment_status === "paid" ? b.total_price : 0)),
+            0,
+          );
 
           // supplier_cost is only known for hotel/car (back-computed from the
           // retail markup) and flight (real base_fare) bookings - see
           // supabase/functions/create-booking. Other verticals leave it null,
           // so margin is only summed over bookings where it's actually known.
-          const bookingsWithCost = paidBookings.filter((b) => b.supplier_cost !== null && b.supplier_cost !== undefined);
+          const bookingsWithCost = paidBookings.filter(
+            (b) => b.supplier_cost !== null && b.supplier_cost !== undefined,
+          );
           const totalSupplierCost = bookingsWithCost.reduce((sum, b) => sum + Number(b.supplier_cost), 0);
-          const totalMargin = bookingsWithCost.reduce((sum, b) => sum + (Number(b.total_price) - Number(b.supplier_cost)), 0);
+          const totalMargin = bookingsWithCost.reduce(
+            (sum, b) => sum + (Number(b.total_price) - Number(b.supplier_cost)),
+            0,
+          );
           const bookingsWithKnownCost = bookingsWithCost.length;
 
           const totalBookings = bookings.length;
@@ -114,19 +124,19 @@ export const useAdminStats = () => {
           // Bookings by service type
           const serviceTypeMap = new Map();
           bookings.forEach((b) => {
-            const serviceType = b.services?.type || 'other';
+            const serviceType = b.services?.type || "other";
             const count = serviceTypeMap.get(serviceType) || 0;
             serviceTypeMap.set(serviceType, count + 1);
           });
 
           const serviceTypeLabels: Record<string, string> = {
-            hotel: 'Hôtels',
-            flight: 'Vols',
-            car: 'Voitures',
-            tour: 'Tours',
-            event: 'Événements',
-            flight_hotel: 'Vol + Hôtel',
-            other: 'Autres'
+            hotel: "Hôtels",
+            flight: "Vols",
+            car: "Voitures",
+            tour: "Tours",
+            event: "Événements",
+            flight_hotel: "Vol + Hôtel",
+            other: "Autres",
           };
 
           const bookingsByService = Array.from(serviceTypeMap.entries()).map(([type, count]) => ({
@@ -137,7 +147,7 @@ export const useAdminStats = () => {
           // Geographic distribution
           const locationMap = new Map();
           bookings.forEach((b) => {
-            const location = b.services?.location || 'Non défini';
+            const location = b.services?.location || "Non défini";
             const revenue = locationMap.get(location) || 0;
             locationMap.set(location, revenue + Number(b.total_price));
           });
@@ -174,9 +184,7 @@ export const useAdminStats = () => {
         }
 
         // Total users
-        const { count: usersCount } = await supabase
-          .from("profiles")
-          .select("*", { count: "exact", head: true });
+        const { count: usersCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
 
         setStats((prev) => ({ ...prev, totalUsers: usersCount || 0 }));
       } catch (error) {
@@ -191,11 +199,7 @@ export const useAdminStats = () => {
     // Set up realtime subscription for bookings
     const channel = supabase
       .channel("admin-stats")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "bookings" },
-        () => fetchStats()
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => fetchStats())
       .subscribe();
 
     return () => {

@@ -42,10 +42,7 @@ export default function AdminStays() {
   const fetchStays = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("stays")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("stays").select("*").order("created_at", { ascending: false });
 
       if (error) throw error;
       setStays(data || []);
@@ -65,10 +62,7 @@ export default function AdminStays() {
     e.preventDefault();
     try {
       if (editingStay) {
-        const { error } = await supabase
-          .from("stays")
-          .update(formData)
-          .eq("id", editingStay.id);
+        const { error } = await supabase.from("stays").update(formData).eq("id", editingStay.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.stayUpdatedSuccessfully") });
@@ -140,10 +134,11 @@ export default function AdminStays() {
     });
   };
 
-  const filteredStays = stays.filter((stay) =>
-    stay.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    stay.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    stay.type.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStays = stays.filter(
+    (stay) =>
+      stay.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stay.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stay.type.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -160,9 +155,7 @@ export default function AdminStays() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {editingStay ? t("ux.bo.editStay") : t("ux.bo.createStay")}
-                </DialogTitle>
+                <DialogTitle>{editingStay ? t("ux.bo.editStay") : t("ux.bo.createStay")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -247,9 +240,7 @@ export default function AdminStays() {
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                     {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">
-                    {editingStay ? t("ux.bo.update") : "Créer"}
-                  </Button>
+                  <Button type="submit">{editingStay ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -307,11 +298,7 @@ export default function AdminStays() {
                       <Button size="sm" variant="ghost" onClick={() => handleEdit(stay)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(stay.id)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(stay.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

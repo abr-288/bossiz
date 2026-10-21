@@ -17,14 +17,16 @@ export const BossizConfigProvider = ({ children }: { children: ReactNode }) => {
   const { sites, globalConfig, loading, updateSiteConfig, updateGlobalConfig, refetch } = useBossizConfig();
 
   return (
-    <BossizConfigContext.Provider value={{ 
-      sites, 
-      globalConfig, 
-      loading, 
-      updateSiteConfig, 
-      updateGlobalConfig, 
-      refetch 
-    }}>
+    <BossizConfigContext.Provider
+      value={{
+        sites,
+        globalConfig,
+        loading,
+        updateSiteConfig,
+        updateGlobalConfig,
+        refetch,
+      }}
+    >
       {children}
     </BossizConfigContext.Provider>
   );

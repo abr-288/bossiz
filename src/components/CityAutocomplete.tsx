@@ -29,28 +29,28 @@ const popularCities: City[] = [
   { name: "Freetown", code: "FNA", country: "Sierra Leone" },
   { name: "Monrovia", code: "MLW", country: "Libéria" },
   { name: "Cotonou", code: "COO", country: "Bénin" },
-  
+
   // Afrique du Nord
   { name: "Casablanca", code: "CMN", country: "Maroc" },
   { name: "Tunis", code: "TUN", country: "Tunisie" },
   { name: "Alger", code: "ALG", country: "Algérie" },
   { name: "Le Caire", code: "CAI", country: "Égypte" },
   { name: "Tripoli", code: "TIP", country: "Libye" },
-  
+
   // Afrique de l'Est
   { name: "Nairobi", code: "NBO", country: "Kenya" },
   { name: "Addis-Abeba", code: "ADD", country: "Éthiopie" },
   { name: "Dar es Salaam", code: "DAR", country: "Tanzanie" },
   { name: "Kampala", code: "EBB", country: "Ouganda" },
   { name: "Kigali", code: "KGL", country: "Rwanda" },
-  
+
   // Afrique Australe
   { name: "Johannesburg", code: "JNB", country: "Afrique du Sud" },
   { name: "Le Cap", code: "CPT", country: "Afrique du Sud" },
   { name: "Luanda", code: "LAD", country: "Angola" },
   { name: "Maputo", code: "MPM", country: "Mozambique" },
   { name: "Harare", code: "HRE", country: "Zimbabwe" },
-  
+
   // Europe
   { name: "Paris", code: "CDG", country: "France" },
   { name: "Londres", code: "LHR", country: "Royaume-Uni" },
@@ -60,20 +60,20 @@ const popularCities: City[] = [
   { name: "Rome", code: "FCO", country: "Italie" },
   { name: "Berlin", code: "BER", country: "Allemagne" },
   { name: "Lisbonne", code: "LIS", country: "Portugal" },
-  
+
   // Moyen-Orient
   { name: "Dubaï", code: "DXB", country: "Émirats Arabes Unis" },
   { name: "Istanbul", code: "IST", country: "Turquie" },
   { name: "Doha", code: "DOH", country: "Qatar" },
   { name: "Beyrouth", code: "BEY", country: "Liban" },
-  
+
   // Amériques
   { name: "New York", code: "JFK", country: "États-Unis" },
   { name: "Los Angeles", code: "LAX", country: "États-Unis" },
   { name: "Miami", code: "MIA", country: "États-Unis" },
   { name: "Toronto", code: "YYZ", country: "Canada" },
   { name: "São Paulo", code: "GRU", country: "Brésil" },
-  
+
   // Asie
   { name: "Pékin", code: "PEK", country: "Chine" },
   { name: "Tokyo", code: "NRT", country: "Japon" },
@@ -97,7 +97,7 @@ export const CityAutocomplete = ({
       const filtered = popularCities.filter(
         (city) =>
           city.name.toLowerCase().includes(value.toLowerCase()) ||
-          city.code?.toLowerCase().includes(value.toLowerCase())
+          city.code?.toLowerCase().includes(value.toLowerCase()),
       );
       setFilteredCities(filtered);
       setIsOpen(filtered.length > 0);

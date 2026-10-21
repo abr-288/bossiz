@@ -17,14 +17,7 @@ import { toast } from "sonner";
 import { Users, Package, CreditCard, TrendingUp, Edit, Trash2, Plus } from "lucide-react";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
 import { Price } from "@/components/ui/price";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +43,9 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
         return;
@@ -78,10 +73,12 @@ const AdminDashboard = () => {
       // Fetch bookings
       const { data: bookingsData, error: bookingsError } = await supabase
         .from("bookings")
-        .select(`
+        .select(
+          `
           *,
           services (name, type)
-        `)
+        `,
+        )
         .order("created_at", { ascending: false });
 
       if (bookingsError) throw bookingsError;
@@ -98,7 +95,7 @@ const AdminDashboard = () => {
 
       // Calculate stats
       const totalRevenue = bookingsData?.reduce((sum, b) => sum + Number(b.total_price), 0) || 0;
-      
+
       setStats({
         totalBookings: bookingsData?.length || 0,
         totalRevenue,
@@ -120,10 +117,7 @@ const AdminDashboard = () => {
       const updateData: TablesUpdate<"bookings"> = { status };
       if (paymentStatus) updateData.payment_status = paymentStatus;
 
-      const { error } = await supabase
-        .from("bookings")
-        .update(updateData)
-        .eq("id", bookingId);
+      const { error } = await supabase.from("bookings").update(updateData).eq("id", bookingId);
 
       if (error) throw error;
       toast.success("Statut mis à jour");
@@ -137,7 +131,7 @@ const AdminDashboard = () => {
   const handleServiceSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     try {
       const serviceData = {
         name: formData.get("name") as string,
@@ -150,16 +144,11 @@ const AdminDashboard = () => {
       };
 
       if (selectedService) {
-        const { error } = await supabase
-          .from("services")
-          .update(serviceData)
-          .eq("id", selectedService.id);
+        const { error } = await supabase.from("services").update(serviceData).eq("id", selectedService.id);
         if (error) throw error;
         toast.success("Service mis à jour");
       } else {
-        const { error } = await supabase
-          .from("services")
-          .insert([serviceData]);
+        const { error } = await supabase.from("services").insert([serviceData]);
         if (error) throw error;
         toast.success("Service créé");
       }
@@ -177,10 +166,7 @@ const AdminDashboard = () => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer ce service ?")) return;
 
     try {
-      const { error } = await supabase
-        .from("services")
-        .delete()
-        .eq("id", serviceId);
+      const { error } = await supabase.from("services").delete().eq("id", serviceId);
 
       if (error) throw error;
       toast.success("Service supprimé");
@@ -228,7 +214,9 @@ const AdminDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold"><Price amount={stats.totalRevenue} fromCurrency="XOF" /></div>
+              <div className="text-2xl font-bold">
+                <Price amount={stats.totalRevenue} fromCurrency="XOF" />
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -306,11 +294,15 @@ const AdminDashboard = () => {
                         </TableCell>
                         <TableCell>{booking.services?.name}</TableCell>
                         <TableCell>{new Date(booking.start_date).toLocaleDateString("fr-FR")}</TableCell>
-                        <TableCell><Price amount={Number(booking.total_price)} fromCurrency="XOF" /></TableCell>
+                        <TableCell>
+                          <Price amount={Number(booking.total_price)} fromCurrency="XOF" />
+                        </TableCell>
                         <TableCell>
                           <Select
                             value={booking.status}
-                            onValueChange={(value) => updateBookingStatus(booking.id, value as Tables<"bookings">["status"])}
+                            onValueChange={(value) =>
+                              updateBookingStatus(booking.id, value as Tables<"bookings">["status"])
+                            }
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
@@ -326,7 +318,13 @@ const AdminDashboard = () => {
                         <TableCell>
                           <Select
                             value={booking.payment_status}
-                            onValueChange={(value) => updateBookingStatus(booking.id, booking.status, value as Tables<"bookings">["payment_status"])}
+                            onValueChange={(value) =>
+                              updateBookingStatus(
+                                booking.id,
+                                booking.status,
+                                value as Tables<"bookings">["payment_status"],
+                              )
+                            }
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
@@ -339,7 +337,9 @@ const AdminDashboard = () => {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button variant="ghost" size="sm">
+                            Voir
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -366,20 +366,11 @@ const AdminDashboard = () => {
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl">
                       <DialogHeader>
-                        <DialogTitle>
-                          {selectedService ? "Modifier le Service" : "Nouveau Service"}
-                        </DialogTitle>
-                        <DialogDescription>
-                          Remplissez les informations du service
-                        </DialogDescription>
+                        <DialogTitle>{selectedService ? "Modifier le Service" : "Nouveau Service"}</DialogTitle>
+                        <DialogDescription>Remplissez les informations du service</DialogDescription>
                       </DialogHeader>
                       <UnifiedForm onSubmit={handleServiceSubmit} variant="booking">
-                        <UnifiedFormField
-                          label="Nom"
-                          name="name"
-                          defaultValue={selectedService?.name}
-                          required
-                        />
+                        <UnifiedFormField label="Nom" name="name" defaultValue={selectedService?.name} required />
                         <div className="space-y-2">
                           <label className="text-sm font-medium block">Description</label>
                           <Textarea
@@ -423,9 +414,7 @@ const AdminDashboard = () => {
                           <Button type="button" variant="outline" onClick={() => setIsServiceDialogOpen(false)}>
                             Annuler
                           </Button>
-                          <UnifiedSubmitButton>
-                            {selectedService ? "Modifier" : "Créer"}
-                          </UnifiedSubmitButton>
+                          <UnifiedSubmitButton>{selectedService ? "Modifier" : "Créer"}</UnifiedSubmitButton>
                         </div>
                       </UnifiedForm>
                     </DialogContent>
@@ -453,7 +442,9 @@ const AdminDashboard = () => {
                           <Badge variant="outline">{service.type}</Badge>
                         </TableCell>
                         <TableCell>{service.location}</TableCell>
-                        <TableCell><Price amount={Number(service.price_per_unit)} fromCurrency="XOF" /></TableCell>
+                        <TableCell>
+                          <Price amount={Number(service.price_per_unit)} fromCurrency="XOF" />
+                        </TableCell>
                         <TableCell>
                           ⭐ {service.rating || 0} ({service.total_reviews || 0})
                         </TableCell>
@@ -474,11 +465,7 @@ const AdminDashboard = () => {
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteService(service.id)}
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => deleteService(service.id)}>
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>

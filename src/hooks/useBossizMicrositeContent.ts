@@ -107,25 +107,28 @@ export const useBossizMicrositeContent = (country: BossizCountry) => {
     }
   }, [country]);
 
-  const updateContent = useCallback(async (updates: BossizMicrositeContent) => {
-    try {
-      const { error } = await supabase
-        .from("site_config")
-        .update({ config_value: updates as unknown as Json })
-        .eq("config_key", configKeyFor(country));
+  const updateContent = useCallback(
+    async (updates: BossizMicrositeContent) => {
+      try {
+        const { error } = await supabase
+          .from("site_config")
+          .update({ config_value: updates as unknown as Json })
+          .eq("config_key", configKeyFor(country));
 
-      if (error) throw error;
-      setContent(updates);
-      toast({ title: "Succès", description: "Contenu mis à jour" });
-    } catch (error) {
-      console.error("Error updating Bossiz microsite content:", error);
-      toast({
-        title: "Erreur",
-        description: getErrorMessage(error) || "Impossible de mettre à jour le contenu",
-        variant: "destructive",
-      });
-    }
-  }, [country, toast]);
+        if (error) throw error;
+        setContent(updates);
+        toast({ title: "Succès", description: "Contenu mis à jour" });
+      } catch (error) {
+        console.error("Error updating Bossiz microsite content:", error);
+        toast({
+          title: "Erreur",
+          description: getErrorMessage(error) || "Impossible de mettre à jour le contenu",
+          variant: "destructive",
+        });
+      }
+    },
+    [country, toast],
+  );
 
   useEffect(() => {
     fetchContent();

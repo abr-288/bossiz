@@ -11,7 +11,7 @@ import {
   HelpCircle,
   LogOut,
   Building2,
-  Smile
+  Smile,
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -52,7 +52,9 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
 
   useEffect(() => {
     const checkSubAgencyRole = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const { data: roles } = await supabase
           .from("user_roles")
@@ -60,7 +62,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
           .eq("user_id", user.id)
           .eq("role", "sub_agency")
           .maybeSingle();
-        
+
         setIsSubAgency(!!roles);
       }
     };
@@ -68,68 +70,68 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
   }, []);
 
   const menuItems = [
-    { 
-      title: t('dashboardPage.sidebar.overview', 'Vue d\'ensemble'), 
-      url: "/dashboard", 
-      icon: LayoutDashboard 
+    {
+      title: t("dashboardPage.sidebar.overview", "Vue d'ensemble"),
+      url: "/dashboard",
+      icon: LayoutDashboard,
     },
     {
-      title: t('dashboardPage.sidebar.bookings', 'Mes réservations'),
-      url: "/booking-history", 
-      icon: Calendar 
+      title: t("dashboardPage.sidebar.bookings", "Mes réservations"),
+      url: "/booking-history",
+      icon: Calendar,
     },
     {
-      title: t('ux.smiles.navLabel', 'Mes Smiles'),
+      title: t("ux.smiles.navLabel", "Mes Smiles"),
       url: "/smiles",
-      icon: Smile
+      icon: Smile,
     },
-    { 
-      title: t('dashboardPage.sidebar.priceAlerts', 'Alertes prix'), 
-      url: "/price-alerts", 
-      icon: Bell 
+    {
+      title: t("dashboardPage.sidebar.priceAlerts", "Alertes prix"),
+      url: "/price-alerts",
+      icon: Bell,
     },
-    { 
-      title: t('dashboardPage.sidebar.account', 'Mon compte'), 
-      url: "/account", 
-      icon: User 
+    {
+      title: t("dashboardPage.sidebar.account", "Mon compte"),
+      url: "/account",
+      icon: User,
     },
   ];
 
   const exploreItems = [
     {
-      title: t('nav.flights', 'Vols'),
+      title: t("nav.flights", "Vols"),
       url: "https://vols.bossiz.com/",
-      icon: Plane
-    },
-    { 
-      title: t('nav.destinations', 'Destinations'), 
-      url: "/destinations", 
-      icon: MapPin 
+      icon: Plane,
     },
     {
-      title: t('nav.tours', 'Circuits'),
+      title: t("nav.destinations", "Destinations"),
+      url: "/destinations",
+      icon: MapPin,
+    },
+    {
+      title: t("nav.tours", "Circuits"),
       url: "/tours",
       icon: Map,
     },
   ];
 
   const supportItems = [
-    { 
-      title: t('nav.help', 'Aide'), 
-      url: "/help", 
-      icon: HelpCircle 
+    {
+      title: t("nav.help", "Aide"),
+      url: "/help",
+      icon: HelpCircle,
     },
-    { 
-      title: t('nav.support', 'Support'), 
-      url: "/support", 
-      icon: Settings 
+    {
+      title: t("nav.support", "Support"),
+      url: "/support",
+      icon: Settings,
     },
   ];
 
-  const agencyItem = { 
+  const agencyItem = {
     title: "BizBossiz",
-    url: "/agency", 
-    icon: Building2 
+    url: "/agency",
+    icon: Building2,
   };
 
   const isActive = (path: string) => {
@@ -146,18 +148,15 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
   return (
-    <Sidebar
-      className={sidebarWidthClass(collapsed)}
-      collapsible="icon"
-    >
+    <Sidebar className={sidebarWidthClass(collapsed)} collapsible="icon">
       <SidebarHeader className="bg-brand p-4 text-brand-foreground">
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
           <Avatar className="h-10 w-10 border border-white/40">
@@ -169,11 +168,9 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
           {!collapsed && (
             <div className="flex flex-col overflow-hidden">
               <span className="font-semibold text-sm truncate">
-                {userProfile?.full_name || t('dashboardPage.welcome')}
+                {userProfile?.full_name || t("dashboardPage.welcome")}
               </span>
-              <span className="text-xs text-white/75 truncate">
-                {userProfile?.email}
-              </span>
+              <span className="text-xs text-white/75 truncate">{userProfile?.email}</span>
             </div>
           )}
         </div>
@@ -181,19 +178,13 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            {!collapsed && t('dashboardPage.sidebar.main', 'Principal')}
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>{!collapsed && t("dashboardPage.sidebar.main", "Principal")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link
-                      to={item.url}
-                      aria-label={item.title}
-                      className={sidebarLinkClass(isActive(item.url))}
-                    >
+                    <Link to={item.url} aria-label={item.title} className={sidebarLinkClass(isActive(item.url))}>
                       <item.icon className={sidebarIconClass} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
@@ -206,9 +197,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
 
         {isSubAgency && (
           <SidebarGroup>
-            <SidebarGroupLabel>
-              {!collapsed && "Mon Agence"}
-            </SidebarGroupLabel>
+            <SidebarGroupLabel>{!collapsed && "Mon Agence"}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
@@ -229,9 +218,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
         )}
 
         <SidebarGroup>
-          <SidebarGroupLabel>
-            {!collapsed && t('dashboardPage.sidebar.explore', 'Explorer')}
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>{!collapsed && t("dashboardPage.sidebar.explore", "Explorer")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {exploreItems.map((item) => (
@@ -249,11 +236,7 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
                         {!collapsed && <span>{item.title}</span>}
                       </a>
                     ) : (
-                      <Link
-                        to={item.url}
-                        aria-label={item.title}
-                        className={sidebarLinkClass(isActive(item.url))}
-                      >
+                      <Link to={item.url} aria-label={item.title} className={sidebarLinkClass(isActive(item.url))}>
                         <item.icon className={sidebarIconClass} />
                         {!collapsed && <span>{item.title}</span>}
                       </Link>
@@ -266,19 +249,13 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>
-            {!collapsed && t('dashboardPage.sidebar.support', 'Assistance')}
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>{!collapsed && t("dashboardPage.sidebar.support", "Assistance")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {supportItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link
-                      to={item.url}
-                      aria-label={item.title}
-                      className={sidebarLinkClass(false)}
-                    >
+                    <Link to={item.url} aria-label={item.title} className={sidebarLinkClass(false)}>
                       <item.icon className={sidebarIconClass} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
@@ -294,13 +271,13 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
         <Button
           variant="ghost"
           onClick={handleLogout}
-          aria-label={t('auth.logout', 'Déconnexion')}
+          aria-label={t("auth.logout", "Déconnexion")}
           className={`w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 ${
             collapsed ? "justify-center px-2" : ""
           }`}
         >
           <LogOut className="h-5 w-5 shrink-0" />
-          {!collapsed && <span>{t('auth.logout', 'Déconnexion')}</span>}
+          {!collapsed && <span>{t("auth.logout", "Déconnexion")}</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>

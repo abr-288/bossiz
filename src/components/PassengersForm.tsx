@@ -23,12 +23,7 @@ interface PassengersFormProps {
   maxPassengers?: number;
 }
 
-export const PassengersForm = ({
-  passengers,
-  onChange,
-  minPassengers = 1,
-  maxPassengers = 9,
-}: PassengersFormProps) => {
+export const PassengersForm = ({ passengers, onChange, minPassengers = 1, maxPassengers = 9 }: PassengersFormProps) => {
   const { t } = useTranslation();
   const addPassenger = () => {
     if (passengers.length < maxPassengers) {
@@ -63,12 +58,7 @@ export const PassengersForm = ({
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Passagers</h3>
         {passengers.length < maxPassengers && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addPassenger}
-          >
+          <Button type="button" variant="outline" size="sm" onClick={addPassenger}>
             <Plus className="h-4 w-4 mr-2" />
             {t("ux.passengersForm.add")}
           </Button>
@@ -79,16 +69,9 @@ export const PassengersForm = ({
         <Card key={index}>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">
-                Passager {index + 1}
-              </CardTitle>
+              <CardTitle className="text-base">Passager {index + 1}</CardTitle>
               {passengers.length > minPassengers && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removePassenger(index)}
-                >
+                <Button type="button" variant="ghost" size="sm" onClick={() => removePassenger(index)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               )}

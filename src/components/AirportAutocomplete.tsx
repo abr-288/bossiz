@@ -26,7 +26,7 @@ export const AirportAutocomplete = ({
   onChange,
   placeholder = "Ville ou aéroport",
   className,
-  type = "flight"
+  type = "flight",
 }: AirportAutocompleteProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -43,8 +43,8 @@ export const AirportAutocomplete = ({
       debounceTimer.current = setTimeout(async () => {
         setLoading(true);
         try {
-          const { data } = await supabase.functions.invoke('airport-autocomplete', {
-            body: { query: value, type }
+          const { data } = await supabase.functions.invoke("airport-autocomplete", {
+            body: { query: value, type },
           });
 
           if (data?.success && data.suggestions) {
@@ -52,7 +52,7 @@ export const AirportAutocomplete = ({
             setIsOpen(true);
           }
         } catch (error) {
-          console.error('Autocomplete error:', error);
+          console.error("Autocomplete error:", error);
         } finally {
           setLoading(false);
         }

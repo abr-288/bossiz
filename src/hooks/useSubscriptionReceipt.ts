@@ -20,7 +20,9 @@ export const useSubscriptionReceipt = () => {
     // (elle n'est plus rattachée au clic de l'utilisateur).
     const receiptWindow = window.open("", "_blank");
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Not authenticated");
       }
@@ -70,7 +72,9 @@ export const useSubscriptionReceipt = () => {
   const downloadReceipt = async (subscriptionRequestId: string, kind: ReceiptKind = "request") => {
     setIsGenerating(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Not authenticated");
       }

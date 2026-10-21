@@ -18,8 +18,57 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Configuration DOMPurify pour les templates email
 const DOMPURIFY_CONFIG = {
-  ALLOWED_TAGS: ['p', 'br', 'b', 'i', 'u', 'strong', 'em', 'a', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'img', 'hr', 'blockquote', 'pre', 'code'],
-  ALLOWED_ATTR: ['href', 'src', 'alt', 'style', 'class', 'id', 'target', 'rel', 'width', 'height', 'colspan', 'rowspan', 'align', 'valign', 'border', 'cellpadding', 'cellspacing']
+  ALLOWED_TAGS: [
+    "p",
+    "br",
+    "b",
+    "i",
+    "u",
+    "strong",
+    "em",
+    "a",
+    "div",
+    "span",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "img",
+    "hr",
+    "blockquote",
+    "pre",
+    "code",
+  ],
+  ALLOWED_ATTR: [
+    "href",
+    "src",
+    "alt",
+    "style",
+    "class",
+    "id",
+    "target",
+    "rel",
+    "width",
+    "height",
+    "colspan",
+    "rowspan",
+    "align",
+    "valign",
+    "border",
+    "cellpadding",
+    "cellspacing",
+  ],
 };
 
 const AdminEmailTemplates = () => {
@@ -49,13 +98,13 @@ const AdminEmailTemplates = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const templateData = {
       name: formData.get("name") as string,
       type: formData.get("type") as string,
       subject: formData.get("subject") as string,
       html_content: formData.get("html_content") as string,
-      variables: JSON.parse(formData.get("variables") as string || "[]"),
+      variables: JSON.parse((formData.get("variables") as string) || "[]"),
       is_active: formData.get("is_active") === "on",
     };
 
@@ -133,19 +182,12 @@ const AdminEmailTemplates = () => {
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {selectedTemplate ? "Modifier le template" : "Nouveau template"}
-                </DialogTitle>
+                <DialogTitle>{selectedTemplate ? "Modifier le template" : "Nouveau template"}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="name">Nom du template</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    defaultValue={selectedTemplate?.name}
-                    required
-                  />
+                  <Input id="name" name="name" defaultValue={selectedTemplate?.name} required />
                 </div>
 
                 <div>
@@ -201,11 +243,7 @@ const AdminEmailTemplates = () => {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_active"
-                    name="is_active"
-                    defaultChecked={selectedTemplate?.is_active ?? true}
-                  />
+                  <Switch id="is_active" name="is_active" defaultChecked={selectedTemplate?.is_active ?? true} />
                   <Label htmlFor="is_active">Template actif</Label>
                 </div>
 
@@ -253,15 +291,9 @@ const AdminEmailTemplates = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {template.subject}
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{template.subject}</p>
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setPreviewTemplate(template)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => setPreviewTemplate(template)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
@@ -274,11 +306,7 @@ const AdminEmailTemplates = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(template.id)}
-                      >
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(template.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -309,11 +337,7 @@ const AdminEmailTemplates = () => {
                       </CardHeader>
                       <CardContent>
                         <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setPreviewTemplate(template)}
-                          >
+                          <Button size="sm" variant="outline" onClick={() => setPreviewTemplate(template)}>
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
@@ -326,11 +350,7 @@ const AdminEmailTemplates = () => {
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDelete(template.id)}
-                          >
+                          <Button size="sm" variant="destructive" onClick={() => handleDelete(template.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -365,10 +385,10 @@ const AdminEmailTemplates = () => {
               </div>
               <div>
                 <Label>Aperçu HTML</Label>
-                <div 
+                <div
                   className="mt-2 border rounded-lg p-4 bg-background"
-                  dangerouslySetInnerHTML={{ 
-                    __html: DOMPurify.sanitize(previewTemplate?.html_content || "", DOMPURIFY_CONFIG) 
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(previewTemplate?.html_content || "", DOMPURIFY_CONFIG),
                   }}
                 />
               </div>

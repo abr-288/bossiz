@@ -23,12 +23,12 @@ interface PageBannerProps {
  * PageBanner - Bannière avec formulaires pour les pages internes
  * Design premium unifié avec système UnifiedForm
  */
-export const PageBanner = ({ 
-  title, 
-  subtitle, 
+export const PageBanner = ({
+  title,
+  subtitle,
   defaultTab = "flight",
   backgroundImage,
-  showAllTabs = true 
+  showAllTabs = true,
 }: PageBannerProps) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -39,11 +39,7 @@ export const PageBanner = ({
       {backgroundImage && (
         <>
           <div className="absolute inset-0 z-0">
-            <img
-              src={backgroundImage}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
+            <img src={backgroundImage} alt={title} className="w-full h-full object-cover" />
           </div>
           <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary-light/85 to-secondary/90 z-[1]" />
         </>
@@ -55,30 +51,26 @@ export const PageBanner = ({
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2 sm:mb-3 animate-fade-in">
             {title}
           </h1>
-          {subtitle && (
-            <p className="text-sm sm:text-lg md:text-xl text-white/95 animate-fade-in">
-              {subtitle}
-            </p>
-          )}
+          {subtitle && <p className="text-sm sm:text-lg md:text-xl text-white/95 animate-fade-in">{subtitle}</p>}
         </div>
 
         {/* Formulaires de recherche */}
         <div className="max-w-6xl mx-auto bg-background rounded-xl shadow-2xl overflow-hidden animate-scale-in">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full h-auto p-0 bg-background border-b flex justify-start overflow-x-auto rounded-none gap-0 scrollbar-hide">
-              <TabsTrigger 
-                value="flight" 
+              <TabsTrigger
+                value="flight"
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Plane className="w-5 h-5" />
-                <span className="text-sm">{t('nav.flights')}</span>
+                <span className="text-sm">{t("nav.flights")}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="hotel"
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Hotel className="w-5 h-5" />
-                <span className="text-sm">{t('nav.hotels')}</span>
+                <span className="text-sm">{t("nav.hotels")}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="flight-hotel"
@@ -86,14 +78,14 @@ export const PageBanner = ({
               >
                 <Plane className="w-4 h-4" />
                 <Hotel className="w-4 h-4" />
-                <span className="text-sm">{t('nav.flightHotel')}</span>
+                <span className="text-sm">{t("nav.flightHotel")}</span>
               </TabsTrigger>
               <TabsTrigger
                 value="car"
                 className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
               >
                 <Car className="w-5 h-5" />
-                <span className="text-sm">{t('nav.carRental')}</span>
+                <span className="text-sm">{t("nav.carRental")}</span>
               </TabsTrigger>
               {showAllTabs && (
                 <>
@@ -102,28 +94,28 @@ export const PageBanner = ({
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Train className="w-5 h-5" />
-                    <span className="text-sm">{t('nav.trains')}</span>
+                    <span className="text-sm">{t("nav.trains")}</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="event"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Calendar className="w-5 h-5" />
-                    <span className="text-sm">{t('nav.events')}</span>
+                    <span className="text-sm">{t("nav.events")}</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="tour"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Map className="w-5 h-5" />
-                    <span className="text-sm">{t('nav.tours')}</span>
+                    <span className="text-sm">{t("nav.tours")}</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="stay"
                     className="gap-2 py-4 px-6 rounded-none data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-secondary flex-shrink-0"
                   >
                     <Hotel className="w-5 h-5" />
-                    <span className="text-sm">{t('nav.stays')}</span>
+                    <span className="text-sm">{t("nav.stays")}</span>
                   </TabsTrigger>
                 </>
               )}
@@ -139,7 +131,7 @@ export const PageBanner = ({
             </TabsContent>
 
             <TabsContent value="flight-hotel" className="p-3 sm:p-6">
-              <FlightHotelSearchForm 
+              <FlightHotelSearchForm
                 onSearch={(params) => {
                   // Navigation gérée par le formulaire
                 }}

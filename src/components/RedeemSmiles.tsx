@@ -58,19 +58,17 @@ export function RedeemSmiles({ amountXof, onChange }: RedeemSmilesProps) {
                 })}
           </p>
         </div>
-        {max > 0 && (
-          <Switch checked={enabled} onCheckedChange={setEnabled} aria-label={t("ux.smiles.redeemTitle")} />
-        )}
+        {max > 0 && <Switch checked={enabled} onCheckedChange={setEnabled} aria-label={t("ux.smiles.redeemTitle")} />}
       </div>
       {enabled && max > 0 && (
-        <p className="mt-2 text-right text-sm font-semibold text-success">
-          −{nf.format(discount)} FCFA
-        </p>
+        <p className="mt-2 text-right text-sm font-semibold text-success">−{nf.format(discount)} FCFA</p>
       )}
       {earned > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
           {t("ux.smiles.willEarn", { points: nf.format(earned) })}{" "}
-          <Link to="/smiles" className="text-primary hover:underline">{t("ux.smiles.learnMore")}</Link>
+          <Link to="/smiles" className="text-primary hover:underline">
+            {t("ux.smiles.learnMore")}
+          </Link>
         </p>
       )}
     </div>

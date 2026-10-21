@@ -5,28 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -68,29 +49,88 @@ interface WellnessService {
 
 const CATEGORIES: { key: string; label: string }[] = [
   { key: "spa", label: "Spa" },
-  { key: "nail_salon", get label() { return i18n.t("ux.bo.nails"); } },
-  { key: "barbershop", get label() { return i18n.t("ux.bo.barbershop"); } },
-  { key: "beauty_institute", get label() { return i18n.t("ux.bo.beautySalon"); } },
+  {
+    key: "nail_salon",
+    get label() {
+      return i18n.t("ux.bo.nails");
+    },
+  },
+  {
+    key: "barbershop",
+    get label() {
+      return i18n.t("ux.bo.barbershop");
+    },
+  },
+  {
+    key: "beauty_institute",
+    get label() {
+      return i18n.t("ux.bo.beautySalon");
+    },
+  },
   { key: "yoga", label: "Yoga" },
 ];
 
 const DAYS: { key: string; label: string }[] = [
-  { key: "mon", get label() { return i18n.t("ux.bo.monday"); } },
-  { key: "tue", get label() { return i18n.t("ux.bo.tuesday"); } },
-  { key: "wed", get label() { return i18n.t("ux.bo.wednesday"); } },
-  { key: "thu", get label() { return i18n.t("ux.bo.thursday"); } },
-  { key: "fri", get label() { return i18n.t("ux.bo.friday"); } },
-  { key: "sat", get label() { return i18n.t("ux.bo.saturday"); } },
-  { key: "sun", get label() { return i18n.t("ux.bo.sunday"); } },
+  {
+    key: "mon",
+    get label() {
+      return i18n.t("ux.bo.monday");
+    },
+  },
+  {
+    key: "tue",
+    get label() {
+      return i18n.t("ux.bo.tuesday");
+    },
+  },
+  {
+    key: "wed",
+    get label() {
+      return i18n.t("ux.bo.wednesday");
+    },
+  },
+  {
+    key: "thu",
+    get label() {
+      return i18n.t("ux.bo.thursday");
+    },
+  },
+  {
+    key: "fri",
+    get label() {
+      return i18n.t("ux.bo.friday");
+    },
+  },
+  {
+    key: "sat",
+    get label() {
+      return i18n.t("ux.bo.saturday");
+    },
+  },
+  {
+    key: "sun",
+    get label() {
+      return i18n.t("ux.bo.sunday");
+    },
+  },
 ];
 
 const emptyOpeningHours = () =>
-  DAYS.reduce((acc, d) => {
-    acc[d.key] = { open: "09:00", close: "19:00", closed: d.key === "sun" };
-    return acc;
-  }, {} as Record<string, { open: string; close: string; closed?: boolean }>);
+  DAYS.reduce(
+    (acc, d) => {
+      acc[d.key] = { open: "09:00", close: "19:00", closed: d.key === "sun" };
+      return acc;
+    },
+    {} as Record<string, { open: string; close: string; closed?: boolean }>,
+  );
 
-const emptyTreatment = (): Treatment => ({ name: "", description: "", price: undefined, currency: "XOF", duration_minutes: undefined });
+const emptyTreatment = (): Treatment => ({
+  name: "",
+  description: "",
+  price: undefined,
+  currency: "XOF",
+  duration_minutes: undefined,
+});
 
 const emptyForm = {
   name: "",
@@ -126,14 +166,12 @@ export default function AgencyWellness() {
   }, []);
 
   const fetchAgencyAndItems = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: agency } = await supabase
-      .from("agencies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .single();
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
 
     if (!agency) return;
     setAgencyId(agency.id);
@@ -165,7 +203,8 @@ export default function AgencyWellness() {
         description: t.description?.trim() || undefined,
         price: t.price !== undefined && !Number.isNaN(t.price) ? t.price : undefined,
         currency: "XOF",
-        duration_minutes: t.duration_minutes !== undefined && !Number.isNaN(t.duration_minutes) ? t.duration_minutes : undefined,
+        duration_minutes:
+          t.duration_minutes !== undefined && !Number.isNaN(t.duration_minutes) ? t.duration_minutes : undefined,
       }));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -242,10 +281,13 @@ export default function AgencyWellness() {
       slot_interval_minutes: service.slot_interval_minutes.toString(),
       max_capacity_per_slot: service.max_capacity_per_slot.toString(),
       available: service.is_active,
-      openingHours: DAYS.reduce((acc, d) => {
-        acc[d.key] = hours[d.key] || { open: "09:00", close: "19:00", closed: true };
-        return acc;
-      }, {} as typeof emptyForm.openingHours),
+      openingHours: DAYS.reduce(
+        (acc, d) => {
+          acc[d.key] = hours[d.key] || { open: "09:00", close: "19:00", closed: true };
+          return acc;
+        },
+        {} as typeof emptyForm.openingHours,
+      ),
       treatments: service.treatments && service.treatments.length > 0 ? service.treatments : [emptyTreatment()],
     });
     setIsDialogOpen(true);
@@ -287,9 +329,18 @@ export default function AgencyWellness() {
             <h1 className="text-2xl font-bold">{t("ux.bo.wellnessBeauty")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.manageVenuesTheirAppointmentSlots")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newVenue")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newVenue")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -299,15 +350,23 @@ export default function AgencyWellness() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.name2")}</Label>
-                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.category2")}</Label>
                     <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         {CATEGORIES.map((c) => (
-                          <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>
+                          <SelectItem key={c.key} value={c.key}>
+                            {c.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -316,18 +375,38 @@ export default function AgencyWellness() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.cityDistrict")}</Label>
-                    <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.address")}</Label>
-                    <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+                    <Input
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    />
                   </div>
                 </div>
-                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
+                <LocationPicker
+                  value={{
+                    location: formData.location,
+                    maps_url: formData.maps_url,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  }}
+                  onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
+                  required
+                  showLocation={false}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.phone")}</Label>
-                    <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.maxCapacityPerSlot")}</Label>
@@ -342,14 +421,19 @@ export default function AgencyWellness() {
                 </div>
                 <div className="space-y-2">
                   <Label>{t("ux.bo.description")}</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} />
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={2}
+                  />
                 </div>
 
                 <div className="space-y-3 border-t pt-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">{t("ux.bo.servicesOffered")}</p>
                     <Button type="button" variant="outline" size="sm" onClick={addTreatment}>
-                      <Plus className="h-3.5 w-3.5 mr-1" />Ajouter
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      Ajouter
                     </Button>
                   </div>
                   {formData.treatments.map((treatment, index) => (
@@ -366,7 +450,9 @@ export default function AgencyWellness() {
                         min="0"
                         placeholder={t("ux.bo.priceXof")}
                         value={treatment.price ?? ""}
-                        onChange={(e) => updateTreatment(index, { price: e.target.value ? parseFloat(e.target.value) : undefined })}
+                        onChange={(e) =>
+                          updateTreatment(index, { price: e.target.value ? parseFloat(e.target.value) : undefined })
+                        }
                       />
                       <Input
                         className="col-span-3"
@@ -374,7 +460,11 @@ export default function AgencyWellness() {
                         min="0"
                         placeholder={t("ux.bo.durationMin")}
                         value={treatment.duration_minutes ?? ""}
-                        onChange={(e) => updateTreatment(index, { duration_minutes: e.target.value ? parseInt(e.target.value) : undefined })}
+                        onChange={(e) =>
+                          updateTreatment(index, {
+                            duration_minutes: e.target.value ? parseInt(e.target.value) : undefined,
+                          })
+                        }
                       />
                       <Button
                         aria-label={t("ux.bo.removeTreatment")}
@@ -418,7 +508,10 @@ export default function AgencyWellness() {
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
-                                  openingHours: { ...formData.openingHours, [day.key]: { ...hours, open: e.target.value } },
+                                  openingHours: {
+                                    ...formData.openingHours,
+                                    [day.key]: { ...hours, open: e.target.value },
+                                  },
                                 })
                               }
                             />
@@ -430,7 +523,10 @@ export default function AgencyWellness() {
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
-                                  openingHours: { ...formData.openingHours, [day.key]: { ...hours, close: e.target.value } },
+                                  openingHours: {
+                                    ...formData.openingHours,
+                                    [day.key]: { ...hours, close: e.target.value },
+                                  },
                                 })
                               }
                             />
@@ -453,12 +549,17 @@ export default function AgencyWellness() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Switch checked={formData.available} onCheckedChange={(c) => setFormData({ ...formData, available: c })} />
+                  <Switch
+                    checked={formData.available}
+                    onCheckedChange={(c) => setFormData({ ...formData, available: c })}
+                  />
                   <Label>{t("ux.bo.visibleSite")}</Label>
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    {t("ux.bo.cancel")}
+                  </Button>
                   <Button type="submit">{editing ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
@@ -468,7 +569,12 @@ export default function AgencyWellness() {
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder={t("ux.bo.search")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          <Input
+            placeholder={t("ux.bo.search")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
 
         <div className="border rounded-lg">
@@ -485,7 +591,11 @@ export default function AgencyWellness() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
+                </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
@@ -509,7 +619,12 @@ export default function AgencyWellness() {
                       <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(s)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(s.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(s.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

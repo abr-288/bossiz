@@ -5,21 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,14 +57,12 @@ export default function AgencyPromotions() {
   }, []);
 
   const fetchAgencyAndPromotions = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: agency } = await supabase
-      .from("agencies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .single();
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
 
     if (!agency) return;
     setAgencyId(agency.id);
@@ -115,17 +100,12 @@ export default function AgencyPromotions() {
       };
 
       if (editingPromotion) {
-        const { error } = await supabase
-          .from("promotions")
-          .update(promotionData)
-          .eq("id", editingPromotion.id);
+        const { error } = await supabase.from("promotions").update(promotionData).eq("id", editingPromotion.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionUpdated") });
       } else {
-        const { error } = await supabase
-          .from("promotions")
-          .insert(promotionData);
+        const { error } = await supabase.from("promotions").insert(promotionData);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionCreated") });
@@ -186,12 +166,10 @@ export default function AgencyPromotions() {
     });
   };
 
-  const filteredPromotions = promotions.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPromotions = promotions.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const calculateDiscountedPrice = (original: number, discount: number) => {
-    return original - (original * discount / 100);
+    return original - (original * discount) / 100;
   };
 
   return (
@@ -202,18 +180,22 @@ export default function AgencyPromotions() {
             <h1 className="text-2xl font-bold">{t("ux.bo.myPromotions")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.managePromotionalOffers")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newPromotion2")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newPromotion2")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>
-                  {editingPromotion ? t("ux.bo.editPromotion") : t("ux.bo.newPromotion")}
-                </DialogTitle>
+                <DialogTitle>{editingPromotion ? t("ux.bo.editPromotion") : t("ux.bo.newPromotion")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
@@ -253,7 +235,9 @@ export default function AgencyPromotions() {
                       required
                     />
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">
+                    {t("ux.bo.priceShownChargedXofFcfa")}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label>{t("ux.bo.expiryDate")}</Label>
@@ -271,7 +255,12 @@ export default function AgencyPromotions() {
                     rows={2}
                   />
                 </div>
-                <ImageUpload label={t("ux.bo.promotionVisual")} folder="agency-promotions" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
+                <ImageUpload
+                  label={t("ux.bo.promotionVisual")}
+                  folder="agency-promotions"
+                  value={formData.image_url}
+                  onChange={(image_url) => setFormData({ ...formData, image_url })}
+                />
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.is_active}
@@ -317,7 +306,9 @@ export default function AgencyPromotions() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
                 </TableRow>
               ) : filteredPromotions.length === 0 ? (
                 <TableRow>
@@ -338,13 +329,13 @@ export default function AgencyPromotions() {
                       <Badge variant="destructive">-{promotion.discount}%</Badge>
                     </TableCell>
                     <TableCell className="font-semibold text-success">
-                      {calculateDiscountedPrice(promotion.original_price, promotion.discount).toFixed(0)} {promotion.currency}
+                      {calculateDiscountedPrice(promotion.original_price, promotion.discount).toFixed(0)}{" "}
+                      {promotion.currency}
                     </TableCell>
                     <TableCell>
-                      {promotion.expires_at 
+                      {promotion.expires_at
                         ? format(new Date(promotion.expires_at), "dd MMM yyyy", { locale: fr })
-                        : "-"
-                      }
+                        : "-"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={promotion.is_active ? "default" : "secondary"}>
@@ -352,10 +343,20 @@ export default function AgencyPromotions() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(promotion)}>
+                      <Button
+                        aria-label={t("ux.bo.edit")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(promotion)}
+                      >
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(promotion.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(promotion.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

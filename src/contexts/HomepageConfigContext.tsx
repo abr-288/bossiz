@@ -16,13 +16,15 @@ export const HomepageConfigProvider = ({ children }: { children: ReactNode }) =>
   const { config, loading, updateFeature, updateSection, refetch } = useHomepageConfig();
 
   return (
-    <HomepageConfigContext.Provider value={{ 
-      config, 
-      loading, 
-      updateFeature, 
-      updateSection, 
-      refetch 
-    }}>
+    <HomepageConfigContext.Provider
+      value={{
+        config,
+        loading,
+        updateFeature,
+        updateSection,
+        refetch,
+      }}
+    >
       {children}
     </HomepageConfigContext.Provider>
   );

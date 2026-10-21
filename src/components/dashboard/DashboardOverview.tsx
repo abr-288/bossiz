@@ -134,7 +134,11 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
   const nf = new Intl.NumberFormat(currentLocaleTag());
   const today = startOfToday();
   const fmtDate = (iso: string, withYear = false) =>
-    new Date(iso).toLocaleDateString(currentLocaleTag(), { day: "numeric", month: "short", ...(withYear ? { year: "numeric" } : {}) });
+    new Date(iso).toLocaleDateString(currentLocaleTag(), {
+      day: "numeric",
+      month: "short",
+      ...(withYear ? { year: "numeric" } : {}),
+    });
 
   // ------------------------------------------------------------- Réservations
   const live = bookings.filter((b) => b.status !== "cancelled");
@@ -146,13 +150,16 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
   const totalSpent = bookings
     .filter((b) => b.payment_status === "paid")
     .reduce((sum, b) => sum + Number(b.total_price || 0), 0);
-  const daysToNextTrip = nextTrip ? Math.round((new Date(nextTrip.start_date).getTime() - today.getTime()) / DAY_MS) : null;
+  const daysToNextTrip = nextTrip
+    ? Math.round((new Date(nextTrip.start_date).getTime() - today.getTime()) / DAY_MS)
+    : null;
 
   // ------------------------------------------------------------- Abonnement
   const subActive = subscription?.status === "active";
-  const subDaysLeft = subActive && subscription?.end_date
-    ? Math.ceil((new Date(subscription.end_date).getTime() - Date.now()) / DAY_MS)
-    : null;
+  const subDaysLeft =
+    subActive && subscription?.end_date
+      ? Math.ceil((new Date(subscription.end_date).getTime() - Date.now()) / DAY_MS)
+      : null;
 
   // ------------------------------------------------------------- Profil
   const profileChecks = [
@@ -165,7 +172,14 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
   const activeAlerts = alerts.filter((a) => a.is_active);
 
   // ------------------------------------------------------------- Actions requises
-  const todo: { key: string; icon: ComponentType<{ className?: string }>; text: string; cta: string; to: string; tone: string }[] = [];
+  const todo: {
+    key: string;
+    icon: ComponentType<{ className?: string }>;
+    text: string;
+    cta: string;
+    to: string;
+    tone: string;
+  }[] = [];
   if (toPay.length > 0) {
     todo.push({
       key: "pay",
@@ -248,9 +262,10 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
       icon: Crown,
       label: t("ux.dash.tileSub"),
       value: subActive ? subscription!.plan_name || subscription!.plan_id : t("ux.dash.none"),
-      hint: subActive && subscription?.end_date
-        ? t("ux.dash.until", { date: fmtDate(subscription.end_date, true) })
-        : t("ux.dash.discoverPlans"),
+      hint:
+        subActive && subscription?.end_date
+          ? t("ux.dash.until", { date: fmtDate(subscription.end_date, true) })
+          : t("ux.dash.discoverPlans"),
       to: subActive ? "/account" : "/",
     },
     {
@@ -327,7 +342,9 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
               <div className="relative flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-white/70">{t("ux.dash.nextTrip")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-white/70">
+                    {t("ux.dash.nextTrip")}
+                  </p>
                   <h2 className="mt-2 truncate text-2xl font-bold">{nextTrip.services?.name || t("ux.dash.trip")}</h2>
                   <p className="mt-1 flex items-center gap-1.5 text-sm text-white/80">
                     <MapPin className="h-4 w-4" />
@@ -336,7 +353,9 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
                   <p className="mt-1 flex items-center gap-1.5 text-sm text-white/80">
                     <CalendarDays className="h-4 w-4" />
                     {fmtDate(nextTrip.start_date, true)}
-                    {nextTrip.end_date && nextTrip.end_date !== nextTrip.start_date && ` → ${fmtDate(nextTrip.end_date, true)}`}
+                    {nextTrip.end_date &&
+                      nextTrip.end_date !== nextTrip.start_date &&
+                      ` → ${fmtDate(nextTrip.end_date, true)}`}
                   </p>
                 </div>
                 <div className="shrink-0 rounded-2xl bg-white/10 px-4 py-3 text-center backdrop-blur">
@@ -347,14 +366,24 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
                 </div>
               </div>
               <div className="relative mt-5 flex flex-wrap items-center gap-2">
-                <Badge className={nextTrip.payment_status === "paid" ? "bg-success text-white" : "bg-warning text-warning-foreground"}>
+                <Badge
+                  className={
+                    nextTrip.payment_status === "paid" ? "bg-success text-white" : "bg-warning text-warning-foreground"
+                  }
+                >
                   {nextTrip.payment_status === "paid" ? t("ux.dash.paid") : t("ux.dash.toPay")}
                 </Badge>
-                <span className="text-sm font-semibold"><Price amount={nextTrip.total_price} fromCurrency={nextTrip.currency} /></span>
+                <span className="text-sm font-semibold">
+                  <Price amount={nextTrip.total_price} fromCurrency={nextTrip.currency} />
+                </span>
                 <Button
                   size="sm"
                   className="ml-auto bg-white text-primary hover:bg-white/90"
-                  onClick={() => navigate(nextTrip.payment_status === "pending" ? `/payment?bookingId=${nextTrip.id}` : "/booking-history")}
+                  onClick={() =>
+                    navigate(
+                      nextTrip.payment_status === "pending" ? `/payment?bookingId=${nextTrip.id}` : "/booking-history",
+                    )
+                  }
                 >
                   {nextTrip.payment_status === "pending" ? t("ux.dash.pay") : t("ux.dash.details")}
                   <ArrowRight className="ml-1 h-4 w-4" />
@@ -366,7 +395,9 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
               <Luggage className="mx-auto h-10 w-10 text-primary" />
               <p className="mt-3 font-semibold">{t("ux.dash.noTripTitle")}</p>
               <p className="mt-1 text-sm text-muted-foreground">{t("ux.dash.noTripDesc")}</p>
-              <Button className="mt-4" onClick={() => navigate("/")}>{t("ux.dash.bookTrip")}</Button>
+              <Button className="mt-4" onClick={() => navigate("/")}>
+                {t("ux.dash.bookTrip")}
+              </Button>
             </section>
           )}
 
@@ -375,7 +406,9 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
             <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-base font-semibold">{t("ux.dash.upcomingTitle")}</h2>
-                <Link to="/booking-history" className="text-sm text-primary hover:underline">{t("ux.dash.seeAll")}</Link>
+                <Link to="/booking-history" className="text-sm text-primary hover:underline">
+                  {t("ux.dash.seeAll")}
+                </Link>
               </div>
               <ul className="divide-y divide-border">
                 {upcoming.slice(1, 5).map((booking) => {
@@ -392,9 +425,13 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
                         </p>
                       </div>
                       {booking.payment_status === "pending" ? (
-                        <Badge variant="outline" className="border-warning/50 text-warning-foreground">{t("ux.dash.toPay")}</Badge>
+                        <Badge variant="outline" className="border-warning/50 text-warning-foreground">
+                          {t("ux.dash.toPay")}
+                        </Badge>
                       ) : (
-                        <Badge variant="outline" className="border-success/40 text-success">{t("ux.dash.paid")}</Badge>
+                        <Badge variant="outline" className="border-success/40 text-success">
+                          {t("ux.dash.paid")}
+                        </Badge>
                       )}
                     </li>
                   );
@@ -413,7 +450,11 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
                 <Crown className="h-5 w-5 text-primary" />
                 {t("ux.dash.membership")}
               </h2>
-              {subActive && <Link to="/ma-carte" className="text-sm text-primary hover:underline">{t("ux.dash.showCard")}</Link>}
+              {subActive && (
+                <Link to="/ma-carte" className="text-sm text-primary hover:underline">
+                  {t("ux.dash.showCard")}
+                </Link>
+              )}
             </div>
             {subActive && profile?.member_code ? (
               <MemberCard
@@ -426,14 +467,19 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
             ) : (
               <div className="rounded-2xl bg-muted/50 p-4 text-sm">
                 <p className="text-muted-foreground">{t("ux.dash.noMembership")}</p>
-                <Button size="sm" className="mt-3" onClick={() => navigate("/")}>{t("ux.dash.discoverPlans")}</Button>
+                <Button size="sm" className="mt-3" onClick={() => navigate("/")}>
+                  {t("ux.dash.discoverPlans")}
+                </Button>
               </div>
             )}
           </section>
 
           {/* Smiles */}
           {loyalty && (
-            <Link to="/smiles" className="block rounded-3xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
+            <Link
+              to="/smiles"
+              className="block rounded-3xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+            >
               <div className="flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-base font-semibold">
                   <Smile className="h-5 w-5 text-primary" />
@@ -479,21 +525,35 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
                 <Bell className="h-5 w-5 text-primary" />
                 {t("ux.dash.tileAlerts")}
               </h2>
-              <Link to="/price-alerts" className="text-sm text-primary hover:underline">{t("ux.dash.manage")}</Link>
+              <Link to="/price-alerts" className="text-sm text-primary hover:underline">
+                {t("ux.dash.manage")}
+              </Link>
             </div>
             {activeAlerts.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("ux.dash.noAlerts")}</p>
             ) : (
               <ul className="space-y-2">
                 {activeAlerts.slice(0, 3).map((alert) => {
-                  const reached = alert.target_price != null && alert.current_price != null && alert.current_price <= alert.target_price;
+                  const reached =
+                    alert.target_price != null &&
+                    alert.current_price != null &&
+                    alert.current_price <= alert.target_price;
                   return (
-                    <li key={alert.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 px-3 py-2 text-sm">
+                    <li
+                      key={alert.id}
+                      className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 px-3 py-2 text-sm"
+                    >
                       <span className="min-w-0 truncate">
-                        {alert.origin ? `${alert.origin} → ` : ""}{alert.destination}
+                        {alert.origin ? `${alert.origin} → ` : ""}
+                        {alert.destination}
                       </span>
                       {alert.target_price != null && (
-                        <span className={cn("shrink-0 text-xs font-semibold", reached ? "text-success" : "text-muted-foreground")}>
+                        <span
+                          className={cn(
+                            "shrink-0 text-xs font-semibold",
+                            reached ? "text-success" : "text-muted-foreground",
+                          )}
+                        >
                           {reached && <Check className="mr-0.5 inline h-3.5 w-3.5" />}
                           ≤ <Price amount={alert.target_price} fromCurrency={alert.currency} />
                         </span>
@@ -520,8 +580,15 @@ export function DashboardOverview({ userId, bookings }: { userId: string; bookin
               </div>
               <ul className="mt-3 space-y-1.5 text-sm">
                 {profileChecks.map(({ key, done }) => (
-                  <li key={key} className={cn("flex items-center gap-2", done ? "text-muted-foreground line-through" : "")}>
-                    {done ? <Check className="h-4 w-4 text-success" /> : <Circle className="h-4 w-4 text-muted-foreground/50" />}
+                  <li
+                    key={key}
+                    className={cn("flex items-center gap-2", done ? "text-muted-foreground line-through" : "")}
+                  >
+                    {done ? (
+                      <Check className="h-4 w-4 text-success" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-muted-foreground/50" />
+                    )}
                     {t(`ux.dash.check_${key}`)}
                   </li>
                 ))}

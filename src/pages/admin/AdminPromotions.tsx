@@ -59,10 +59,7 @@ export default function AdminPromotions() {
   const fetchPromotions = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("promotions")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("promotions").select("*").order("created_at", { ascending: false });
 
       if (error) throw error;
       setPromotions((data as Promotion[]) || []);
@@ -114,16 +111,11 @@ export default function AdminPromotions() {
       };
 
       if (editingPromotion) {
-        const { error } = await supabase
-          .from("promotions")
-          .update(dataToSave)
-          .eq("id", editingPromotion.id);
+        const { error } = await supabase.from("promotions").update(dataToSave).eq("id", editingPromotion.id);
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionUpdated") });
       } else {
-        const { error } = await supabase
-          .from("promotions")
-          .insert(dataToSave);
+        const { error } = await supabase.from("promotions").insert(dataToSave);
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.promotionCreated") });
       }
@@ -152,10 +144,7 @@ export default function AdminPromotions() {
 
   const toggleActive = async (promo: Promotion) => {
     try {
-      const { error } = await supabase
-        .from("promotions")
-        .update({ is_active: !promo.is_active })
-        .eq("id", promo.id);
+      const { error } = await supabase.from("promotions").update({ is_active: !promo.is_active }).eq("id", promo.id);
       if (error) throw error;
       fetchPromotions();
     } catch (error) {
@@ -201,9 +190,7 @@ export default function AdminPromotions() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{t("ux.bo.active3")}</p>
-                  <p className="text-2xl font-bold text-success">
-                    {promotions.filter(p => p.is_active).length}
-                  </p>
+                  <p className="text-2xl font-bold text-success">{promotions.filter((p) => p.is_active).length}</p>
                 </div>
                 <Percent className="w-8 h-8 text-success" />
               </div>
@@ -221,7 +208,11 @@ export default function AdminPromotions() {
                 <Loader2 className="w-8 h-8 animate-spin" />
               </div>
             ) : promotions.length === 0 ? (
-              <EmptyState icon={Tag} title={t("ux.bo.noPromotion")} description={t("ux.bo.promotionsCreatedHereAppearSite")} />
+              <EmptyState
+                icon={Tag}
+                title={t("ux.bo.noPromotion")}
+                description={t("ux.bo.promotionsCreatedHereAppearSite")}
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -380,7 +371,12 @@ export default function AdminPromotions() {
                 <Input
                   type="datetime-local"
                   value={formData.expires_at ? formData.expires_at.slice(0, 16) : ""}
-                  onChange={(e) => setFormData({ ...formData, expires_at: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      expires_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                    })
+                  }
                 />
               </div>
 
@@ -393,7 +389,9 @@ export default function AdminPromotions() {
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  {t("ux.bo.cancel")}
+                </Button>
                 <Button onClick={handleSave} disabled={isSaving}>
                   {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {editingPromotion ? t("ux.bo.update") : "Créer"}

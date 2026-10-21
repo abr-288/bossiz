@@ -14,13 +14,7 @@ interface ConversionMetricsProps {
 
 export function ConversionMetrics({ stats }: ConversionMetricsProps) {
   const { t } = useTranslation();
-  const { 
-    totalBookings, 
-    confirmedBookings, 
-    cancelledBookings, 
-    pendingBookings, 
-    conversionRate 
-  } = stats;
+  const { totalBookings, confirmedBookings, cancelledBookings, pendingBookings, conversionRate } = stats;
 
   const cancelRate = totalBookings > 0 ? (cancelledBookings / totalBookings) * 100 : 0;
   const pendingRate = totalBookings > 0 ? (pendingBookings / totalBookings) * 100 : 0;
@@ -47,9 +41,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{confirmedBookings}</div>
-          <p className="text-xs text-muted-foreground">
-            {conversionRate.toFixed(1)}% du total
-          </p>
+          <p className="text-xs text-muted-foreground">{conversionRate.toFixed(1)}% du total</p>
         </CardContent>
       </Card>
 
@@ -60,9 +52,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{cancelRate.toFixed(1)}%</div>
-          <p className="text-xs text-muted-foreground">
-            {cancelledBookings} annulations
-          </p>
+          <p className="text-xs text-muted-foreground">{cancelledBookings} annulations</p>
         </CardContent>
       </Card>
 
@@ -73,9 +63,7 @@ export function ConversionMetrics({ stats }: ConversionMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{pendingBookings}</div>
-          <p className="text-xs text-muted-foreground">
-            {pendingRate.toFixed(1)}% du total
-          </p>
+          <p className="text-xs text-muted-foreground">{pendingRate.toFixed(1)}% du total</p>
         </CardContent>
       </Card>
     </div>

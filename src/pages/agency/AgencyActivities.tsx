@@ -5,28 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
 import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
@@ -57,12 +38,42 @@ interface ActivityItem {
 }
 
 const categories = [
-  { value: "adventure", get label() { return i18n.t("ux.bo.adventure"); } },
-  { value: "cultural", get label() { return i18n.t("ux.bo.cultural"); } },
-  { value: "nature", get label() { return i18n.t("ux.bo.nature"); } },
-  { value: "sport", get label() { return i18n.t("ux.bo.sport"); } },
-  { value: "relaxation", get label() { return i18n.t("ux.bo.relaxation"); } },
-  { value: "gastronomie", get label() { return i18n.t("ux.bo.foodDrink"); } },
+  {
+    value: "adventure",
+    get label() {
+      return i18n.t("ux.bo.adventure");
+    },
+  },
+  {
+    value: "cultural",
+    get label() {
+      return i18n.t("ux.bo.cultural");
+    },
+  },
+  {
+    value: "nature",
+    get label() {
+      return i18n.t("ux.bo.nature");
+    },
+  },
+  {
+    value: "sport",
+    get label() {
+      return i18n.t("ux.bo.sport");
+    },
+  },
+  {
+    value: "relaxation",
+    get label() {
+      return i18n.t("ux.bo.relaxation");
+    },
+  },
+  {
+    value: "gastronomie",
+    get label() {
+      return i18n.t("ux.bo.foodDrink");
+    },
+  },
 ];
 
 export default function AgencyActivities() {
@@ -95,14 +106,12 @@ export default function AgencyActivities() {
   }, []);
 
   const fetchAgencyAndActivities = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: agency } = await supabase
-      .from("agencies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .single();
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
 
     if (!agency) return;
     setAgencyId(agency.id);
@@ -144,17 +153,12 @@ export default function AgencyActivities() {
       };
 
       if (editingActivity) {
-        const { error } = await supabase
-          .from("activities")
-          .update(activityData)
-          .eq("id", editingActivity.id);
+        const { error } = await supabase.from("activities").update(activityData).eq("id", editingActivity.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.activityUpdated") });
       } else {
-        const { error } = await supabase
-          .from("activities")
-          .insert(activityData);
+        const { error } = await supabase.from("activities").insert(activityData);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.activityCreated") });
@@ -223,9 +227,7 @@ export default function AgencyActivities() {
     });
   };
 
-  const filteredActivities = activities.filter((a) =>
-    a.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredActivities = activities.filter((a) => a.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <AgencyLayout>
@@ -235,18 +237,22 @@ export default function AgencyActivities() {
             <h1 className="text-2xl font-bold">{t("ux.bo.myActivities")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.manageTouristActivities")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newActivity")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newActivity")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>
-                  {editingActivity ? t("ux.bo.editActivity") : t("ux.bo.newActivity2")}
-                </DialogTitle>
+                <DialogTitle>{editingActivity ? t("ux.bo.editActivity") : t("ux.bo.newActivity2")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -260,23 +266,29 @@ export default function AgencyActivities() {
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.category2")}</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(v) => setFormData({ ...formData, category: v })}
-                    >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         {categories.map((c) => (
-                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                          <SelectItem key={c.value} value={c.value}>
+                            {c.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <LocationPicker
-                    value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }}
-                    onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
-                    required
+                  value={{
+                    location: formData.location,
+                    maps_url: formData.maps_url,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  }}
+                  onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
+                  required
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -299,9 +311,14 @@ export default function AgencyActivities() {
                       required
                     />
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">
+                    {t("ux.bo.priceShownChargedXofFcfa")}
+                  </div>
                 </div>
-                <AvailableDatesInput dates={formData.available_dates} onChange={(available_dates) => setFormData({ ...formData, available_dates })} />
+                <AvailableDatesInput
+                  dates={formData.available_dates}
+                  onChange={(available_dates) => setFormData({ ...formData, available_dates })}
+                />
                 <div className="space-y-2">
                   <Label>{t("ux.bo.description")}</Label>
                   <Textarea
@@ -310,7 +327,12 @@ export default function AgencyActivities() {
                     rows={2}
                   />
                 </div>
-                <ImageUpload label={t("ux.bo.activityPhoto")} folder="agency-activities" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
+                <ImageUpload
+                  label={t("ux.bo.activityPhoto")}
+                  folder="agency-activities"
+                  value={formData.image_url}
+                  onChange={(image_url) => setFormData({ ...formData, image_url })}
+                />
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.available}
@@ -355,7 +377,9 @@ export default function AgencyActivities() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
                 </TableRow>
               ) : filteredActivities.length === 0 ? (
                 <TableRow>
@@ -375,17 +399,29 @@ export default function AgencyActivities() {
                     </TableCell>
                     <TableCell>{activity.location}</TableCell>
                     <TableCell>{activity.duration}</TableCell>
-                    <TableCell>{activity.price_per_unit} {activity.currency}</TableCell>
+                    <TableCell>
+                      {activity.price_per_unit} {activity.currency}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={activity.available ? "default" : "secondary"}>
                         {activity.available ? t("ux.bo.available") : "Indisponible"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(activity)}>
+                      <Button
+                        aria-label={t("ux.bo.edit")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(activity)}
+                      >
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(activity.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(activity.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

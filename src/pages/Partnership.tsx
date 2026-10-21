@@ -79,11 +79,7 @@ const partnershipTypes: PartnershipType[] = [
     title: "ux.partnershipData.activitiesTitle",
     tagline: "ux.partnershipData.activitiesTagline",
     facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
-    conditions: [
-      "ux.partnershipData.signup",
-      "ux.partnershipData.activitiesC2",
-      "ux.partnershipData.activitiesC3",
-    ],
+    conditions: ["ux.partnershipData.signup", "ux.partnershipData.activitiesC2", "ux.partnershipData.activitiesC3"],
     ctaLabel: "ux.partnershipData.activitiesCta",
     ctaTo: "/devenir-partenaire?type=activity",
   },
@@ -108,11 +104,7 @@ const partnershipTypes: PartnershipType[] = [
     title: "ux.partnershipData.wellnessTitle",
     tagline: "ux.partnershipData.wellnessTagline",
     facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
-    conditions: [
-      "ux.partnershipData.signup",
-      "ux.partnershipData.wellnessC2",
-      "ux.partnershipData.wellnessC3",
-    ],
+    conditions: ["ux.partnershipData.signup", "ux.partnershipData.wellnessC2", "ux.partnershipData.wellnessC3"],
     ctaLabel: "ux.partnershipData.wellnessCta",
     ctaTo: "/devenir-partenaire?type=wellness",
   },
@@ -122,11 +114,7 @@ const partnershipTypes: PartnershipType[] = [
     title: "ux.partnershipData.carsTitle",
     tagline: "ux.partnershipData.carsTagline",
     facts: ["ux.partnershipData.carsFrom", "ux.partnershipData.carsCommission"],
-    conditions: [
-      "ux.partnershipData.carsC1",
-      "ux.partnershipData.carsC2",
-      "ux.partnershipData.carsC3",
-    ],
+    conditions: ["ux.partnershipData.carsC1", "ux.partnershipData.carsC2", "ux.partnershipData.carsC3"],
     ctaLabel: "ux.partnershipData.carsCta",
     ctaTo: "/devenir-partenaire?type=cars",
     highlight: "ux.partnershipData.paidPlans",
@@ -137,11 +125,7 @@ const partnershipTypes: PartnershipType[] = [
 // l'admin : publication gratuite, sans mention des forfaits payants.
 const freeCarsPartnership: Pick<PartnershipType, "facts" | "conditions" | "highlight"> = {
   facts: ["ux.partnershipData.free", "ux.partnershipData.share"],
-  conditions: [
-    "ux.partnershipData.signup",
-    "ux.partnershipData.carsFreeC1",
-    "ux.partnershipData.carsFreeC2",
-  ],
+  conditions: ["ux.partnershipData.signup", "ux.partnershipData.carsFreeC1", "ux.partnershipData.carsFreeC2"],
   highlight: undefined,
 };
 
@@ -175,10 +159,7 @@ const PartnershipCard = ({ type, index }: { type: PartnershipType; index: number
 
           <div className="flex flex-wrap gap-1.5 mb-4">
             {type.facts.map((fact) => (
-              <span
-                key={fact}
-                className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground"
-              >
+              <span key={fact} className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
                 {t(fact)}
               </span>
             ))}
@@ -247,9 +228,7 @@ const Partnership = () => {
         />
         <div className="absolute inset-0 bg-brand/70" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t("ux.partnership.title")}
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.partnership.title")}</h1>
           <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium mb-8">
             {t("ux.partnershipData.heroDesc")}
           </p>
@@ -306,9 +285,7 @@ const Partnership = () => {
 
         {/* Bottom CTA */}
         <div className="text-center max-w-xl mx-auto">
-          <p className="text-sm text-muted-foreground mb-2">
-            {t("ux.partnership.other")}
-          </p>
+          <p className="text-sm text-muted-foreground mb-2">{t("ux.partnership.other")}</p>
           <Button asChild variant="outline" size="lg">
             <Link to="/devenir-partenaire">{t("ux.partnership.general")}</Link>
           </Button>

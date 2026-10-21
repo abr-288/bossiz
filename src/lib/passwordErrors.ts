@@ -7,7 +7,9 @@ export type PasswordErrorKind = "same" | "weak" | "session" | "other";
  * bruts sont en anglais et parfois techniques ; on les remplace par un texte
  * traduit qui dit quoi faire.
  */
-export function classifyPasswordError(error: { message?: string; code?: string } | null | undefined): PasswordErrorKind {
+export function classifyPasswordError(
+  error: { message?: string; code?: string } | null | undefined,
+): PasswordErrorKind {
   const code = error?.code ?? "";
   const message = error?.message ?? "";
   if (code === "same_password" || /different from the old/i.test(message)) return "same";
@@ -16,7 +18,10 @@ export function classifyPasswordError(error: { message?: string; code?: string }
   return "other";
 }
 
-export function passwordErrorMessage(t: TFunction, error: { message?: string; code?: string } | null | undefined): string {
+export function passwordErrorMessage(
+  t: TFunction,
+  error: { message?: string; code?: string } | null | undefined,
+): string {
   switch (classifyPasswordError(error)) {
     case "same":
       return t("ux.reset.samePassword");

@@ -148,24 +148,22 @@ const PrivacyPolicy = () => {
       <PageHero
         image={heroImage}
         title={<>Politique de Confidentialité</>}
-        subtitle={<>Chez {siteName}, la protection de vos données personnelles est une priorité absolue. 
-              Cette politique détaille comment nous collectons, utilisons et protégeons vos informations.</>}
+        subtitle={
+          <>
+            Chez {siteName}, la protection de vos données personnelles est une priorité absolue. Cette politique
+            détaille comment nous collectons, utilisons et protégeons vos informations.
+          </>
+        }
       />
       <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-
           {/* Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => {
               return (
-                <section
-                  key={index}
-                  className="bg-card border border-border rounded-xl p-6 md:p-8"
-                >
+                <section key={index} className="bg-card border border-border rounded-xl p-6 md:p-8">
                   <div className="mb-4">
-                    <h2 className="text-xl font-bold text-foreground">
-                      {section.title}
-                    </h2>
+                    <h2 className="text-xl font-bold text-foreground">{section.title}</h2>
                   </div>
                   <div className="space-y-2">
                     {section.content.map((line, i) => (
@@ -173,8 +171,7 @@ const PrivacyPolicy = () => {
                         key={i}
                         className="text-muted-foreground text-sm leading-relaxed"
                         dangerouslySetInnerHTML={{
-                          __html: line
-                            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>')
+                          __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>'),
                         }}
                       />
                     ))}

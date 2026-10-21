@@ -7,7 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Users, Wifi, UtensilsCrossed, Car, Globe, GitCompare, SlidersHorizontal, Hotel } from "lucide-react";
+import {
+  Star,
+  MapPin,
+  Users,
+  Wifi,
+  UtensilsCrossed,
+  Car,
+  Globe,
+  GitCompare,
+  SlidersHorizontal,
+  Hotel,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -91,7 +102,7 @@ const Hotels = () => {
   const [selectedHotel, setSelectedHotel] = useState<SelectedHotel | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [apiHotels, setApiHotels] = useState<DisplayHotel[]>([]);
-  
+
   // Filter states
   const [filterDestination, setFilterDestination] = useState("");
   const [filterStars, setFilterStars] = useState("all");
@@ -100,7 +111,7 @@ const Hotels = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
   const itemsPerPage = 9;
-  
+
   // Comparison state
   const [selectedHotels, setSelectedHotels] = useState<DisplayHotel[]>([]);
   const [comparisonOpen, setComparisonOpen] = useState(false);
@@ -109,10 +120,10 @@ const Hotels = () => {
   useEffect(() => {
     const loadDefaultHotels = async () => {
       // Popular destinations to fetch real hotels from
-      const destinations = ['Paris', 'Dubai', 'New York', 'Tokyo', 'London'];
+      const destinations = ["Paris", "Dubai", "New York", "Tokyo", "London"];
       const today = new Date();
-      const checkIn = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const checkOut = new Date(today.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const checkIn = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      const checkOut = new Date(today.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
       const allHotels: DisplayHotel[] = [];
 
@@ -124,7 +135,7 @@ const Hotels = () => {
             checkOut,
             adults: 2,
             children: 0,
-            rooms: 1
+            rooms: 1,
           });
 
           if (result?.success && result.data) {
@@ -133,25 +144,25 @@ const Hotels = () => {
               ...(result.data.xotelo || []),
               ...(result.data.amadeus || []),
               ...(result.data.tripadvisor || []),
-              ...(result.data.priceline || [])
+              ...(result.data.priceline || []),
             ];
 
             hotels.forEach((hotel) => {
               const price = parseHotelPrice(hotel.price);
-              
+
               allHotels.push({
                 id: hotel.id || hotel.hotel_id || Math.random().toString(),
                 name: hotel.name || `Hôtel ${destination}`,
                 location: hotel.location || destination,
                 price: Math.round(price),
-                currency: hotel.currency || 'EUR',
+                currency: hotel.currency || "EUR",
                 rating: hotel.rating || hotel.review_score || 0,
                 reviews: hotel.reviews || hotel.review_count || 0,
-                image: hotel.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-                amenities: hotel.amenities || hotel.facilities || ['Wifi', 'Restaurant'],
+                image: hotel.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                amenities: hotel.amenities || hotel.facilities || ["Wifi", "Restaurant"],
                 offerSignature: hotel.offerSignature || hotel.offer_signature,
                 offerExpiresAt: hotel.offerExpiresAt || hotel.offer_expires_at,
-                source: 'API Réelle'
+                source: "API Réelle",
               });
             });
           }
@@ -166,7 +177,7 @@ const Hotels = () => {
       // recherche sur Paris/Dubai/etc.
       try {
         const partnerResult = await searchHotels({
-          location: 'partner',
+          location: "partner",
           checkIn,
           checkOut,
           adults: 2,
@@ -177,25 +188,25 @@ const Hotels = () => {
 
         if (partnerResult?.success && partnerResult.data?.services) {
           (partnerResult.data.services as RawHotel[]).forEach((hotel) => {
-            const rawPrice = typeof hotel.price === 'object' ? hotel.price.grandTotal : hotel.price;
+            const rawPrice = typeof hotel.price === "object" ? hotel.price.grandTotal : hotel.price;
             allHotels.push({
-              id: hotel.id ?? '',
-              name: hotel.name ?? '',
-              location: hotel.location ?? '',
+              id: hotel.id ?? "",
+              name: hotel.name ?? "",
+              location: hotel.location ?? "",
               price: Math.round(Number(rawPrice ?? 0)),
-              currency: hotel.currency || 'EUR',
+              currency: hotel.currency || "EUR",
               rating: hotel.rating ?? 8.0,
               reviews: hotel.reviews ?? 0,
-              image: hotel.image ?? '',
-              amenities: hotel.amenities ?? ['Wifi', 'Restaurant'],
+              image: hotel.image ?? "",
+              amenities: hotel.amenities ?? ["Wifi", "Restaurant"],
               offerSignature: hotel.offerSignature || hotel.offer_signature,
               offerExpiresAt: hotel.offerExpiresAt || hotel.offer_expires_at,
-              source: 'Partenaire',
+              source: "Partenaire",
             });
           });
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des hôtels partenaires:', error);
+        console.error("Erreur lors du chargement des hôtels partenaires:", error);
       }
 
       if (allHotels.length > 0) {
@@ -223,7 +234,7 @@ const Hotels = () => {
         checkOut,
         parseInt(adults),
         children ? parseInt(children) : 0,
-        rooms ? parseInt(rooms) : 1
+        rooms ? parseInt(rooms) : 1,
       );
     }
   }, [searchParams]);
@@ -234,7 +245,7 @@ const Hotels = () => {
     checkOut: string,
     adults: number,
     children: number = 0,
-    rooms: number = 1
+    rooms: number = 1,
   ) => {
     const result = await searchHotels({
       location,
@@ -242,51 +253,64 @@ const Hotels = () => {
       checkOut,
       adults,
       children,
-      rooms
+      rooms,
     });
 
     if (result?.success) {
       // Check if data is from mock or real APIs
       const isMockData = result.mock === true;
-      
+
       if (isMockData) {
-        console.warn('⚠️ Displaying MOCK hotel data - APIs did not return results');
+        console.warn("⚠️ Displaying MOCK hotel data - APIs did not return results");
         toast.warning(t("ux.hotels.mockData"));
       }
-      
+
       // Helper function to transform hotel data from any API source
       const transformHotelData = (hotel: RawHotel, sourceName: string): DisplayHotel => {
         const price = parseHotelPrice(hotel.price);
-        
+
         return {
           id: hotel.id || hotel.hotel_id || Math.random().toString(),
-          name: hotel.name || 'Hôtel',
+          name: hotel.name || "Hôtel",
           location: hotel.location || hotel.address || location,
-          address: hotel.address || '',
+          address: hotel.address || "",
           price: Math.round(price),
-          currency: hotel.currency || 'EUR',
+          currency: hotel.currency || "EUR",
           rating: hotel.rating || hotel.review_score || 0,
           stars: hotel.stars || Math.ceil((hotel.rating || 0) / 2),
           reviews: hotel.reviews || hotel.review_count || 0,
-          image: hotel.image || hotel.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+          image:
+            hotel.image || hotel.images?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
           images: hotel.images || (hotel.image ? [hotel.image] : []),
-          amenities: hotel.amenities || hotel.facilities || ['Wifi', 'Restaurant'],
-          description: hotel.description || '',
+          amenities: hotel.amenities || hotel.facilities || ["Wifi", "Restaurant"],
+          description: hotel.description || "",
           freeCancellation: hotel.freeCancellation || false,
           breakfast: hotel.breakfast || false,
           offerSignature: hotel.offerSignature || hotel.offer_signature,
           offerExpiresAt: hotel.offerExpiresAt || hotel.offer_expires_at,
-          source: sourceName
+          source: sourceName,
         };
       };
 
       // Transform API data to match display structure with source tracking
-      const bookingHotels = ((result.data?.booking || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Booking.com'));
-      const xoteloHotels = ((result.data?.xotelo || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Xotelo'));
-      const amadeusHotels = ((result.data?.amadeus || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Amadeus'));
-      const tripadvisorHotels = ((result.data?.tripadvisor || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'TripAdvisor'));
-      const pricelineHotels = ((result.data?.priceline || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Priceline'));
-      const servicesHotels = ((result.data?.services || []) as RawHotel[]).map((hotel) => transformHotelData(hotel, 'Partenaire'));
+      const bookingHotels = ((result.data?.booking || []) as RawHotel[]).map((hotel) =>
+        transformHotelData(hotel, "Booking.com"),
+      );
+      const xoteloHotels = ((result.data?.xotelo || []) as RawHotel[]).map((hotel) =>
+        transformHotelData(hotel, "Xotelo"),
+      );
+      const amadeusHotels = ((result.data?.amadeus || []) as RawHotel[]).map((hotel) =>
+        transformHotelData(hotel, "Amadeus"),
+      );
+      const tripadvisorHotels = ((result.data?.tripadvisor || []) as RawHotel[]).map((hotel) =>
+        transformHotelData(hotel, "TripAdvisor"),
+      );
+      const pricelineHotels = ((result.data?.priceline || []) as RawHotel[]).map((hotel) =>
+        transformHotelData(hotel, "Priceline"),
+      );
+      const servicesHotels = ((result.data?.services || []) as RawHotel[]).map((hotel) =>
+        transformHotelData(hotel, "Partenaire"),
+      );
 
       const transformedHotels = [
         ...bookingHotels,
@@ -294,13 +318,15 @@ const Hotels = () => {
         ...amadeusHotels,
         ...tripadvisorHotels,
         ...pricelineHotels,
-        ...servicesHotels
+        ...servicesHotels,
       ];
-      
+
       if (transformedHotels.length > 0) {
         setApiHotels(transformedHotels);
         const sources = Array.from(new Set(transformedHotels.map((h) => h.source)));
-        toast.success(`${transformedHotels.length} hébergements trouvés depuis ${sources.length} source(s) API: ${sources.join(', ')}`);
+        toast.success(
+          `${transformedHotels.length} hébergements trouvés depuis ${sources.length} source(s) API: ${sources.join(", ")}`,
+        );
       } else {
         setApiHotels([]);
         toast.error(t("ux.hotels.noResultsApi"));
@@ -310,12 +336,11 @@ const Hotels = () => {
     }
   };
 
-
   // Get unique amenities from hotels for filter
   const availableAmenities = useMemo(() => {
     const displayHotels = apiHotels;
     const amenitiesSet = new Set<string>();
-    displayHotels.forEach(hotel => {
+    displayHotels.forEach((hotel) => {
       hotel.amenities.forEach((amenity: string) => amenitiesSet.add(amenity));
     });
     return Array.from(amenitiesSet).sort();
@@ -329,31 +354,28 @@ const Hotels = () => {
 
     // Apply destination filter
     if (filterDestination) {
-      result = result.filter(hotel => 
-        hotel.name.toLowerCase().includes(filterDestination.toLowerCase()) ||
-        hotel.location.toLowerCase().includes(filterDestination.toLowerCase())
+      result = result.filter(
+        (hotel) =>
+          hotel.name.toLowerCase().includes(filterDestination.toLowerCase()) ||
+          hotel.location.toLowerCase().includes(filterDestination.toLowerCase()),
       );
     }
 
     // Apply star filter
     if (filterStars !== "all") {
       const starRating = parseInt(filterStars);
-      result = result.filter(hotel => Math.floor(hotel.rating) >= starRating);
+      result = result.filter((hotel) => Math.floor(hotel.rating) >= starRating);
     }
 
     // Apply price filter
-    result = result.filter(hotel => 
-      hotel.price >= priceRange[0] && hotel.price <= priceRange[1]
-    );
+    result = result.filter((hotel) => hotel.price >= priceRange[0] && hotel.price <= priceRange[1]);
 
     // Apply amenities filter
     if (selectedAmenities.length > 0) {
-      result = result.filter(hotel => 
-        selectedAmenities.some(amenity => 
-          hotel.amenities.some((hotelAmenity: string) => 
-            hotelAmenity.toLowerCase().includes(amenity.toLowerCase())
-          )
-        )
+      result = result.filter((hotel) =>
+        selectedAmenities.some((amenity) =>
+          hotel.amenities.some((hotelAmenity: string) => hotelAmenity.toLowerCase().includes(amenity.toLowerCase())),
+        ),
       );
     }
 
@@ -407,41 +429,44 @@ const Hotels = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
-      
+
       {/* Hero Banner */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
-        <LazyImage 
+        <LazyImage
           src={bannerHotels}
-          alt={t("ux.hotels.title")} 
+          alt={t("ux.hotels.title")}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+        ></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.hotels.title")}</h1>
-            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">{t("ux.hotels.subtitle")}</p>
+            <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
+              {t("ux.hotels.subtitle")}
+            </p>
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <HotelSearchForm />
           </div>
         </div>
       </div>
-      
+
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
-        
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 md:gap-8">
           {/* Filtres Desktop */}
           <aside className="hidden lg:block lg:col-span-1 space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">{t("ux.hotels.filters")}</h2>
-              
+
               <div className="space-y-6">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Destination</label>
-                  <Input 
-                    placeholder={t("ux.hotels.searchCity")} 
+                  <Input
+                    placeholder={t("ux.hotels.searchCity")}
                     value={filterDestination}
                     onChange={(e) => setFilterDestination(e.target.value)}
                   />
@@ -478,20 +503,20 @@ const Hotels = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Équipements ({selectedAmenities.length > 0 ? selectedAmenities.length : 'Tous'})
+                    Équipements ({selectedAmenities.length > 0 ? selectedAmenities.length : "Tous"})
                   </label>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {availableAmenities.map((amenity) => (
                       <label key={amenity} className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           className="rounded"
                           checked={selectedAmenities.includes(amenity)}
                           onChange={(e) => {
                             if (e.target.checked) {
                               setSelectedAmenities([...selectedAmenities, amenity]);
                             } else {
-                              setSelectedAmenities(selectedAmenities.filter(a => a !== amenity));
+                              setSelectedAmenities(selectedAmenities.filter((a) => a !== amenity));
                             }
                           }}
                         />
@@ -501,8 +526,8 @@ const Hotels = () => {
                   </div>
                 </div>
 
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   variant="outline"
                   onClick={() => {
                     setFilterDestination("");
@@ -535,8 +560,8 @@ const Hotels = () => {
                   <div className="space-y-6 mt-6">
                     <div>
                       <label className="text-sm font-medium mb-2 block">Destination</label>
-                      <Input 
-                        placeholder={t("ux.hotels.searchCity")} 
+                      <Input
+                        placeholder={t("ux.hotels.searchCity")}
                         value={filterDestination}
                         onChange={(e) => setFilterDestination(e.target.value)}
                       />
@@ -574,7 +599,7 @@ const Hotels = () => {
                     <div>
                       <label className="text-sm font-medium mb-2 block">{t("ux.hotels.amenities")}</label>
                       <div className="space-y-2">
-                        {availableAmenities.map(amenity => (
+                        {availableAmenities.map((amenity) => (
                           <div key={amenity} className="flex items-center space-x-2">
                             <Checkbox
                               id={`mobile-${amenity}`}
@@ -583,7 +608,7 @@ const Hotels = () => {
                                 if (checked) {
                                   setSelectedAmenities([...selectedAmenities, amenity]);
                                 } else {
-                                  setSelectedAmenities(selectedAmenities.filter(a => a !== amenity));
+                                  setSelectedAmenities(selectedAmenities.filter((a) => a !== amenity));
                                 }
                               }}
                             />
@@ -609,7 +634,7 @@ const Hotels = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {loading && (
               <div role="status" className="grid gap-6">
                 <span className="sr-only">{t("ux.hotels.searching")}</span>
@@ -618,7 +643,7 @@ const Hotels = () => {
                 <HotelCardSkeleton />
               </div>
             )}
-            
+
             {/* Data Source Indicator */}
             {apiHotels.length === 0 && !hasSearched && filteredAndSortedHotels.length > 0 && (
               <div className="bg-info/10 border border-info/30 rounded-lg p-4 mb-4">
@@ -626,9 +651,7 @@ const Hotels = () => {
                   <Hotel className="w-5 h-5" />
                   <span className="font-medium">{t("ux.hotels.suggestions")}</span>
                 </div>
-                <p className="text-sm text-info mt-1">
-                  {t("ux.hotels.useSearch")}
-                </p>
+                <p className="text-sm text-info mt-1">{t("ux.hotels.useSearch")}</p>
               </div>
             )}
 
@@ -636,22 +659,21 @@ const Hotels = () => {
               <div className="bg-success/10 border border-success/30 rounded-lg p-4 mb-4">
                 <div className="flex items-center gap-2 text-success">
                   <Globe className="w-5 h-5" />
-                  <span className="font-medium">{hasSearched ? t("ux.hotels.liveData") : t("ux.hotels.worldHotels")}</span>
+                  <span className="font-medium">
+                    {hasSearched ? t("ux.hotels.liveData") : t("ux.hotels.worldHotels")}
+                  </span>
                 </div>
                 <p className="text-sm text-success mt-1">
-                  {hasSearched 
-                    ? `Prix et disponibilité actualisés depuis ${new Set(apiHotels.map((h) => h.source)).size} source(s): ${Array.from(new Set(apiHotels.map((h) => h.source))).join(', ')}`
-                    : t("ux.hotels.loadedDesc", { count: apiHotels.length })
-                  }
+                  {hasSearched
+                    ? `Prix et disponibilité actualisés depuis ${new Set(apiHotels.map((h) => h.source)).size} source(s): ${Array.from(new Set(apiHotels.map((h) => h.source))).join(", ")}`
+                    : t("ux.hotels.loadedDesc", { count: apiHotels.length })}
                 </p>
               </div>
             )}
 
             {/* Desktop Header */}
             <div className="hidden lg:flex justify-between items-center">
-              <p className="text-muted-foreground">
-                {t("ux.hotels.found", { count: filteredAndSortedHotels.length })}
-              </p>
+              <p className="text-muted-foreground">{t("ux.hotels.found", { count: filteredAndSortedHotels.length })}</p>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
@@ -666,205 +688,193 @@ const Hotels = () => {
             </div>
 
             {filteredAndSortedHotels.length === 0 ? (
-              <EmptyState
-                icon={Hotel}
-                title={t("ux.hotels.emptyTitle")}
-                description={t("ux.hotels.emptyDesc")}
-              />
+              <EmptyState icon={Hotel} title={t("ux.hotels.emptyTitle")} description={t("ux.hotels.emptyDesc")} />
             ) : (
               <>
-              <div className="grid gap-6">
-                {paginatedHotels.map((hotel, index) => {
-                  const isSelected = selectedHotels.some((h) => h.id === hotel.id);
-                  // Normalize rating - if > 5, it's on 10 scale; otherwise convert to 10
-                  const ratingOn10 = hotel.rating > 5 ? hotel.rating : hotel.rating * 2;
-                  const ratingDisplay = Math.min(ratingOn10, 10).toFixed(1);
-                  // Hotel stars (classification)
-                  const hotelStars = hotel.stars || Math.ceil(hotel.rating);
-                  
-                  // Rating qualifier based on 10 scale
-                  const getRatingQualifier = (rating: number) => {
-                    if (rating >= 9) return { text: t("ux.hotels.exceptional"), color: 'text-success' };
-                    if (rating >= 8) return { text: t("ux.hotels.excellent"), color: 'text-success' };
-                    if (rating >= 7) return { text: t("ux.hotels.veryGood"), color: 'text-info' };
-                    if (rating >= 6) return { text: t("ux.hotels.good"), color: 'text-sky-600 dark:text-sky-400' };
-                    return { text: t("ux.hotels.fair"), color: 'text-muted-foreground' };
-                  };
-                  const qualifier = getRatingQualifier(ratingOn10);
-                  
-                  return (
-                <Card key={hotel.id || index} className={`overflow-hidden hover:shadow-lg transition-all ${isSelected ? 'ring-2 ring-primary' : ''}`}>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div className="md:col-span-1 relative group">
-                      <LazyImage
-                        src={hotel.image}
-                        alt={hotel.name}
-                        className="w-full h-full object-cover min-h-[300px] group-hover:scale-105 transition-transform duration-slow ease-standard"
-                      />
-                      <div className="absolute top-2 left-2 flex gap-2">
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={() => toggleHotelSelection(hotel)}
-                          className="bg-background/90 border-2"
-                        />
-                      </div>
-                      <div className="absolute top-2 right-2 flex flex-col gap-2">
-                        {ratingOn10 >= 9 && (
-                          <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
-                            <Star className="w-3 h-3 mr-1 fill-white" />
-                            {t("ux.hotels.topRatedBadge")}
-                          </Badge>
-                        )}
-                        {hotel.reviews > 200 && (
-                          <Badge className="bg-info hover:bg-info/90 text-info-foreground border-0">
-                            {t("ux.hotels.popularBadge")}
-                          </Badge>
-                        )}
-                        {hotel.freeCancellation && (
-                          <Badge className="bg-success hover:bg-success/90 text-success-foreground border-0">
-                            {t("ux.hotels.freeCancel")}
-                          </Badge>
-                        )}
-                        {hotel.breakfast && (
-                          <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
-                            {t("ux.hotels.breakfast")}
-                          </Badge>
-                        )}
-                        {hotel.source && (
-                          <Badge className="bg-background/90 text-foreground border">
-                            <Globe className="w-3 h-3 mr-1" />
-                            {hotel.source}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <CardContent className="md:col-span-2 p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <h3 className="text-2xl font-semibold line-clamp-2">{hotel.name}</h3>
-                          </div>
-                          <div className="flex items-center gap-2 text-muted-foreground mb-3">
-                            <MapPin className="w-4 h-4 flex-shrink-0" />
-                            <span className="line-clamp-1">{hotel.location}</span>
-                          </div>
-                          <div className="flex items-center gap-4 mb-3 flex-wrap">
-                            {/* Hotel star classification */}
-                            <div className="flex items-center gap-1">
-                              {[...Array(Math.min(hotelStars, 5))].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className="w-4 h-4 fill-gold text-gold"
-                                />
-                              ))}
-                              {hotelStars < 5 && [...Array(5 - Math.min(hotelStars, 5))].map((_, i) => (
-                                <Star
-                                  key={i + hotelStars}
-                                  className="w-4 h-4 text-gray-300"
-                                />
-                              ))}
-                            </div>
-                            {/* Guest rating */}
-                            <div className="flex items-center gap-2 bg-primary/10 px-2 py-1 rounded-md">
-                              <span className="font-bold text-lg text-primary">
-                                {ratingDisplay}
-                              </span>
-                              <span className="text-xs text-muted-foreground">/10</span>
-                            </div>
-                            <span className={`text-sm font-medium ${qualifier.color}`}>
-                              {qualifier.text}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              ({hotel.reviews.toLocaleString()} avis)
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                <div className="grid gap-6">
+                  {paginatedHotels.map((hotel, index) => {
+                    const isSelected = selectedHotels.some((h) => h.id === hotel.id);
+                    // Normalize rating - if > 5, it's on 10 scale; otherwise convert to 10
+                    const ratingOn10 = hotel.rating > 5 ? hotel.rating : hotel.rating * 2;
+                    const ratingDisplay = Math.min(ratingOn10, 10).toFixed(1);
+                    // Hotel stars (classification)
+                    const hotelStars = hotel.stars || Math.ceil(hotel.rating);
 
-                      <div className="flex gap-2 mb-4 flex-wrap">
-                        {hotel.amenities.slice(0, 6).map((amenity, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="px-3 py-1 text-xs"
-                          >
-                            {amenity === 'Wifi' && <Wifi className="w-3 h-3 mr-1" />}
-                            {amenity.toLowerCase().includes('restaurant') && <UtensilsCrossed className="w-3 h-3 mr-1" />}
-                            {amenity.toLowerCase().includes('parking') && <Car className="w-3 h-3 mr-1" />}
-                            {amenity}
-                          </Badge>
-                        ))}
-                        {hotel.amenities.length > 6 && (
-                          <Badge variant="outline" className="px-3 py-1 text-xs">
-                            +{hotel.amenities.length - 6} autres
-                          </Badge>
-                        )}
-                      </div>
+                    // Rating qualifier based on 10 scale
+                    const getRatingQualifier = (rating: number) => {
+                      if (rating >= 9) return { text: t("ux.hotels.exceptional"), color: "text-success" };
+                      if (rating >= 8) return { text: t("ux.hotels.excellent"), color: "text-success" };
+                      if (rating >= 7) return { text: t("ux.hotels.veryGood"), color: "text-info" };
+                      if (rating >= 6) return { text: t("ux.hotels.good"), color: "text-sky-600 dark:text-sky-400" };
+                      return { text: t("ux.hotels.fair"), color: "text-muted-foreground" };
+                    };
+                    const qualifier = getRatingQualifier(ratingOn10);
 
-                      <div className="flex justify-between items-end mt-auto pt-4 border-t">
-                        <div>
-                          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t("ux.hotels.from")}</p>
-                          <div className="flex items-baseline gap-2">
-                            <p className="text-3xl font-bold text-primary">
-                              {hotel.price.toLocaleString()}
-                            </p>
-                            <span className="text-lg font-semibold text-muted-foreground">{hotel.currency || 'EUR'}</span>
+                    return (
+                      <Card
+                        key={hotel.id || index}
+                        className={`overflow-hidden hover:shadow-lg transition-all ${isSelected ? "ring-2 ring-primary" : ""}`}
+                      >
+                        <div className="grid md:grid-cols-3 gap-6">
+                          <div className="md:col-span-1 relative group">
+                            <LazyImage
+                              src={hotel.image}
+                              alt={hotel.name}
+                              className="w-full h-full object-cover min-h-[300px] group-hover:scale-105 transition-transform duration-slow ease-standard"
+                            />
+                            <div className="absolute top-2 left-2 flex gap-2">
+                              <Checkbox
+                                checked={isSelected}
+                                onCheckedChange={() => toggleHotelSelection(hotel)}
+                                className="bg-background/90 border-2"
+                              />
+                            </div>
+                            <div className="absolute top-2 right-2 flex flex-col gap-2">
+                              {ratingOn10 >= 9 && (
+                                <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
+                                  <Star className="w-3 h-3 mr-1 fill-white" />
+                                  {t("ux.hotels.topRatedBadge")}
+                                </Badge>
+                              )}
+                              {hotel.reviews > 200 && (
+                                <Badge className="bg-info hover:bg-info/90 text-info-foreground border-0">
+                                  {t("ux.hotels.popularBadge")}
+                                </Badge>
+                              )}
+                              {hotel.freeCancellation && (
+                                <Badge className="bg-success hover:bg-success/90 text-success-foreground border-0">
+                                  {t("ux.hotels.freeCancel")}
+                                </Badge>
+                              )}
+                              {hotel.breakfast && (
+                                <Badge className="bg-gold hover:bg-gold/90 text-gold-foreground border-0">
+                                  {t("ux.hotels.breakfast")}
+                                </Badge>
+                              )}
+                              {hotel.source && (
+                                <Badge className="bg-background/90 text-foreground border">
+                                  <Globe className="w-3 h-3 mr-1" />
+                                  {hotel.source}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">{t("ux.hotels.perNight")}</p>
+                          <CardContent className="md:col-span-2 p-6">
+                            <div className="flex justify-between items-start mb-4">
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between gap-3 mb-2">
+                                  <h3 className="text-2xl font-semibold line-clamp-2">{hotel.name}</h3>
+                                </div>
+                                <div className="flex items-center gap-2 text-muted-foreground mb-3">
+                                  <MapPin className="w-4 h-4 flex-shrink-0" />
+                                  <span className="line-clamp-1">{hotel.location}</span>
+                                </div>
+                                <div className="flex items-center gap-4 mb-3 flex-wrap">
+                                  {/* Hotel star classification */}
+                                  <div className="flex items-center gap-1">
+                                    {[...Array(Math.min(hotelStars, 5))].map((_, i) => (
+                                      <Star key={i} className="w-4 h-4 fill-gold text-gold" />
+                                    ))}
+                                    {hotelStars < 5 &&
+                                      [...Array(5 - Math.min(hotelStars, 5))].map((_, i) => (
+                                        <Star key={i + hotelStars} className="w-4 h-4 text-gray-300" />
+                                      ))}
+                                  </div>
+                                  {/* Guest rating */}
+                                  <div className="flex items-center gap-2 bg-primary/10 px-2 py-1 rounded-md">
+                                    <span className="font-bold text-lg text-primary">{ratingDisplay}</span>
+                                    <span className="text-xs text-muted-foreground">/10</span>
+                                  </div>
+                                  <span className={`text-sm font-medium ${qualifier.color}`}>{qualifier.text}</span>
+                                  <span className="text-sm text-muted-foreground">
+                                    ({hotel.reviews.toLocaleString()} avis)
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2 mb-4 flex-wrap">
+                              {hotel.amenities.slice(0, 6).map((amenity, index) => (
+                                <Badge key={index} variant="secondary" className="px-3 py-1 text-xs">
+                                  {amenity === "Wifi" && <Wifi className="w-3 h-3 mr-1" />}
+                                  {amenity.toLowerCase().includes("restaurant") && (
+                                    <UtensilsCrossed className="w-3 h-3 mr-1" />
+                                  )}
+                                  {amenity.toLowerCase().includes("parking") && <Car className="w-3 h-3 mr-1" />}
+                                  {amenity}
+                                </Badge>
+                              ))}
+                              {hotel.amenities.length > 6 && (
+                                <Badge variant="outline" className="px-3 py-1 text-xs">
+                                  +{hotel.amenities.length - 6} autres
+                                </Badge>
+                              )}
+                            </div>
+
+                            <div className="flex justify-between items-end mt-auto pt-4 border-t">
+                              <div>
+                                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                                  {t("ux.hotels.from")}
+                                </p>
+                                <div className="flex items-baseline gap-2">
+                                  <p className="text-3xl font-bold text-primary">{hotel.price.toLocaleString()}</p>
+                                  <span className="text-lg font-semibold text-muted-foreground">
+                                    {hotel.currency || "EUR"}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1">{t("ux.hotels.perNight")}</p>
+                              </div>
+                              <Button
+                                size="lg"
+                                className="font-semibold"
+                                onClick={() => {
+                                  // Hôtel partenaire : fiche avec types de chambre et tarifs.
+                                  if (hotel.source === "Partenaire") {
+                                    const params = new URLSearchParams();
+                                    const checkIn = searchParams.get("checkIn");
+                                    const checkOut = searchParams.get("checkOut");
+                                    const adults = searchParams.get("adults");
+                                    if (checkIn) params.set("checkin", checkIn);
+                                    if (checkOut) params.set("checkout", checkOut);
+                                    if (adults) params.set("adults", adults);
+                                    navigate(`/hotels/partenaires/${hotel.id}${params.toString() ? `?${params}` : ""}`);
+                                    return;
+                                  }
+                                  setSelectedHotel({
+                                    id: hotel.id.toString(),
+                                    name: hotel.name,
+                                    location: hotel.location,
+                                    price: hotel.price,
+                                    currency: hotel.currency,
+                                    offerSignature: hotel.offerSignature,
+                                    offerExpiresAt: hotel.offerExpiresAt,
+                                  });
+                                  setDialogOpen(true);
+                                }}
+                              >
+                                {t("ux.hotels.seeRooms")}
+                              </Button>
+                            </div>
+                          </CardContent>
                         </div>
-                        <Button size="lg" className="font-semibold" onClick={() => {
-                          // Hôtel partenaire : fiche avec types de chambre et tarifs.
-                          if (hotel.source === 'Partenaire') {
-                            const params = new URLSearchParams();
-                            const checkIn = searchParams.get("checkIn");
-                            const checkOut = searchParams.get("checkOut");
-                            const adults = searchParams.get("adults");
-                            if (checkIn) params.set("checkin", checkIn);
-                            if (checkOut) params.set("checkout", checkOut);
-                            if (adults) params.set("adults", adults);
-                            navigate(`/hotels/partenaires/${hotel.id}${params.toString() ? `?${params}` : ""}`);
-                            return;
-                          }
-                          setSelectedHotel({
-                            id: hotel.id.toString(),
-                            name: hotel.name,
-                            location: hotel.location,
-                            price: hotel.price,
-                            currency: hotel.currency,
-                            offerSignature: hotel.offerSignature,
-                            offerExpiresAt: hotel.offerExpiresAt,
-                          });
-                          setDialogOpen(true);
-                        }}>
-                          {t("ux.hotels.seeRooms")}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </div>
-                </Card>
-                );
-                })}
-              </div>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                itemsPerPage={itemsPerPage}
-                totalItems={filteredAndSortedHotels.length}
-              />
+                      </Card>
+                    );
+                  })}
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={filteredAndSortedHotels.length}
+                />
               </>
             )}
           </div>
         </div>
       </main>
 
-      {selectedHotel && (
-        <HotelBookingDialog 
-          open={dialogOpen} 
-          onOpenChange={setDialogOpen}
-          hotel={selectedHotel}
-        />
-      )}
+      {selectedHotel && <HotelBookingDialog open={dialogOpen} onOpenChange={setDialogOpen} hotel={selectedHotel} />}
 
       <HotelComparisonDialog
         open={comparisonOpen}
@@ -876,7 +886,7 @@ const Hotels = () => {
             id: hotel.id.toString(),
             name: hotel.name,
             location: hotel.location,
-            price: hotel.price
+            price: hotel.price,
           });
           setDialogOpen(true);
         }}

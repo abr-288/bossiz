@@ -44,21 +44,17 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const departureDate = (searchParams && searchParams.departureDate) || flight.departureDate || new Date().toISOString().split('T')[0];
+  const departureDate =
+    (searchParams && searchParams.departureDate) || flight.departureDate || new Date().toISOString().split("T")[0];
   const returnDate = (searchParams && searchParams.returnDate) || flight.returnDate;
   const stops = flight.stops ?? 0;
 
   // Validate and correct flight times
   const flightTimes = useMemo(() => {
-    return validateAndCorrectFlightTimes(
-      flight.departure,
-      flight.arrival,
-      flight.duration || '',
-      departureDate
-    );
+    return validateAndCorrectFlightTimes(flight.departure, flight.arrival, flight.duration || "", departureDate);
   }, [flight.departure, flight.arrival, flight.duration, departureDate]);
 
-  const handleSelectFare = (fare: 'basic' | 'benefits') => {
+  const handleSelectFare = (fare: "basic" | "benefits") => {
     // Navigate to booking process page with flight data
     const params = new URLSearchParams({
       id: flight.id,
@@ -76,13 +72,13 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
     });
     // Add airline code and flight number
     if (flight.airlineCode) {
-      params.append('airlineCode', flight.airlineCode);
+      params.append("airlineCode", flight.airlineCode);
     }
     if (flight.flightNumber) {
-      params.append('flightNumber', flight.flightNumber);
+      params.append("flightNumber", flight.flightNumber);
     }
     if (returnDate) {
-      params.append('returnDate', returnDate);
+      params.append("returnDate", returnDate);
     }
     navigate(`/booking-process?${params.toString()}`);
     onOpenChange(false);
@@ -92,368 +88,387 @@ export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams =
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-[95vw] p-0 overflow-y-auto">
         <div className="h-full flex flex-col">
-            {/* Header */}
-            <div className="p-6 border-b bg-primary/5 sticky top-0 z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">{t("ux.flightDialog.title")}</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Bossiz+</p>
-                </div>
-                <Button aria-label={t("ux.flightDialog.close")} variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="hover:bg-background/50">
-                  <X className="h-5 w-5" />
-                </Button>
+          {/* Header */}
+          <div className="p-6 border-b bg-primary/5 sticky top-0 z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">{t("ux.flightDialog.title")}</h2>
+                <p className="text-sm text-muted-foreground mt-1">Bossiz+</p>
               </div>
-              <div className="flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="font-medium">1 Passager</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Briefcase className="h-4 w-4 text-primary" />
-                  <span className="font-medium">{t("ux.flightDialog.cabinBag")}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Luggage className="h-4 w-4 text-primary" />
-                  <span className="font-medium">{t("ux.flightDialog.checkedBag")}</span>
-                </div>
-              </div>
+              <Button
+                aria-label={t("ux.flightDialog.close")}
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenChange(false)}
+                className="hover:bg-background/50"
+              >
+                <X className="h-5 w-5" />
+              </Button>
             </div>
-
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0">
-              {/* Left Side - Flight Details */}
-              <div className="p-8 bg-muted/20">
-                <div className="space-y-6">
-                  {/* Airline Header */}
-                  <Card className="p-5 bg-primary/5 border-primary/30 shadow-sm">
-                    <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-lg flex items-center justify-center overflow-hidden bg-white border border-border shrink-0">
-                        <img 
-                          src={`https://pics.avs.io/100/100/${flight.airlineCode || 'XX'}.png`}
-                          alt={`${flight.airline} logo`}
-                          className="w-12 h-12 object-contain"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            if (target.parentElement) {
-                              target.parentElement.innerHTML = `<svg class="h-7 w-7 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>`;
-                            }
-                          }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t("ux.flightDialog.airline")}</p>
-                        <p className="text-xl font-bold text-foreground truncate">{flight.airline}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {flight.flightNumber ? `Vol ${flight.airlineCode || ''}${flight.flightNumber}` : `Classe ${flight.class}`}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Itinerary Card */}
-                  <Card className="p-6 shadow-sm">
-                    <div className="flex items-center gap-2 mb-6">
-                      <MapPin className="h-5 w-5 text-primary" />
-                      <h3 className="font-bold text-lg">{t("ux.flightDialog.itinerary")}</h3>
-                    </div>
-                    
-                    <div className="space-y-6">
-                      {/* Departure */}
-                      <div className="relative pl-8 border-l-2 border-primary/40">
-                        <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.departure")}</div>
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground font-medium">
-                              {formatFlightDate(flightTimes.departureDate, 'long')}
-                            </span>
-                          </div>
-                          <div className="flex items-baseline gap-3">
-                            <p className="text-3xl font-bold text-foreground">{flightTimes.departureTime}</p>
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                          <p className="text-base font-semibold">{getCityName(flight.from)} ({flight.from})</p>
-                          <p className="text-sm text-muted-foreground">{getAirportName(flight.from)}</p>
-                        </div>
-                      </div>
-
-                      {/* Flight Duration */}
-                      <div className="pl-8 border-l-2 border-dashed border-border">
-                        <div className="flex items-center gap-3 py-2">
-                          <Clock className="h-5 w-5 text-primary" />
-                          <div>
-                            <p className="text-sm font-semibold">Durée totale: {flightTimes.duration}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: stops })}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Stopover Warning - only if there are stops */}
-                        {stops > 0 && (
-                          <div className="mt-3 bg-warning border border-warning-foreground/20 rounded-lg p-4">
-                            <div className="flex items-start gap-3">
-                              <Info className="h-5 w-5 text-warning-foreground flex-shrink-0 mt-0.5" />
-                              <div>
-                                <p className="text-sm font-semibold text-warning-foreground">
-                                  Vol avec {stops} escale{stops > 1 ? 's' : ''}
-                                </p>
-                                <p className="text-xs text-warning-foreground mt-1">
-                                  {t("ux.flightDialog.stopsNote")}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Arrival */}
-                      <div className="relative pl-8 border-l-2 border-primary/40">
-                        <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.arrival")}</div>
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground font-medium">
-                              {formatFlightDate(flightTimes.arrivalDate, 'long')}
-                              {flightTimes.isNextDay && (
-                                <span className="ml-2 text-warning-foreground">(+1 jour)</span>
-                              )}
-                              {flightTimes.isMultiDay && (
-                                <span className="ml-2 text-warning-foreground">(+{flightTimes.daysDifference} jours)</span>
-                              )}
-                            </span>
-                          </div>
-                          <div className="flex items-baseline gap-3">
-                            <p className="text-3xl font-bold text-foreground">{flightTimes.arrivalTime}</p>
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                          <p className="text-base font-semibold">{getCityName(flight.to)} ({flight.to})</p>
-                          <p className="text-sm text-muted-foreground">{getAirportName(flight.to)}</p>
-                        </div>
-                      </div>
-
-                      {/* Return Flight - Only if round trip */}
-                      {returnDate && (
-                        <>
-                          {/* Return Flight Duration */}
-                          <div className="pl-8 border-l-2 border-dashed border-border">
-                            <div className="flex items-center gap-3 py-2">
-                              <Clock className="h-5 w-5 text-primary" />
-                              <div>
-                                <p className="text-sm font-semibold">{t("ux.flightDialog.stay")}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  Du {formatFlightDate(flightTimes.arrivalDate, 'short')} au {formatFlightDate(returnDate, 'short')}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Return Departure */}
-                          <div className="relative pl-8 border-l-2 border-primary/40">
-                            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.returnDeparture")}</div>
-                                <Calendar className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-xs text-muted-foreground font-medium">
-                                  {formatFlightDate(returnDate, 'long')}
-                                </span>
-                              </div>
-                              <div className="flex items-baseline gap-3">
-                                <p className="text-3xl font-bold text-foreground">{flightTimes.departureTime}</p>
-                                <Clock className="h-4 w-4 text-muted-foreground" />
-                              </div>
-                              <p className="text-base font-semibold">{getCityName(flight.to)} ({flight.to})</p>
-                              <p className="text-sm text-muted-foreground">{getAirportName(flight.to)}</p>
-                            </div>
-                          </div>
-
-                          {/* Return Flight Duration */}
-                          <div className="pl-8 border-l-2 border-dashed border-border">
-                            <div className="flex items-center gap-3 py-2">
-                              <Clock className="h-5 w-5 text-primary" />
-                              <div>
-                                <p className="text-sm font-semibold">Durée du vol retour: {flightTimes.duration}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: stops })}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Return Arrival */}
-                          <div className="relative pl-8 border-l-2 border-primary/40">
-                            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">{t("ux.flightDialog.returnArrival")}</div>
-                                <Calendar className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-xs text-muted-foreground font-medium">
-                                  {formatFlightDate(returnDate, 'long')}
-                                  {flightTimes.isNextDay && (
-                                    <span className="ml-2 text-warning-foreground">(+1 jour)</span>
-                                  )}
-                                </span>
-                              </div>
-                              <div className="flex items-baseline gap-3">
-                                <p className="text-3xl font-bold text-foreground">{flightTimes.arrivalTime}</p>
-                                <Clock className="h-4 w-4 text-muted-foreground" />
-                              </div>
-                              <p className="text-base font-semibold">{getCityName(flight.from)} ({flight.from})</p>
-                              <p className="text-sm text-muted-foreground">{getAirportName(flight.from)}</p>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </Card>
-
-                  {/* Price Card */}
-                  <Card className="p-5 bg-gradient-to-br from-primary/15 to-primary/5 border-primary/30 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{t("ux.flightDialog.ticketPrice")}</p>
-                        <p className="text-sm text-muted-foreground">{t("ux.flightDialog.perPassenger")}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold text-primary">
-                          <Price amount={flight.price} fromCurrency="EUR" showLoader />
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Baggage Information */}
-                  <BaggageInfo 
-                    airline={flight.airline}
-                    fareType="basic"
-                    cabinClass={flight.class}
-                    apiBaggageData={flight.baggage}
-                  />
-                </div>
+            <div className="flex items-center gap-6 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Users className="h-4 w-4 text-primary" />
+                <span className="font-medium">1 Passager</span>
               </div>
-
-              {/* Right Side - Fare Options */}
-              <div className="p-8 bg-background">
-                <h3 className="text-2xl font-bold mb-2">{t("ux.flightDialog.chooseOption")}</h3>
-                <p className="text-sm text-muted-foreground mb-8">{t("ux.flightDialog.chooseOptionDesc")}</p>
-                
-                <div className="space-y-4">
-                  {/* Basic Fare */}
-                  <Card className="p-6 hover:border-primary/50 hover:shadow-md transition-all">
-                    <div className="flex items-start gap-4 mb-5">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20">
-                        <Briefcase className="h-6 w-6 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-xl font-bold mb-2">{t("ux.flightDialog.basic")}</h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {t("ux.flightDialog.basicDesc")}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-start gap-2 text-sm">
-                        <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk1")}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk2")}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk3")}</span>
-                      </div>
-                    </div>
-
-                    <Button 
-                      onClick={() => handleSelectFare('basic')}
-                      className="w-full"
-                      size="lg"
-                    >
-                      Continuer pour <Price amount={flight.price} fromCurrency="EUR" />
-                    </Button>
-
-                    <button className="w-full text-center text-sm text-primary mt-3 flex items-center justify-center gap-1">
-                      <span>+</span>
-                      <span className="underline">{t("ux.flightDialog.showDetails")}</span>
-                    </button>
-
-                    <div className="mt-4 space-y-2">
-                      <div className="flex items-start gap-2 text-sm">
-                        <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{t("ux.flightDialog.cancelledOrDelayed")}</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground ml-6">
-                        {t('flightBookingDialog.cancelPolicyNote')}
-                      </div>
-                      <div className="flex items-start gap-2 text-sm mt-3">
-                        <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{t("ux.flightDialog.changeTrip")}</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground ml-6">
-                        {t('flightBookingDialog.changePolicyNote')}
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Benefits Fare */}
-                  <Card className="p-6 border-2 border-primary hover:border-primary/90 hover:shadow-lg transition-all bg-gradient-to-br from-primary/5 to-background">
-                    <div className="flex items-start gap-4 mb-5">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
-                        <Check className="h-6 w-6 text-primary-foreground" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="text-xl font-bold">{t("ux.flightDialog.benefits")}</h4>
-                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">{t("ux.flightDialog.recommended")}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {t('flightBookingDialog.benefitsDescription')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-start gap-2 text-sm">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">{t("ux.flightDialog.benefitsPerk1")}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">{t("ux.flightDialog.benefitsPerk2")}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">{t("ux.flightDialog.benefitsPerk3")}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-medium">{t("ux.flightDialog.priority")}</span>
-                      </div>
-                    </div>
-
-                    <Button 
-                      onClick={() => handleSelectFare('benefits')}
-                      className="w-full"
-                      size="lg"
-                    >
-                      Continuer pour <Price amount={flight.price + 40} fromCurrency="EUR" />
-                    </Button>
-
-                    <button className="w-full text-center text-sm text-primary mt-3 flex items-center justify-center gap-1">
-                      <span>+</span>
-                      <span className="underline">{t("ux.flightDialog.showDetails")}</span>
-                    </button>
-                  </Card>
-                </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Briefcase className="h-4 w-4 text-primary" />
+                <span className="font-medium">{t("ux.flightDialog.cabinBag")}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Luggage className="h-4 w-4 text-primary" />
+                <span className="font-medium">{t("ux.flightDialog.checkedBag")}</span>
               </div>
             </div>
           </div>
+
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {/* Left Side - Flight Details */}
+            <div className="p-8 bg-muted/20">
+              <div className="space-y-6">
+                {/* Airline Header */}
+                <Card className="p-5 bg-primary/5 border-primary/30 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-lg flex items-center justify-center overflow-hidden bg-white border border-border shrink-0">
+                      <img
+                        src={`https://pics.avs.io/100/100/${flight.airlineCode || "XX"}.png`}
+                        alt={`${flight.airline} logo`}
+                        className="w-12 h-12 object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = "none";
+                          if (target.parentElement) {
+                            target.parentElement.innerHTML = `<svg class="h-7 w-7 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>`;
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        {t("ux.flightDialog.airline")}
+                      </p>
+                      <p className="text-xl font-bold text-foreground truncate">{flight.airline}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {flight.flightNumber
+                          ? `Vol ${flight.airlineCode || ""}${flight.flightNumber}`
+                          : `Classe ${flight.class}`}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Itinerary Card */}
+                <Card className="p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <h3 className="font-bold text-lg">{t("ux.flightDialog.itinerary")}</h3>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Departure */}
+                    <div className="relative pl-8 border-l-2 border-primary/40">
+                      <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                            {t("ux.flightDialog.departure")}
+                          </div>
+                          <Calendar className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {formatFlightDate(flightTimes.departureDate, "long")}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-3">
+                          <p className="text-3xl font-bold text-foreground">{flightTimes.departureTime}</p>
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-base font-semibold">
+                          {getCityName(flight.from)} ({flight.from})
+                        </p>
+                        <p className="text-sm text-muted-foreground">{getAirportName(flight.from)}</p>
+                      </div>
+                    </div>
+
+                    {/* Flight Duration */}
+                    <div className="pl-8 border-l-2 border-dashed border-border">
+                      <div className="flex items-center gap-3 py-2">
+                        <Clock className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="text-sm font-semibold">Durée totale: {flightTimes.duration}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: stops })}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Stopover Warning - only if there are stops */}
+                      {stops > 0 && (
+                        <div className="mt-3 bg-warning border border-warning-foreground/20 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <Info className="h-5 w-5 text-warning-foreground flex-shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-semibold text-warning-foreground">
+                                Vol avec {stops} escale{stops > 1 ? "s" : ""}
+                              </p>
+                              <p className="text-xs text-warning-foreground mt-1">{t("ux.flightDialog.stopsNote")}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Arrival */}
+                    <div className="relative pl-8 border-l-2 border-primary/40">
+                      <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                            {t("ux.flightDialog.arrival")}
+                          </div>
+                          <Calendar className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {formatFlightDate(flightTimes.arrivalDate, "long")}
+                            {flightTimes.isNextDay && <span className="ml-2 text-warning-foreground">(+1 jour)</span>}
+                            {flightTimes.isMultiDay && (
+                              <span className="ml-2 text-warning-foreground">
+                                (+{flightTimes.daysDifference} jours)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-3">
+                          <p className="text-3xl font-bold text-foreground">{flightTimes.arrivalTime}</p>
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-base font-semibold">
+                          {getCityName(flight.to)} ({flight.to})
+                        </p>
+                        <p className="text-sm text-muted-foreground">{getAirportName(flight.to)}</p>
+                      </div>
+                    </div>
+
+                    {/* Return Flight - Only if round trip */}
+                    {returnDate && (
+                      <>
+                        {/* Return Flight Duration */}
+                        <div className="pl-8 border-l-2 border-dashed border-border">
+                          <div className="flex items-center gap-3 py-2">
+                            <Clock className="h-5 w-5 text-primary" />
+                            <div>
+                              <p className="text-sm font-semibold">{t("ux.flightDialog.stay")}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Du {formatFlightDate(flightTimes.arrivalDate, "short")} au{" "}
+                                {formatFlightDate(returnDate, "short")}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Return Departure */}
+                        <div className="relative pl-8 border-l-2 border-primary/40">
+                          <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                                {t("ux.flightDialog.returnDeparture")}
+                              </div>
+                              <Calendar className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground font-medium">
+                                {formatFlightDate(returnDate, "long")}
+                              </span>
+                            </div>
+                            <div className="flex items-baseline gap-3">
+                              <p className="text-3xl font-bold text-foreground">{flightTimes.departureTime}</p>
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                            <p className="text-base font-semibold">
+                              {getCityName(flight.to)} ({flight.to})
+                            </p>
+                            <p className="text-sm text-muted-foreground">{getAirportName(flight.to)}</p>
+                          </div>
+                        </div>
+
+                        {/* Return Flight Duration */}
+                        <div className="pl-8 border-l-2 border-dashed border-border">
+                          <div className="flex items-center gap-3 py-2">
+                            <Clock className="h-5 w-5 text-primary" />
+                            <div>
+                              <p className="text-sm font-semibold">Durée du vol retour: {flightTimes.duration}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: stops })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Return Arrival */}
+                        <div className="relative pl-8 border-l-2 border-primary/40">
+                          <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-sm"></div>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                                {t("ux.flightDialog.returnArrival")}
+                              </div>
+                              <Calendar className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground font-medium">
+                                {formatFlightDate(returnDate, "long")}
+                                {flightTimes.isNextDay && (
+                                  <span className="ml-2 text-warning-foreground">(+1 jour)</span>
+                                )}
+                              </span>
+                            </div>
+                            <div className="flex items-baseline gap-3">
+                              <p className="text-3xl font-bold text-foreground">{flightTimes.arrivalTime}</p>
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                            <p className="text-base font-semibold">
+                              {getCityName(flight.from)} ({flight.from})
+                            </p>
+                            <p className="text-sm text-muted-foreground">{getAirportName(flight.from)}</p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Price Card */}
+                <Card className="p-5 bg-gradient-to-br from-primary/15 to-primary/5 border-primary/30 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                        {t("ux.flightDialog.ticketPrice")}
+                      </p>
+                      <p className="text-sm text-muted-foreground">{t("ux.flightDialog.perPassenger")}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-3xl font-bold text-primary">
+                        <Price amount={flight.price} fromCurrency="EUR" showLoader />
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Baggage Information */}
+                <BaggageInfo
+                  airline={flight.airline}
+                  fareType="basic"
+                  cabinClass={flight.class}
+                  apiBaggageData={flight.baggage}
+                />
+              </div>
+            </div>
+
+            {/* Right Side - Fare Options */}
+            <div className="p-8 bg-background">
+              <h3 className="text-2xl font-bold mb-2">{t("ux.flightDialog.chooseOption")}</h3>
+              <p className="text-sm text-muted-foreground mb-8">{t("ux.flightDialog.chooseOptionDesc")}</p>
+
+              <div className="space-y-4">
+                {/* Basic Fare */}
+                <Card className="p-6 hover:border-primary/50 hover:shadow-md transition-all">
+                  <div className="flex items-start gap-4 mb-5">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20">
+                      <Briefcase className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold mb-2">{t("ux.flightDialog.basic")}</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{t("ux.flightDialog.basicDesc")}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-start gap-2 text-sm">
+                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk1")}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk2")}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <span className="line-through text-muted-foreground">{t("ux.flightDialog.basicPerk3")}</span>
+                    </div>
+                  </div>
+
+                  <Button onClick={() => handleSelectFare("basic")} className="w-full" size="lg">
+                    Continuer pour <Price amount={flight.price} fromCurrency="EUR" />
+                  </Button>
+
+                  <button className="w-full text-center text-sm text-primary mt-3 flex items-center justify-center gap-1">
+                    <span>+</span>
+                    <span className="underline">{t("ux.flightDialog.showDetails")}</span>
+                  </button>
+
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-start gap-2 text-sm">
+                      <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground">{t("ux.flightDialog.cancelledOrDelayed")}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground ml-6">
+                      {t("flightBookingDialog.cancelPolicyNote")}
+                    </div>
+                    <div className="flex items-start gap-2 text-sm mt-3">
+                      <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground">{t("ux.flightDialog.changeTrip")}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground ml-6">
+                      {t("flightBookingDialog.changePolicyNote")}
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Benefits Fare */}
+                <Card className="p-6 border-2 border-primary hover:border-primary/90 hover:shadow-lg transition-all bg-gradient-to-br from-primary/5 to-background">
+                  <div className="flex items-start gap-4 mb-5">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
+                      <Check className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="text-xl font-bold">{t("ux.flightDialog.benefits")}</h4>
+                        <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">
+                          {t("ux.flightDialog.recommended")}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {t("flightBookingDialog.benefitsDescription")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-start gap-2 text-sm">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="font-medium">{t("ux.flightDialog.benefitsPerk1")}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="font-medium">{t("ux.flightDialog.benefitsPerk2")}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="font-medium">{t("ux.flightDialog.benefitsPerk3")}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="font-medium">{t("ux.flightDialog.priority")}</span>
+                    </div>
+                  </div>
+
+                  <Button onClick={() => handleSelectFare("benefits")} className="w-full" size="lg">
+                    Continuer pour <Price amount={flight.price + 40} fromCurrency="EUR" />
+                  </Button>
+
+                  <button className="w-full text-center text-sm text-primary mt-3 flex items-center justify-center gap-1">
+                    <span>+</span>
+                    <span className="underline">{t("ux.flightDialog.showDetails")}</span>
+                  </button>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

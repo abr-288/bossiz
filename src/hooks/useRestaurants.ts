@@ -22,17 +22,17 @@ export const useRestaurants = () => {
     try {
       setLoading(true);
       const { data, error: fetchError } = await supabase
-        .from('restaurants')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .from("restaurants")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setRestaurants((data || []).map(toRestaurant));
       setError(null);
     } catch (err) {
-      console.error('Error fetching restaurants:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      console.error("Error fetching restaurants:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }

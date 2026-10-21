@@ -58,7 +58,7 @@ export const WeatherWidget = ({ city }: WeatherWidgetProps) => {
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
           <div className="flex flex-col items-center gap-1">
             <Thermometer className="w-4 h-4 text-muted-foreground" />

@@ -31,12 +31,24 @@ import i18n from "@/i18n/config";
 
 const WIDGET_LABELS: Record<string, string> = {
   stats: "Statistiques principales",
-  get conversion() { return i18n.t("ux.bo.conversionMetrics"); },
-  get revenue() { return i18n.t("ux.bo.revenueChart"); },
-  get service() { return i18n.t("ux.bo.bookingsService"); },
-  get geographic() { return i18n.t("ux.bo.geographicBreakdown"); },
-  get status() { return i18n.t("ux.bo.breakdownStatus2"); },
-  get recent() { return i18n.t("ux.bo.recentBookings2"); },
+  get conversion() {
+    return i18n.t("ux.bo.conversionMetrics");
+  },
+  get revenue() {
+    return i18n.t("ux.bo.revenueChart");
+  },
+  get service() {
+    return i18n.t("ux.bo.bookingsService");
+  },
+  get geographic() {
+    return i18n.t("ux.bo.geographicBreakdown");
+  },
+  get status() {
+    return i18n.t("ux.bo.breakdownStatus2");
+  },
+  get recent() {
+    return i18n.t("ux.bo.recentBookings2");
+  },
 };
 
 interface SortableWidgetProps {
@@ -45,13 +57,7 @@ interface SortableWidgetProps {
 }
 
 function SortableWidget({ widget, onToggle }: SortableWidgetProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: widget.id });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: widget.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -96,7 +102,7 @@ export function DashboardCustomizer() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleNewLayout = () => {
@@ -127,9 +133,7 @@ export function DashboardCustomizer() {
   };
 
   const handleToggleWidget = (widgetId: string) => {
-    setWidgets((prev) =>
-      prev.map((w) => (w.id === widgetId ? { ...w, visible: !w.visible } : w))
-    );
+    setWidgets((prev) => prev.map((w) => (w.id === widgetId ? { ...w, visible: !w.visible } : w)));
   };
 
   const handleSave = async () => {
@@ -157,9 +161,7 @@ export function DashboardCustomizer() {
         </DialogTrigger>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {editingLayout ? t("ux.bo.editView") : t("ux.bo.createNewView")}
-            </DialogTitle>
+            <DialogTitle>{editingLayout ? t("ux.bo.editView") : t("ux.bo.createNewView")}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
@@ -174,19 +176,11 @@ export function DashboardCustomizer() {
 
             <div className="space-y-3">
               <Label>{t("ux.bo.widgetsDragReorder")}</Label>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={widgets.map((w) => w.id)} strategy={verticalListSortingStrategy}>
                   <div className="space-y-2">
                     {widgets.map((widget) => (
-                      <SortableWidget
-                        key={widget.id}
-                        widget={widget}
-                        onToggle={handleToggleWidget}
-                      />
+                      <SortableWidget key={widget.id} widget={widget} onToggle={handleToggleWidget} />
                     ))}
                   </div>
                 </SortableContext>
@@ -224,7 +218,11 @@ export function DashboardCustomizer() {
           {layouts.map((layout) => (
             <SelectItem key={layout.id} value={layout.id!}>
               {layout.layoutName}
-              {layout.isActive && <Badge className="ml-2" variant="secondary">{t("ux.bo.active")}</Badge>}
+              {layout.isActive && (
+                <Badge className="ml-2" variant="secondary">
+                  {t("ux.bo.active")}
+                </Badge>
+              )}
             </SelectItem>
           ))}
           <SelectItem value="new">
@@ -246,7 +244,11 @@ export function DashboardCustomizer() {
                 <div className="flex items-center gap-2">
                   <Layers className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">{layout.layoutName}</span>
-                  {layout.isActive && <Badge variant="secondary" className="text-xs">{t("ux.bo.active")}</Badge>}
+                  {layout.isActive && (
+                    <Badge variant="secondary" className="text-xs">
+                      {t("ux.bo.active")}
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex gap-1">
                   <Button

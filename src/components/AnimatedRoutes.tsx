@@ -140,116 +140,879 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait" initial={false}>
       <Suspense fallback={<PageLoader />}>
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-          <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
-          <Route path="/bossiz-portal" element={<PageTransition><BossizPortal /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-ci" element={<PageTransition><BossizCIAccueil /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-ci/services" element={<PageTransition><BossizCIServices /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-ci/a-propos" element={<PageTransition><BossizCIAPropos /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-ci/formules" element={<PageTransition><BossizCIFormules /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-sn" element={<PageTransition><BossizSNAccueil /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-sn/services" element={<PageTransition><BossizSNServices /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-sn/a-propos" element={<PageTransition><BossizSNAPropos /></PageTransition>} />
-          <Route path="/bossiz-conciergerie-sn/formules" element={<PageTransition><BossizSNFormules /></PageTransition>} />
-          <Route path="/flights" element={<PageTransition><Flights /></PageTransition>} />
-          <Route path="/hotels" element={<PageTransition><Hotels /></PageTransition>} />
-          <Route path="/hotels-partenaires" element={<PageTransition><HotelsPartners /></PageTransition>} />
-          <Route path="/hotels/partenaires/:id" element={<PageTransition><HotelDetail /></PageTransition>} />
-          <Route path="/cars" element={<PageTransition><Cars /></PageTransition>} />
-          <Route path="/tours" element={<PageTransition><Tours /></PageTransition>} />
-          <Route path="/restaurants" element={<PageTransition><Restaurants /></PageTransition>} />
-          <Route path="/artisans" element={<PageTransition><Artisans /></PageTransition>} />
-          <Route path="/bien-etre-beaute" element={<PageTransition><WellnessBeauty /></PageTransition>} />
-          <Route path="/entreprises" element={<PageTransition><Companies /></PageTransition>} />
-          <Route path="/company/dashboard" element={<PageTransition><CompanyDashboard /></PageTransition>} />
-          <Route path="/culture" element={<PageTransition><Culture /></PageTransition>} />
-          <Route path="/culture/:slug" element={<PageTransition><CultureArticle /></PageTransition>} />
-          <Route path="/destinations" element={<PageTransition><Destinations /></PageTransition>} />
-          <Route path="/destinations/:id" element={<PageTransition><DestinationDetail /></PageTransition>} />
-          <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
-          <Route path="/stays" element={<PageTransition><Stays /></PageTransition>} />
-          <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
-          <Route path="/trains" element={<PageTransition><Trains /></PageTransition>} />
-          <Route path="/flight-hotel" element={<PageTransition><FlightHotel /></PageTransition>} />
-          <Route path="/flight-hotel/booking" element={<PageTransition><FlightHotelBookingProcess /></PageTransition>} />
-          <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-          <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
-          <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
-          <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-          <Route path="/booking-history" element={<PageTransition><BookingHistory /></PageTransition>} />
-          <Route path="/account" element={<PageTransition><Account /></PageTransition>} />
-          <Route path="/ma-carte" element={<PageTransition><MyMemberCard /></PageTransition>} />
-          <Route path="/smiles" element={<PageTransition><Rewards /></PageTransition>} />
-          <Route path="/verifier-membre/:code" element={<PageTransition><VerifyMember /></PageTransition>} />
-          <Route path="/price-alerts" element={<PageTransition><PriceAlerts /></PageTransition>} />
-          <Route path="/payment" element={<PageTransition><Payment /></PageTransition>} />
-          <Route path="/confirmation" element={<PageTransition><Confirmation /></PageTransition>} />
-          <Route path="/flight-comparison" element={<PageTransition><FlightComparison /></PageTransition>} />
-          <Route path="/booking-process" element={<PageTransition><FlightBookingProcess /></PageTransition>} />
-          <Route path="/booking/:serviceType" element={<PageTransition><UnifiedBookingProcess /></PageTransition>} />
-          <Route path="/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
-          <Route path="/admin/bookings" element={<PageTransition><AdminBookings /></PageTransition>} />
-          <Route path="/admin/services" element={<PageTransition><AdminServices /></PageTransition>} />
-          <Route path="/admin/activities" element={<PageTransition><AdminActivities /></PageTransition>} />
-          <Route path="/admin/stays" element={<PageTransition><AdminStays /></PageTransition>} />
-          <Route path="/admin/users" element={<PageTransition><AdminUsers /></PageTransition>} />
-          <Route path="/admin/users-list" element={<PageTransition><AdminUsersList /></PageTransition>} />
-          <Route path="/admin/subscriptions" element={<PageTransition><AdminSubscriptions /></PageTransition>} />
-          <Route path="/admin/subscription-plans" element={<PageTransition><AdminSubscriptionPlans /></PageTransition>} />
-          <Route path="/admin/smiles" element={<PageTransition><AdminSmiles /></PageTransition>} />
-          <Route path="/admin/promotions" element={<PageTransition><AdminPromotions /></PageTransition>} />
-          <Route path="/admin/email-templates" element={<PageTransition><AdminEmailTemplates /></PageTransition>} />
-          <Route path="/admin/configuration" element={<PageTransition><AdminConfiguration /></PageTransition>} />
-          <Route path="/admin/agencies" element={<PageTransition><AdminAgencies /></PageTransition>} />
-          <Route path="/admin/partner-applications" element={<PageTransition><AdminPartnerApplications /></PageTransition>} />
-          <Route path="/admin/commissions" element={<PageTransition><AdminCommissions /></PageTransition>} />
-          <Route path="/admin/car-partner-plans" element={<PageTransition><AdminCarPartnerPlans /></PageTransition>} />
-          <Route path="/admin/advertisements" element={<PageTransition><AdminAdvertisements /></PageTransition>} />
-          <Route path="/admin/payments" element={<PageTransition><AdminPayments /></PageTransition>} />
-          <Route path="/admin/reviews" element={<PageTransition><AdminReviews /></PageTransition>} />
-          <Route path="/admin/newsletter" element={<PageTransition><AdminNewsletter /></PageTransition>} />
-          <Route path="/admin/translations" element={<PageTransition><AdminTranslations /></PageTransition>} />
-          <Route path="/admin/culture" element={<PageTransition><AdminCulture /></PageTransition>} />
-          <Route path="/admin/hotel-commissions" element={<PageTransition><AdminHotelCommissions /></PageTransition>} />
-          <Route path="/admin/destinations" element={<PageTransition><AdminDestinations /></PageTransition>} />
-          <Route path="/admin/content" element={<PageTransition><AdminContentManager /></PageTransition>} />
+          <Route
+            path="/"
+            element={
+              <PageTransition>
+                <Index />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <PageTransition>
+                <Index />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-portal"
+            element={
+              <PageTransition>
+                <BossizPortal />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-ci"
+            element={
+              <PageTransition>
+                <BossizCIAccueil />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-ci/services"
+            element={
+              <PageTransition>
+                <BossizCIServices />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-ci/a-propos"
+            element={
+              <PageTransition>
+                <BossizCIAPropos />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-ci/formules"
+            element={
+              <PageTransition>
+                <BossizCIFormules />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-sn"
+            element={
+              <PageTransition>
+                <BossizSNAccueil />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-sn/services"
+            element={
+              <PageTransition>
+                <BossizSNServices />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-sn/a-propos"
+            element={
+              <PageTransition>
+                <BossizSNAPropos />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-conciergerie-sn/formules"
+            element={
+              <PageTransition>
+                <BossizSNFormules />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/flights"
+            element={
+              <PageTransition>
+                <Flights />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/hotels"
+            element={
+              <PageTransition>
+                <Hotels />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/hotels-partenaires"
+            element={
+              <PageTransition>
+                <HotelsPartners />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/hotels/partenaires/:id"
+            element={
+              <PageTransition>
+                <HotelDetail />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/cars"
+            element={
+              <PageTransition>
+                <Cars />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/tours"
+            element={
+              <PageTransition>
+                <Tours />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/restaurants"
+            element={
+              <PageTransition>
+                <Restaurants />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/artisans"
+            element={
+              <PageTransition>
+                <Artisans />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bien-etre-beaute"
+            element={
+              <PageTransition>
+                <WellnessBeauty />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/entreprises"
+            element={
+              <PageTransition>
+                <Companies />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/company/dashboard"
+            element={
+              <PageTransition>
+                <CompanyDashboard />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/culture"
+            element={
+              <PageTransition>
+                <Culture />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/culture/:slug"
+            element={
+              <PageTransition>
+                <CultureArticle />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/destinations"
+            element={
+              <PageTransition>
+                <Destinations />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/destinations/:id"
+            element={
+              <PageTransition>
+                <DestinationDetail />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/activities"
+            element={
+              <PageTransition>
+                <Activities />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/stays"
+            element={
+              <PageTransition>
+                <Stays />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <PageTransition>
+                <Events />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/trains"
+            element={
+              <PageTransition>
+                <Trains />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/flight-hotel"
+            element={
+              <PageTransition>
+                <FlightHotel />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/flight-hotel/booking"
+            element={
+              <PageTransition>
+                <FlightHotelBookingProcess />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/auth"
+            element={
+              <PageTransition>
+                <Auth />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PageTransition>
+                <ForgotPassword />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <PageTransition>
+                <ResetPassword />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PageTransition>
+                <Dashboard />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/booking-history"
+            element={
+              <PageTransition>
+                <BookingHistory />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <PageTransition>
+                <Account />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/ma-carte"
+            element={
+              <PageTransition>
+                <MyMemberCard />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/smiles"
+            element={
+              <PageTransition>
+                <Rewards />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/verifier-membre/:code"
+            element={
+              <PageTransition>
+                <VerifyMember />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/price-alerts"
+            element={
+              <PageTransition>
+                <PriceAlerts />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <PageTransition>
+                <Payment />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/confirmation"
+            element={
+              <PageTransition>
+                <Confirmation />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/flight-comparison"
+            element={
+              <PageTransition>
+                <FlightComparison />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/booking-process"
+            element={
+              <PageTransition>
+                <FlightBookingProcess />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/booking/:serviceType"
+            element={
+              <PageTransition>
+                <UnifiedBookingProcess />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <PageTransition>
+                <AdminDashboard />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/bookings"
+            element={
+              <PageTransition>
+                <AdminBookings />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/services"
+            element={
+              <PageTransition>
+                <AdminServices />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/activities"
+            element={
+              <PageTransition>
+                <AdminActivities />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/stays"
+            element={
+              <PageTransition>
+                <AdminStays />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <PageTransition>
+                <AdminUsers />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/users-list"
+            element={
+              <PageTransition>
+                <AdminUsersList />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/subscriptions"
+            element={
+              <PageTransition>
+                <AdminSubscriptions />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/subscription-plans"
+            element={
+              <PageTransition>
+                <AdminSubscriptionPlans />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/smiles"
+            element={
+              <PageTransition>
+                <AdminSmiles />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/promotions"
+            element={
+              <PageTransition>
+                <AdminPromotions />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/email-templates"
+            element={
+              <PageTransition>
+                <AdminEmailTemplates />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/configuration"
+            element={
+              <PageTransition>
+                <AdminConfiguration />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/agencies"
+            element={
+              <PageTransition>
+                <AdminAgencies />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/partner-applications"
+            element={
+              <PageTransition>
+                <AdminPartnerApplications />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/commissions"
+            element={
+              <PageTransition>
+                <AdminCommissions />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/car-partner-plans"
+            element={
+              <PageTransition>
+                <AdminCarPartnerPlans />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/advertisements"
+            element={
+              <PageTransition>
+                <AdminAdvertisements />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <PageTransition>
+                <AdminPayments />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/reviews"
+            element={
+              <PageTransition>
+                <AdminReviews />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/newsletter"
+            element={
+              <PageTransition>
+                <AdminNewsletter />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/translations"
+            element={
+              <PageTransition>
+                <AdminTranslations />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/culture"
+            element={
+              <PageTransition>
+                <AdminCulture />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/hotel-commissions"
+            element={
+              <PageTransition>
+                <AdminHotelCommissions />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/destinations"
+            element={
+              <PageTransition>
+                <AdminDestinations />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/content"
+            element={
+              <PageTransition>
+                <AdminContentManager />
+              </PageTransition>
+            }
+          />
           <Route path="/admin/bossiz-sites" element={<Navigate to="/admin/bossiz-microsites" replace />} />
-          <Route path="/admin/bossiz-microsites" element={<PageTransition><AdminBossizMicrosites /></PageTransition>} />
-          <Route path="/admin/integrations" element={<PageTransition><AdminIntegrations /></PageTransition>} />
-          <Route path="/admin/homepage-config" element={<PageTransition><AdminHomepageConfig /></PageTransition>} />
-          <Route path="/agency" element={<PageTransition><AgencyDashboard /></PageTransition>} />
-          <Route path="/agency/services" element={<PageTransition><AgencyServices /></PageTransition>} />
-          <Route path="/agency/hotel-bookings" element={<PageTransition><AgencyHotelBookings /></PageTransition>} />
-          <Route path="/agency/restaurants" element={<PageTransition><AgencyRestaurants /></PageTransition>} />
-          <Route path="/agency/artisans" element={<PageTransition><AgencyArtisans /></PageTransition>} />
-          <Route path="/agency/wellness" element={<PageTransition><AgencyWellness /></PageTransition>} />
-          <Route path="/agency/activities" element={<PageTransition><AgencyActivities /></PageTransition>} />
-          <Route path="/agency/stays" element={<PageTransition><AgencyStays /></PageTransition>} />
-          <Route path="/agency/promotions" element={<PageTransition><AgencyPromotions /></PageTransition>} />
-          <Route path="/agency/settings" element={<PageTransition><AgencySettings /></PageTransition>} />
-          <Route path="/help" element={<PageTransition><Help /></PageTransition>} />
-          <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-          <Route path="/partenariat" element={<PageTransition><Partnership /></PageTransition>} />
-          <Route path="/devenir-partenaire" element={<PageTransition><BecomePartner /></PageTransition>} />
-          <Route path="/partenaires/voitures" element={<PageTransition><CarPartnerPlans /></PageTransition>} />
-          <Route path="/support" element={<PageTransition><Support /></PageTransition>} />
-          <Route path="/support/:categoryId" element={<PageTransition><SupportCategory /></PageTransition>} />
-          <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
-          <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
-          <Route path="/install" element={<PageTransition><Install /></PageTransition>} />
-          <Route path="/install/android" element={<PageTransition><InstallAndroid /></PageTransition>} />
-          <Route path="/install/ios" element={<PageTransition><InstalliOS /></PageTransition>} />
-          <Route path="/subscription-payment" element={<PageTransition><SubscriptionPaymentComponent /></PageTransition>} />
-          <Route path="/order-summary" element={<PageTransition><OrderSummary /></PageTransition>} />
-          <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
-          <Route path="/terms-of-service" element={<PageTransition><TermsOfService /></PageTransition>} />
-          <Route path="/politique-cookies" element={<PageTransition><CookiePolicy /></PageTransition>} />
-          <Route path="/cookie-policy" element={<PageTransition><CookiePolicy /></PageTransition>} />
-          <Route path="/mentions-legales" element={<PageTransition><LegalNotice /></PageTransition>} />
-          <Route path="/documentation" element={<PageTransition><Documentation /></PageTransition>} />
-          <Route path="/documentations" element={<PageTransition><PlatformPresentation /></PageTransition>} />
-          <Route path="/compatibility" element={<PageTransition><Compatibility /></PageTransition>} />
-          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+          <Route
+            path="/admin/bossiz-microsites"
+            element={
+              <PageTransition>
+                <AdminBossizMicrosites />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/integrations"
+            element={
+              <PageTransition>
+                <AdminIntegrations />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/homepage-config"
+            element={
+              <PageTransition>
+                <AdminHomepageConfig />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency"
+            element={
+              <PageTransition>
+                <AgencyDashboard />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/services"
+            element={
+              <PageTransition>
+                <AgencyServices />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/hotel-bookings"
+            element={
+              <PageTransition>
+                <AgencyHotelBookings />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/restaurants"
+            element={
+              <PageTransition>
+                <AgencyRestaurants />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/artisans"
+            element={
+              <PageTransition>
+                <AgencyArtisans />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/wellness"
+            element={
+              <PageTransition>
+                <AgencyWellness />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/activities"
+            element={
+              <PageTransition>
+                <AgencyActivities />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/stays"
+            element={
+              <PageTransition>
+                <AgencyStays />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/promotions"
+            element={
+              <PageTransition>
+                <AgencyPromotions />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/settings"
+            element={
+              <PageTransition>
+                <AgencySettings />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/help"
+            element={
+              <PageTransition>
+                <Help />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <PageTransition>
+                <Contact />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/partenariat"
+            element={
+              <PageTransition>
+                <Partnership />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/devenir-partenaire"
+            element={
+              <PageTransition>
+                <BecomePartner />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/partenaires/voitures"
+            element={
+              <PageTransition>
+                <CarPartnerPlans />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/support"
+            element={
+              <PageTransition>
+                <Support />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/support/:categoryId"
+            element={
+              <PageTransition>
+                <SupportCategory />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/privacy"
+            element={
+              <PageTransition>
+                <PrivacyPolicy />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <PageTransition>
+                <TermsOfService />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/install"
+            element={
+              <PageTransition>
+                <Install />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/install/android"
+            element={
+              <PageTransition>
+                <InstallAndroid />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/install/ios"
+            element={
+              <PageTransition>
+                <InstalliOS />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/subscription-payment"
+            element={
+              <PageTransition>
+                <SubscriptionPaymentComponent />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/order-summary"
+            element={
+              <PageTransition>
+                <OrderSummary />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/privacy-policy"
+            element={
+              <PageTransition>
+                <PrivacyPolicy />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/terms-of-service"
+            element={
+              <PageTransition>
+                <TermsOfService />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/politique-cookies"
+            element={
+              <PageTransition>
+                <CookiePolicy />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/cookie-policy"
+            element={
+              <PageTransition>
+                <CookiePolicy />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/mentions-legales"
+            element={
+              <PageTransition>
+                <LegalNotice />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/documentation"
+            element={
+              <PageTransition>
+                <Documentation />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/documentations"
+            element={
+              <PageTransition>
+                <PlatformPresentation />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/compatibility"
+            element={
+              <PageTransition>
+                <Compatibility />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <PageTransition>
+                <NotFound />
+              </PageTransition>
+            }
+          />
         </Routes>
       </Suspense>
     </AnimatePresence>

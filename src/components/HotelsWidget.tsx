@@ -14,7 +14,8 @@ const HotelsWidget = () => {
         <CardTitle className="text-xl">Trouvez votre hôtel à Abidjan</CardTitle>
         <CardDescription className="flex items-center gap-1.5">
           <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-          En partenariat avec Stay22 — la réservation se finalise sur le site de nos partenaires (Booking.com, Expedia, etc.).
+          En partenariat avec Stay22 — la réservation se finalise sur le site de nos partenaires (Booking.com, Expedia,
+          etc.).
         </CardDescription>
       </CardHeader>
       <CardContent className="px-4 pb-4 md:px-6 md:pb-6">

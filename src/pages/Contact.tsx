@@ -6,8 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Phone, Mail, MessageCircle, MapPin, Clock, Facebook, Twitter,
-  Instagram, Youtube, Linkedin, Building2
+  Phone,
+  Mail,
+  MessageCircle,
+  MapPin,
+  Clock,
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+  Linkedin,
+  Building2,
 } from "lucide-react";
 import { useSupportMessage } from "@/hooks/useSupportMessage";
 import { UnifiedForm, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
@@ -46,20 +55,28 @@ const Contact = () => {
   const supportWhatsApp = whatsAppLink(config.contact.whatsapp);
 
   const directChannels = [
-    ...(supportPhone ? [{
-      icon: Phone,
-      title: t("pages.contact.channels.phone.title", "Téléphone"),
-      description: t("pages.contact.channels.phone.description", "Support disponible 24h/24 et 7j/7"),
-      value: supportPhone,
-      href: `tel:${supportPhone.replace(/[^\d+]/g, "")}`,
-    }] : []),
-    ...(supportWhatsApp ? [{
-      icon: MessageCircle,
-      title: t("pages.contact.channels.whatsapp.title", "WhatsApp"),
-      description: t("pages.contact.channels.whatsapp.description", "Réponse rapide, du lundi au dimanche"),
-      value: config.contact.whatsapp,
-      href: supportWhatsApp,
-    }] : []),
+    ...(supportPhone
+      ? [
+          {
+            icon: Phone,
+            title: t("pages.contact.channels.phone.title", "Téléphone"),
+            description: t("pages.contact.channels.phone.description", "Support disponible 24h/24 et 7j/7"),
+            value: supportPhone,
+            href: `tel:${supportPhone.replace(/[^\d+]/g, "")}`,
+          },
+        ]
+      : []),
+    ...(supportWhatsApp
+      ? [
+          {
+            icon: MessageCircle,
+            title: t("pages.contact.channels.whatsapp.title", "WhatsApp"),
+            description: t("pages.contact.channels.whatsapp.description", "Réponse rapide, du lundi au dimanche"),
+            value: config.contact.whatsapp,
+            href: supportWhatsApp,
+          },
+        ]
+      : []),
     {
       icon: Mail,
       title: t("pages.contact.channels.email.title", "Email"),
@@ -114,7 +131,13 @@ const Contact = () => {
         />
         <div className="absolute inset-0 bg-brand/65" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+          <div
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
@@ -151,7 +174,12 @@ const Contact = () => {
               );
             }
             return (
-              <a key={channel.title} href={channel.href} target={channel.href?.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">
+              <a
+                key={channel.title}
+                href={channel.href}
+                target={channel.href?.startsWith("http") ? "_blank" : undefined}
+                rel="noopener noreferrer"
+              >
                 {content}
               </a>
             );
@@ -178,12 +206,16 @@ const Contact = () => {
                       {agency.phone && (
                         <p className="flex items-center gap-2">
                           <Phone className="w-4 h-4 text-primary flex-shrink-0" />
-                          <a href={`tel:${agency.phone.replace(/\s/g, "")}`} className="hover:text-primary">{agency.phone}</a>
+                          <a href={`tel:${agency.phone.replace(/\s/g, "")}`} className="hover:text-primary">
+                            {agency.phone}
+                          </a>
                         </p>
                       )}
                       <p className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-primary flex-shrink-0" />
-                        <a href={`mailto:${agency.email}`} className="hover:text-primary">{agency.email}</a>
+                        <a href={`mailto:${agency.email}`} className="hover:text-primary">
+                          {agency.email}
+                        </a>
                       </p>
                       <p className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-primary flex-shrink-0" />
@@ -281,7 +313,10 @@ const Contact = () => {
         <Card className="border-0 bg-muted/50">
           <CardContent className="p-8 text-center">
             <p className="text-muted-foreground mb-4">
-              {t("pages.contact.helpRedirect", "Vous cherchez une réponse rapide ? Consultez notre centre d'aide ou gérez votre réservation directement.")}
+              {t(
+                "pages.contact.helpRedirect",
+                "Vous cherchez une réponse rapide ? Consultez notre centre d'aide ou gérez votre réservation directement.",
+              )}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="outline" asChild>

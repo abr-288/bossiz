@@ -8,12 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { HotelAvailabilityTable, type RoomSelection } from "@/components/hotels/HotelAvailabilityTable";
 import { HotelCheckoutDialog, type CheckoutContact } from "@/components/hotels/HotelCheckoutDialog";
@@ -130,7 +125,9 @@ export default function HotelDetail() {
     queryFn: async () => {
       const { data: hotel, error } = await supabase
         .from("services")
-        .select("id, name, description, location, maps_url, image_url, images, amenities, specifications, rating, total_reviews")
+        .select(
+          "id, name, description, location, maps_url, image_url, images, amenities, specifications, rating, total_reviews",
+        )
         .eq("id", id!)
         .eq("type", "hotel")
         .eq("available", true)
@@ -171,7 +168,10 @@ export default function HotelDetail() {
         p_check_out: checkOut,
       });
       if (error) throw error;
-      return Object.fromEntries((data || []).map((row) => [row.room_type_id, row.available_units])) as Record<string, number>;
+      return Object.fromEntries((data || []).map((row) => [row.room_type_id, row.available_units])) as Record<
+        string,
+        number
+      >;
     },
   });
 
@@ -213,7 +213,9 @@ export default function HotelDetail() {
   }, [hotelQuery.data, id]);
 
   const handleReserve = async (selections: RoomSelection[]) => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       try {
         const stored: StoredSelection = {
@@ -294,7 +296,9 @@ export default function HotelDetail() {
         <main className="flex-1 container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-2">Hôtel introuvable</h1>
           <p className="text-muted-foreground mb-6">Cet établissement n'est plus disponible à la réservation.</p>
-          <Button asChild><Link to="/hotels-partenaires">Voir les hôtels partenaires</Link></Button>
+          <Button asChild>
+            <Link to="/hotels-partenaires">Voir les hôtels partenaires</Link>
+          </Button>
         </main>
         <Footer />
       </div>
@@ -307,9 +311,13 @@ export default function HotelDetail() {
 
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8 space-y-8">
         <nav className="flex items-center gap-1 text-xs text-muted-foreground" aria-label="Fil d'Ariane">
-          <Link to="/" className="hover:underline">Accueil</Link>
+          <Link to="/" className="hover:underline">
+            Accueil
+          </Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to="/hotels-partenaires" className="hover:underline">Hôtels</Link>
+          <Link to="/hotels-partenaires" className="hover:underline">
+            Hôtels
+          </Link>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground line-clamp-1">{hotel.name}</span>
         </nav>
@@ -332,7 +340,12 @@ export default function HotelDetail() {
                 {hotel.maps_url && (
                   <>
                     {" – "}
-                    <a href={hotel.maps_url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
+                    <a
+                      href={hotel.maps_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-primary hover:underline"
+                    >
                       Voir sur la carte
                     </a>
                   </>
@@ -352,7 +365,9 @@ export default function HotelDetail() {
                 </span>
               </div>
             )}
-            <Button size="lg" onClick={scrollToAvailability}>Réserver</Button>
+            <Button size="lg" onClick={scrollToAvailability}>
+              Réserver
+            </Button>
           </div>
         </div>
 
@@ -366,11 +381,17 @@ export default function HotelDetail() {
                 onClick={() => setGalleryOpen(true)}
                 className={`relative overflow-hidden bg-muted ${
                   i === 0
-                    ? photos.length === 1 ? "col-span-4 row-span-2" : "col-span-4 md:col-span-2 row-span-2"
+                    ? photos.length === 1
+                      ? "col-span-4 row-span-2"
+                      : "col-span-4 md:col-span-2 row-span-2"
                     : "hidden md:block"
                 }`}
               >
-                <img src={url} alt={`${hotel.name} - photo ${i + 1}`} className="h-full w-full object-cover transition-transform hover:scale-105" />
+                <img
+                  src={url}
+                  alt={`${hotel.name} - photo ${i + 1}`}
+                  className="h-full w-full object-cover transition-transform hover:scale-105"
+                />
               </button>
             ))}
             {photos.length > 1 && (
@@ -419,17 +440,28 @@ export default function HotelDetail() {
               {specs.highlights.length > 0 ? (
                 <ul className="space-y-2 text-sm">
                   {specs.highlights.map((h) => (
-                    <li key={h} className="flex items-start gap-2"><ThumbsUp className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />{h}</li>
+                    <li key={h} className="flex items-start gap-2">
+                      <ThumbsUp className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+                      {h}
+                    </li>
                   ))}
                 </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">{hotel.location}</p>
               )}
               <div className="text-sm space-y-1 border-t pt-3">
-                <p className="flex items-center gap-2"><Clock className="h-4 w-4" />Arrivée à partir de {specs.checkInFrom}</p>
-                <p className="flex items-center gap-2"><Clock className="h-4 w-4" />Départ jusqu'à {specs.checkOutUntil}</p>
+                <p className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Arrivée à partir de {specs.checkInFrom}
+                </p>
+                <p className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Départ jusqu'à {specs.checkOutUntil}
+                </p>
               </div>
-              <Button className="w-full" onClick={scrollToAvailability}>Réserver</Button>
+              <Button className="w-full" onClick={scrollToAvailability}>
+                Réserver
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -439,7 +471,9 @@ export default function HotelDetail() {
           <h2 className="text-xl font-bold">Disponibilités</h2>
           <div className="grid grid-cols-2 md:grid-cols-[1fr_1fr_10rem] gap-3 rounded-lg border-2 border-gold bg-gold/10 p-3">
             <div className="space-y-1">
-              <Label htmlFor="hotel-checkin" className="text-xs">Arrivée</Label>
+              <Label htmlFor="hotel-checkin" className="text-xs">
+                Arrivée
+              </Label>
               <Input
                 id="hotel-checkin"
                 type="date"
@@ -455,7 +489,9 @@ export default function HotelDetail() {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="hotel-checkout" className="text-xs">Départ</Label>
+              <Label htmlFor="hotel-checkout" className="text-xs">
+                Départ
+              </Label>
               <Input
                 id="hotel-checkout"
                 type="date"
@@ -467,7 +503,9 @@ export default function HotelDetail() {
               />
             </div>
             <div className="space-y-1 col-span-2 md:col-span-1">
-              <Label htmlFor="hotel-guests" className="text-xs">Voyageurs</Label>
+              <Label htmlFor="hotel-guests" className="text-xs">
+                Voyageurs
+              </Label>
               <Input
                 id="hotel-guests"
                 type="number"
@@ -482,7 +520,9 @@ export default function HotelDetail() {
           {nights === 0 ? (
             <p className="text-sm text-destructive">La date de départ doit être après la date d'arrivée.</p>
           ) : availabilityQuery.isError ? (
-            <p className="text-sm text-destructive">Impossible de vérifier les disponibilités. Réessayez dans un instant.</p>
+            <p className="text-sm text-destructive">
+              Impossible de vérifier les disponibilités. Réessayez dans un instant.
+            </p>
           ) : (
             <HotelAvailabilityTable
               key={`${checkIn}_${checkOut}_${restoredQuantities ? "restored" : "new"}`}
@@ -540,7 +580,12 @@ export default function HotelDetail() {
           </DialogHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {photos.map((url, i) => (
-              <img key={url} src={url} alt={`${hotel.name} - photo ${i + 1}`} className="w-full rounded object-cover aspect-[4/3]" />
+              <img
+                key={url}
+                src={url}
+                alt={`${hotel.name} - photo ${i + 1}`}
+                className="w-full rounded object-cover aspect-[4/3]"
+              />
             ))}
           </div>
         </DialogContent>

@@ -6,18 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Shield, 
-  Smartphone, 
-  QrCode, 
-  Check, 
-  X, 
-  Loader2, 
-  Copy, 
+import {
+  Shield,
+  Smartphone,
+  QrCode,
+  Check,
+  X,
+  Loader2,
+  Copy,
   AlertTriangle,
   ShieldCheck,
   ShieldOff,
-  Trash2
+  Trash2,
 } from "lucide-react";
 import { useMFA } from "@/hooks/useMFA";
 import { toast } from "sonner";
@@ -114,9 +114,7 @@ export function TwoFactorAuth() {
           <Shield className="h-5 w-5 text-primary" />
           {t("ux.twoFactor.title")}
         </CardTitle>
-        <CardDescription>
-          {t("ux.twoFactor.subtitle")}
-        </CardDescription>
+        <CardDescription>{t("ux.twoFactor.subtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Status indicator */}
@@ -124,9 +122,7 @@ export function TwoFactorAuth() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-lg flex items-center gap-4 ${
-            hasMFAEnabled 
-              ? "bg-success/10 border border-success/30" 
-              : "bg-warning border border-warning-foreground/20"
+            hasMFAEnabled ? "bg-success/10 border border-success/30" : "bg-warning border border-warning-foreground/20"
           }`}
         >
           {hasMFAEnabled ? (
@@ -134,9 +130,7 @@ export function TwoFactorAuth() {
               <ShieldCheck className="h-8 w-8 text-success" />
               <div>
                 <h3 className="font-semibold text-success">{t("ux.twoFactor.on")}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.twoFactor.onDesc")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("ux.twoFactor.onDesc")}</p>
               </div>
               <Badge variant="outline" className="ml-auto border-success text-success">
                 <Check className="h-3 w-3 mr-1" />
@@ -148,9 +142,7 @@ export function TwoFactorAuth() {
               <ShieldOff className="h-8 w-8 text-gold" />
               <div>
                 <h3 className="font-semibold text-warning-foreground">{t("ux.twoFactor.off")}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.twoFactor.offDesc")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("ux.twoFactor.offDesc")}</p>
               </div>
               <Badge variant="outline" className="ml-auto border-gold text-warning-foreground">
                 <AlertTriangle className="h-3 w-3 mr-1" />
@@ -170,10 +162,7 @@ export function TwoFactorAuth() {
           >
             <Label>{t("ux.twoFactor.methods")}</Label>
             {factors.map((factor) => (
-              <div
-                key={factor.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border"
-              >
+              <div key={factor.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border">
                 <div className="flex items-center gap-3">
                   <Smartphone className="h-5 w-5 text-primary" />
                   <div>
@@ -193,8 +182,8 @@ export function TwoFactorAuth() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>{t("ux.twoFactor.disableTitle")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Cette action va désactiver l'authentification à deux facteurs sur votre compte.
-                        Vous devrez la reconfigurer pour la réactiver.
+                        Cette action va désactiver l'authentification à deux facteurs sur votre compte. Vous devrez la
+                        reconfigurer pour la réactiver.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -225,9 +214,7 @@ export function TwoFactorAuth() {
             >
               <Alert>
                 <QrCode className="h-4 w-4" />
-                <AlertDescription>
-                  {t("ux.twoFactor.scan")}
-                </AlertDescription>
+                <AlertDescription>{t("ux.twoFactor.scan")}</AlertDescription>
               </Alert>
 
               {/* QR Code */}
@@ -237,18 +224,12 @@ export function TwoFactorAuth() {
                   animate={{ scale: 1, opacity: 1 }}
                   className="p-4 bg-white rounded-lg shadow-lg"
                 >
-                  <img
-                    src={enrollmentData.qrCode}
-                    alt={t("ux.twoFactor.qrAlt")}
-                    className="w-48 h-48"
-                  />
+                  <img src={enrollmentData.qrCode} alt={t("ux.twoFactor.qrAlt")} className="w-48 h-48" />
                 </motion.div>
 
                 {/* Manual entry secret */}
                 <div className="w-full space-y-2">
-                  <Label className="text-sm text-muted-foreground">
-                    {t("ux.twoFactor.manualKey")}
-                  </Label>
+                  <Label className="text-sm text-muted-foreground">{t("ux.twoFactor.manualKey")}</Label>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 p-2 bg-muted rounded text-sm font-mono break-all">
                       {enrollmentData.secret}
@@ -267,9 +248,7 @@ export function TwoFactorAuth() {
 
               {/* Verification code input */}
               <div className="space-y-3">
-                <Label htmlFor="verification-code">
-                  {t("ux.twoFactor.enterCode")}
-                </Label>
+                <Label htmlFor="verification-code">{t("ux.twoFactor.enterCode")}</Label>
                 <Input
                   id="verification-code"
                   type="text"
@@ -295,41 +274,19 @@ export function TwoFactorAuth() {
 
               {/* Action buttons */}
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  className="flex-1"
-                  disabled={verifying}
-                >
+                <Button variant="outline" onClick={handleCancel} className="flex-1" disabled={verifying}>
                   {t("ux.twoFactor.cancel")}
                 </Button>
-                <Button
-                  onClick={handleVerify}
-                  className="flex-1"
-                  disabled={verifying || verificationCode.length !== 6}
-                >
-                  {verifying ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Check className="mr-2 h-4 w-4" />
-                  )}
+                <Button onClick={handleVerify} className="flex-1" disabled={verifying || verificationCode.length !== 6}>
+                  {verifying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
                   {t("ux.twoFactor.verify")}
                 </Button>
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="setup-button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <motion.div key="setup-button" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               {!hasMFAEnabled && (
-                <Button
-                  onClick={handleStartEnrollment}
-                  className="w-full"
-                  disabled={enrolling}
-                >
+                <Button onClick={handleStartEnrollment} className="w-full" disabled={enrolling}>
                   {enrolling ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (

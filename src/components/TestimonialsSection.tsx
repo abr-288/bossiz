@@ -20,9 +20,13 @@ interface Testimonial {
 // Shown only as filler while real customer reviews are still accumulating -
 // dropped from the carousel entirely once enough real ones exist (see
 
-
 const getInitials = (name: string) =>
-  name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || "").join("") || "?";
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() || "")
+    .join("") || "?";
 
 const TestimonialsSection = () => {
   const { t } = useTranslation();
@@ -42,18 +46,15 @@ const TestimonialsSection = () => {
 
       if (error || !reviews || reviews.length === 0) return;
 
-      const userIds = [...new Set(reviews.map(r => r.user_id).filter((id): id is string => !!id))];
+      const userIds = [...new Set(reviews.map((r) => r.user_id).filter((id): id is string => !!id))];
       const profilesById = new Map<string, string>();
       if (userIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name")
-          .in("id", userIds);
-        (profiles || []).forEach(p => profilesById.set(p.id, p.full_name || ""));
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name").in("id", userIds);
+        (profiles || []).forEach((p) => profilesById.set(p.id, p.full_name || ""));
       }
 
       const real: Testimonial[] = reviews
-        .map(r => {
+        .map((r) => {
           const name = (r.user_id && profilesById.get(r.user_id)) || r.reviewer_name || "Client Bossiz+";
           return {
             id: r.id,
@@ -64,7 +65,7 @@ const TestimonialsSection = () => {
             avatar: getInitials(name),
           };
         })
-        .filter(t => t.name);
+        .filter((t) => t.name);
 
       setTestimonials(real);
     };
@@ -78,7 +79,7 @@ const TestimonialsSection = () => {
       align: "center",
       skipSnaps: false,
     },
-    [Autoplay({ delay: 5000, stopOnInteraction: false })]
+    [Autoplay({ delay: 5000, stopOnInteraction: false })],
   );
 
   const scrollPrev = useCallback(() => {
@@ -93,7 +94,7 @@ const TestimonialsSection = () => {
     (index: number) => {
       if (emblaApi) emblaApi.scrollTo(index);
     },
-    [emblaApi]
+    [emblaApi],
   );
 
   const onSelect = useCallback(() => {
@@ -106,7 +107,7 @@ const TestimonialsSection = () => {
     onSelect();
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
-    
+
     return () => {
       emblaApi.off("select", onSelect);
       emblaApi.off("reInit", onSelect);
@@ -121,17 +122,20 @@ const TestimonialsSection = () => {
       {/* Background decoration */}
       <div className="absolute inset-0 gradient-mesh opacity-40" />
       <div className="absolute top-20 left-20 w-40 md:w-64 h-40 md:h-64 bg-primary/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-20 w-48 md:w-72 h-48 md:h-72 bg-secondary/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
-      
+      <div
+        className="absolute bottom-20 right-20 w-48 md:w-72 h-48 md:h-72 bg-secondary/5 rounded-full blur-3xl animate-float"
+        style={{ animationDelay: "1s" }}
+      />
+
       <div className="site-container relative z-10">
         <div className="text-center mb-8 md:mb-14 lg:mb-16 animate-slide-up-fade px-4">
           <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gradient mb-4 md:mb-6">
-            {t('testimonials.title')}
+            {t("testimonials.title")}
           </h2>
           <p className="text-sm md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
-            {t('testimonials.subtitle')}
+            {t("testimonials.subtitle")}
           </p>
-          
+
           {/* Decorative line */}
           <div className="flex justify-center gap-2 mt-4 md:mt-8">
             <div className="w-12 md:w-16 h-1 md:h-1.5 bg-gradient-primary rounded-full" />
@@ -151,7 +155,7 @@ const TestimonialsSection = () => {
           >
             <ChevronLeft className="w-6 h-6" />
           </Button>
-          
+
           <Button
             aria-label="Suivant"
             variant="outline"
@@ -166,18 +170,16 @@ const TestimonialsSection = () => {
           <div className="overflow-hidden px-2 md:px-0" ref={emblaRef}>
             <div className="flex gap-4 md:gap-6 lg:gap-8">
               {testimonials.map((testimonial, index) => (
-                <div 
+                <div
                   key={testimonial.id}
                   className="flex-[0_0_85%] sm:flex-[0_0_70%] md:flex-[0_0_calc(50%-1rem)] lg:flex-[0_0_calc(33.333%-1.5rem)] min-w-0"
                 >
-                  <Card 
-                    className="group border-2 border-border/50 hover:border-secondary/50 shadow-xl hover:shadow-2xl transition-all duration-slow ease-standard hover-lift rounded-xl md:rounded-2xl bg-gradient-card relative overflow-hidden h-full"
-                  >
+                  <Card className="group border-2 border-border/50 hover:border-secondary/50 shadow-xl hover:shadow-2xl transition-all duration-slow ease-standard hover-lift rounded-xl md:rounded-2xl bg-gradient-card relative overflow-hidden h-full">
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-slow ease-standard pointer-events-none">
                       <div className="absolute inset-0 animate-shimmer" />
                     </div>
-                    
+
                     <CardContent className="p-5 md:p-8 lg:p-10 relative z-10 h-full flex flex-col">
                       {/* Quote icon with glow effect */}
                       <div className="mb-4 md:mb-6 relative">
@@ -189,9 +191,9 @@ const TestimonialsSection = () => {
                       {/* Rating stars with animation */}
                       <div className="flex gap-1 mb-4 md:mb-6">
                         {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className="w-4 h-4 md:w-5 md:h-5 fill-secondary text-secondary group-hover:scale-110 transition-transform" 
+                          <Star
+                            key={i}
+                            className="w-4 h-4 md:w-5 md:h-5 fill-secondary text-secondary group-hover:scale-110 transition-transform"
                             style={{ transitionDelay: `${i * 0.05}s` }}
                           />
                         ))}
@@ -228,15 +230,15 @@ const TestimonialsSection = () => {
                 key={index}
                 onClick={() => scrollTo(index)}
                 className={`group transition-all duration-slow ease-standard ${
-                  index === selectedIndex ? 'w-12' : 'w-3'
+                  index === selectedIndex ? "w-12" : "w-3"
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               >
                 <div
                   className={`h-3 rounded-full transition-all duration-slow ease-standard ${
                     index === selectedIndex
-                      ? 'gradient-primary shadow-primary'
-                      : 'bg-border group-hover:bg-secondary/50'
+                      ? "gradient-primary shadow-primary"
+                      : "bg-border group-hover:bg-secondary/50"
                   }`}
                 />
               </button>

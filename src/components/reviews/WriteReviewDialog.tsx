@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, Loader2 } from "lucide-react";
@@ -15,7 +22,14 @@ interface WriteReviewDialogProps {
   onSubmitted: () => void;
 }
 
-export const WriteReviewDialog = ({ open, onOpenChange, bookingId, serviceId, serviceName, onSubmitted }: WriteReviewDialogProps) => {
+export const WriteReviewDialog = ({
+  open,
+  onOpenChange,
+  bookingId,
+  serviceId,
+  serviceName,
+  onSubmitted,
+}: WriteReviewDialogProps) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -34,7 +48,9 @@ export const WriteReviewDialog = ({ open, onOpenChange, bookingId, serviceId, se
     }
 
     setSubmitting(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error("Vous devez être connecté");
       setSubmitting(false);
@@ -67,7 +83,13 @@ export const WriteReviewDialog = ({ open, onOpenChange, bookingId, serviceId, se
   };
 
   return (
-    <Dialog open={open} onOpenChange={(next) => { onOpenChange(next); if (!next) reset(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        onOpenChange(next);
+        if (!next) reset();
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Laisser un avis</DialogTitle>

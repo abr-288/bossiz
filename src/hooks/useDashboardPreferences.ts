@@ -40,8 +40,10 @@ export const useDashboardPreferences = () => {
   const fetchLayouts = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) return;
 
       const { data, error } = await supabase
@@ -52,12 +54,13 @@ export const useDashboardPreferences = () => {
 
       if (error) throw error;
 
-      const formattedLayouts = data?.map((pref) => ({
-        id: pref.id,
-        layoutName: pref.layout_name,
-        widgetsConfig: (pref.widgets_config as unknown as WidgetConfig[]) || [],
-        isActive: pref.is_active,
-      })) || [];
+      const formattedLayouts =
+        data?.map((pref) => ({
+          id: pref.id,
+          layoutName: pref.layout_name,
+          widgetsConfig: (pref.widgets_config as unknown as WidgetConfig[]) || [],
+          isActive: pref.is_active,
+        })) || [];
 
       setLayouts(formattedLayouts);
 
@@ -87,7 +90,9 @@ export const useDashboardPreferences = () => {
 
   const saveLayout = async (layout: DashboardLayout) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const layoutData = {
@@ -99,19 +104,12 @@ export const useDashboardPreferences = () => {
 
       if (layout.id) {
         // Update existing layout
-        const { error } = await supabase
-          .from("dashboard_preferences")
-          .update(layoutData)
-          .eq("id", layout.id);
+        const { error } = await supabase.from("dashboard_preferences").update(layoutData).eq("id", layout.id);
 
         if (error) throw error;
       } else {
         // Insert new layout
-        const { data, error } = await supabase
-          .from("dashboard_preferences")
-          .insert([layoutData])
-          .select()
-          .single();
+        const { data, error } = await supabase.from("dashboard_preferences").insert([layoutData]).select().single();
 
         if (error) throw error;
         layout.id = data.id;
@@ -135,20 +133,16 @@ export const useDashboardPreferences = () => {
 
   const setActive = async (layoutId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Deactivate all layouts
-      await supabase
-        .from("dashboard_preferences")
-        .update({ is_active: false })
-        .eq("user_id", user.id);
+      await supabase.from("dashboard_preferences").update({ is_active: false }).eq("user_id", user.id);
 
       // Activate selected layout
-      const { error } = await supabase
-        .from("dashboard_preferences")
-        .update({ is_active: true })
-        .eq("id", layoutId);
+      const { error } = await supabase.from("dashboard_preferences").update({ is_active: true }).eq("id", layoutId);
 
       if (error) throw error;
 
@@ -170,10 +164,7 @@ export const useDashboardPreferences = () => {
 
   const deleteLayout = async (layoutId: string) => {
     try {
-      const { error } = await supabase
-        .from("dashboard_preferences")
-        .delete()
-        .eq("id", layoutId);
+      const { error } = await supabase.from("dashboard_preferences").delete().eq("id", layoutId);
 
       if (error) throw error;
 

@@ -15,7 +15,7 @@ const QuickSearch = () => {
     { value: "flights", label: "Vols", icon: Plane, route: "https://vols.bossiz.com/" },
     { value: "hotels", label: "Hôtels", icon: Hotel, route: "/hotels-partenaires" },
     { value: "cars", label: "Voitures", icon: Car, route: "/cars" },
-    { value: "events", label: "Événements", icon: Calendar, route: "/events" }
+    { value: "events", label: "Événements", icon: Calendar, route: "/events" },
   ];
 
   const handleSearch = (route: string) => (e: React.FormEvent) => {
@@ -31,11 +31,9 @@ const QuickSearch = () => {
     <section className="py-12 md:py-16 lg:py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4">
-            Recherche Rapide
-          </h2>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4">Recherche Rapide</h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            {t('quickSearch.subtitle')}
+            {t("quickSearch.subtitle")}
           </p>
         </div>
 
@@ -44,11 +42,7 @@ const QuickSearch = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-4 mb-4 md:mb-6 gap-1">
                 {searchTypes.map((type) => (
-                  <TabsTrigger 
-                    key={type.value} 
-                    value={type.value} 
-                    className="gap-1 md:gap-2 text-xs md:text-sm"
-                  >
+                  <TabsTrigger key={type.value} value={type.value} className="gap-1 md:gap-2 text-xs md:text-sm">
                     <type.icon className="w-3 h-3 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">{type.label}</span>
                   </TabsTrigger>
@@ -63,40 +57,24 @@ const QuickSearch = () => {
                         <UnifiedFormField
                           label="Départ"
                           name="departure"
-                          placeholder={t('search.departureCityPlaceholder')}
+                          placeholder={t("search.departureCityPlaceholder")}
                           icon={MapPin}
                         />
                         <UnifiedFormField
                           label="Destination"
                           name="destination"
-                          placeholder={t('search.arrivalCityPlaceholder')}
+                          placeholder={t("search.arrivalCityPlaceholder")}
                           icon={MapPin}
                         />
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                        <UnifiedFormField
-                          label="Date de départ"
-                          name="departureDate"
-                          type="date"
-                        />
-                        <UnifiedFormField
-                          label="Date de retour"
-                          name="returnDate"
-                          type="date"
-                        />
-                        <UnifiedFormField
-                          label="Voyageurs"
-                          name="travelers"
-                          type="number"
-                          defaultValue="1"
-                          min={1}
-                        />
+                        <UnifiedFormField label="Date de départ" name="departureDate" type="date" />
+                        <UnifiedFormField label="Date de retour" name="returnDate" type="date" />
+                        <UnifiedFormField label="Voyageurs" name="travelers" type="number" defaultValue="1" min={1} />
                       </div>
 
-                      <UnifiedSubmitButton fullWidth>
-                        Rechercher
-                      </UnifiedSubmitButton>
+                      <UnifiedSubmitButton fullWidth>Rechercher</UnifiedSubmitButton>
                     </div>
                   </UnifiedForm>
                 </TabsContent>

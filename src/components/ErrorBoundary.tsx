@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log l'erreur pour le monitoring
     console.error("ErrorBoundary caught an error:", error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -79,23 +79,15 @@ class ErrorBoundary extends Component<Props, State> {
                   <AlertCircle className="h-6 w-6 text-destructive" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">
-                    Une erreur s'est produite
-                  </CardTitle>
-                  <CardDescription>
-                    Nous nous excusons pour ce désagrément
-                  </CardDescription>
+                  <CardTitle className="text-2xl">Une erreur s'est produite</CardTitle>
+                  <CardDescription>Nous nous excusons pour ce désagrément</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="p-4 rounded-lg bg-muted">
-                <p className="text-sm font-medium text-muted-foreground mb-2">
-                  Détails de l'erreur:
-                </p>
-                <p className="text-sm font-mono text-destructive">
-                  {this.state.error?.message || "Erreur inconnue"}
-                </p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Détails de l'erreur:</p>
+                <p className="text-sm font-mono text-destructive">{this.state.error?.message || "Erreur inconnue"}</p>
               </div>
 
               {import.meta.env.DEV && this.state.errorInfo && (
@@ -103,26 +95,16 @@ class ErrorBoundary extends Component<Props, State> {
                   <summary className="text-sm font-medium cursor-pointer hover:text-primary">
                     Stack trace (développement uniquement)
                   </summary>
-                  <pre className="mt-2 text-xs overflow-auto">
-                    {this.state.errorInfo.componentStack}
-                  </pre>
+                  <pre className="mt-2 text-xs overflow-auto">{this.state.errorInfo.componentStack}</pre>
                 </details>
               )}
 
               <div className="flex gap-3">
-                <Button
-                  onClick={this.handleReset}
-                  className="flex-1"
-                  variant="default"
-                >
+                <Button onClick={this.handleReset} className="flex-1" variant="default">
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Réessayer
                 </Button>
-                <Button
-                  onClick={() => window.location.href = "/"}
-                  variant="outline"
-                  className="flex-1"
-                >
+                <Button onClick={() => (window.location.href = "/")} variant="outline" className="flex-1">
                   <Home className="mr-2 h-4 w-4" />
                   Retour à l'accueil
                 </Button>
@@ -152,7 +134,7 @@ export default ErrorBoundary;
  */
 export const useErrorBoundary = () => {
   const [, setError] = React.useState();
-  
+
   return React.useCallback((error: Error) => {
     setError(() => {
       throw error;
@@ -168,11 +150,11 @@ export const ErrorFallback: React.FC<{
   resetError?: () => void;
   title?: string;
   description?: string;
-}> = ({ 
-  error, 
-  resetError, 
+}> = ({
+  error,
+  resetError,
   title = "Une erreur s'est produite",
-  description = "Impossible de charger cette section"
+  description = "Impossible de charger cette section",
 }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
@@ -181,11 +163,7 @@ export const ErrorFallback: React.FC<{
       </div>
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground mb-4">{description}</p>
-      {error && (
-        <p className="text-xs text-destructive mb-4 font-mono">
-          {error.message}
-        </p>
-      )}
+      {error && <p className="text-xs text-destructive mb-4 font-mono">{error.message}</p>}
       {resetError && (
         <Button onClick={resetError} size="sm" variant="outline">
           <RefreshCw className="mr-2 h-4 w-4" />

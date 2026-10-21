@@ -39,9 +39,7 @@ const BossizSNAPropos = () => {
               <h1 className="font-extrabold text-3xl md:text-5xl text-white mb-6 drop-shadow-lg">
                 {content.about.title}
               </h1>
-              <p className="text-white/85 leading-relaxed">
-                {content.about.description}
-              </p>
+              <p className="text-white/85 leading-relaxed">{content.about.description}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">

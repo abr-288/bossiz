@@ -22,10 +22,7 @@ const AdminPayments = () => {
 
   const fetchPayments = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("payments")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("payments").select("*").order("created_at", { ascending: false });
 
     if (error) {
       toast.error(t("ux.bo.errorWhileLoadingPayments"));
@@ -39,13 +36,13 @@ const AdminPayments = () => {
     fetchPayments();
   }, []);
 
-  const filtered = statusFilter === "all"
-    ? payments
-    : payments.filter(p => p.status === statusFilter);
+  const filtered = statusFilter === "all" ? payments : payments.filter((p) => p.status === statusFilter);
 
-  const totalPaid = payments.filter(p => p.status === "completed" || p.status === "paid").reduce((s, p) => s + Number(p.amount), 0);
-  const totalPending = payments.filter(p => p.status === "pending").reduce((s, p) => s + Number(p.amount), 0);
-  const totalFailed = payments.filter(p => p.status === "failed").reduce((s, p) => s + Number(p.amount), 0);
+  const totalPaid = payments
+    .filter((p) => p.status === "completed" || p.status === "paid")
+    .reduce((s, p) => s + Number(p.amount), 0);
+  const totalPending = payments.filter((p) => p.status === "pending").reduce((s, p) => s + Number(p.amount), 0);
+  const totalFailed = payments.filter((p) => p.status === "failed").reduce((s, p) => s + Number(p.amount), 0);
 
   const statusBadge = (status: string) => <PaymentStatusBadge status={status} />;
 
@@ -55,7 +52,9 @@ const AdminPayments = () => {
         <div className="space-y-4">
           <Skeleton className="h-10 w-64" />
           <div className="grid gap-4 md:grid-cols-3">
-            {[1, 2, 3].map(i => <Skeleton key={i} className="h-28" />)}
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-28" />
+            ))}
           </div>
           <Skeleton className="h-96" />
         </div>
@@ -78,7 +77,9 @@ const AdminPayments = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold"><Price amount={totalPaid} fromCurrency="XOF" /></div>
+              <div className="text-2xl font-bold">
+                <Price amount={totalPaid} fromCurrency="XOF" />
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -87,7 +88,9 @@ const AdminPayments = () => {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold"><Price amount={totalPending} fromCurrency="XOF" /></div>
+              <div className="text-2xl font-bold">
+                <Price amount={totalPending} fromCurrency="XOF" />
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -96,7 +99,9 @@ const AdminPayments = () => {
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold"><Price amount={totalFailed} fromCurrency="XOF" /></div>
+              <div className="text-2xl font-bold">
+                <Price amount={totalFailed} fromCurrency="XOF" />
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -147,12 +152,16 @@ const AdminPayments = () => {
                   filtered.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell className="font-mono text-xs">{p.transaction_id || p.id.slice(0, 8)}</TableCell>
-                      <TableCell className="font-semibold"><Price amount={Number(p.amount)} fromCurrency={p.currency || "XOF"} /></TableCell>
+                      <TableCell className="font-semibold">
+                        <Price amount={Number(p.amount)} fromCurrency={p.currency || "XOF"} />
+                      </TableCell>
                       <TableCell>{p.payment_method}</TableCell>
                       <TableCell>{p.payment_provider}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{p.ip_address || "-"}</TableCell>
                       <TableCell>{statusBadge(p.status)}</TableCell>
-                      <TableCell>{p.created_at ? format(new Date(p.created_at), "dd MMM yyyy HH:mm", { locale: fr }) : "—"}</TableCell>
+                      <TableCell>
+                        {p.created_at ? format(new Date(p.created_at), "dd MMM yyyy HH:mm", { locale: fr }) : "—"}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

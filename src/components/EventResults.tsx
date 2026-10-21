@@ -41,20 +41,15 @@ export const EventResults = ({ events, onBook }: EventResultsProps) => {
   return (
     <div className="space-y-4 mt-8">
       <h2 className="text-2xl font-bold">
-        {events.length} événement{events.length > 1 ? 's' : ''} trouvé{events.length > 1 ? 's' : ''}
+        {events.length} événement{events.length > 1 ? "s" : ""} trouvé{events.length > 1 ? "s" : ""}
       </h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {events.map((event) => (
           <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             {event.image && (
               <div className="aspect-video w-full overflow-hidden bg-muted">
-                <img
-                  src={event.image}
-                  alt={event.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+                <img src={event.image} alt={event.name} className="w-full h-full object-cover" loading="lazy" />
               </div>
             )}
             <CardHeader>
@@ -66,23 +61,17 @@ export const EventResults = ({ events, onBook }: EventResultsProps) => {
                   </Badge>
                 )}
               </div>
-              <CardDescription className="line-clamp-2">
-                {event.description}
-              </CardDescription>
+              <CardDescription className="line-clamp-2">{event.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
-                  <span>
-                    {format(new Date(event.date), "PPP", { locale: currentDateFnsLocale() })}
-                  </span>
+                  <span>{format(new Date(event.date), "PPP", { locale: currentDateFnsLocale() })}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-4 h-4" />
-                  <span className="line-clamp-1">
-                    {event.address || event.location}
-                  </span>
+                  <span className="line-clamp-1">{event.address || event.location}</span>
                 </div>
               </div>
 
@@ -90,7 +79,7 @@ export const EventResults = ({ events, onBook }: EventResultsProps) => {
                 <div>
                   <p className="text-sm text-muted-foreground">À partir de</p>
                   <p className="text-xl font-bold">
-                    <Price amount={parseFloat(event.price) || 0} fromCurrency={event.currency || 'EUR'} showLoader />
+                    <Price amount={parseFloat(event.price) || 0} fromCurrency={event.currency || "EUR"} showLoader />
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

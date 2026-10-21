@@ -30,8 +30,10 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
   useEffect(() => {
     const checkAgencyAccess = async () => {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         navigate("/auth");
         return;
@@ -72,11 +74,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
 
       // Keep older deployments usable until the permissions migration is applied.
       if (agencyError?.message.includes("enabled_features")) {
-        const legacyResult = await supabase
-          .from("agencies")
-          .select("name, is_active")
-          .eq("owner_id", user.id)
-          .single();
+        const legacyResult = await supabase.from("agencies").select("name, is_active").eq("owner_id", user.id).single();
         agency = legacyResult.data ? { ...legacyResult.data, enabled_features: {} } : null;
         agencyError = legacyResult.error;
       }
@@ -99,14 +97,21 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
     checkAgencyAccess();
   }, [navigate, pathname, toast]);
 
-  const featureForPath = pathname.startsWith("/agency/services") ? "services"
-    : pathname.startsWith("/agency/activities") ? "activities"
-    : pathname.startsWith("/agency/stays") ? "stays"
-    : pathname.startsWith("/agency/restaurants") ? "restaurants"
-    : pathname.startsWith("/agency/artisans") ? "artisans"
-    : pathname.startsWith("/agency/wellness") ? "wellness"
-    : pathname.startsWith("/agency/promotions") ? "promotions"
-    : null;
+  const featureForPath = pathname.startsWith("/agency/services")
+    ? "services"
+    : pathname.startsWith("/agency/activities")
+      ? "activities"
+      : pathname.startsWith("/agency/stays")
+        ? "stays"
+        : pathname.startsWith("/agency/restaurants")
+          ? "restaurants"
+          : pathname.startsWith("/agency/artisans")
+            ? "artisans"
+            : pathname.startsWith("/agency/wellness")
+              ? "wellness"
+              : pathname.startsWith("/agency/promotions")
+                ? "promotions"
+                : null;
   const featureDisabled = !!featureForPath && enabledFeatures[featureForPath] === false;
 
   // Traduction automatique des contenus enregistrés pendant la session
@@ -127,17 +132,19 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <div className="fixed top-0 left-0 right-0 h-1 z-banner bg-brand" />
-        <AgencySidebar
-          enabledFeatures={enabledFeatures}
-          profileName={profileName}
-          profilePhoto={profilePhoto}
-        />
+        <AgencySidebar enabledFeatures={enabledFeatures} profileName={profileName} profilePhoto={profilePhoto} />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 md:h-16 border-b flex items-center justify-between px-3 md:px-4 bg-background sticky top-0 z-50">
             <div className="flex items-center gap-2 md:gap-4 min-w-0">
               <SidebarTrigger className="touch-target flex-shrink-0" />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" aria-label={t("ux.bo.backHome")} title={t("ux.bo.backHome")}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 flex-shrink-0"
+                  aria-label={t("ux.bo.backHome")}
+                  title={t("ux.bo.backHome")}
+                >
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>
@@ -147,7 +154,10 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
           </header>
           <main className="flex-1 p-3 md:p-6 overflow-auto">
             {featureDisabled && (
-              <div className="mb-4 rounded-lg border border-warning-foreground/20 bg-warning p-3 text-sm text-warning-foreground" role="status">
+              <div
+                className="mb-4 rounded-lg border border-warning-foreground/20 bg-warning p-3 text-sm text-warning-foreground"
+                role="status"
+              >
                 {t("ux.bo.sectionDisabledAdministratorItemsRemain")}
               </div>
             )}

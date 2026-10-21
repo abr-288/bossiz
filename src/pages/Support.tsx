@@ -3,10 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Phone, Mail, MessageCircle, Clock, Search,
-  CalendarCheck, ArrowRight, X, ChevronRight
-} from "lucide-react";
+import { Phone, Mail, MessageCircle, Clock, Search, CalendarCheck, ArrowRight, X, ChevronRight } from "lucide-react";
 import { useSupportMessage } from "@/hooks/useSupportMessage";
 import { useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +27,7 @@ const Support = () => {
     email: "",
     bookingReference: "",
     subject: "",
-    message: ""
+    message: "",
   });
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +45,7 @@ const Support = () => {
     const result = await subscribe(newsletterEmail);
     if (result) {
       toast({
-        title: t('footer.newsletter.subscribeSuccess'),
+        title: t("footer.newsletter.subscribeSuccess"),
         description: result.message,
       });
       setNewsletterEmail("");
@@ -56,7 +53,7 @@ const Support = () => {
   };
 
   const handleChatClick = () => {
-    window.dispatchEvent(new CustomEvent('open-live-chat'));
+    window.dispatchEvent(new CustomEvent("open-live-chat"));
   };
 
   // Aplatit toutes les FAQ de toutes les catégories pour la recherche globale
@@ -78,9 +75,7 @@ const Support = () => {
     if (!isSearching) return [];
     const query = searchQuery.trim().toLowerCase();
     return allFaqs.filter(
-      (faq) =>
-        faq.question.toLowerCase().includes(query) ||
-        faq.answer.toLowerCase().includes(query)
+      (faq) => faq.question.toLowerCase().includes(query) || faq.answer.toLowerCase().includes(query),
     );
   }, [isSearching, searchQuery, allFaqs]);
 
@@ -97,10 +92,19 @@ const Support = () => {
         />
         <div className="absolute inset-0 bg-brand/65"></div>
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+          <div
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background/10"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.18), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.18), transparent 55%)" }}
+        ></div>
 
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
@@ -108,7 +112,10 @@ const Support = () => {
               {t("pages.support.title")}
             </h1>
             <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow-md mb-8">
-              {t("support.subtitle", "Notre équipe d'experts est disponible 24/7 pour répondre à toutes vos questions et vous accompagner.")}
+              {t(
+                "support.subtitle",
+                "Notre équipe d'experts est disponible 24/7 pour répondre à toutes vos questions et vous accompagner.",
+              )}
             </p>
 
             <div className="relative max-w-xl mx-auto">
@@ -144,9 +151,7 @@ const Support = () => {
               <h2 className="text-xl md:text-2xl font-extrabold text-foreground mb-1">
                 {t("pages.support.manageBooking.title")}
               </h2>
-              <p className="text-muted-foreground font-medium">
-                {t("pages.support.manageBooking.description")}
-              </p>
+              <p className="text-muted-foreground font-medium">{t("pages.support.manageBooking.description")}</p>
             </div>
             <Button
               size="lg"
@@ -180,7 +185,9 @@ const Support = () => {
                         className="flex items-start justify-between gap-4 py-4 group hover:bg-muted/40 -mx-2 px-2 rounded-lg transition-colors"
                       >
                         <div>
-                          <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{faq.question}</p>
+                          <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                            {faq.question}
+                          </p>
                           <p className="text-sm text-muted-foreground line-clamp-1">{faq.answer}</p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
@@ -198,9 +205,7 @@ const Support = () => {
               <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2">
                 {t("pages.support.categories.sectionTitle")}
               </h2>
-              <p className="text-muted-foreground font-medium">
-                {t("pages.support.categories.sectionSubtitle")}
-              </p>
+              <p className="text-muted-foreground font-medium">{t("pages.support.categories.sectionSubtitle")}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {SUPPORT_CATEGORIES.map(({ id, icon: Icon }) => (
@@ -235,8 +240,8 @@ const Support = () => {
                   <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                     <Phone className="w-6 h-6 text-primary" />
                   </div>
-                  <h4 className="font-bold text-sm mb-1">{t('pages.support.callUs')}</h4>
-                  <p className="text-xs text-muted-foreground mb-2">{t('pages.support.hours.247')}</p>
+                  <h4 className="font-bold text-sm mb-1">{t("pages.support.callUs")}</h4>
+                  <p className="text-xs text-muted-foreground mb-2">{t("pages.support.hours.247")}</p>
                   <p className="font-bold text-primary text-sm">+225 27 20 00 00 00</p>
                 </CardContent>
               </Card>
@@ -245,8 +250,8 @@ const Support = () => {
                   <div className="w-12 h-12 bg-secondary/5 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                     <Mail className="w-6 h-6 text-secondary" />
                   </div>
-                  <h4 className="font-bold text-sm mb-1">{t('pages.support.writeToUs')}</h4>
-                  <p className="text-xs text-muted-foreground mb-2">{t('pages.support.responseWithin24h')}</p>
+                  <h4 className="font-bold text-sm mb-1">{t("pages.support.writeToUs")}</h4>
+                  <p className="text-xs text-muted-foreground mb-2">{t("pages.support.responseWithin24h")}</p>
                   <p className="font-bold text-secondary text-sm">support@bossiz.com</p>
                 </CardContent>
               </Card>
@@ -255,9 +260,9 @@ const Support = () => {
                   <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                     <MessageCircle className="w-6 h-6 text-primary" />
                   </div>
-                  <h4 className="font-bold text-sm mb-2">{t('pages.support.contact.chat')}</h4>
+                  <h4 className="font-bold text-sm mb-2">{t("pages.support.contact.chat")}</h4>
                   <Button size="sm" className="w-full font-bold rounded-lg" onClick={handleChatClick}>
-                    {t('pages.support.startChat')}
+                    {t("pages.support.startChat")}
                   </Button>
                 </CardContent>
               </Card>
@@ -271,11 +276,17 @@ const Support = () => {
                     <Clock className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-bold mb-2">{t('pages.support.hours.title')}</h3>
+                    <h3 className="font-bold mb-2">{t("pages.support.hours.title")}</h3>
                     <div className="space-y-1 text-sm text-muted-foreground">
-                      <p><strong>{t('pages.support.phoneSupport')} :</strong> {t('pages.support.hours.247')}</p>
-                      <p><strong>{t('pages.support.agencies')} :</strong> {t('pages.support.agenciesHours')}</p>
-                      <p><strong>{t('pages.support.onlineChat')} :</strong> {t('pages.support.hours.247')}</p>
+                      <p>
+                        <strong>{t("pages.support.phoneSupport")} :</strong> {t("pages.support.hours.247")}
+                      </p>
+                      <p>
+                        <strong>{t("pages.support.agencies")} :</strong> {t("pages.support.agenciesHours")}
+                      </p>
+                      <p>
+                        <strong>{t("pages.support.onlineChat")} :</strong> {t("pages.support.hours.247")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -287,55 +298,55 @@ const Support = () => {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>{t('pages.support.form.title')}</CardTitle>
+                <CardTitle>{t("pages.support.form.title")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <UnifiedForm onSubmit={handleSubmit} variant="contact" loading={sendingMessage}>
                   <UnifiedFormField
-                    label={t('pages.support.form.name')}
+                    label={t("pages.support.form.name")}
                     name="name"
-                    placeholder={t('pages.support.namePlaceholder')}
+                    placeholder={t("pages.support.namePlaceholder")}
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                   />
                   <UnifiedFormField
-                    label={t('pages.support.form.email')}
+                    label={t("pages.support.form.email")}
                     name="email"
                     type="email"
-                    placeholder={t('auth.emailPlaceholder')}
+                    placeholder={t("auth.emailPlaceholder")}
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
                   />
                   <UnifiedFormField
-                    label={t('pages.support.form.reference')}
+                    label={t("pages.support.form.reference")}
                     name="bookingReference"
-                    placeholder={t('pages.support.referencePlaceholder')}
+                    placeholder={t("pages.support.referencePlaceholder")}
                     value={formData.bookingReference}
-                    onChange={(e) => setFormData({...formData, bookingReference: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, bookingReference: e.target.value })}
                   />
                   <UnifiedFormField
-                    label={t('pages.support.form.subject')}
+                    label={t("pages.support.form.subject")}
                     name="subject"
-                    placeholder={t('pages.support.subjectPlaceholder')}
+                    placeholder={t("pages.support.subjectPlaceholder")}
                     value={formData.subject}
-                    onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     required
                   />
                   <div className="space-y-2">
-                    <label className="text-sm font-medium block">{t('pages.support.form.message')}</label>
+                    <label className="text-sm font-medium block">{t("pages.support.form.message")}</label>
                     <Textarea
-                      placeholder={t('pages.support.messagePlaceholder')}
+                      placeholder={t("pages.support.messagePlaceholder")}
                       rows={5}
                       value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       required
                       className="w-full"
                     />
                   </div>
                   <UnifiedSubmitButton loading={sendingMessage} fullWidth>
-                    {t('pages.support.sendMessage')}
+                    {t("pages.support.sendMessage")}
                   </UnifiedSubmitButton>
                 </UnifiedForm>
               </CardContent>
@@ -348,34 +359,51 @@ const Support = () => {
           <Card className="border-0 bg-brand text-brand-foreground rounded-3xl overflow-hidden shadow-2xl relative">
             {/* Background texture (dots or lines) */}
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-              <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(45deg, white 25%, transparent 25%, transparent 50%, white 50%, white 75%, transparent 75%, transparent)', backgroundSize: '40px 40px' }} />
+              <div
+                className="absolute top-0 left-0 w-full h-full"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(45deg, white 25%, transparent 25%, transparent 50%, white 50%, white 75%, transparent 75%, transparent)",
+                  backgroundSize: "40px 40px",
+                }}
+              />
               <div className="absolute -top-24 -left-24 w-64 h-64 border-8 border-white rounded-full" />
               <div className="absolute top-1/2 -right-32 w-64 h-64 border-8 border-white rounded-full -translate-y-1/2" />
             </div>
 
             <CardContent className="p-10 md:p-16 relative z-10">
               <div className="max-w-3xl mx-auto text-center">
-                <h3 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">{t('pages.support.followNews')} <br className="hidden md:block" /> Bossiz+</h3>
+                <h3 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">
+                  {t("pages.support.followNews")} <br className="hidden md:block" /> Bossiz+
+                </h3>
                 <p className="text-lg text-white/80 mb-10 max-w-xl mx-auto font-medium">
-                  {t('footer.newsletter.description')}
+                  {t("footer.newsletter.description")}
                 </p>
-                <UnifiedForm onSubmit={handleNewsletterSubmit} variant="contact" loading={subscribing} className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
+                <UnifiedForm
+                  onSubmit={handleNewsletterSubmit}
+                  variant="contact"
+                  loading={subscribing}
+                  className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto"
+                >
                   <div className="flex-1">
                     <UnifiedFormField
                       name="email"
                       type="email"
-                      placeholder={t('footer.newsletter.placeholder')}
+                      placeholder={t("footer.newsletter.placeholder")}
                       value={newsletterEmail}
                       onChange={(e) => setNewsletterEmail(e.target.value)}
                       required
                       className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-14 rounded-2xl"
                     />
                   </div>
-                  <UnifiedSubmitButton loading={subscribing} className="bg-secondary text-secondary-foreground h-14 px-8 rounded-2xl font-extrabold text-lg shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95">
-                    {t('pages.support.subscribe')}
+                  <UnifiedSubmitButton
+                    loading={subscribing}
+                    className="bg-secondary text-secondary-foreground h-14 px-8 rounded-2xl font-extrabold text-lg shadow-lg shadow-black/20 transition-all hover:scale-105 active:scale-95"
+                  >
+                    {t("pages.support.subscribe")}
                   </UnifiedSubmitButton>
                 </UnifiedForm>
-                <p className="mt-6 text-xs text-white/50 font-medium">{t('pages.support.newsletterDisclaimer')}</p>
+                <p className="mt-6 text-xs text-white/50 font-medium">{t("pages.support.newsletterDisclaimer")}</p>
               </div>
             </CardContent>
           </Card>

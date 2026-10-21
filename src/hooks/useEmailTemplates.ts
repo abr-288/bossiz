@@ -28,15 +28,13 @@ export const useEmailTemplates = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
+
       // Transform variables from Json to string[]
-      const templates = (data || []).map(template => ({
+      const templates = (data || []).map((template) => ({
         ...template,
-        variables: Array.isArray(template.variables) 
-          ? template.variables.map(v => String(v))
-          : []
+        variables: Array.isArray(template.variables) ? template.variables.map((v) => String(v)) : [],
       }));
-      
+
       return templates as EmailTemplate[];
     } catch (error) {
       toast({
@@ -53,9 +51,7 @@ export const useEmailTemplates = () => {
   const createTemplate = async (template: Omit<EmailTemplate, "id" | "created_at" | "updated_at">) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from("email_templates")
-        .insert([template]);
+      const { error } = await supabase.from("email_templates").insert([template]);
 
       if (error) throw error;
 
@@ -79,10 +75,7 @@ export const useEmailTemplates = () => {
   const updateTemplate = async (id: string, template: Partial<EmailTemplate>) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from("email_templates")
-        .update(template)
-        .eq("id", id);
+      const { error } = await supabase.from("email_templates").update(template).eq("id", id);
 
       if (error) throw error;
 
@@ -106,10 +99,7 @@ export const useEmailTemplates = () => {
   const deleteTemplate = async (id: string) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from("email_templates")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("email_templates").delete().eq("id", id);
 
       if (error) throw error;
 

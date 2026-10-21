@@ -2,7 +2,14 @@ import { useState } from "react";
 import { Plane, Hotel, ArrowRightLeft } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { UnifiedForm, UnifiedAutocomplete, UnifiedDatePicker, UnifiedFormField, UnifiedSubmitButton, FormProgressBar } from "@/components/forms";
+import {
+  UnifiedForm,
+  UnifiedAutocomplete,
+  UnifiedDatePicker,
+  UnifiedFormField,
+  UnifiedSubmitButton,
+  FormProgressBar,
+} from "@/components/forms";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 
@@ -35,7 +42,7 @@ export const FlightHotelSearchForm = ({ onSearch }: FlightHotelSearchFormProps) 
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!origin || !destination || !departureDate || !returnDate) {
       return;
     }
@@ -72,11 +79,7 @@ export const FlightHotelSearchForm = ({ onSearch }: FlightHotelSearchFormProps) 
   return (
     <UnifiedForm onSubmit={handleSearch} variant="search" className="max-w-6xl mx-auto">
       {/* Barre de progression */}
-      <FormProgressBar 
-        totalFields={totalFields} 
-        completedFields={completedFields}
-        className="mb-3 md:mb-4"
-      />
+      <FormProgressBar totalFields={totalFields} completedFields={completedFields} className="mb-3 md:mb-4" />
 
       <div className="space-y-3 md:space-y-4">
         {/* Ligne 1: Origine et Destination */}
@@ -129,7 +132,7 @@ export const FlightHotelSearchForm = ({ onSearch }: FlightHotelSearchFormProps) 
             required
             minDate={new Date()}
           />
-          
+
           <UnifiedDatePicker
             label={t("search.return")}
             value={returnDate}
@@ -185,9 +188,7 @@ export const FlightHotelSearchForm = ({ onSearch }: FlightHotelSearchFormProps) 
 
         {/* Bouton de recherche */}
         <div className="mt-4 md:mt-6">
-          <UnifiedSubmitButton fullWidth>
-            {t("search.search")}
-          </UnifiedSubmitButton>
+          <UnifiedSubmitButton fullWidth>{t("search.search")}</UnifiedSubmitButton>
         </div>
       </div>
     </UnifiedForm>

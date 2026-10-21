@@ -45,14 +45,13 @@ const AdminNewsletter = () => {
     fetchSubscribers();
   }, []);
 
-  const filtered = subscribers.filter(s =>
-    s.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = subscribers.filter((s) => s.email.toLowerCase().includes(search.toLowerCase()));
 
   const exportCSV = () => {
-    const csv = ["Email,Date d'inscription", ...subscribers.map(s =>
-      `${s.email},${format(new Date(s.subscribed_at), "dd/MM/yyyy HH:mm")}`
-    )].join("\n");
+    const csv = [
+      "Email,Date d'inscription",
+      ...subscribers.map((s) => `${s.email},${format(new Date(s.subscribed_at), "dd/MM/yyyy HH:mm")}`),
+    ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -105,11 +104,13 @@ const AdminNewsletter = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {subscribers.filter(s => {
-                  const d = new Date(s.created_at);
-                  const now = new Date();
-                  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                }).length}
+                {
+                  subscribers.filter((s) => {
+                    const d = new Date(s.created_at);
+                    const now = new Date();
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                  }).length
+                }
               </div>
             </CardContent>
           </Card>

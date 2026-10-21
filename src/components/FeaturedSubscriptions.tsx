@@ -105,7 +105,7 @@ const FeaturedSubscriptions = () => {
     email: "",
     phone: "",
     company: "",
-    message: ""
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -120,22 +120,24 @@ const FeaturedSubscriptions = () => {
           .order("sort_order", { ascending: true });
 
         if (error) throw error;
-        
-        const formattedPlans: DisplayPlan[] = (data || []).map((row) => localizeRow(row as SubscriptionPlanDB, i18n.language)).map((p: SubscriptionPlanDB) => ({
-          id: p.id,
-          plan_id: p.plan_id,
-          name: p.name,
-          subtitle: p.subtitle,
-          icon: ICON_MAP[p.icon] || <Building2 className="h-6 w-6" />,
-          price: p.price,
-          priceNote: p.price_note,
-          billedMonthly: null,
-          billedYearly: null,
-          features: p.features || [],
-          popular: p.popular,
-          color: p.color,
-        }));
-        
+
+        const formattedPlans: DisplayPlan[] = (data || [])
+          .map((row) => localizeRow(row as SubscriptionPlanDB, i18n.language))
+          .map((p: SubscriptionPlanDB) => ({
+            id: p.id,
+            plan_id: p.plan_id,
+            name: p.name,
+            subtitle: p.subtitle,
+            icon: ICON_MAP[p.icon] || <Building2 className="h-6 w-6" />,
+            price: p.price,
+            priceNote: p.price_note,
+            billedMonthly: null,
+            billedYearly: null,
+            features: p.features || [],
+            popular: p.popular,
+            color: p.color,
+          }));
+
         const payableIds = formattedPlans.map((p) => p.plan_id).filter((id) => !isRequestOnlyPlan(id));
         if (payableIds.length > 0) {
           const { data: pricing } = await supabase
@@ -166,35 +168,33 @@ const FeaturedSubscriptions = () => {
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRequestPlan) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const { error } = await supabase
-        .from("subscription_requests")
-        .insert({
-          plan_id: selectedRequestPlan.plan_id,
-          plan_name: selectedRequestPlan.name,
-          name: contactForm.name.trim(),
-          email: contactForm.email.trim(),
-          phone: contactForm.phone.trim(),
-          company: contactForm.company.trim() || null,
-          message: contactForm.message.trim() || null,
-        });
+      const { error } = await supabase.from("subscription_requests").insert({
+        plan_id: selectedRequestPlan.plan_id,
+        plan_name: selectedRequestPlan.name,
+        name: contactForm.name.trim(),
+        email: contactForm.email.trim(),
+        phone: contactForm.phone.trim(),
+        company: contactForm.company.trim() || null,
+        message: contactForm.message.trim() || null,
+      });
 
       if (error) throw error;
-    
+
       toast({
         title: t("subscriptions.requestSent", "Demande envoyée !"),
         description: t("subscriptions.contactSoon", "Notre équipe vous contactera dans les plus brefs délais."),
       });
-    
+
       setContactForm({
         name: "",
         email: "",
         phone: "",
         company: "",
-        message: ""
+        message: "",
       });
       setSelectedRequestPlan(null);
     } catch (error) {
@@ -219,10 +219,11 @@ const FeaturedSubscriptions = () => {
 
   // Numéro WhatsApp de Admin > Configuration > Contact ; le bouton n'apparaît
   // qu'avec un vrai numéro (pas de numéro de démonstration).
-  const whatsAppFor = (planName: string) => whatsAppLink(
-    siteConfig.contact.whatsapp,
-    `Bonjour, je suis intéressé(e) par l'offre "${planName}" de Bossiz Conciergerie. Pouvez-vous me donner plus d'informations ?`
-  );
+  const whatsAppFor = (planName: string) =>
+    whatsAppLink(
+      siteConfig.contact.whatsapp,
+      `Bonjour, je suis intéressé(e) par l'offre "${planName}" de Bossiz Conciergerie. Pouvez-vous me donner plus d'informations ?`,
+    );
 
   const scrollBy = (direction: 1 | -1) => {
     const track = trackRef.current;
@@ -274,7 +275,9 @@ const FeaturedSubscriptions = () => {
             <li key={plan.id} className={cn(SLIDE_CLASS, plan.popular && "border-primary ring-1 ring-primary")}>
               <div className="flex flex-1 flex-col p-5">
                 <div className="mb-3 flex items-start justify-between gap-3">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${plan.color} text-white`}>
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${plan.color} text-white`}
+                  >
                     {plan.icon}
                   </div>
                   {plan.popular && (
@@ -314,11 +317,17 @@ const FeaturedSubscriptions = () => {
                 </ul>
                 <div className="mt-auto flex flex-col gap-2 pt-5">
                   <Button className="w-full" onClick={() => handleSubscribe(plan)}>
-                    {isRequestOnlyPlan(plan.plan_id) ? t("subscriptions.requestInfo") : t("subscriptions.subscribeDirect")}
+                    {isRequestOnlyPlan(plan.plan_id)
+                      ? t("subscriptions.requestInfo")
+                      : t("subscriptions.subscribeDirect")}
                     <ArrowRight />
                   </Button>
                   {whatsAppFor(plan.name) && (
-                    <Button variant="outline" className="w-full" onClick={() => window.open(whatsAppFor(plan.name)!, "_blank")}>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => window.open(whatsAppFor(plan.name)!, "_blank")}
+                    >
                       <MessageCircle />
                       WhatsApp
                     </Button>
@@ -334,7 +343,9 @@ const FeaturedSubscriptions = () => {
       <Dialog open={!!selectedRequestPlan} onOpenChange={(open) => !open && setSelectedRequestPlan(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("subscriptions.subscribeTo", "Souscrire à")} {selectedRequestPlan?.name}</DialogTitle>
+            <DialogTitle>
+              {t("subscriptions.subscribeTo", "Souscrire à")} {selectedRequestPlan?.name}
+            </DialogTitle>
             <DialogDescription>
               {t("subscriptions.fillForm", "Remplissez ce formulaire et notre équipe vous contactera rapidement.")}
             </DialogDescription>
@@ -346,7 +357,7 @@ const FeaturedSubscriptions = () => {
                 <Input
                   id="feat-name"
                   value={contactForm.name}
-                  onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                   required
                 />
               </div>
@@ -366,7 +377,7 @@ const FeaturedSubscriptions = () => {
                 id="feat-email"
                 type="email"
                 value={contactForm.email}
-                onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                 required
               />
             </div>
@@ -375,13 +386,15 @@ const FeaturedSubscriptions = () => {
               <Textarea
                 id="feat-message"
                 value={contactForm.message}
-                onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
+                onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                 placeholder={t("subscriptions.specifyNeeds", "Précisez vos besoins...")}
                 rows={3}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? t("subscriptions.sending", "Envoi en cours...") : t("subscriptions.sendRequest", "Envoyer ma demande")}
+              {isSubmitting
+                ? t("subscriptions.sending", "Envoi en cours...")
+                : t("subscriptions.sendRequest", "Envoyer ma demande")}
             </Button>
           </form>
         </DialogContent>

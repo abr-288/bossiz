@@ -23,7 +23,7 @@ export default function ForgotPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const validated = emailSchema.parse({ email });
       setLoading(true);
@@ -36,9 +36,11 @@ export default function ForgotPassword() {
       if (error instanceof z.ZodError) {
         toast.error(t("ux.forgot.invalidEmail"));
       } else {
-        toast.error(error instanceof Error
-          ? await getEdgeFunctionErrorMessage(error, t("ux.forgot.sendError"))
-          : t("ux.forgot.sendError"));
+        toast.error(
+          error instanceof Error
+            ? await getEdgeFunctionErrorMessage(error, t("ux.forgot.sendError"))
+            : t("ux.forgot.sendError"),
+        );
       }
     } finally {
       setLoading(false);
@@ -49,13 +51,9 @@ export default function ForgotPassword() {
     <div className="flex min-h-screen">
       {/* Left Side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <img 
-          src={authBg} 
-          alt="Bossiz+"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <img src={authBg} alt="Bossiz+" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-brand/80" />
-        
+
         <div className="relative z-10 flex flex-col justify-between p-12 text-white">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="h-12 w-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-105 transition-transform">
@@ -66,21 +64,17 @@ export default function ForgotPassword() {
               <span className="text-xs text-white/70 tracking-wider">{t("ux.forgot.eyebrow")}</span>
             </div>
           </Link>
-          
+
           <div className="space-y-8">
             <h2 className="text-4xl font-bold leading-tight">
               {t("ux.forgot.heroTitle")}
               <br />
               <span className="text-gold">{t("ux.forgot.heroAccent")}</span>
             </h2>
-            <p className="text-white/80 text-lg max-w-md">
-              {t("ux.forgot.heroDesc")}
-            </p>
+            <p className="text-white/80 text-lg max-w-md">{t("ux.forgot.heroDesc")}</p>
           </div>
-          
-          <p className="text-sm text-white/50">
-            {t("ux.forgot.copyright")}
-          </p>
+
+          <p className="text-sm text-white/50">{t("ux.forgot.copyright")}</p>
         </div>
       </div>
 
@@ -104,12 +98,8 @@ export default function ForgotPassword() {
             <>
               <div className="space-y-2 text-center lg:text-left">
                 <h1 className="text-3xl font-bold tracking-tight">{t("ux.forgot.title")}</h1>
-                <p className="text-muted-foreground">
-                  {t("ux.forgot.subtitle")}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.forgot.googleNote")}
-                </p>
+                <p className="text-muted-foreground">{t("ux.forgot.subtitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("ux.forgot.googleNote")}</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -141,12 +131,8 @@ export default function ForgotPassword() {
               </div>
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tight">{t("ux.forgot.sent")}</h1>
-                <p className="text-muted-foreground">
-                  {t("ux.forgot.checkInbox")}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.forgot.googleNote2")}
-                </p>
+                <p className="text-muted-foreground">{t("ux.forgot.checkInbox")}</p>
+                <p className="text-sm text-muted-foreground">{t("ux.forgot.googleNote2")}</p>
               </div>
               <p className="text-sm text-muted-foreground">
                 {t("ux.forgot.notReceived")}{" "}

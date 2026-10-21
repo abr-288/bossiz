@@ -123,12 +123,20 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
                         <p className="text-sm text-muted-foreground">{booking.customer_email}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold"><Price amount={Number(booking.total_price)} fromCurrency="XOF" /></p>
-                        <Badge variant={
-                          booking.status === "confirmed" ? "default" :
-                          booking.status === "pending" ? "secondary" :
-                          booking.status === "completed" ? "outline" : "destructive"
-                        }>
+                        <p className="font-semibold">
+                          <Price amount={Number(booking.total_price)} fromCurrency="XOF" />
+                        </p>
+                        <Badge
+                          variant={
+                            booking.status === "confirmed"
+                              ? "default"
+                              : booking.status === "pending"
+                                ? "secondary"
+                                : booking.status === "completed"
+                                  ? "outline"
+                                  : "destructive"
+                          }
+                        >
                           {booking.status}
                         </Badge>
                       </div>
@@ -182,17 +190,14 @@ export function CustomizableDashboard({ widgetsConfig, stats }: CustomizableDash
   return (
     <div className="space-y-6">
       {groupedWidgets.map((group, groupIndex) => {
-        const isGrid = group.length > 1 || 
-          !["stats", "conversion", "geographic"].includes(group[0].type);
-        
+        const isGrid = group.length > 1 || !["stats", "conversion", "geographic"].includes(group[0].type);
+
         return isGrid ? (
           <div key={groupIndex} className="grid gap-4 md:grid-cols-2">
             {group.map((widget) => renderWidget(widget))}
           </div>
         ) : (
-          <div key={groupIndex}>
-            {renderWidget(group[0])}
-          </div>
+          <div key={groupIndex}>{renderWidget(group[0])}</div>
         );
       })}
     </div>

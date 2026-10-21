@@ -2,21 +2,8 @@ import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,20 +35,40 @@ interface Commission {
 }
 
 const sourceLabels: Record<string, string> = {
-  get service_booking() { return i18n.t("ux.bo.bookingFlightHotelCarStay"); },
-  get restaurant_reservation() { return i18n.t("ux.bo.restaurant"); },
-  get wellness_booking() { return i18n.t("ux.bo.wellnessBeauty"); },
-  get artisan_order() { return i18n.t("ux.bo.artisan"); },
+  get service_booking() {
+    return i18n.t("ux.bo.bookingFlightHotelCarStay");
+  },
+  get restaurant_reservation() {
+    return i18n.t("ux.bo.restaurant");
+  },
+  get wellness_booking() {
+    return i18n.t("ux.bo.wellnessBeauty");
+  },
+  get artisan_order() {
+    return i18n.t("ux.bo.artisan");
+  },
 };
 
 const payoutStatusLabels: Record<string, string> = {
   not_scheduled: "Hors reversement auto",
-  get awaiting_details() { return i18n.t("ux.bo.missingDetails"); },
-  get ready() { return i18n.t("ux.bo.payOut"); },
-  get processing() { return i18n.t("ux.bo.progressAtJKo"); },
-  get paid() { return i18n.t("ux.bo.paidOut"); },
-  get failed() { return i18n.t("ux.bo.failure"); },
-  get needs_review() { return i18n.t("ux.bo.checkAtJKo"); },
+  get awaiting_details() {
+    return i18n.t("ux.bo.missingDetails");
+  },
+  get ready() {
+    return i18n.t("ux.bo.payOut");
+  },
+  get processing() {
+    return i18n.t("ux.bo.progressAtJKo");
+  },
+  get paid() {
+    return i18n.t("ux.bo.paidOut");
+  },
+  get failed() {
+    return i18n.t("ux.bo.failure");
+  },
+  get needs_review() {
+    return i18n.t("ux.bo.checkAtJKo");
+  },
 };
 
 interface Stats {
@@ -85,23 +92,17 @@ export default function AdminCommissions() {
 
   const fetchCommissions = async () => {
     try {
-      const { data, error } = await supabase
-        .from("commissions")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("commissions").select("*").order("created_at", { ascending: false });
 
       if (error) throw error;
 
       // Fetch agency names
-      const agencyIds = [...new Set((data || []).map(c => c.agency_id))];
-      const { data: agencies } = await supabase
-        .from("agencies")
-        .select("id, name")
-        .in("id", agencyIds);
+      const agencyIds = [...new Set((data || []).map((c) => c.agency_id))];
+      const { data: agencies } = await supabase.from("agencies").select("id, name").in("id", agencyIds);
 
-      const agencyMap = new Map(agencies?.map(a => [a.id, a.name]) || []);
+      const agencyMap = new Map(agencies?.map((a) => [a.id, a.name]) || []);
 
-      const commissionsWithNames = (data || []).map(c => ({
+      const commissionsWithNames = (data || []).map((c) => ({
         ...c,
         agency_name: agencyMap.get(c.agency_id) || "N/A",
       }));
@@ -111,10 +112,10 @@ export default function AdminCommissions() {
       // Calculate stats
       const total = commissionsWithNames.reduce((sum, c) => sum + c.commission_amount, 0);
       const pending = commissionsWithNames
-        .filter(c => c.status === "pending")
+        .filter((c) => c.status === "pending")
         .reduce((sum, c) => sum + c.commission_amount, 0);
       const paid = commissionsWithNames
-        .filter(c => c.status === "paid")
+        .filter((c) => c.status === "paid")
         .reduce((sum, c) => sum + c.commission_amount, 0);
 
       setStats({ total, pending, paid });
@@ -138,10 +139,7 @@ export default function AdminCommissions() {
         updateData.payout_status = "paid";
       }
 
-      const { error } = await supabase
-        .from("commissions")
-        .update(updateData)
-        .eq("id", id);
+      const { error } = await supabase.from("commissions").update(updateData).eq("id", id);
 
       if (error) throw error;
 
@@ -172,9 +170,17 @@ export default function AdminCommissions() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.pending2")}</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="h-3 w-3 mr-1" /> {t("ux.bo.pending2")}
+          </Badge>
+        );
       case "paid":
-        return <Badge variant="default" className="bg-success text-success-foreground"><CheckCircle className="h-3 w-3 mr-1" /> {t("ux.bo.paid2")}</Badge>;
+        return (
+          <Badge variant="default" className="bg-success text-success-foreground">
+            <CheckCircle className="h-3 w-3 mr-1" /> {t("ux.bo.paid2")}
+          </Badge>
+        );
       case "cancelled":
         return <Badge variant="destructive">{t("ux.bo.cancelled2")}</Badge>;
       default:
@@ -196,9 +202,7 @@ export default function AdminCommissions() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">{t("ux.bo.commissionManagement")}</h1>
-            <p className="text-muted-foreground">
-              {t("ux.bo.trackSharesOwedAgenciesTheir")}
-            </p>
+            <p className="text-muted-foreground">{t("ux.bo.trackSharesOwedAgenciesTheir")}</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" asChild>
@@ -316,9 +320,7 @@ export default function AdminCommissions() {
                     <TableCell>
                       <Badge variant="outline">{commission.commission_rate}%</Badge>
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {formatCurrency(commission.commission_amount)}
-                    </TableCell>
+                    <TableCell className="font-medium">{formatCurrency(commission.commission_amount)}</TableCell>
                     <TableCell>
                       <div className="space-y-1">
                         {getStatusBadge(commission.status)}
@@ -339,14 +341,12 @@ export default function AdminCommissions() {
                       {format(new Date(commission.created_at), "dd MMM yyyy", { locale: fr })}
                     </TableCell>
                     <TableCell className="text-right">
-                      {commission.status === "pending" && !["ready", "processing", "needs_review"].includes(commission.payout_status) && (
-                        <Button
-                          size="sm"
-                          onClick={() => updateStatus(commission.id, "paid")}
-                        >
-                          {t("ux.bo.markAsPaid")}
-                        </Button>
-                      )}
+                      {commission.status === "pending" &&
+                        !["ready", "processing", "needs_review"].includes(commission.payout_status) && (
+                          <Button size="sm" onClick={() => updateStatus(commission.id, "paid")}>
+                            {t("ux.bo.markAsPaid")}
+                          </Button>
+                        )}
                     </TableCell>
                   </TableRow>
                 ))

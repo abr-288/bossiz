@@ -31,32 +31,34 @@ interface BaggageInfoProps {
   apiBaggageData?: ApiBaggageData;
 }
 
-export function BaggageInfo({ 
-  airline, 
-  fareType = "basic", 
+export function BaggageInfo({
+  airline,
+  fareType = "basic",
   cabinClass = "ECONOMY",
   compact = false,
-  apiBaggageData
+  apiBaggageData,
 }: BaggageInfoProps) {
   const { t } = useTranslation();
   // Use API data if available, otherwise fall back to static policies
   const staticAllowance = getBaggageAllowance(airline, fareType, cabinClass);
-  
+
   // Merge API data with static data structure
-  const allowance = apiBaggageData ? {
-    cabin: {
-      pieces: apiBaggageData.cabin.pieces,
-      weightKg: apiBaggageData.cabin.weightKg,
-      description: apiBaggageData.cabin.description || `Sac${apiBaggageData.cabin.pieces > 1 ? 's' : ''} cabine`
-    },
-    checked: apiBaggageData.checked,
-    personalItem: apiBaggageData.personalItem,
-    additionalBagPrice: apiBaggageData.additionalBagPrice || staticAllowance.additionalBagPrice
-  } : staticAllowance;
-  
+  const allowance = apiBaggageData
+    ? {
+        cabin: {
+          pieces: apiBaggageData.cabin.pieces,
+          weightKg: apiBaggageData.cabin.weightKg,
+          description: apiBaggageData.cabin.description || `Sac${apiBaggageData.cabin.pieces > 1 ? "s" : ""} cabine`,
+        },
+        checked: apiBaggageData.checked,
+        personalItem: apiBaggageData.personalItem,
+        additionalBagPrice: apiBaggageData.additionalBagPrice || staticAllowance.additionalBagPrice,
+      }
+    : staticAllowance;
+
   const { cabinText, checkedText, personalItemText } = formatBaggageInfo(allowance, t);
   const isLowCost = isLowCostCarrier(airline);
-  
+
   // For API data, show a badge indicating real-time data
   const isRealTimeData = !!apiBaggageData;
 
@@ -76,16 +78,20 @@ export function BaggageInfo({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className={cn(
-                "flex items-center gap-1",
-                allowance.checked.included ? "text-muted-foreground" : "text-warning-foreground"
-              )}>
+              <div
+                className={cn(
+                  "flex items-center gap-1",
+                  allowance.checked.included ? "text-muted-foreground" : "text-warning-foreground",
+                )}
+              >
                 <Luggage className="h-3 w-3" />
-                <span>{allowance.checked.included ? `${allowance.checked.weightKg}kg` : t("ux.baggage.notIncluded")}</span>
+                <span>
+                  {allowance.checked.included ? `${allowance.checked.weightKg}kg` : t("ux.baggage.notIncluded")}
+                </span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -104,7 +110,7 @@ export function BaggageInfo({
         <h4 className="font-semibold text-sm">{t("ux.baggage.includedBags")}</h4>
         {isRealTimeData && (
           <Badge variant="outline" className="text-xs px-1.5 py-0 text-success border-success/30">
-            {t('baggageInfo.realDataBadge')}
+            {t("baggageInfo.realDataBadge")}
           </Badge>
         )}
         {isLowCost && (
@@ -147,18 +153,15 @@ export function BaggageInfo({
 
         {/* Checked baggage */}
         <div className="flex items-start gap-2">
-          <div className={cn(
-            "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
-            allowance.checked.included 
-              ? "bg-primary/10" 
-              : "bg-warning"
-          )}>
-            <Luggage className={cn(
-              "h-3.5 w-3.5",
-              allowance.checked.included 
-                ? "text-primary" 
-                : "text-warning-foreground"
-            )} />
+          <div
+            className={cn(
+              "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
+              allowance.checked.included ? "bg-primary/10" : "bg-warning",
+            )}
+          >
+            <Luggage
+              className={cn("h-3.5 w-3.5", allowance.checked.included ? "text-primary" : "text-warning-foreground")}
+            />
           </div>
           <div className="min-w-0">
             <p className="text-xs font-medium text-foreground">{t("ux.baggage.checkedTitle")}</p>
@@ -169,7 +172,10 @@ export function BaggageInfo({
               {t("ux.baggage.included")}
             </Badge>
           ) : (
-            <Badge variant="outline" className="ml-auto shrink-0 text-xs px-1.5 py-0 text-warning-foreground border-warning-foreground/20">
+            <Badge
+              variant="outline"
+              className="ml-auto shrink-0 text-xs px-1.5 py-0 text-warning-foreground border-warning-foreground/20"
+            >
               {t("ux.baggage.paid")}
             </Badge>
           )}
@@ -179,9 +185,7 @@ export function BaggageInfo({
         {isLowCost && !allowance.checked.included && (
           <div className="flex items-start gap-2 p-2 rounded-md bg-warning border border-warning-foreground/20">
             <AlertTriangle className="h-3.5 w-3.5 text-warning-foreground shrink-0 mt-0.5" />
-            <p className="text-xs text-warning-foreground">
-              {t('baggageInfo.lowCostWarning')}
-            </p>
+            <p className="text-xs text-warning-foreground">{t("baggageInfo.lowCostWarning")}</p>
           </div>
         )}
 
@@ -211,8 +215,11 @@ export function BaggageInfo({
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-[200px]">
               <p className="text-xs">
-                {t("ux.baggage.basedOn", { fare: fareType === "benefits" ? "Benefits" : "Basic", cabin: cabinClass === "ECONOMY" ? t("ux.baggage.economy") : cabinClass })}{" "}
-                {t('baggageInfo.confirmationNote')}
+                {t("ux.baggage.basedOn", {
+                  fare: fareType === "benefits" ? "Benefits" : "Basic",
+                  cabin: cabinClass === "ECONOMY" ? t("ux.baggage.economy") : cabinClass,
+                })}{" "}
+                {t("baggageInfo.confirmationNote")}
               </p>
             </TooltipContent>
           </Tooltip>

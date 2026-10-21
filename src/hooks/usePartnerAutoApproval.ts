@@ -21,7 +21,8 @@ export function usePartnerAutoApproval() {
       const value = data?.config_value as { autoApprove?: boolean; delayMinutes?: number } | null;
       return {
         autoApprove: value?.autoApprove === true,
-        delayMinutes: typeof value?.delayMinutes === "number" ? value.delayMinutes : DEFAULT_PARTNER_AUTO_APPROVAL_DELAY,
+        delayMinutes:
+          typeof value?.delayMinutes === "number" ? value.delayMinutes : DEFAULT_PARTNER_AUTO_APPROVAL_DELAY,
       };
     },
     staleTime: 60_000,

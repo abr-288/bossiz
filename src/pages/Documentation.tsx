@@ -6,16 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { 
+import {
   Book,
   Users,
   Shield,
-  Lock, 
-  Settings, 
-  CreditCard, 
-  Home, 
-  Phone, 
-  Mail, 
+  Lock,
+  Settings,
+  CreditCard,
+  Home,
+  Phone,
+  Mail,
   Calendar,
   FileText,
   BarChart3,
@@ -182,7 +182,7 @@ import {
   DiamondSquare,
   Hexagon,
   Octagon,
-  Pentagon
+  Pentagon,
 } from "lucide-react";
 import heroImage from "@/assets/destination-safari.webp";
 import { useTranslation } from "react-i18next";
@@ -200,11 +200,7 @@ const Documentation = () => {
   const [demoProgress, setDemoProgress] = useState(0);
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section) 
-        : [...prev, section]
-    );
+    setExpandedSections((prev) => (prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]));
   };
 
   const startDemo = (feature: string) => {
@@ -236,107 +232,107 @@ const Documentation = () => {
   const prevDemoStep = () => {
     if (currentDemoStep > 0) {
       setCurrentDemoStep(currentDemoStep - 1);
-      setDemoProgress(((currentDemoStep - 1) / getDemoSteps(selectedFeature || '').length) * 100);
+      setDemoProgress(((currentDemoStep - 1) / getDemoSteps(selectedFeature || "").length) * 100);
     }
   };
 
   const getDemoSteps = (feature: string) => {
     const steps: Record<string, string[]> = {
-      'dashboard': [
+      dashboard: [
         t("ux.bo.loginAuthentication"),
         t("ux.bo.navigatingDashboard"),
         t("ux.bo.viewingStatistics"),
         t("ux.bo.managingBookings"),
-        t("ux.bo.profileCustomization")
+        t("ux.bo.profileCustomization"),
       ],
-      'subscription': [
+      subscription: [
         t("ux.bo.discoveringPlans"),
         t("ux.bo.comparingPrices"),
         t("ux.bo.subscriptionProcess"),
         t("ux.bo.securePayment"),
-        t("ux.bo.confirmationActivation")
+        t("ux.bo.confirmationActivation"),
       ],
-      'admin': [
+      admin: [
         t("ux.bo.accessingAdminPanel"),
         t("ux.bo.userManagement"),
         t("ux.bo.systemConfiguration"),
         t("ux.bo.reportsAnalytics"),
-        t("ux.bo.maintenanceSupport")
+        t("ux.bo.maintenanceSupport"),
       ],
-      'booking': [
+      booking: [
         t("ux.bo.searchingDestinations"),
         t("ux.bo.choosingDatesOptions"),
         t("ux.bo.settingUpTripDetails"),
         t("ux.bo.confirmingJKo"),
-        t("ux.bo.bookingConfirmation")
+        t("ux.bo.bookingConfirmation"),
       ],
-      'profile': [
+      profile: [
         t("ux.bo.accessingUserProfile"),
         t("ux.bo.updatingInformation"),
         t("ux.bo.settingPreferences"),
         t("ux.bo.managingPaymentMethods"),
-        t("ux.bo.activityHistory")
+        t("ux.bo.activityHistory"),
       ],
-      'support': [
+      support: [
         t("ux.bo.accessHelpCenter"),
         t("ux.bo.browsingFaq"),
         t("ux.bo.contactingSupport"),
         t("ux.bo.trackingTickets"),
-        t("ux.bo.accessingResources")
+        t("ux.bo.accessingResources"),
       ],
-      'mobile': [
+      mobile: [
         t("ux.bo.responsiveMobile"),
         t("ux.bo.optimizedTouchNavigation"),
         t("ux.bo.mobileFeatures"),
         t("ux.bo.pushNotifications"),
-        t("ux.bo.mobileUserExperience")
-      ]
+        t("ux.bo.mobileUserExperience"),
+      ],
     };
     return steps[feature] || [];
   };
 
   const getFeatureIcon = (feature: string) => {
     const icons: Record<string, React.ReactNode> = {
-      'dashboard': <BarChart3 className="w-6 h-6" />,
-      'subscription': <CreditCard className="w-6 h-6" />,
-      'admin': <Settings className="w-6 h-6" />,
-      'booking': <Calendar className="w-6 h-6" />,
-      'profile': <User className="w-6 h-6" />,
-      'support': <HelpCircle className="w-6 h-6" />,
-      'mobile': <Smartphone className="w-6 h-6" />
+      dashboard: <BarChart3 className="w-6 h-6" />,
+      subscription: <CreditCard className="w-6 h-6" />,
+      admin: <Settings className="w-6 h-6" />,
+      booking: <Calendar className="w-6 h-6" />,
+      profile: <User className="w-6 h-6" />,
+      support: <HelpCircle className="w-6 h-6" />,
+      mobile: <Smartphone className="w-6 h-6" />,
     };
     return icons[feature] || <Book className="w-6 h-6" />;
   };
 
   const getFeatureTitle = (feature: string) => {
     const titles: Record<string, string> = {
-      'dashboard': t("ux.bo.dashboard"),
-      'subscription': t("ux.bo.subscriptions"),
-      'admin': t("ux.bo.administration"),
-      'booking': t("ux.bo.bookings"),
-      'profile': t("ux.bo.profile"),
-      'support': t("ux.bo.support"),
-      'mobile': t("ux.bo.mobile")
+      dashboard: t("ux.bo.dashboard"),
+      subscription: t("ux.bo.subscriptions"),
+      admin: t("ux.bo.administration"),
+      booking: t("ux.bo.bookings"),
+      profile: t("ux.bo.profile"),
+      support: t("ux.bo.support"),
+      mobile: t("ux.bo.mobile"),
     };
     return titles[feature] || feature;
   };
 
   const getFeatureRoute = (feature: string) => {
     const routes: Record<string, string> = {
-      'dashboard': '/dashboard',
-      'subscription': '/',
-      'admin': '/admin',
-      'booking': '/booking-history',
-      'profile': '/account',
-      'support': '/support',
-      'mobile': '/install'
+      dashboard: "/dashboard",
+      subscription: "/",
+      admin: "/admin",
+      booking: "/booking-history",
+      profile: "/account",
+      support: "/support",
+      mobile: "/install",
     };
-    return routes[feature] || '/';
+    return routes[feature] || "/";
   };
 
   const getLivePreview = (feature: string, step: number) => {
     const previews: Record<string, React.ReactNode[]> = {
-      'dashboard': [
+      dashboard: [
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 bg-info/10 rounded-full flex items-center justify-center">
@@ -350,9 +346,15 @@ const Documentation = () => {
         </div>,
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="flex gap-2 mb-4">
-            <Button variant="ghost" size="sm"><BarChart3 className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm"><Users className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm"><Calendar className="w-4 h-4" /></Button>
+            <Button variant="ghost" size="sm">
+              <BarChart3 className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Users className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Calendar className="w-4 h-4" />
+            </Button>
           </div>
           <p className="text-sm text-muted-foreground">{t("ux.bo.intuitiveNavigationBetweenSections")}</p>
         </div>,
@@ -394,16 +396,16 @@ const Documentation = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
       ],
-      'booking': [
+      booking: [
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-              <input 
-                type="text" 
-                placeholder={t("ux.bo.searchDestination")} 
+              <input
+                type="text"
+                placeholder={t("ux.bo.searchDestination")}
                 className="w-full pl-10 pr-4 py-2 border rounded-lg"
               />
             </div>
@@ -470,9 +472,9 @@ const Documentation = () => {
             <h4 className="font-semibold text-success">{t("ux.bo.bookingConfirmed")}</h4>
             <p className="text-sm text-muted-foreground">{t("ux.bo.tripHasBeenBookedSuccessfully")}</p>
           </div>
-        </div>
+        </div>,
       ],
-      'profile': [
+      profile: [
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
@@ -500,11 +502,15 @@ const Documentation = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm">{t("ux.bo.emailNotifications")}</span>
-              <Button variant="outline" size="sm">{t("ux.bo.enable")}</Button>
+              <Button variant="outline" size="sm">
+                {t("ux.bo.enable")}
+              </Button>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Newsletter</span>
-              <Button variant="outline" size="sm">{t("ux.bo.disable")}</Button>
+              <Button variant="outline" size="sm">
+                {t("ux.bo.disable")}
+              </Button>
             </div>
           </div>
         </div>,
@@ -514,7 +520,9 @@ const Documentation = () => {
               <CreditCard className="w-5 h-5 text-info" />
               <span className="text-sm">••••• 4242</span>
             </div>
-            <Button variant="outline" className="w-full">{t("ux.bo.addMethod")}</Button>
+            <Button variant="outline" className="w-full">
+              {t("ux.bo.addMethod")}
+            </Button>
           </div>
         </div>,
         <div className="bg-card p-6 rounded-lg shadow-lg">
@@ -528,9 +536,9 @@ const Documentation = () => {
               <Badge variant="outline">{t("ux.bo.confirmed")}</Badge>
             </div>
           </div>
-        </div>
+        </div>,
       ],
-      'support': [
+      support: [
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center">
             <HelpCircle className="w-12 h-12 mx-auto mb-4 text-info" />
@@ -552,10 +560,7 @@ const Documentation = () => {
         </div>,
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="space-y-4">
-            <textarea 
-              placeholder={t("ux.bo.describeProblem")} 
-              className="w-full p-3 border rounded-lg h-24"
-            />
+            <textarea placeholder={t("ux.bo.describeProblem")} className="w-full p-3 border rounded-lg h-24" />
             <Button className="w-full">{t("ux.bo.sendRequest")}</Button>
           </div>
         </div>,
@@ -582,9 +587,9 @@ const Documentation = () => {
               <div className="text-sm">{t("ux.bo.tutorials")}</div>
             </div>
           </div>
-        </div>
+        </div>,
       ],
-      'mobile': [
+      mobile: [
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="text-center">
             <Smartphone className="w-12 h-12 mx-auto mb-4 text-info" />
@@ -594,10 +599,18 @@ const Documentation = () => {
         </div>,
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="grid grid-cols-4 gap-2">
-            <Button variant="ghost" size="sm"><Home className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm"><Search className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm"><Calendar className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm"><User className="w-4 h-4" /></Button>
+            <Button variant="ghost" size="sm">
+              <Home className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Search className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Calendar className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <User className="w-4 h-4" />
+            </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-2">{t("ux.bo.intuitiveTouchNavigation")}</p>
         </div>,
@@ -642,14 +655,14 @@ const Documentation = () => {
               </div>
             </div>
           </div>
-        </div>
-      ]
+        </div>,
+      ],
     };
-    
+
     if (previews[feature] && previews[feature][step]) {
       return previews[feature][step];
     }
-    
+
     return (
       <div className="bg-card p-6 rounded-lg shadow-lg">
         <div className="text-center">
@@ -665,43 +678,43 @@ const Documentation = () => {
 
   const getStepDescription = (feature: string, step: number) => {
     const descriptions: Record<string, string[]> = {
-      'dashboard': [
+      dashboard: [
         t("ux.bo.logEmailPasswordAccessSecure"),
         t("ux.bo.useIntuitiveSideMenuMove"),
         t("ux.bo.viewBookingStatisticsRevenueRecent"),
         t("ux.bo.easilyManageCurrentBookingsPlace"),
-        t("ux.bo.customizeProfileSetPreferencesManage")
+        t("ux.bo.customizeProfileSetPreferencesManage"),
       ],
-      'booking': [
+      booking: [
         t("ux.bo.searchHundredsAvailableDestinationsOur"),
         t("ux.bo.selectTravelDatesNumberTravelers"),
         t("ux.bo.customizeTripExtraOptionsPremium"),
         t("ux.bo.paySecurelyJKoPreferred"),
-        t("ux.bo.getInstantConfirmationAllDetails")
+        t("ux.bo.getInstantConfirmationAllDetails"),
       ],
-      'profile': [
+      profile: [
         t("ux.bo.accessPersonalProfileManageAll"),
         t("ux.bo.updateContactDetailsPaymentInformation"),
         t("ux.bo.setNotificationsAlertsPrivacySettings"),
         t("ux.bo.addEditRemovePaymentMethods"),
-        t("ux.bo.viewFullHistoryActivitiesBookings")
+        t("ux.bo.viewFullHistoryActivitiesBookings"),
       ],
-      'support': [
+      support: [
         t("ux.bo.accessOurCompleteHelpCenter"),
         t("ux.bo.browseOurFaqOrganizedCategory"),
         t("ux.bo.contactOurTechnicalSupport24"),
         t("ux.bo.trackStatusSupportRequestsReal"),
-        t("ux.bo.accessRichLibraryVideoResources")
+        t("ux.bo.accessRichLibraryVideoResources"),
       ],
-      'mobile': [
+      mobile: [
         t("ux.bo.enjoyInterfacePerfectlySuitedMobile"),
         t("ux.bo.navigateEasilyIntuitiveGesturesTouch"),
         t("ux.bo.accessEveryFeaturePlatformWherever"),
         t("ux.bo.getPushNotificationsStayInformed"),
-        t("ux.bo.enjoySmoothFastUserExperience")
-      ]
+        t("ux.bo.enjoySmoothFastUserExperience"),
+      ],
     };
-    
+
     return descriptions[feature]?.[step] || t("ux.bo.discoverExcitingFeature");
   };
 
@@ -720,9 +733,7 @@ const Documentation = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-              Master Traversee Connect
-            </h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Master Traversee Connect</h1>
             <p className="text-lg md:text-xl text-white/95 mb-8 max-w-2xl mx-auto">
               {t("ux.bo.exploreOurPlatformThroughImmersive")}
             </p>
@@ -758,11 +769,15 @@ const Documentation = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={() => navigate('/')} className="flex items-center gap-2 hover:bg-muted">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/")}
+                className="flex items-center gap-2 hover:bg-muted"
+              >
                 <Home className="w-4 h-4" />
                 {t("ux.bo.home")}
               </Button>
-              <Button onClick={() => navigate('/admin')} className="flex items-center gap-2 bg-info hover:bg-info/90">
+              <Button onClick={() => navigate("/admin")} className="flex items-center gap-2 bg-info hover:bg-info/90">
                 <Settings className="w-4 h-4" />
                 Admin
               </Button>
@@ -782,11 +797,11 @@ const Documentation = () => {
               </div>
               <h3 className="text-xl font-bold mb-2">{t("ux.bo.quickTour")}</h3>
               <p className="text-blue-100 mb-4">{t("ux.bo.discoverEssentialFeatures5Minutes")}</p>
-              <Button 
-                size="sm" 
-                variant="secondary" 
+              <Button
+                size="sm"
+                variant="secondary"
                 className="bg-card text-info hover:bg-info/10"
-                onClick={() => startDemo('dashboard')}
+                onClick={() => startDemo("dashboard")}
               >
                 {t("ux.bo.start")}
               </Button>
@@ -800,11 +815,11 @@ const Documentation = () => {
               </div>
               <h3 className="text-xl font-bold mb-2">{t("ux.bo.fullTour")}</h3>
               <p className="text-purple-100 mb-4">{t("ux.bo.exploreEveryFeatureDetail")}</p>
-              <Button 
-                size="sm" 
-                variant="secondary" 
+              <Button
+                size="sm"
+                variant="secondary"
                 className="bg-card text-primary hover:bg-primary/10"
-                onClick={() => startDemo('complete-tour')}
+                onClick={() => startDemo("complete-tour")}
               >
                 {t("ux.bo.startTour")}
               </Button>
@@ -818,11 +833,11 @@ const Documentation = () => {
               </div>
               <h3 className="text-xl font-bold mb-2">{t("ux.bo.freeModule")}</h3>
               <p className="text-green-100 mb-4">{t("ux.bo.chooseLearningModule")}</p>
-              <Button 
-                size="sm" 
-                variant="secondary" 
+              <Button
+                size="sm"
+                variant="secondary"
                 className="bg-card text-success hover:bg-success/10"
-                onClick={() => document.getElementById('module-selection')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.getElementById("module-selection")?.scrollIntoView({ behavior: "smooth" })}
               >
                 {t("ux.bo.explore")}
               </Button>
@@ -834,24 +849,64 @@ const Documentation = () => {
         <div id="module-selection" className="bg-card rounded-2xl shadow-xl p-8 mb-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-4">{t("ux.bo.learningModules")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("ux.bo.chooseSpecificModuleExploreDetail")}
-            </p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">{t("ux.bo.chooseSpecificModuleExploreDetail")}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { id: 'dashboard', title: t("ux.bo.dashboard2"), icon: BarChart3, color: 'blue', description: t("ux.bo.mainManagement") },
-              { id: 'booking', title: t("ux.bo.bookings"), icon: Calendar, color: 'purple', description: t("ux.bo.tripsStays") },
-              { id: 'subscription', title: t("ux.bo.subscriptions"), icon: CreditCard, color: 'green', description: t("ux.bo.pricingPlans") },
-              { id: 'profile', title: t("ux.bo.profile"), icon: User, color: 'indigo', description: t("ux.bo.personalManagement") },
-              { id: 'support', title: t("ux.bo.support"), icon: HelpCircle, color: 'orange', description: t("ux.bo.helpSupport") },
-              { id: 'admin', title: t("ux.bo.administration"), icon: Settings, color: 'red', description: 'Configuration' },
-              { id: 'mobile', title: t("ux.bo.mobile"), icon: Smartphone, color: 'pink', description: t("ux.bo.mobileApp2") }
+              {
+                id: "dashboard",
+                title: t("ux.bo.dashboard2"),
+                icon: BarChart3,
+                color: "blue",
+                description: t("ux.bo.mainManagement"),
+              },
+              {
+                id: "booking",
+                title: t("ux.bo.bookings"),
+                icon: Calendar,
+                color: "purple",
+                description: t("ux.bo.tripsStays"),
+              },
+              {
+                id: "subscription",
+                title: t("ux.bo.subscriptions"),
+                icon: CreditCard,
+                color: "green",
+                description: t("ux.bo.pricingPlans"),
+              },
+              {
+                id: "profile",
+                title: t("ux.bo.profile"),
+                icon: User,
+                color: "indigo",
+                description: t("ux.bo.personalManagement"),
+              },
+              {
+                id: "support",
+                title: t("ux.bo.support"),
+                icon: HelpCircle,
+                color: "orange",
+                description: t("ux.bo.helpSupport"),
+              },
+              {
+                id: "admin",
+                title: t("ux.bo.administration"),
+                icon: Settings,
+                color: "red",
+                description: "Configuration",
+              },
+              {
+                id: "mobile",
+                title: t("ux.bo.mobile"),
+                icon: Smartphone,
+                color: "pink",
+                description: t("ux.bo.mobileApp2"),
+              },
             ].map((module) => (
               <Dialog key={module.id}>
                 <DialogTrigger asChild>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="h-32 flex flex-col gap-3 hover:scale-105 transition-all duration-slow ease-standard border-2 hover:border-info/50 bg-card hover:bg-info/10 group"
                     onClick={() => setSelectedFeature(module.id)}
                   >
@@ -874,12 +929,14 @@ const Documentation = () => {
                       {getFeatureTitle(module.id)} - Démo Interactive
                     </DialogTitle>
                   </DialogHeader>
-                  
+
                   <div className="space-y-6">
                     {/* Progress Bar */}
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Étape {currentDemoStep + 1} sur {getDemoSteps(module.id).length}</span>
+                        <span>
+                          Étape {currentDemoStep + 1} sur {getDemoSteps(module.id).length}
+                        </span>
                         <span>{Math.round(demoProgress)}%</span>
                       </div>
                       <Progress value={demoProgress} className="w-full h-3" />
@@ -888,45 +945,32 @@ const Documentation = () => {
                     {/* Demo Content */}
                     <div className="bg-gradient-to-br from-muted/40 to-muted/20 rounded-xl p-8 min-h-[400px]">
                       <div className="text-center">
-                        <div className="mb-6">
-                          {getFeatureIcon(module.id)}
-                        </div>
+                        <div className="mb-6">{getFeatureIcon(module.id)}</div>
                         <h3 className="text-2xl font-bold mb-4 text-foreground">
                           {getDemoSteps(module.id)[currentDemoStep] || t("ux.bo.demoComplete")}
                         </h3>
                         <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
                           {getStepDescription(module.id, currentDemoStep)}
                         </p>
-                        
+
                         {/* Live Preview */}
-                        <div className="mb-6">
-                          {getLivePreview(module.id, currentDemoStep)}
-                        </div>
+                        <div className="mb-6">{getLivePreview(module.id, currentDemoStep)}</div>
                       </div>
                     </div>
 
                     {/* Controls */}
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={prevDemoStep}
-                          disabled={currentDemoStep === 0}
-                        >
+                        <Button variant="outline" size="sm" onClick={prevDemoStep} disabled={currentDemoStep === 0}>
                           <SkipBack className="w-4 h-4 mr-1" />
                           {t("ux.bo.previous")}
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setIsPlaying(!isPlaying)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => setIsPlaying(!isPlaying)}>
                           {isPlaying ? <Pause className="w-4 h-4 mr-1" /> : <Play className="w-4 h-4 mr-1" />}
-                          {isPlaying ? 'Pause' : 'Play'}
+                          {isPlaying ? "Pause" : "Play"}
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={nextDemoStep}
                           disabled={currentDemoStep >= getDemoSteps(module.id).length - 1}
@@ -935,20 +979,13 @@ const Documentation = () => {
                           <SkipForward className="w-4 h-4 ml-1" />
                         </Button>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setShowPreview(!showPreview)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => setShowPreview(!showPreview)}>
                           <Eye className="w-4 h-4 mr-1" />
-                          {showPreview ? 'Masquer' : 'Voir'} aperçu
+                          {showPreview ? "Masquer" : "Voir"} aperçu
                         </Button>
-                        <Button 
-                          size="sm"
-                          onClick={() => navigate(getFeatureRoute(module.id))}
-                        >
+                        <Button size="sm" onClick={() => navigate(getFeatureRoute(module.id))}>
                           <ExternalLink className="w-4 h-4 mr-1" />
                           {t("ux.bo.open")}
                         </Button>
@@ -956,12 +993,9 @@ const Documentation = () => {
                     </div>
 
                     {/* Complete Tour Button */}
-                    {module.id !== 'complete-tour' && (
+                    {module.id !== "complete-tour" && (
                       <div className="text-center mt-6">
-                        <Button 
-                          className="bg-action hover:bg-action-hover"
-                          onClick={() => startDemo('complete-tour')}
-                        >
+                        <Button className="bg-action hover:bg-action-hover" onClick={() => startDemo("complete-tour")}>
                           <Rocket className="w-4 h-4 mr-2" />
                           {t("ux.bo.startFullTour")}
                         </Button>
@@ -985,7 +1019,7 @@ const Documentation = () => {
               <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
                 {t("ux.bo.masterWholeTraverseeConnectPlatform")}
               </p>
-              
+
               <div className="flex flex-wrap justify-center gap-6 mb-8">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-1">8</div>
@@ -1005,10 +1039,10 @@ const Documentation = () => {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-                onClick={() => startDemo('complete-tour')}
+                onClick={() => startDemo("complete-tour")}
               >
                 <Rocket className="w-5 h-5 mr-2" />
                 {t("ux.bo.startFullTour2")}
@@ -1023,7 +1057,7 @@ const Documentation = () => {
                 { icon: User, title: t("ux.bo.profile"), description: t("ux.bo.personalManagement") },
                 { icon: HelpCircle, title: t("ux.bo.support"), description: t("ux.bo.helpSupport") },
                 { icon: Settings, title: t("ux.bo.administration"), description: t("ux.bo.systemConfiguration") },
-                { icon: Smartphone, title: t("ux.bo.mobile"), description: t("ux.bo.mobileApp2") }
+                { icon: Smartphone, title: t("ux.bo.mobile"), description: t("ux.bo.mobileApp2") },
               ].map((item, index) => (
                 <div key={index} className="bg-card p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-3 mb-2">
@@ -1041,10 +1075,14 @@ const Documentation = () => {
               <h3 className="text-xl font-bold text-foreground mb-4">{t("ux.bo.benefitsFullTour")}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { icon: CheckCircle, title: t("ux.bo.fullMastery"), description: t("ux.bo.discoverEveryFeatureDepth") },
-                  { icon: Award, title: 'Certification', description: t("ux.bo.earnMasteryCertificate") },
+                  {
+                    icon: CheckCircle,
+                    title: t("ux.bo.fullMastery"),
+                    description: t("ux.bo.discoverEveryFeatureDepth"),
+                  },
+                  { icon: Award, title: "Certification", description: t("ux.bo.earnMasteryCertificate") },
                   { icon: TrendingUp, title: t("ux.bo.productivity"), description: t("ux.bo.getMostOutPlatform") },
-                  { icon: Users, title: t("ux.bo.confidence"), description: t("ux.bo.gainAutonomyConfidence") }
+                  { icon: Users, title: t("ux.bo.confidence"), description: t("ux.bo.gainAutonomyConfidence") },
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <benefit.icon className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
@@ -1078,7 +1116,7 @@ const Documentation = () => {
                 {t("ux.bo.designedOfferOutstandingUserExperience")}
                 {t("ux.bo.tourismProfessionals")}
               </p>
-              
+
               <h3>{t("ux.bo.keyPoints")}</h3>
               <ul>
                 <li>{t("ux.bo.modernIntuitiveInterface")}</li>
@@ -1096,28 +1134,28 @@ const Documentation = () => {
                 {
                   icon: <Calendar className="w-8 h-8 text-info" />,
                   title: t("ux.bo.smartBookings"),
-                  description: t("ux.bo.advancedBookingSystemRealTime")
+                  description: t("ux.bo.advancedBookingSystemRealTime"),
                 },
                 {
                   icon: <CreditCard className="w-8 h-8 text-success" />,
                   title: t("ux.bo.securePayments"),
-                  description: t("ux.bo.jKoIntegrationMultipleSecure")
+                  description: t("ux.bo.jKoIntegrationMultipleSecure"),
                 },
                 {
                   icon: <BarChart3 className="w-8 h-8 text-primary" />,
                   title: t("ux.bo.dashboard2"),
-                  description: t("ux.bo.detailedAnalyticsRealTimeStatistics")
+                  description: t("ux.bo.detailedAnalyticsRealTimeStatistics"),
                 },
                 {
                   icon: <Smartphone className="w-8 h-8 text-pink-600" />,
                   title: t("ux.bo.mobileApp"),
-                  description: t("ux.bo.nativeMobileExperienceNotificationsOffline")
+                  description: t("ux.bo.nativeMobileExperienceNotificationsOffline"),
                 },
                 {
                   icon: <HelpCircle className="w-8 h-8 text-warning-foreground" />,
                   title: t("ux.bo.n247Support"),
-                  description: t("ux.bo.customerSupportAvailableAroundClock")
-                }
+                  description: t("ux.bo.customerSupportAvailableAroundClock"),
+                },
               ].map((feature, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 text-center">
@@ -1137,20 +1175,20 @@ const Documentation = () => {
                   title: t("ux.bo.quickStartGuide"),
                   description: t("ux.bo.setUpAccount5Simple"),
                   icon: <Rocket className="w-6 h-6" />,
-                  level: t("ux.bo.beginner")
+                  level: t("ux.bo.beginner"),
                 },
                 {
                   title: t("ux.bo.paymentGuide"),
                   description: t("ux.bo.allAboutJKoPayment"),
                   icon: <CreditCard className="w-6 h-6" />,
-                  level: t("ux.bo.intermediate")
+                  level: t("ux.bo.intermediate"),
                 },
                 {
                   title: t("ux.bo.mobileGuide"),
                   description: t("ux.bo.getFullPotentialMobileApp"),
                   icon: <Smartphone className="w-6 h-6" />,
-                  level: t("ux.bo.intermediate")
-                }
+                  level: t("ux.bo.intermediate"),
+                },
               ].map((guide, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardContent className="p-6">
@@ -1175,20 +1213,20 @@ const Documentation = () => {
               {[
                 {
                   question: t("ux.bo.howDoesBookingSystemWork"),
-                  answer: t("ux.bo.ourBookingSystemUsesAdvanced")
+                  answer: t("ux.bo.ourBookingSystemUsesAdvanced"),
                 },
                 {
                   question: t("ux.bo.whichPaymentMethodsAccepted"),
-                  answer: t("ux.bo.weAcceptJKoVisa")
+                  answer: t("ux.bo.weAcceptJKoVisa"),
                 },
                 {
                   question: t("ux.bo.howCanICancelMy"),
-                  answer: t("ux.bo.youCanCancelBookingFrom")
+                  answer: t("ux.bo.youCanCancelBookingFrom"),
                 },
                 {
                   question: t("ux.bo.mobileAppAvailable"),
-                  answer: t("ux.bo.yesOurMobileAppAvailable")
-                }
+                  answer: t("ux.bo.yesOurMobileAppAvailable"),
+                },
               ].map((faq, index) => (
                 <Card key={index}>
                   <CardContent className="p-6">

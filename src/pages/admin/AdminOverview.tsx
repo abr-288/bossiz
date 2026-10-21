@@ -37,8 +37,8 @@ const AdminOverview = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground">
-              {activeLayout?.layoutName === "default" 
-                ? t("ux.bo.overviewPlatformRealTime") 
+              {activeLayout?.layoutName === "default"
+                ? t("ux.bo.overviewPlatformRealTime")
                 : `Vue: ${activeLayout?.layoutName} - Temps réel`}
             </p>
           </div>
@@ -48,22 +48,14 @@ const AdminOverview = () => {
               {t("ux.bo.realTime")}
             </Badge>
             <DashboardCustomizer />
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => refetch()}
-              disabled={loading}
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={loading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
               {t("ux.bo.refresh")}
             </Button>
           </div>
         </div>
 
-        <CustomizableDashboard 
-          widgetsConfig={activeLayout?.widgetsConfig || []} 
-          stats={stats}
-        />
+        <CustomizableDashboard widgetsConfig={activeLayout?.widgetsConfig || []} stats={stats} />
       </div>
     </AdminLayout>
   );

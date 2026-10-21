@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { AlertCircle, ArrowRightLeft, MapPin, Calendar, Clock, User } from "lucide-react";
-import { 
-  UnifiedForm, 
+import {
+  UnifiedForm,
   UnifiedAutocomplete,
   UnifiedDatePicker,
   UnifiedSubmitButton,
-  FormProgressBar
+  FormProgressBar,
 } from "@/components/forms";
 import { useTranslation } from "react-i18next";
 import { carRentalSchema, type CarRentalInput } from "@/lib/validationSchemas";
@@ -29,18 +29,18 @@ export const CarSearchForm = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
-  
+
   // Location states
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [differentDropoff, setDifferentDropoff] = useState(false);
-  
+
   // Date/Time states
   const [pickupDate, setPickupDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
   const [pickupTime, setPickupTime] = useState("10:00");
   const [returnTime, setReturnTime] = useState("10:00");
-  
+
   // Driver age
   const [driverAge, setDriverAge] = useState("30");
 
@@ -52,8 +52,8 @@ export const CarSearchForm = () => {
   const timeOptions = [];
   for (let h = 0; h < 24; h++) {
     for (let m = 0; m < 60; m += 30) {
-      const hour = h.toString().padStart(2, '0');
-      const min = m.toString().padStart(2, '0');
+      const hour = h.toString().padStart(2, "0");
+      const min = m.toString().padStart(2, "0");
       timeOptions.push(`${hour}:${min}`);
     }
   }
@@ -77,7 +77,7 @@ export const CarSearchForm = () => {
 
     const formData: Partial<CarRentalInput> = {
       pickupLocation: pickupLocation || "",
-      dropoffLocation: differentDropoff ? (dropoffLocation || "") : (pickupLocation || ""),
+      dropoffLocation: differentDropoff ? dropoffLocation || "" : pickupLocation || "",
       pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
       pickupTime,
       dropoffDate: returnDate ? format(returnDate, "yyyy-MM-dd") : "",
@@ -86,10 +86,10 @@ export const CarSearchForm = () => {
     };
 
     const validation = safeValidate(carRentalSchema, formData as CarRentalInput);
-    
+
     if (!validation.success) {
       const filteredErrors: Record<string, string> = {};
-      Object.keys(validation.errors).forEach(key => {
+      Object.keys(validation.errors).forEach((key) => {
         if (touched[key]) {
           filteredErrors[key] = validation.errors[key];
         }
@@ -97,20 +97,30 @@ export const CarSearchForm = () => {
       setErrors(filteredErrors);
     } else {
       const clearedErrors = { ...errors };
-      Object.keys(touched).forEach(key => {
+      Object.keys(touched).forEach((key) => {
         delete clearedErrors[key];
       });
       setErrors(clearedErrors);
     }
-  }, [pickupLocation, dropoffLocation, differentDropoff, pickupDate, returnDate, pickupTime, returnTime, driverAge, touched]);
+  }, [
+    pickupLocation,
+    dropoffLocation,
+    differentDropoff,
+    pickupDate,
+    returnDate,
+    pickupTime,
+    returnTime,
+    driverAge,
+    touched,
+  ]);
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setTouched({
       pickupLocation: true,
       dropoffLocation: true,
@@ -122,7 +132,7 @@ export const CarSearchForm = () => {
 
     const formData: CarRentalInput = {
       pickupLocation: pickupLocation || "",
-      dropoffLocation: differentDropoff ? (dropoffLocation || pickupLocation || "") : (pickupLocation || ""),
+      dropoffLocation: differentDropoff ? dropoffLocation || pickupLocation || "" : pickupLocation || "",
       pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
       pickupTime,
       dropoffDate: returnDate ? format(returnDate, "yyyy-MM-dd") : "",
@@ -135,11 +145,11 @@ export const CarSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
+        title: t("validation.errorTitle"),
+        description: t("validation.errorDescription"),
         variant: "destructive",
       });
-      
+
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -160,18 +170,15 @@ export const CarSearchForm = () => {
 
   // Calculate form progress
   const totalFields = differentDropoff ? 4 : 3;
-  const completedFields = [
-    pickupLocation,
-    differentDropoff ? dropoffLocation : true,
-    pickupDate,
-    returnDate,
-  ].filter(Boolean).length;
+  const completedFields = [pickupLocation, differentDropoff ? dropoffLocation : true, pickupDate, returnDate].filter(
+    Boolean,
+  ).length;
 
   return (
     <UnifiedForm onSubmit={handleSearch} variant="search" className="max-w-6xl mx-auto">
       {/* Progress bar */}
-      <FormProgressBar 
-        totalFields={totalFields} 
+      <FormProgressBar
+        totalFields={totalFields}
         completedFields={Math.min(completedFields, totalFields)}
         className="mb-3 md:mb-4"
       />
@@ -180,9 +187,7 @@ export const CarSearchForm = () => {
       {hasErrors && (
         <Alert variant="destructive" className="mb-3 md:mb-4">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {t("ux.carSearch.fixErrors")}
-          </AlertDescription>
+          <AlertDescription>{t("ux.carSearch.fixErrors")}</AlertDescription>
         </Alert>
       )}
 
@@ -195,35 +200,29 @@ export const CarSearchForm = () => {
               {t("ux.carSearch.otherReturn")}
             </Label>
           </div>
-          <Switch
-            id="different-dropoff"
-            checked={differentDropoff}
-            onCheckedChange={setDifferentDropoff}
-          />
+          <Switch id="different-dropoff" checked={differentDropoff} onCheckedChange={setDifferentDropoff} />
         </div>
 
         {/* Locations Row */}
         <div className="grid grid-cols-1 gap-3">
           {/* Pickup & Dropoff locations */}
-          <div className={`grid gap-3 ${differentDropoff ? 'grid-cols-1 md:grid-cols-[1fr_auto_1fr]' : 'grid-cols-1'}`}>
+          <div className={`grid gap-3 ${differentDropoff ? "grid-cols-1 md:grid-cols-[1fr_auto_1fr]" : "grid-cols-1"}`}>
             {/* Pickup Location */}
             <div className="space-y-1">
               <UnifiedAutocomplete
-                label={t('cars.pickupLocation')}
+                label={t("cars.pickupLocation")}
                 type="location"
                 value={pickupLocation}
                 onChange={(value) => {
                   setPickupLocation(value);
                   handleBlur("pickupLocation");
                 }}
-                placeholder={t('cars.cityOrAirport')}
+                placeholder={t("cars.cityOrAirport")}
                 required
                 className={errors.pickupLocation && touched.pickupLocation ? "border-destructive" : ""}
               />
               {errors.pickupLocation && touched.pickupLocation && (
-                <p className="text-xs text-destructive animate-in slide-in-from-top-1">
-                  {errors.pickupLocation}
-                </p>
+                <p className="text-xs text-destructive animate-in slide-in-from-top-1">{errors.pickupLocation}</p>
               )}
             </div>
 
@@ -254,21 +253,19 @@ export const CarSearchForm = () => {
                   className="space-y-1"
                 >
                   <UnifiedAutocomplete
-                    label={t('cars.dropoffLocation')}
+                    label={t("cars.dropoffLocation")}
                     type="location"
                     value={dropoffLocation}
                     onChange={(value) => {
                       setDropoffLocation(value);
                       handleBlur("dropoffLocation");
                     }}
-                    placeholder={t('cars.cityOrAirport')}
+                    placeholder={t("cars.cityOrAirport")}
                     required
                     className={errors.dropoffLocation && touched.dropoffLocation ? "border-destructive" : ""}
                   />
                   {errors.dropoffLocation && touched.dropoffLocation && (
-                    <p className="text-xs text-destructive animate-in slide-in-from-top-1">
-                      {errors.dropoffLocation}
-                    </p>
+                    <p className="text-xs text-destructive animate-in slide-in-from-top-1">{errors.dropoffLocation}</p>
                   )}
                 </motion.div>
               )}
@@ -282,7 +279,7 @@ export const CarSearchForm = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label={t('cars.pickupDate')}
+                label={t("cars.pickupDate")}
                 value={pickupDate}
                 onChange={(date) => {
                   setPickupDate(date);
@@ -292,15 +289,13 @@ export const CarSearchForm = () => {
                 required
               />
               {errors.pickupDate && touched.pickupDate && (
-                <p className="text-xs text-destructive animate-in slide-in-from-top-1">
-                  {errors.pickupDate}
-                </p>
+                <p className="text-xs text-destructive animate-in slide-in-from-top-1">{errors.pickupDate}</p>
               )}
             </div>
             <div className="space-y-1">
               <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4" />
-                {t('search.time')}
+                {t("search.time")}
               </Label>
               <Select value={pickupTime} onValueChange={setPickupTime}>
                 <SelectTrigger className="h-11">
@@ -308,7 +303,9 @@ export const CarSearchForm = () => {
                 </SelectTrigger>
                 <SelectContent className="max-h-[200px]">
                   {timeOptions.map((time) => (
-                    <SelectItem key={`pickup-${time}`} value={time}>{time}</SelectItem>
+                    <SelectItem key={`pickup-${time}`} value={time}>
+                      {time}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -319,7 +316,7 @@ export const CarSearchForm = () => {
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label={t('cars.dropoffDate')}
+                label={t("cars.dropoffDate")}
                 value={returnDate}
                 onChange={(date) => {
                   setReturnDate(date);
@@ -329,15 +326,13 @@ export const CarSearchForm = () => {
                 required
               />
               {errors.dropoffDate && touched.dropoffDate && (
-                <p className="text-xs text-destructive animate-in slide-in-from-top-1">
-                  {errors.dropoffDate}
-                </p>
+                <p className="text-xs text-destructive animate-in slide-in-from-top-1">{errors.dropoffDate}</p>
               )}
             </div>
             <div className="space-y-1">
               <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4" />
-                {t('search.time')}
+                {t("search.time")}
               </Label>
               <Select value={returnTime} onValueChange={setReturnTime}>
                 <SelectTrigger className="h-11">
@@ -345,7 +340,9 @@ export const CarSearchForm = () => {
                 </SelectTrigger>
                 <SelectContent className="max-h-[200px]">
                   {timeOptions.map((time) => (
-                    <SelectItem key={`return-${time}`} value={time}>{time}</SelectItem>
+                    <SelectItem key={`return-${time}`} value={time}>
+                      {time}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -391,7 +388,7 @@ export const CarSearchForm = () => {
 
         {/* Submit Button */}
         <div className="pt-2">
-          <UnifiedSubmitButton 
+          <UnifiedSubmitButton
             fullWidth
             disabled={hasErrors}
             className={hasErrors ? "opacity-50 cursor-not-allowed" : ""}

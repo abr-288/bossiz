@@ -39,7 +39,10 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
     const checkAuth = async () => {
       setLoadFailed(false);
       try {
-        const { data: { user }, error } = await withTimeout(supabase.auth.getUser());
+        const {
+          data: { user },
+          error,
+        } = await withTimeout(supabase.auth.getUser());
 
         // Une coupure réseau ne veut pas dire « déconnecté » : on propose de
         // réessayer au lieu de renvoyer vers la page de connexion.
@@ -102,7 +105,7 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/30">
         <UserSidebar userProfile={userProfile} />
-        
+
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 sticky top-0 z-50">
             <div className="flex items-center gap-2">
@@ -119,9 +122,7 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
             </div>
           </header>
 
-          <main className={cn("flex-1 overflow-auto", fullBleed ? "p-0" : "p-4 md:p-6")}>
-            {children}
-          </main>
+          <main className={cn("flex-1 overflow-auto", fullBleed ? "p-0" : "p-4 md:p-6")}>{children}</main>
         </div>
       </div>
     </SidebarProvider>

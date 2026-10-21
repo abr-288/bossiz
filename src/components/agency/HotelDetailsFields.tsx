@@ -2,13 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageGalleryField } from "@/components/agency/ImageGalleryField";
 import { HOTEL_AMENITIES, HOTEL_GALLERY_MAX, type HotelSpecs } from "@/lib/hotels";
 
@@ -43,22 +37,34 @@ export function HotelDetailsFields({
         <div className="space-y-2">
           <Label>Classement</Label>
           <Select value={String(specs.stars)} onValueChange={(v) => onSpecsChange({ ...specs, stars: Number(v) })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="0">Non classé</SelectItem>
               {[1, 2, 3, 4, 5].map((n) => (
-                <SelectItem key={n} value={String(n)}>{"★".repeat(n)} ({n} étoile{n > 1 ? "s" : ""})</SelectItem>
+                <SelectItem key={n} value={String(n)}>
+                  {"★".repeat(n)} ({n} étoile{n > 1 ? "s" : ""})
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
           <Label>Arrivée à partir de</Label>
-          <Input type="time" value={specs.checkInFrom} onChange={(e) => onSpecsChange({ ...specs, checkInFrom: e.target.value })} />
+          <Input
+            type="time"
+            value={specs.checkInFrom}
+            onChange={(e) => onSpecsChange({ ...specs, checkInFrom: e.target.value })}
+          />
         </div>
         <div className="space-y-2">
           <Label>Départ jusqu'à</Label>
-          <Input type="time" value={specs.checkOutUntil} onChange={(e) => onSpecsChange({ ...specs, checkOutUntil: e.target.value })} />
+          <Input
+            type="time"
+            value={specs.checkOutUntil}
+            onChange={(e) => onSpecsChange({ ...specs, checkOutUntil: e.target.value })}
+          />
         </div>
       </div>
 

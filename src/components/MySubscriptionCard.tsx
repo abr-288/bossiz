@@ -99,9 +99,10 @@ export function MySubscriptionCard({ userId }: { userId: string }) {
     cancelled: t("ux.account.subCancelled"),
   };
 
-  const daysLeft = subscription?.status === "active" && subscription.end_date
-    ? Math.ceil((new Date(subscription.end_date).getTime() - Date.now()) / DAY_MS)
-    : null;
+  const daysLeft =
+    subscription?.status === "active" && subscription.end_date
+      ? Math.ceil((new Date(subscription.end_date).getTime() - Date.now()) / DAY_MS)
+      : null;
   const canRenew = subscription
     ? subscription.status !== "active" || (daysLeft !== null && daysLeft <= RENEW_WINDOW_DAYS)
     : false;
@@ -161,9 +162,11 @@ export function MySubscriptionCard({ userId }: { userId: string }) {
                   {subscription.status === "active" && subscription.amount_paid
                     ? ` · ${autoConvertAndFormat(Number(subscription.amount_paid), subscription.currency || "XOF")}`
                     : ""}
-                  {subscription.end_date && subscription.status === "active" &&
+                  {subscription.end_date &&
+                    subscription.status === "active" &&
                     ` · ${t("ux.account.subValidUntil", { date: formatDate(subscription.end_date) })}`}
-                  {subscription.end_date && (subscription.status === "expired" || subscription.status === "cancelled") &&
+                  {subscription.end_date &&
+                    (subscription.status === "expired" || subscription.status === "cancelled") &&
                     ` · ${t("ux.account.subEndedOn", { date: formatDate(subscription.end_date) })}`}
                 </p>
               </div>
@@ -174,7 +177,11 @@ export function MySubscriptionCard({ userId }: { userId: string }) {
                     disabled={isGenerating}
                     onClick={() => generateReceipt(subscription.id, "paid")}
                   >
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}
+                    {isGenerating ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <FileText className="mr-2 h-4 w-4" />
+                    )}
                     {t("ux.account.subReceipt")}
                   </Button>
                 )}

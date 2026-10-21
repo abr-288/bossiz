@@ -12,7 +12,14 @@ interface StatsCardsProps {
   totalUsers: number;
 }
 
-export function StatsCards({ totalRevenue, totalMargin, bookingsWithKnownCost, totalBookings, pendingBookings, totalUsers }: StatsCardsProps) {
+export function StatsCards({
+  totalRevenue,
+  totalMargin,
+  bookingsWithKnownCost,
+  totalBookings,
+  pendingBookings,
+  totalUsers,
+}: StatsCardsProps) {
   const { t } = useTranslation();
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -22,7 +29,9 @@ export function StatsCards({ totalRevenue, totalMargin, bookingsWithKnownCost, t
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold"><Price amount={totalRevenue} fromCurrency="EUR" showLoader /></div>
+          <div className="text-2xl font-bold">
+            <Price amount={totalRevenue} fromCurrency="EUR" showLoader />
+          </div>
           <p className="text-xs text-muted-foreground">{t("ux.bo.paidBookings")}</p>
         </CardContent>
       </Card>
@@ -34,7 +43,9 @@ export function StatsCards({ totalRevenue, totalMargin, bookingsWithKnownCost, t
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success"><Price amount={totalMargin} fromCurrency="EUR" showLoader /></div>
+            <div className="text-2xl font-bold text-success">
+              <Price amount={totalMargin} fromCurrency="EUR" showLoader />
+            </div>
             <p className="text-xs text-muted-foreground">
               Sur {bookingsWithKnownCost ?? 0} réservation(s) à coût connu
             </p>

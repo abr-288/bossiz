@@ -37,7 +37,7 @@ export const UpcomingReminders = ({ bookings, onViewDetails }: UpcomingReminders
     const startDate = new Date(date);
     const today = new Date();
     const diffDays = Math.ceil((startDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return "Aujourd'hui";
     if (diffDays === 1) return "Demain";
     return `Dans ${diffDays} jours`;
@@ -53,10 +53,7 @@ export const UpcomingReminders = ({ bookings, onViewDetails }: UpcomingReminders
       </CardHeader>
       <CardContent className="space-y-3">
         {upcomingBookings.map((booking) => (
-          <div
-            key={booking.id}
-            className="flex items-center justify-between p-3 bg-background rounded-lg border"
-          >
+          <div key={booking.id} className="flex items-center justify-between p-3 bg-background rounded-lg border">
             <div className="flex-1">
               <p className="font-medium text-sm">{booking.services.name}</p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
@@ -72,12 +69,7 @@ export const UpcomingReminders = ({ bookings, onViewDetails }: UpcomingReminders
               <Badge variant="secondary" className="font-semibold">
                 {getDaysUntil(booking.start_date)}
               </Badge>
-              <Button
-                aria-label="Voir le détail"
-                variant="ghost"
-                size="icon"
-                onClick={() => onViewDetails(booking.id)}
-              >
+              <Button aria-label="Voir le détail" variant="ghost" size="icon" onClick={() => onViewDetails(booking.id)}>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>

@@ -22,21 +22,21 @@ const toTourService = (service: Tables<"services">) => {
   return {
     id: service.id,
     name: service.name,
-    description: service.description || '',
+    description: service.description || "",
     location: service.location,
     price: Number(service.price_per_unit),
     currency: service.currency,
     rating: Number(service.rating) || 0,
     reviews: service.total_reviews || 0,
-    image: service.image_url || service.images?.[0] || '/placeholder.svg',
-    duration: specs.duration || '',
+    image: service.image_url || service.images?.[0] || "/placeholder.svg",
+    duration: specs.duration || "",
     groupSizeMax: specs.groupSizeMax || 10,
-    meetingPoint: specs.meetingPoint || '',
-    included: specs.included || '',
-    excluded: specs.excluded || '',
-    languages: specs.languages || '',
-    difficulty: specs.difficulty || 'Facile',
-    category: specs.category || 'Culture & Patrimoine',
+    meetingPoint: specs.meetingPoint || "",
+    included: specs.included || "",
+    excluded: specs.excluded || "",
+    languages: specs.languages || "",
+    difficulty: specs.difficulty || "Facile",
+    category: specs.category || "Culture & Patrimoine",
     availableDates: service.available_dates || [],
     latitude: service.latitude,
     longitude: service.longitude,
@@ -56,11 +56,11 @@ export const useTourServices = () => {
     try {
       setLoading(true);
       const { data, error: fetchError } = await supabase
-        .from('services')
-        .select('*')
-        .eq('type', 'tour')
-        .eq('available', true)
-        .order('created_at', { ascending: false });
+        .from("services")
+        .select("*")
+        .eq("type", "tour")
+        .eq("available", true)
+        .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
 
@@ -69,8 +69,8 @@ export const useTourServices = () => {
       setTours(transformedTours);
       setError(null);
     } catch (err) {
-      console.error('Error fetching tour services:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      console.error("Error fetching tour services:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }

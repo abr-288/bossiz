@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
-import { usePayment } from './usePayment';
-import { supabase } from '@/integrations/supabase/client';
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
+import { usePayment } from "./usePayment";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock Supabase client
-vi.mock('@/integrations/supabase/client', () => ({
+vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -20,125 +20,129 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 // Mock toast
-vi.mock('@/hooks/use-toast', () => ({
+vi.mock("@/hooks/use-toast", () => ({
   useToast: () => ({
     toast: vi.fn(),
   }),
 }));
 
 // Mock validation helpers
-vi.mock('@/lib/formHelpers', () => ({
+vi.mock("@/lib/formHelpers", () => ({
   validateWithSchema: vi.fn(),
-  getUserFriendlyErrorMessage: vi.fn((error) => error?.message || 'Une erreur est survenue'),
+  getUserFriendlyErrorMessage: vi.fn((error) => error?.message || "Une erreur est survenue"),
 }));
 
-import { validateWithSchema, getUserFriendlyErrorMessage } from '@/lib/formHelpers';
+import { validateWithSchema, getUserFriendlyErrorMessage } from "@/lib/formHelpers";
 
 // Accès typé aux fonctions simulées ci-dessus.
 const fromMock = supabase.from as unknown as Mock;
 const invokeMock = supabase.functions.invoke as unknown as Mock;
 const validateMock = validateWithSchema as unknown as Mock;
 
-describe('usePayment', () => {
+describe("usePayment", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should process payment successfully', async () => {
+  it("should process payment successfully", async () => {
     validateMock.mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerAddress: '123 Rue de la Paix',
-        customerCity: 'Abidjan',
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerAddress: "123 Rue de la Paix",
+        customerCity: "Abidjan",
       },
     });
 
     fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          maybeSingle: vi.fn(() => Promise.resolve({
-            data: { payment_status: 'pending', status: 'pending' },
-            error: null,
-          })),
+          maybeSingle: vi.fn(() =>
+            Promise.resolve({
+              data: { payment_status: "pending", status: "pending" },
+              error: null,
+            }),
+          ),
         })),
       })),
     });
 
     invokeMock.mockResolvedValue({
-      data: { success: true, payment_url: 'https://checkout.jeko.africa/payment/123' },
+      data: { success: true, payment_url: "https://checkout.jeko.africa/payment/123" },
       error: null,
     });
 
     const { result } = renderHook(() => usePayment());
 
     const paymentResult = await result.current.processPayment(
-      'booking-123',
+      "booking-123",
       { total_price: 850000 },
       {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerAddress: '123 Rue de la Paix',
-        customerCity: 'Abidjan',
-      }
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerAddress: "123 Rue de la Paix",
+        customerCity: "Abidjan",
+      },
     );
 
     await waitFor(() => {
       expect(paymentResult.success).toBe(true);
-      expect(paymentResult.paymentUrl).toBe('https://checkout.jeko.africa/payment/123');
+      expect(paymentResult.paymentUrl).toBe("https://checkout.jeko.africa/payment/123");
     });
   });
 
-  it('should validate payment data before processing', async () => {
+  it("should validate payment data before processing", async () => {
     validateMock.mockReturnValue({
       success: false,
-      errors: { customerEmail: 'Email invalide' },
+      errors: { customerEmail: "Email invalide" },
     });
 
     const { result } = renderHook(() => usePayment());
 
     const paymentResult = await result.current.processPayment(
-      'booking-123',
+      "booking-123",
       { total_price: 850000 },
       {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'invalid-email',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
-      }
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "invalid-email",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
+      },
     );
 
     await waitFor(() => {
       expect(paymentResult.success).toBe(false);
-      expect(result.current.validationErrors).toEqual({ customerEmail: 'Email invalide' });
+      expect(result.current.validationErrors).toEqual({ customerEmail: "Email invalide" });
     });
   });
 
-  it('should prevent payment if already paid', async () => {
+  it("should prevent payment if already paid", async () => {
     validateMock.mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
       },
     });
 
     fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          maybeSingle: vi.fn(() => Promise.resolve({
-            data: { payment_status: 'paid', status: 'pending' },
-            error: null,
-          })),
+          maybeSingle: vi.fn(() =>
+            Promise.resolve({
+              data: { payment_status: "paid", status: "pending" },
+              error: null,
+            }),
+          ),
         })),
       })),
     });
@@ -146,42 +150,44 @@ describe('usePayment', () => {
     const { result } = renderHook(() => usePayment());
 
     const paymentResult = await result.current.processPayment(
-      'booking-123',
+      "booking-123",
       { total_price: 850000 },
       {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
-      }
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
+      },
     );
 
     await waitFor(() => {
       expect(paymentResult.success).toBe(false);
-      expect(result.current.generalError).toContain('déjà été payée');
+      expect(result.current.generalError).toContain("déjà été payée");
     });
   });
 
-  it('should prevent payment if booking is cancelled', async () => {
+  it("should prevent payment if booking is cancelled", async () => {
     validateMock.mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
       },
     });
 
     fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          maybeSingle: vi.fn(() => Promise.resolve({
-            data: { payment_status: 'pending', status: 'cancelled' },
-            error: null,
-          })),
+          maybeSingle: vi.fn(() =>
+            Promise.resolve({
+              data: { payment_status: "pending", status: "cancelled" },
+              error: null,
+            }),
+          ),
         })),
       })),
     });
@@ -189,47 +195,49 @@ describe('usePayment', () => {
     const { result } = renderHook(() => usePayment());
 
     const paymentResult = await result.current.processPayment(
-      'booking-123',
+      "booking-123",
       { total_price: 850000 },
       {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
-      }
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
+      },
     );
 
     await waitFor(() => {
       expect(paymentResult.success).toBe(false);
-      expect(result.current.generalError).toContain('annulée');
+      expect(result.current.generalError).toContain("annulée");
     });
   });
 
-  it('should prevent multiple simultaneous payments', async () => {
+  it("should prevent multiple simultaneous payments", async () => {
     validateMock.mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
       },
     });
 
     fromMock.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          maybeSingle: vi.fn(() => Promise.resolve({
-            data: { payment_status: 'pending', status: 'pending' },
-            error: null,
-          })),
+          maybeSingle: vi.fn(() =>
+            Promise.resolve({
+              data: { payment_status: "pending", status: "pending" },
+              error: null,
+            }),
+          ),
         })),
       })),
     });
     invokeMock.mockResolvedValue({
-      data: { success: true, payment_url: 'https://checkout.jeko.africa/payment/123' },
+      data: { success: true, payment_url: "https://checkout.jeko.africa/payment/123" },
       error: null,
     });
 
@@ -240,15 +248,15 @@ describe('usePayment', () => {
     // For now, we'll skip this test or modify the approach
 
     await result.current.processPayment(
-      'booking-123',
+      "booking-123",
       { total_price: 850000 },
       {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
-      }
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
+      },
     );
 
     await waitFor(() => {
@@ -256,15 +264,15 @@ describe('usePayment', () => {
     });
   });
 
-  it('should handle payment timeout', async () => {
+  it("should handle payment timeout", async () => {
     validateMock.mockReturnValue({
       success: true,
       data: {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
       },
     });
 
@@ -279,20 +287,23 @@ describe('usePayment', () => {
     const { result } = renderHook(() => usePayment());
 
     result.current.processPayment(
-      'booking-123',
+      "booking-123",
       { total_price: 850000 },
       {
-        paymentMethod: 'jeko',
-        customerName: 'Jean Dupont',
-        customerEmail: 'jean@example.com',
-        customerPhone: '+2250707070707',
-        customerCity: 'Abidjan',
-      }
+        paymentMethod: "jeko",
+        customerName: "Jean Dupont",
+        customerEmail: "jean@example.com",
+        customerPhone: "+2250707070707",
+        customerCity: "Abidjan",
+      },
     );
 
-    await waitFor(() => {
-      expect(result.current.processing).toBe(true);
-    }, { timeout: 1000 });
+    await waitFor(
+      () => {
+        expect(result.current.processing).toBe(true);
+      },
+      { timeout: 1000 },
+    );
 
     // Wait for timeout (30 seconds in real code, but we can't wait that long in test)
     // In a real scenario, you'd use a shorter timeout for testing

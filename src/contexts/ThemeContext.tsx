@@ -59,20 +59,21 @@ const DEFAULT_THEME: ThemeConfig = {
 };
 
 const FONT_URLS: Record<string, string> = {
-  "Archivo": "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap",
-  "Bricolage Grotesque": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&display=swap",
+  Archivo: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap",
+  "Bricolage Grotesque":
+    "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&display=swap",
   "IBM Plex Mono": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap",
-  "Inter": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
-  "Poppins": "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap",
-  "Roboto": "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap",
+  Inter: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+  Poppins: "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap",
+  Roboto: "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap",
   "Open Sans": "https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap",
-  "Lato": "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",
-  "Montserrat": "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap",
+  Lato: "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",
+  Montserrat: "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap",
   "Playfair Display": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap",
-  "Merriweather": "https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap",
+  Merriweather: "https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap",
   "Source Sans Pro": "https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap",
-  "Nunito": "https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap",
-  "Raleway": "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap",
+  Nunito: "https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap",
+  Raleway: "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap",
   "Work Sans": "https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap",
 };
 
@@ -120,7 +121,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // Load font dynamically
   const loadFont = (fontName: string) => {
     if (loadedFonts.has(fontName) || !FONT_URLS[fontName]) return;
-    
+
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = FONT_URLS[fontName];
@@ -129,31 +130,31 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Texte lisible sur un fond donné en "H S% L%" : encre sombre ou blanc selon la
-// luminance relative WCAG. Sans ce calcul, une couleur choisie dans l'admin
-// gardait le --*-foreground du CSS et pouvait devenir illisible.
-const readableForeground = (hsl: string): string => {
-  const m = hsl.match(/^\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%/);
-  if (!m) return "0 0% 100%";
-  const h = Number(m[1]);
-  const sat = Number(m[2]) / 100;
-  const l = Number(m[3]) / 100;
-  const a = sat * Math.min(l, 1 - l);
-  const channel = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  // luminance relative WCAG. Sans ce calcul, une couleur choisie dans l'admin
+  // gardait le --*-foreground du CSS et pouvait devenir illisible.
+  const readableForeground = (hsl: string): string => {
+    const m = hsl.match(/^\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%/);
+    if (!m) return "0 0% 100%";
+    const h = Number(m[1]);
+    const sat = Number(m[2]) / 100;
+    const l = Number(m[3]) / 100;
+    const a = sat * Math.min(l, 1 - l);
+    const channel = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    };
+    const luminance = 0.2126 * channel(0) + 0.7152 * channel(8) + 0.0722 * channel(4);
+    // Contraste avec le blanc (1.05 / (L + 0.05)) contre l'encre #0b111e (~0.006).
+    const withWhite = 1.05 / (luminance + 0.05);
+    const withInk = (luminance + 0.05) / 0.056;
+    return withWhite >= withInk ? "0 0% 100%" : "222 47% 8%";
   };
-  const luminance = 0.2126 * channel(0) + 0.7152 * channel(8) + 0.0722 * channel(4);
-  // Contraste avec le blanc (1.05 / (L + 0.05)) contre l'encre #0b111e (~0.006).
-  const withWhite = 1.05 / (luminance + 0.05);
-  const withInk = (luminance + 0.05) / 0.056;
-  return withWhite >= withInk ? "0 0% 100%" : "222 47% 8%";
-};
 
-// Apply theme to CSS variables
+  // Apply theme to CSS variables
   const applyTheme = (themeConfig: ThemeConfig, dark: boolean) => {
     const root = document.documentElement;
-    
+
     // Load fonts
     loadFont(themeConfig.fontHeading);
     loadFont(themeConfig.fontBody);
@@ -206,14 +207,14 @@ const readableForeground = (hsl: string): string => {
   const setColorMode = (mode: ColorMode) => {
     setColorModeState(mode);
     localStorage.setItem("colorMode", mode);
-    
+
     let dark: boolean;
     if (mode === "system") {
       dark = getSystemPreference();
     } else {
       dark = mode === "dark";
     }
-    
+
     setIsDark(dark);
     applyTheme(theme, dark);
   };
@@ -227,14 +228,14 @@ const readableForeground = (hsl: string): string => {
   // Listen for system preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    
+
     const handleChange = (e: MediaQueryListEvent) => {
       if (colorMode === "system") {
         setIsDark(e.matches);
         applyTheme(theme, e.matches);
       }
     };
-    
+
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [colorMode, theme]);
@@ -253,10 +254,10 @@ const readableForeground = (hsl: string): string => {
 
         if (data?.config_value && typeof data.config_value === "object") {
           const configValue = data.config_value as Partial<ThemeConfig>;
-          const fetchedTheme: ThemeConfig = { 
-            ...DEFAULT_THEME, 
+          const fetchedTheme: ThemeConfig = {
+            ...DEFAULT_THEME,
             ...configValue,
-            darkMode: { ...DEFAULT_THEME.darkMode, ...(configValue.darkMode || {}) }
+            darkMode: { ...DEFAULT_THEME.darkMode, ...(configValue.darkMode || {}) },
           };
           setTheme(fetchedTheme);
           applyTheme(fetchedTheme, isDark);
@@ -282,34 +283,33 @@ const readableForeground = (hsl: string): string => {
   }, [isDark, loading]);
 
   const updateTheme = async (newTheme: Partial<ThemeConfig>) => {
-    const updatedTheme = { 
-      ...theme, 
+    const updatedTheme = {
+      ...theme,
       ...newTheme,
-      darkMode: { ...theme.darkMode, ...(newTheme.darkMode || {}) }
+      darkMode: { ...theme.darkMode, ...(newTheme.darkMode || {}) },
     };
     setTheme(updatedTheme);
     applyTheme(updatedTheme, isDark);
 
     try {
-      await supabase
-        .from("site_config")
-        .update({ config_value: updatedTheme })
-        .eq("config_key", "theme");
+      await supabase.from("site_config").update({ config_value: updatedTheme }).eq("config_key", "theme");
     } catch (error) {
       console.error("Error saving theme:", error);
     }
   };
 
   return (
-    <ThemeContext.Provider value={{ 
-      theme, 
-      loading, 
-      colorMode, 
-      isDark, 
-      setColorMode, 
-      toggleColorMode, 
-      updateTheme 
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        loading,
+        colorMode,
+        isDark,
+        setColorMode,
+        toggleColorMode,
+        updateTheme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

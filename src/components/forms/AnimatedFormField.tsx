@@ -8,28 +8,28 @@ import { MOTION } from "@/lib/motion";
 // Animation configurations
 export const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     scale: 1,
-    transition: { 
+    transition: {
       duration: MOTION.slow,
-      staggerChildren: 0.1
-    } as Transition
+      staggerChildren: 0.1,
+    } as Transition,
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     scale: 0.95,
-    transition: { duration: MOTION.slow } as Transition
-  }
+    transition: { duration: MOTION.slow } as Transition,
+  },
 };
 
 export const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: MOTION.slow } as Transition
-  }
+    transition: { duration: MOTION.slow } as Transition,
+  },
 };
 
 interface FormFieldProps {
@@ -46,12 +46,12 @@ interface FormFieldProps {
   autoComplete?: string;
 }
 
-const AnimatedFormField = ({ 
-  label, 
-  name, 
-  type, 
-  placeholder, 
-  icon, 
+const AnimatedFormField = ({
+  label,
+  name,
+  type,
+  placeholder,
+  icon,
   error,
   value,
   onChange,
@@ -62,10 +62,7 @@ const AnimatedFormField = ({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <motion.div 
-      variants={itemVariants}
-      className="space-y-1.5 md:space-y-2"
-    >
+    <motion.div variants={itemVariants} className="space-y-1.5 md:space-y-2">
       <Label htmlFor={name} className="flex items-center gap-2 text-xs md:text-sm font-medium text-foreground/80">
         <span className="text-primary">{icon}</span>
         {label}
@@ -73,9 +70,7 @@ const AnimatedFormField = ({
       <div className="relative group">
         <motion.div
           animate={{
-            boxShadow: isFocused 
-              ? "0 0 0 3px hsl(var(--primary) / 0.15)" 
-              : "0 0 0 0px transparent"
+            boxShadow: isFocused ? "0 0 0 3px hsl(var(--primary) / 0.15)" : "0 0 0 0px transparent",
           }}
           className="rounded-xl overflow-hidden"
         >
@@ -90,10 +85,10 @@ const AnimatedFormField = ({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             className={`h-12 md:h-11 text-base md:text-sm rounded-xl border-2 bg-background/50 backdrop-blur-sm transition-all duration-slow ease-standard pr-12 placeholder:text-muted-foreground/50 ${
-              error 
-                ? "border-destructive/50 focus:border-destructive focus:ring-destructive/20" 
-                : isFocused 
-                  ? "border-primary/50 bg-background" 
+              error
+                ? "border-destructive/50 focus:border-destructive focus:ring-destructive/20"
+                : isFocused
+                  ? "border-primary/50 bg-background"
                   : "border-border/50 hover:border-border"
             }`}
           />

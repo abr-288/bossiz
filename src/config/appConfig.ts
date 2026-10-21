@@ -11,20 +11,20 @@ export interface AppConfig {
   appName: string;
   appVersion: string;
   appEnvironment: string;
-  
+
   // URLs
   apiBaseUrl: string;
   webBaseUrl: string;
 }
 
 const normalizeEnvValue = (value: string | undefined): string => {
-  if (typeof value !== 'string') {
-    return '';
+  if (typeof value !== "string") {
+    return "";
   }
 
   const trimmed = value.trim();
   if (!trimmed) {
-    return '';
+    return "";
   }
 
   return trimmed;
@@ -43,47 +43,48 @@ export const resolveEnvValue = (viteKey: string, legacyKey?: string): string => 
     }
   }
 
-  return '';
+  return "";
 };
 
 // Configuration par défaut (développement)
 const defaultConfig: AppConfig = {
-  supabaseUrl: resolveEnvValue('VITE_SUPABASE_URL', 'REACT_APP_SUPABASE_URL') || 'https://your-project-id.supabase.co',
-  supabaseAnonKey: resolveEnvValue('VITE_SUPABASE_PUBLISHABLE_KEY', 'REACT_APP_SUPABASE_PUBLISHABLE_KEY') || 'your-anon-key',
-  supabaseProjectId: resolveEnvValue('VITE_SUPABASE_PROJECT_ID', 'REACT_APP_SUPABASE_PROJECT_ID') || 'your-project-id',
+  supabaseUrl: resolveEnvValue("VITE_SUPABASE_URL", "REACT_APP_SUPABASE_URL") || "https://your-project-id.supabase.co",
+  supabaseAnonKey:
+    resolveEnvValue("VITE_SUPABASE_PUBLISHABLE_KEY", "REACT_APP_SUPABASE_PUBLISHABLE_KEY") || "your-anon-key",
+  supabaseProjectId: resolveEnvValue("VITE_SUPABASE_PROJECT_ID", "REACT_APP_SUPABASE_PROJECT_ID") || "your-project-id",
 
-  appName: resolveEnvValue('VITE_APP_NAME') || 'Bossiz Conciergerie',
-  appVersion: resolveEnvValue('VITE_APP_VERSION') || '1.0.0',
-  appEnvironment: resolveEnvValue('VITE_APP_ENVIRONMENT') || 'development',
-  
-  apiBaseUrl: resolveEnvValue('VITE_API_BASE_URL') || 'http://localhost:8080/api',
-  webBaseUrl: resolveEnvValue('VITE_WEB_BASE_URL') || 'http://localhost:8083',
+  appName: resolveEnvValue("VITE_APP_NAME") || "Bossiz Conciergerie",
+  appVersion: resolveEnvValue("VITE_APP_VERSION") || "1.0.0",
+  appEnvironment: resolveEnvValue("VITE_APP_ENVIRONMENT") || "development",
+
+  apiBaseUrl: resolveEnvValue("VITE_API_BASE_URL") || "http://localhost:8080/api",
+  webBaseUrl: resolveEnvValue("VITE_WEB_BASE_URL") || "http://localhost:8083",
 };
 
 // Configuration de production
 const productionConfig: Partial<AppConfig> = {
-  appEnvironment: 'production',
+  appEnvironment: "production",
   // En production, les variables doivent être définies dans les variables d'environnement
 };
 
 // Configuration de développement
 const developmentConfig: Partial<AppConfig> = {
-  appEnvironment: 'development',
+  appEnvironment: "development",
   // En développement, utiliser les clés sandbox
 };
 
 // Fusion des configurations selon l'environnement
 const getConfig = (): AppConfig => {
   const env = defaultConfig.appEnvironment;
-  
+
   let config = { ...defaultConfig };
-  
-  if (env === 'production') {
+
+  if (env === "production") {
     config = { ...config, ...productionConfig };
   } else {
     config = { ...config, ...developmentConfig };
   }
-  
+
   return config;
 };
 
@@ -92,25 +93,17 @@ export const appConfig = getConfig();
 // Validation de la configuration
 export const validateConfig = (): string[] => {
   const errors: string[] = [];
-  
-  if (!appConfig.supabaseUrl || appConfig.supabaseUrl.includes('your-project-id')) {
-    errors.push('Supabase URL non configurée');
+
+  if (!appConfig.supabaseUrl || appConfig.supabaseUrl.includes("your-project-id")) {
+    errors.push("Supabase URL non configurée");
   }
-  
-  if (!appConfig.supabaseAnonKey || appConfig.supabaseAnonKey.includes('your-anon-key')) {
-    errors.push('Supabase Anon Key non configurée');
+
+  if (!appConfig.supabaseAnonKey || appConfig.supabaseAnonKey.includes("your-anon-key")) {
+    errors.push("Supabase Anon Key non configurée");
   }
 
   return errors;
 };
 
 // Export des variables spécifiques pour faciliter l'utilisation
-export const {
-  supabaseUrl,
-  supabaseAnonKey,
-  appName,
-  appVersion,
-  appEnvironment,
-  apiBaseUrl,
-  webBaseUrl,
-} = appConfig;
+export const { supabaseUrl, supabaseAnonKey, appName, appVersion, appEnvironment, apiBaseUrl, webBaseUrl } = appConfig;

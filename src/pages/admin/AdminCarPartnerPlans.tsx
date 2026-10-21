@@ -69,17 +69,15 @@ export default function AdminCarPartnerPlans() {
   const togglePayments = async (enabled: boolean) => {
     setIsTogglingPayments(true);
     try {
-      const { error } = await supabase
-        .from("site_config")
-        .upsert(
-          {
-            config_key: "car_partner_plans",
-            config_value: { paymentsEnabled: enabled },
-            category: "partners",
-            description: "Paiement des forfaits voiture : désactivé = publication de véhicules gratuite pour les loueurs",
-          },
-          { onConflict: "config_key" },
-        );
+      const { error } = await supabase.from("site_config").upsert(
+        {
+          config_key: "car_partner_plans",
+          config_value: { paymentsEnabled: enabled },
+          category: "partners",
+          description: "Paiement des forfaits voiture : désactivé = publication de véhicules gratuite pour les loueurs",
+        },
+        { onConflict: "config_key" },
+      );
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: CAR_PLAN_PAYMENTS_QUERY_KEY });
       toast({
@@ -87,7 +85,11 @@ export default function AdminCarPartnerPlans() {
         description: t(enabled ? "ux.bo.carPlanPaymentsOn" : "ux.bo.carPlanPaymentsOff"),
       });
     } catch (error: unknown) {
-      toast({ title: t("ux.bo.error"), description: error instanceof Error ? error.message : t("ux.bo.unableEditPlan"), variant: "destructive" });
+      toast({
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableEditPlan"),
+        variant: "destructive",
+      });
     } finally {
       setIsTogglingPayments(false);
     }
@@ -104,7 +106,11 @@ export default function AdminCarPartnerPlans() {
       if (error) throw error;
       setPlans((data as CarPartnerPlan[]) || []);
     } catch (error: unknown) {
-      toast({ title: t("ux.bo.error"), description: error instanceof Error ? error.message : t("ux.bo.unableLoadPlans"), variant: "destructive" });
+      toast({
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableLoadPlans"),
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -150,10 +156,7 @@ export default function AdminCarPartnerPlans() {
       };
 
       if (editingPlan) {
-        const { error } = await supabase
-          .from("car_partner_plans")
-          .update(dataToSave)
-          .eq("id", editingPlan.id);
+        const { error } = await supabase.from("car_partner_plans").update(dataToSave).eq("id", editingPlan.id);
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.planUpdated") });
       } else {
@@ -165,7 +168,11 @@ export default function AdminCarPartnerPlans() {
       setIsDialogOpen(false);
       fetchPlans();
     } catch (error: unknown) {
-      toast({ title: t("ux.bo.error"), description: error instanceof Error ? error.message : t("ux.bo.unableSavePlan"), variant: "destructive" });
+      toast({
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableSavePlan"),
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -180,7 +187,11 @@ export default function AdminCarPartnerPlans() {
       if (error) throw error;
       fetchPlans();
     } catch (error: unknown) {
-      toast({ title: t("ux.bo.error"), description: error instanceof Error ? error.message : t("ux.bo.unableEditPlan"), variant: "destructive" });
+      toast({
+        title: t("ux.bo.error"),
+        description: error instanceof Error ? error.message : t("ux.bo.unableEditPlan"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -190,9 +201,7 @@ export default function AdminCarPartnerPlans() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">{t("ux.bo.carPartnerPlans")}</h1>
-            <p className="text-muted-foreground">
-              {t("ux.bo.adjustPlanPricesFeaturesSales")}
-            </p>
+            <p className="text-muted-foreground">{t("ux.bo.adjustPlanPricesFeaturesSales")}</p>
           </div>
           <div className="flex gap-2">
             <Button onClick={fetchPlans} variant="outline" size="sm">
@@ -240,7 +249,11 @@ export default function AdminCarPartnerPlans() {
                 <Loader2 className="w-8 h-8 animate-spin" />
               </div>
             ) : plans.length === 0 ? (
-              <EmptyState icon={Car} title={t("ux.bo.noPartnerPlans")} description={t("ux.bo.createFirstPlanCarRental")} />
+              <EmptyState
+                icon={Car}
+                title={t("ux.bo.noPartnerPlans")}
+                description={t("ux.bo.createFirstPlanCarRental")}
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -269,7 +282,9 @@ export default function AdminCarPartnerPlans() {
                         {plan.monthly_price.toLocaleString()} {plan.currency}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="font-mono">90%</Badge>
+                        <Badge variant="outline" className="font-mono">
+                          90%
+                        </Badge>
                       </TableCell>
                       <TableCell>{plan.max_vehicles ?? "Illimité"}</TableCell>
                       <TableCell>
@@ -351,7 +366,9 @@ export default function AdminCarPartnerPlans() {
                     type="number"
                     min="0"
                     value={formData.max_vehicles ?? ""}
-                    onChange={(e) => setFormData({ ...formData, max_vehicles: e.target.value ? parseInt(e.target.value) : null })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, max_vehicles: e.target.value ? parseInt(e.target.value) : null })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -384,7 +401,9 @@ export default function AdminCarPartnerPlans() {
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  {t("ux.bo.cancel")}
+                </Button>
                 <Button onClick={handleSave} disabled={isSaving}>
                   {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {editingPlan ? t("ux.bo.update") : "Créer"}

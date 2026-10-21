@@ -36,10 +36,14 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
 
   const getServiceIcon = () => {
     switch (service.type) {
-      case "flight": return <Plane className="w-6 h-6" />;
-      case "hotel": return <Hotel className="w-6 h-6" />;
-      case "car": return <Car className="w-6 h-6" />;
-      default: return <MapPin className="w-6 h-6" />;
+      case "flight":
+        return <Plane className="w-6 h-6" />;
+      case "hotel":
+        return <Hotel className="w-6 h-6" />;
+      case "car":
+        return <Car className="w-6 h-6" />;
+      default:
+        return <MapPin className="w-6 h-6" />;
     }
   };
 
@@ -66,11 +70,9 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {getServiceIcon()}
-            {t('booking.dialog.generic.title')} {service.name}
+            {t("booking.dialog.generic.title")} {service.name}
           </DialogTitle>
-          <DialogDescription>
-            {t('booking.dialog.generic.prepareDescription')}
-          </DialogDescription>
+          <DialogDescription>{t("booking.dialog.generic.prepareDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -92,8 +94,17 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
               {!!service.availableDates?.length && (
                 <label className="block space-y-2">
                   <span className="text-sm font-medium">Date de départ disponible</span>
-                  <select className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={startDate} onChange={(event) => setStartDate(event.target.value)} required>
-                    {service.availableDates.map((date) => <option key={date} value={date}>{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</option>)}
+                  <select
+                    className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+                    value={startDate}
+                    onChange={(event) => setStartDate(event.target.value)}
+                    required
+                  >
+                    {service.availableDates.map((date) => (
+                      <option key={date} value={date}>
+                        {new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}
+                      </option>
+                    ))}
                   </select>
                 </label>
               )}
@@ -110,22 +121,30 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
             <h4 className="font-semibold text-sm text-muted-foreground">Le processus de réservation comprend :</h4>
             <div className="space-y-2">
               <div className="flex items-center gap-3 text-sm">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">1</div>
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
+                  1
+                </div>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-primary" />
                   <span>Informations des participants</span>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">2</div>
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
+                  2
+                </div>
                 <span>Options et services supplémentaires</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">3</div>
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
+                  3
+                </div>
                 <span>Préférences et détails</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">4</div>
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
+                  4
+                </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-primary" />
                   <span>Paiement sécurisé</span>
@@ -138,11 +157,8 @@ export const BookingDialog = ({ open, onOpenChange, service }: BookingDialogProp
             <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
               Annuler
             </Button>
-            <Button 
-              onClick={handleStartBooking}
-              className="flex-1 gradient-primary"
-            >
-              {t('booking.dialog.generic.startBooking')}
+            <Button onClick={handleStartBooking} className="flex-1 gradient-primary">
+              {t("booking.dialog.generic.startBooking")}
             </Button>
           </div>
         </div>

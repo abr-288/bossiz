@@ -20,7 +20,9 @@ export const useCompany = () => {
 
   const fetchCompany = useCallback(async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       setCompany(null);
       setRole(null);

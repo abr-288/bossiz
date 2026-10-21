@@ -5,14 +5,7 @@ import { AgencyLayout } from "@/components/agency/AgencyLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { formatFcfa, nightsBetween } from "@/lib/hotels";
 import { BedDouble, CalendarCheck, Mail, Phone, UserX, Wallet } from "lucide-react";
@@ -57,7 +50,12 @@ interface OnsiteInvoice {
 }
 
 const shortDate = (iso: string) =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  new Date(`${iso}T00:00:00`).toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
 const isoToday = () => {
   const d = new Date();
@@ -123,7 +121,12 @@ export default function AgencyHotelBookings() {
   const list = tab === "upcoming" ? upcoming : past;
 
   const markNoShow = async (booking: HotelBooking) => {
-    if (!confirm(`Déclarer ${booking.customer_name} non présenté(e) ? Le séjour reste dû à 100 % et n'est pas facturé en commission sur place.`)) return;
+    if (
+      !confirm(
+        `Déclarer ${booking.customer_name} non présenté(e) ? Le séjour reste dû à 100 % et n'est pas facturé en commission sur place.`,
+      )
+    )
+      return;
     setMarkingId(booking.booking_id);
     const { error } = await supabase.rpc("agency_mark_hotel_no_show", { p_booking_id: booking.booking_id });
     setMarkingId(null);
@@ -162,8 +165,9 @@ export default function AgencyHotelBookings() {
         {tab === "invoices" ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Commission de 10 % sur les séjours payés sur place, facturée chaque mois et payable sous 15 jours. Les séjours payés en ligne
-              ne sont pas facturés : votre part (90 %) vous est versée 24 h après l'arrivée du client.
+              Commission de 10 % sur les séjours payés sur place, facturée chaque mois et payable sous 15 jours. Les
+              séjours payés en ligne ne sont pas facturés : votre part (90 %) vous est versée 24 h après l'arrivée du
+              client.
             </p>
             <div className="border rounded-lg">
               <Table>
@@ -179,22 +183,40 @@ export default function AgencyHotelBookings() {
                 </TableHeader>
                 <TableBody>
                   {invoicesQuery.isLoading ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8">Chargement...</TableCell></TableRow>
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        Chargement...
+                      </TableCell>
+                    </TableRow>
                   ) : !invoicesQuery.data?.length ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Aucune facture pour l'instant.</TableCell></TableRow>
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                        Aucune facture pour l'instant.
+                      </TableCell>
+                    </TableRow>
                   ) : (
                     invoicesQuery.data.map((invoice) => {
-                      const status = invoiceStatus[invoice.status] ?? { label: invoice.status, variant: "outline" as const };
+                      const status = invoiceStatus[invoice.status] ?? {
+                        label: invoice.status,
+                        variant: "outline" as const,
+                      };
                       return (
                         <TableRow key={invoice.id}>
                           <TableCell className="capitalize">
-                            {new Date(`${invoice.period}T00:00:00`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+                            {new Date(`${invoice.period}T00:00:00`).toLocaleDateString("fr-FR", {
+                              month: "long",
+                              year: "numeric",
+                            })}
                           </TableCell>
                           <TableCell>{invoice.stays_count}</TableCell>
                           <TableCell>{formatFcfa(Number(invoice.stays_amount))}</TableCell>
-                          <TableCell className="font-semibold">{formatFcfa(Number(invoice.commission_amount))}</TableCell>
+                          <TableCell className="font-semibold">
+                            {formatFcfa(Number(invoice.commission_amount))}
+                          </TableCell>
                           <TableCell>{shortDate(invoice.due_at)}</TableCell>
-                          <TableCell><Badge variant={status.variant}>{status.label}</Badge></TableCell>
+                          <TableCell>
+                            <Badge variant={status.variant}>{status.label}</Badge>
+                          </TableCell>
                         </TableRow>
                       );
                     })
@@ -223,7 +245,11 @@ export default function AgencyHotelBookings() {
                       <div>
                         <p className="font-semibold">
                           {shortDate(booking.check_in)} → {shortDate(booking.check_out)}
-                          <span className="font-normal text-muted-foreground"> · {nights} nuit{nights > 1 ? "s" : ""} · {booking.guests} voyageur{booking.guests > 1 ? "s" : ""}</span>
+                          <span className="font-normal text-muted-foreground">
+                            {" "}
+                            · {nights} nuit{nights > 1 ? "s" : ""} · {booking.guests} voyageur
+                            {booking.guests > 1 ? "s" : ""}
+                          </span>
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {booking.hotel_name} · Réf. {booking.booking_id.slice(0, 8).toUpperCase()}
@@ -257,17 +283,28 @@ export default function AgencyHotelBookings() {
                     )}
                     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm border-t pt-3">
                       <span className="font-medium">{booking.customer_name}</span>
-                      <a href={`tel:${booking.customer_phone}`} className="flex items-center gap-1 text-primary hover:underline">
-                        <Phone className="h-3.5 w-3.5" />{booking.customer_phone}
+                      <a
+                        href={`tel:${booking.customer_phone}`}
+                        className="flex items-center gap-1 text-primary hover:underline"
+                      >
+                        <Phone className="h-3.5 w-3.5" />
+                        {booking.customer_phone}
                       </a>
-                      <a href={`mailto:${booking.customer_email}`} className="flex items-center gap-1 text-primary hover:underline">
-                        <Mail className="h-3.5 w-3.5" />{booking.customer_email}
+                      <a
+                        href={`mailto:${booking.customer_email}`}
+                        className="flex items-center gap-1 text-primary hover:underline"
+                      >
+                        <Mail className="h-3.5 w-3.5" />
+                        {booking.customer_email}
                       </a>
-                      {booking.pay_at_property && booking.payment_status !== "paid" && booking.status !== "cancelled" && (
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                          <Wallet className="h-3.5 w-3.5" />Le client paie à l'arrivée
-                        </span>
-                      )}
+                      {booking.pay_at_property &&
+                        booking.payment_status !== "paid" &&
+                        booking.status !== "cancelled" && (
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Wallet className="h-3.5 w-3.5" />
+                            Le client paie à l'arrivée
+                          </span>
+                        )}
                       {canMarkNoShow(booking) && (
                         <Button
                           variant="outline"
@@ -282,7 +319,10 @@ export default function AgencyHotelBookings() {
                       )}
                     </div>
                     {booking.notes && (
-                      <p className="rounded-md bg-muted/50 p-2 text-sm"><span className="font-medium">Demande : </span>{booking.notes}</p>
+                      <p className="rounded-md bg-muted/50 p-2 text-sm">
+                        <span className="font-medium">Demande : </span>
+                        {booking.notes}
+                      </p>
                     )}
                   </CardContent>
                 </Card>

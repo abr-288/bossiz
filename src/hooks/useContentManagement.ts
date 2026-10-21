@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { getErrorMessage } from '@/lib/errorMessage';
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface PageSection {
   id: string;
@@ -56,7 +56,7 @@ export interface GlobalSetting {
   id: string;
   setting_key: string;
   setting_value: string;
-  setting_type: 'text' | 'color' | 'boolean' | 'number';
+  setting_type: "text" | "color" | "boolean" | "number";
   description?: string;
 }
 
@@ -66,18 +66,18 @@ export const useContentManagement = () => {
 
   // Page Sections
   const [pageSections, setPageSections] = useState<PageSection[]>([]);
-  
+
   const fetchPageSections = async (pageKey?: string) => {
     try {
       setLoading(true);
-      let query = supabase.from('page_sections').select('*').order('sort_order');
-      
+      let query = supabase.from("page_sections").select("*").order("sort_order");
+
       if (pageKey) {
-        query = query.eq('page_key', pageKey);
+        query = query.eq("page_key", pageKey);
       }
-      
+
       const { data, error } = await query;
-      
+
       if (error) throw error;
       setPageSections(data || []);
     } catch (err) {
@@ -89,35 +89,24 @@ export const useContentManagement = () => {
 
   const updatePageSection = async (id: string, updates: Partial<PageSection>) => {
     try {
-      const { error } = await supabase
-        .from('page_sections')
-        .update(updates)
-        .eq('id', id);
-      
+      const { error } = await supabase.from("page_sections").update(updates).eq("id", id);
+
       if (error) throw error;
-      
-      setPageSections(prev => 
-        prev.map(section => 
-          section.id === id ? { ...section, ...updates } : section
-        )
-      );
+
+      setPageSections((prev) => prev.map((section) => (section.id === id ? { ...section, ...updates } : section)));
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
 
-  const createPageSection = async (section: Omit<PageSection, 'id'>) => {
+  const createPageSection = async (section: Omit<PageSection, "id">) => {
     try {
-      const { data, error } = await supabase
-        .from('page_sections')
-        .insert(section)
-        .select()
-        .single();
-      
+      const { data, error } = await supabase.from("page_sections").insert(section).select().single();
+
       if (error) throw error;
-      
-      setPageSections(prev => [...prev, data]);
+
+      setPageSections((prev) => [...prev, data]);
       return data;
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -127,14 +116,11 @@ export const useContentManagement = () => {
 
   const deletePageSection = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('page_sections')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from("page_sections").delete().eq("id", id);
+
       if (error) throw error;
-      
-      setPageSections(prev => prev.filter(section => section.id !== id));
+
+      setPageSections((prev) => prev.filter((section) => section.id !== id));
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
       throw err;
@@ -143,15 +129,12 @@ export const useContentManagement = () => {
 
   // Customizable Plans
   const [customizablePlans, setCustomizablePlans] = useState<CustomizablePlan[]>([]);
-  
+
   const fetchCustomizablePlans = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('customizable_plans')
-        .select('*')
-        .order('sort_order');
-      
+      const { data, error } = await supabase.from("customizable_plans").select("*").order("sort_order");
+
       if (error) throw error;
       setCustomizablePlans(data || []);
     } catch (err) {
@@ -163,35 +146,24 @@ export const useContentManagement = () => {
 
   const updateCustomizablePlan = async (id: string, updates: Partial<CustomizablePlan>) => {
     try {
-      const { error } = await supabase
-        .from('customizable_plans')
-        .update(updates)
-        .eq('id', id);
-      
+      const { error } = await supabase.from("customizable_plans").update(updates).eq("id", id);
+
       if (error) throw error;
-      
-      setCustomizablePlans(prev => 
-        prev.map(plan => 
-          plan.id === id ? { ...plan, ...updates } : plan
-        )
-      );
+
+      setCustomizablePlans((prev) => prev.map((plan) => (plan.id === id ? { ...plan, ...updates } : plan)));
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
       throw err;
     }
   };
 
-  const createCustomizablePlan = async (plan: Omit<CustomizablePlan, 'id'>) => {
+  const createCustomizablePlan = async (plan: Omit<CustomizablePlan, "id">) => {
     try {
-      const { data, error } = await supabase
-        .from('customizable_plans')
-        .insert(plan)
-        .select()
-        .single();
-      
+      const { data, error } = await supabase.from("customizable_plans").insert(plan).select().single();
+
       if (error) throw error;
-      
-      setCustomizablePlans(prev => [...prev, data]);
+
+      setCustomizablePlans((prev) => [...prev, data]);
       return data;
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -201,14 +173,11 @@ export const useContentManagement = () => {
 
   const deleteCustomizablePlan = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('customizable_plans')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from("customizable_plans").delete().eq("id", id);
+
       if (error) throw error;
-      
-      setCustomizablePlans(prev => prev.filter(plan => plan.id !== id));
+
+      setCustomizablePlans((prev) => prev.filter((plan) => plan.id !== id));
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
       throw err;
@@ -217,15 +186,12 @@ export const useContentManagement = () => {
 
   // Testimonials
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  
+
   const fetchTestimonials = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('testimonials')
-        .select('*')
-        .order('sort_order');
-      
+      const { data, error } = await supabase.from("testimonials").select("*").order("sort_order");
+
       if (error) throw error;
       setTestimonials(data || []);
     } catch (err) {
@@ -237,17 +203,12 @@ export const useContentManagement = () => {
 
   const updateTestimonial = async (id: string, updates: Partial<Testimonial>) => {
     try {
-      const { error } = await supabase
-        .from('testimonials')
-        .update(updates)
-        .eq('id', id);
-      
+      const { error } = await supabase.from("testimonials").update(updates).eq("id", id);
+
       if (error) throw error;
-      
-      setTestimonials(prev => 
-        prev.map(testimonial => 
-          testimonial.id === id ? { ...testimonial, ...updates } : testimonial
-        )
+
+      setTestimonials((prev) =>
+        prev.map((testimonial) => (testimonial.id === id ? { ...testimonial, ...updates } : testimonial)),
       );
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -255,17 +216,13 @@ export const useContentManagement = () => {
     }
   };
 
-  const createTestimonial = async (testimonial: Omit<Testimonial, 'id'>) => {
+  const createTestimonial = async (testimonial: Omit<Testimonial, "id">) => {
     try {
-      const { data, error } = await supabase
-        .from('testimonials')
-        .insert(testimonial)
-        .select()
-        .single();
-      
+      const { data, error } = await supabase.from("testimonials").insert(testimonial).select().single();
+
       if (error) throw error;
-      
-      setTestimonials(prev => [...prev, data]);
+
+      setTestimonials((prev) => [...prev, data]);
       return data;
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -275,14 +232,11 @@ export const useContentManagement = () => {
 
   const deleteTestimonial = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('testimonials')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from("testimonials").delete().eq("id", id);
+
       if (error) throw error;
-      
-      setTestimonials(prev => prev.filter(testimonial => testimonial.id !== id));
+
+      setTestimonials((prev) => prev.filter((testimonial) => testimonial.id !== id));
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
       throw err;
@@ -291,15 +245,12 @@ export const useContentManagement = () => {
 
   // Value Propositions
   const [valuePropositions, setValuePropositions] = useState<ValueProposition[]>([]);
-  
+
   const fetchValuePropositions = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('value_propositions')
-        .select('*')
-        .order('sort_order');
-      
+      const { data, error } = await supabase.from("value_propositions").select("*").order("sort_order");
+
       if (error) throw error;
       setValuePropositions(data || []);
     } catch (err) {
@@ -311,17 +262,12 @@ export const useContentManagement = () => {
 
   const updateValueProposition = async (id: string, updates: Partial<ValueProposition>) => {
     try {
-      const { error } = await supabase
-        .from('value_propositions')
-        .update(updates)
-        .eq('id', id);
-      
+      const { error } = await supabase.from("value_propositions").update(updates).eq("id", id);
+
       if (error) throw error;
-      
-      setValuePropositions(prev => 
-        prev.map(proposition => 
-          proposition.id === id ? { ...proposition, ...updates } : proposition
-        )
+
+      setValuePropositions((prev) =>
+        prev.map((proposition) => (proposition.id === id ? { ...proposition, ...updates } : proposition)),
       );
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -329,17 +275,13 @@ export const useContentManagement = () => {
     }
   };
 
-  const createValueProposition = async (proposition: Omit<ValueProposition, 'id'>) => {
+  const createValueProposition = async (proposition: Omit<ValueProposition, "id">) => {
     try {
-      const { data, error } = await supabase
-        .from('value_propositions')
-        .insert(proposition)
-        .select()
-        .single();
-      
+      const { data, error } = await supabase.from("value_propositions").insert(proposition).select().single();
+
       if (error) throw error;
-      
-      setValuePropositions(prev => [...prev, data]);
+
+      setValuePropositions((prev) => [...prev, data]);
       return data;
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -349,14 +291,11 @@ export const useContentManagement = () => {
 
   const deleteValueProposition = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('value_propositions')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from("value_propositions").delete().eq("id", id);
+
       if (error) throw error;
-      
-      setValuePropositions(prev => prev.filter(proposition => proposition.id !== id));
+
+      setValuePropositions((prev) => prev.filter((proposition) => proposition.id !== id));
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
       throw err;
@@ -365,14 +304,12 @@ export const useContentManagement = () => {
 
   // Global Settings
   const [globalSettings, setGlobalSettings] = useState<GlobalSetting[]>([]);
-  
+
   const fetchGlobalSettings = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('global_settings')
-        .select('*');
-      
+      const { data, error } = await supabase.from("global_settings").select("*");
+
       if (error) throw error;
       setGlobalSettings(data || []);
     } catch (err) {
@@ -384,17 +321,12 @@ export const useContentManagement = () => {
 
   const updateGlobalSetting = async (key: string, value: string) => {
     try {
-      const { error } = await supabase
-        .from('global_settings')
-        .update({ setting_value: value })
-        .eq('setting_key', key);
-      
+      const { error } = await supabase.from("global_settings").update({ setting_value: value }).eq("setting_key", key);
+
       if (error) throw error;
-      
-      setGlobalSettings(prev => 
-        prev.map(setting => 
-          setting.setting_key === key ? { ...setting, setting_value: value } : setting
-        )
+
+      setGlobalSettings((prev) =>
+        prev.map((setting) => (setting.setting_key === key ? { ...setting, setting_value: value } : setting)),
       );
     } catch (err) {
       setError(getErrorMessage(err) ?? null);
@@ -403,8 +335,8 @@ export const useContentManagement = () => {
   };
 
   const getGlobalSetting = (key: string): string => {
-    const setting = globalSettings.find(s => s.setting_key === key);
-    return setting?.setting_value || '';
+    const setting = globalSettings.find((s) => s.setting_key === key);
+    return setting?.setting_value || "";
   };
 
   // Initialize all data
@@ -424,31 +356,31 @@ export const useContentManagement = () => {
     testimonials,
     valuePropositions,
     globalSettings,
-    
+
     // Page Sections
     fetchPageSections,
     updatePageSection,
     createPageSection,
     deletePageSection,
-    
+
     // Customizable Plans
     fetchCustomizablePlans,
     updateCustomizablePlan,
     createCustomizablePlan,
     deleteCustomizablePlan,
-    
+
     // Testimonials
     fetchTestimonials,
     updateTestimonial,
     createTestimonial,
     deleteTestimonial,
-    
+
     // Value Propositions
     fetchValuePropositions,
     updateValueProposition,
     createValueProposition,
     deleteValueProposition,
-    
+
     // Global Settings
     fetchGlobalSettings,
     updateGlobalSetting,

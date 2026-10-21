@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { getErrorMessage } from '@/lib/errorMessage';
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 export interface PriceAlert {
   id: string;
-  service_type: 'flight' | 'hotel' | 'car';
+  service_type: "flight" | "hotel" | "car";
   origin?: string;
   destination: string;
   departure_date?: string;
@@ -25,14 +25,16 @@ export const usePriceAlerts = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const createAlert = async (alert: Omit<PriceAlert, 'id' | 'created_at' | 'last_checked_at'>) => {
+  const createAlert = async (alert: Omit<PriceAlert, "id" | "created_at" | "last_checked_at">) => {
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Vous devez être connecté');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Vous devez être connecté");
 
       const { data, error } = await supabase
-        .from('price_alerts')
+        .from("price_alerts")
         .insert([{ ...alert, user_id: user.id }])
         .select()
         .single();
@@ -60,14 +62,16 @@ export const usePriceAlerts = () => {
   const getAlerts = async () => {
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Vous devez être connecté');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Vous devez être connecté");
 
       const { data, error } = await supabase
-        .from('price_alerts')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .from("price_alerts")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as PriceAlert[];
@@ -86,10 +90,7 @@ export const usePriceAlerts = () => {
   const updateAlert = async (id: string, updates: Partial<PriceAlert>) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('price_alerts')
-        .update(updates)
-        .eq('id', id);
+      const { error } = await supabase.from("price_alerts").update(updates).eq("id", id);
 
       if (error) throw error;
 
@@ -112,10 +113,7 @@ export const usePriceAlerts = () => {
   const deleteAlert = async (id: string) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('price_alerts')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from("price_alerts").delete().eq("id", id);
 
       if (error) throw error;
 

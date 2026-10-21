@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { AlertCircle } from "lucide-react";
-import { 
-  UnifiedForm, 
+import {
+  UnifiedForm,
   UnifiedAutocomplete,
   UnifiedDatePicker,
   UnifiedPassengerSelector,
   UnifiedSubmitButton,
-  FormProgressBar
+  FormProgressBar,
 } from "@/components/forms";
 import { useTranslation } from "react-i18next";
 import { hotelSearchSchema, type HotelSearchInput } from "@/lib/validationSchemas";
@@ -31,7 +31,7 @@ export const HotelSearchForm = () => {
     adults: 2,
     children: 0,
     rooms: 1,
-    infants: 0
+    infants: 0,
   });
 
   // Validation pour que la date de départ soit au minimum le lendemain de la date d'arrivée
@@ -62,10 +62,10 @@ export const HotelSearchForm = () => {
     };
 
     const validation = safeValidate(hotelSearchSchema, formData);
-    
+
     if (!validation.success) {
       const filteredErrors: Record<string, string> = {};
-      Object.keys(validation.errors).forEach(key => {
+      Object.keys(validation.errors).forEach((key) => {
         if (touched[key]) {
           filteredErrors[key] = validation.errors[key];
         }
@@ -73,7 +73,7 @@ export const HotelSearchForm = () => {
       setErrors(filteredErrors);
     } else {
       const clearedErrors = { ...errors };
-      Object.keys(touched).forEach(key => {
+      Object.keys(touched).forEach((key) => {
         delete clearedErrors[key];
       });
       setErrors(clearedErrors);
@@ -81,12 +81,12 @@ export const HotelSearchForm = () => {
   }, [destination, checkIn, checkOut, passengers, touched]);
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Marquer tous les champs comme touchés
     setTouched({
       destination: true,
@@ -112,11 +112,11 @@ export const HotelSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
+        title: t("validation.errorTitle"),
+        description: t("validation.errorDescription"),
         variant: "destructive",
       });
-      
+
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -138,30 +138,20 @@ export const HotelSearchForm = () => {
 
   // Calcul de la progression du formulaire
   const totalFields = 5;
-  const completedFields = [
-    destination,
-    checkIn,
-    checkOut,
-    passengers.adults > 0,
-    passengers.rooms > 0,
-  ].filter(Boolean).length;
+  const completedFields = [destination, checkIn, checkOut, passengers.adults > 0, passengers.rooms > 0].filter(
+    Boolean,
+  ).length;
 
   return (
     <UnifiedForm onSubmit={handleSearch} variant="search" className="max-w-6xl mx-auto">
       {/* Barre de progression */}
-      <FormProgressBar 
-        totalFields={totalFields} 
-        completedFields={completedFields}
-        className="mb-4 md:mb-6"
-      />
+      <FormProgressBar totalFields={totalFields} completedFields={completedFields} className="mb-4 md:mb-6" />
 
       {/* Alert d'erreur générale */}
       {hasErrors && (
         <Alert variant="destructive" className="mb-3 md:mb-4">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Veuillez corriger les erreurs dans le formulaire
-          </AlertDescription>
+          <AlertDescription>Veuillez corriger les erreurs dans le formulaire</AlertDescription>
         </Alert>
       )}
 
@@ -183,9 +173,7 @@ export const HotelSearchForm = () => {
               helpText="Saisissez la ville, région ou pays de destination"
             />
             {errors.destination && touched.destination && (
-              <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                {errors.destination}
-              </p>
+              <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.destination}</p>
             )}
           </div>
         </div>
@@ -205,9 +193,7 @@ export const HotelSearchForm = () => {
               required
             />
             {errors.checkIn && touched.checkIn && (
-              <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                {errors.checkIn}
-              </p>
+              <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.checkIn}</p>
             )}
           </div>
         </div>
@@ -227,9 +213,7 @@ export const HotelSearchForm = () => {
               required
             />
             {errors.checkOut && touched.checkOut && (
-              <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                {errors.checkOut}
-              </p>
+              <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.checkOut}</p>
             )}
           </div>
         </div>
@@ -241,11 +225,11 @@ export const HotelSearchForm = () => {
               label={t("search.guests")}
               value={passengers}
               onChange={(value) => {
-                setPassengers({ 
+                setPassengers({
                   adults: value.adults,
                   children: value.children,
                   rooms: value.rooms || 1,
-                  infants: value.infants || 0
+                  infants: value.infants || 0,
                 });
                 handleBlur("adults");
                 handleBlur("rooms");
@@ -253,7 +237,9 @@ export const HotelSearchForm = () => {
               showRooms
               required
             />
-            {((errors.adults && touched.adults) || (errors.children && touched.children) || (errors.rooms && touched.rooms)) && (
+            {((errors.adults && touched.adults) ||
+              (errors.children && touched.children) ||
+              (errors.rooms && touched.rooms)) && (
               <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
                 {errors.adults || errors.children || errors.rooms}
               </p>
@@ -262,11 +248,9 @@ export const HotelSearchForm = () => {
         </div>
       </div>
 
-
-
       {/* Submit Button */}
       <div className="mt-4 md:mt-6">
-        <UnifiedSubmitButton 
+        <UnifiedSubmitButton
           variant="search"
           disabled={hasErrors}
           className={hasErrors ? "opacity-50 cursor-not-allowed" : ""}

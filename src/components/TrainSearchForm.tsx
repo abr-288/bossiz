@@ -4,7 +4,13 @@ import { Train, AlertCircle, ArrowRightLeft } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
-import { UnifiedForm, UnifiedAutocomplete, UnifiedDatePicker, UnifiedFormField, UnifiedSubmitButton } from "@/components/forms";
+import {
+  UnifiedForm,
+  UnifiedAutocomplete,
+  UnifiedDatePicker,
+  UnifiedFormField,
+  UnifiedSubmitButton,
+} from "@/components/forms";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trainSearchSchema, type TrainSearchInput } from "@/lib/validationSchemas";
 import { safeValidate } from "@/lib/formHelpers";
@@ -17,7 +23,7 @@ export const TrainSearchForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
+
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [departureDate, setDepartureDate] = useState<Date>();
@@ -45,10 +51,10 @@ export const TrainSearchForm = () => {
     };
 
     const validation = safeValidate(trainSearchSchema, formData);
-    
+
     if (!validation.success) {
       const filteredErrors: Record<string, string> = {};
-      Object.keys(validation.errors).forEach(key => {
+      Object.keys(validation.errors).forEach((key) => {
         if (touched[key]) {
           filteredErrors[key] = validation.errors[key];
         }
@@ -56,7 +62,7 @@ export const TrainSearchForm = () => {
       setErrors(filteredErrors);
     } else {
       const clearedErrors = { ...errors };
-      Object.keys(touched).forEach(key => {
+      Object.keys(touched).forEach((key) => {
         delete clearedErrors[key];
       });
       setErrors(clearedErrors);
@@ -64,7 +70,7 @@ export const TrainSearchForm = () => {
   }, [origin, destination, departureDate, returnDate, adults, children, travelClass, touched]);
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSwap = () => {
@@ -75,7 +81,7 @@ export const TrainSearchForm = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Marquer tous les champs comme touchés
     setTouched({
       origin: true,
@@ -103,11 +109,11 @@ export const TrainSearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
+        title: t("validation.errorTitle"),
+        description: t("validation.errorDescription"),
         variant: "destructive",
       });
-      
+
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -142,9 +148,7 @@ export const TrainSearchForm = () => {
         {hasErrors && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {t("ux.trainSearch.fixErrors")}
-            </AlertDescription>
+            <AlertDescription>{t("ux.trainSearch.fixErrors")}</AlertDescription>
           </Alert>
         )}
 
@@ -152,7 +156,7 @@ export const TrainSearchForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-start">
             <div className="md:col-span-5 space-y-1">
               <UnifiedAutocomplete
-                label={t('search.from')}
+                label={t("search.from")}
                 value={origin}
                 onChange={(value) => {
                   setOrigin(value);
@@ -164,9 +168,7 @@ export const TrainSearchForm = () => {
                 className={errors.origin && touched.origin ? "border-destructive" : ""}
               />
               {errors.origin && touched.origin && (
-                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                  {errors.origin}
-                </p>
+                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.origin}</p>
               )}
             </div>
 
@@ -185,7 +187,7 @@ export const TrainSearchForm = () => {
 
             <div className="md:col-span-5 space-y-1">
               <UnifiedAutocomplete
-                label={t('search.to')}
+                label={t("search.to")}
                 value={destination}
                 onChange={(value) => {
                   setDestination(value);
@@ -197,9 +199,7 @@ export const TrainSearchForm = () => {
                 className={errors.destination && touched.destination ? "border-destructive" : ""}
               />
               {errors.destination && touched.destination && (
-                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                  {errors.destination}
-                </p>
+                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.destination}</p>
               )}
             </div>
           </div>
@@ -207,7 +207,7 @@ export const TrainSearchForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <UnifiedDatePicker
-                label={t('search.departure')}
+                label={t("search.departure")}
                 value={departureDate}
                 onChange={(date) => {
                   setDepartureDate(date);
@@ -217,15 +217,13 @@ export const TrainSearchForm = () => {
                 minDate={new Date()}
               />
               {errors.departureDate && touched.departureDate && (
-                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                  {errors.departureDate}
-                </p>
+                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.departureDate}</p>
               )}
             </div>
 
             <div className="space-y-1">
               <UnifiedDatePicker
-                label={t('search.return')}
+                label={t("search.return")}
                 value={returnDate}
                 onChange={(date) => {
                   setReturnDate(date);
@@ -234,9 +232,7 @@ export const TrainSearchForm = () => {
                 minDate={departureDate || new Date()}
               />
               {errors.returnDate && touched.returnDate && (
-                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                  {errors.returnDate}
-                </p>
+                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.returnDate}</p>
               )}
             </div>
           </div>
@@ -244,8 +240,8 @@ export const TrainSearchForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Adultes *</label>
-              <Select 
-                value={adults.toString()} 
+              <Select
+                value={adults.toString()}
                 onValueChange={(value) => {
                   setAdults(parseInt(value));
                   handleBlur("adults");
@@ -269,8 +265,8 @@ export const TrainSearchForm = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Enfants</label>
-              <Select 
-                value={children.toString()} 
+              <Select
+                value={children.toString()}
                 onValueChange={(value) => {
                   setChildren(parseInt(value));
                   handleBlur("children");
@@ -294,14 +290,16 @@ export const TrainSearchForm = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Classe *</label>
-              <Select 
-                value={travelClass} 
+              <Select
+                value={travelClass}
                 onValueChange={(value) => {
                   setTravelClass(value as typeof travelClass);
                   handleBlur("travelClass");
                 }}
               >
-                <SelectTrigger className={cn("h-11", errors.travelClass && touched.travelClass && "border-destructive")}>
+                <SelectTrigger
+                  className={cn("h-11", errors.travelClass && touched.travelClass && "border-destructive")}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -315,9 +313,9 @@ export const TrainSearchForm = () => {
             </div>
           </div>
 
-          <UnifiedSubmitButton 
-            loading={loading} 
-            fullWidth 
+          <UnifiedSubmitButton
+            loading={loading}
+            fullWidth
             className={cn("mt-6", hasErrors && "opacity-50 cursor-not-allowed")}
             disabled={hasErrors || loading}
           >

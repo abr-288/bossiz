@@ -20,54 +20,54 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
 
       // Check for old browsers - be very permissive for site access
       const ua = navigator.userAgent.toLowerCase();
-      
+
       // Only block truly incompatible browsers (Internet Explorer)
-      if (ua.includes('msie') || ua.includes('trident')) {
-        issues.push('Internet Explorer n\'est plus supporté - certaines fonctionnalités pourraient être limitées');
+      if (ua.includes("msie") || ua.includes("trident")) {
+        issues.push("Internet Explorer n'est plus supporté - certaines fonctionnalités pourraient être limitées");
         // Still allow access but with warning
         compatible = true;
       }
 
       // Check cookies - only warn, don't block
       if (!navigator.cookieEnabled) {
-        issues.push('Les cookies sont désactivés - certaines fonctionnalités pourraient être limitées');
+        issues.push("Les cookies sont désactivés - certaines fonctionnalités pourraient être limitées");
       }
 
       // Check screen resolution - only warn for very small screens
       const width = screen.width;
       if (width < 320) {
-        issues.push('Écran très petit - certaines fonctionnalités pourraient être limitées');
+        issues.push("Écran très petit - certaines fonctionnalités pourraient être limitées");
       }
 
       // Check for very old iOS - only warn
-      if (ua.includes('iphone') || ua.includes('ipad')) {
+      if (ua.includes("iphone") || ua.includes("ipad")) {
         const iosMatch = ua.match(/os (\d+)_/);
         if (iosMatch && parseInt(iosMatch[1]) < 12) {
-          issues.push('Version iOS ancienne détectée - les téléchargements pourraient être limités');
+          issues.push("Version iOS ancienne détectée - les téléchargements pourraient être limités");
         }
       }
 
       // Check for very old Android - only warn
-      if (ua.includes('android')) {
+      if (ua.includes("android")) {
         const androidMatch = ua.match(/android (\d+)/);
         if (androidMatch && parseInt(androidMatch[1]) < 6) {
-          issues.push('Version Android ancienne détectée - les téléchargements pourraient être limités');
+          issues.push("Version Android ancienne détectée - les téléchargements pourraient être limités");
         }
       }
 
       // Check for very old browsers - only warn, don't block
-      const isVeryOldBrowser = 
-        ua.includes('chrome/1') || 
-        ua.includes('chrome/2') || 
-        ua.includes('chrome/3') || 
-        ua.includes('firefox/1') || 
-        ua.includes('firefox/2') || 
-        ua.includes('safari/1') || 
-        ua.includes('safari/2') || 
-        ua.includes('safari/3');
+      const isVeryOldBrowser =
+        ua.includes("chrome/1") ||
+        ua.includes("chrome/2") ||
+        ua.includes("chrome/3") ||
+        ua.includes("firefox/1") ||
+        ua.includes("firefox/2") ||
+        ua.includes("safari/1") ||
+        ua.includes("safari/2") ||
+        ua.includes("safari/3");
 
       if (isVeryOldBrowser) {
-        issues.push('Navigateur très ancien détecté - les téléchargements pourraient être limités');
+        issues.push("Navigateur très ancien détecté - les téléchargements pourraient être limités");
       }
 
       // Always allow access to the site
@@ -75,7 +75,7 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
 
       setCompatibilityIssues(issues);
       setIsCompatible(compatible);
-      
+
       // Show warning for non-critical issues
       if (issues.length > 0 && compatible) {
         setShowWarning(true);
@@ -96,12 +96,12 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
     const compatible = checkCompatibility();
 
     // Store compatibility check result
-    sessionStorage.setItem('breserve-compatibility-checked', 'true');
-    sessionStorage.setItem('breserve-is-compatible', compatible.toString());
+    sessionStorage.setItem("breserve-compatibility-checked", "true");
+    sessionStorage.setItem("breserve-is-compatible", compatible.toString());
   }, [onCompatibilityCheck]);
 
   // Don't show anything on compatibility page itself
-  if (window.location.pathname === '/compatibility') {
+  if (window.location.pathname === "/compatibility") {
     return <>{children}</>;
   }
 
@@ -122,28 +122,15 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
                     ))}
                   </ul>
                   <div className="flex gap-2 mt-3">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => window.location.href = '/compatibility'}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => (window.location.href = "/compatibility")}>
                       Vérifier la compatibilité
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      onClick={() => setShowWarning(false)}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => setShowWarning(false)}>
                       Ignorer
                     </Button>
                   </div>
                 </div>
-                <Button 
-                  size="sm" 
-                  variant="ghost"
-                  className="ml-2"
-                  onClick={() => setShowWarning(false)}
-                >
+                <Button size="sm" variant="ghost" className="ml-2" onClick={() => setShowWarning(false)}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -159,16 +146,12 @@ const CompatibilityDetector = ({ children, onCompatibilityCheck }: Compatibility
             <AlertTriangle className="h-12 w-12 text-warning-foreground mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Appareil non compatible</h2>
             <p className="text-muted-foreground mb-4">
-              Votre appareil ou navigateur n'est pas compatible avec Bossiz+.
-              Vous allez être redirigé vers la page de compatibilité.
+              Votre appareil ou navigateur n'est pas compatible avec Bossiz+. Vous allez être redirigé vers la page de
+              compatibilité.
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>Redirection automatique dans 3 secondes...</p>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={() => window.location.href = '/compatibility'}
-              >
+              <Button size="sm" variant="outline" onClick={() => (window.location.href = "/compatibility")}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Aller maintenant
               </Button>

@@ -63,10 +63,10 @@ export const UnifiedDatePicker = ({
       className={cn("space-y-2", className)}
     >
       {label && (
-        <Label 
+        <Label
           className={cn(
             "text-sm font-semibold text-foreground flex items-center gap-2",
-            required && "after:content-['*'] after:text-destructive after:ml-0.5"
+            required && "after:content-['*'] after:text-destructive after:ml-0.5",
           )}
         >
           <CalendarIcon className="w-4 h-4 text-primary" />
@@ -85,12 +85,14 @@ export const UnifiedDatePicker = ({
               "transition-all duration-base ease-standard",
               !value && "text-muted-foreground",
               error && "border-destructive",
-              "group"
+              "group",
             )}
           >
             <CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
             <span className="truncate flex-1">
-              {value ? format(value, "dd MMMM yyyy", { locale: dateLocale }) : placeholder ?? t("ux.datepicker.placeholder")}
+              {value
+                ? format(value, "dd MMMM yyyy", { locale: dateLocale })
+                : (placeholder ?? t("ux.datepicker.placeholder"))}
             </span>
             {value && (
               <Button
@@ -123,7 +125,8 @@ export const UnifiedDatePicker = ({
       </Popover>
 
       {error && (
-        <motion.p role="alert"
+        <motion.p
+          role="alert"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           className="text-sm text-destructive font-medium flex items-center gap-1"

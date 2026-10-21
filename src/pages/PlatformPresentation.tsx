@@ -134,7 +134,8 @@ const modules = [
     icon: Compass,
     title: "Circuits & Tours",
     route: "/tours",
-    description: "Des circuits organisés et expériences guidées pour les voyageurs qui recherchent un itinéraire clé en main.",
+    description:
+      "Des circuits organisés et expériences guidées pour les voyageurs qui recherchent un itinéraire clé en main.",
     features: [
       "Filtres par destination et durée du circuit",
       "Tri par popularité",
@@ -160,11 +161,9 @@ const modules = [
     icon: Ticket,
     title: "Activités",
     route: "/activities",
-    description: "Réservation d'activités et d'expériences locales sur place, en complément d'un hébergement ou d'un vol.",
-    features: [
-      "Recherche par destination, date et nombre de participants",
-      "Filtrage par catégorie d'activité",
-    ],
+    description:
+      "Réservation d'activités et d'expériences locales sur place, en complément d'un hébergement ou d'un vol.",
+    features: ["Recherche par destination, date et nombre de participants", "Filtrage par catégorie d'activité"],
     src: shotActivities,
   },
   {
@@ -172,7 +171,8 @@ const modules = [
     icon: PartyPopper,
     title: "Événements",
     route: "/events",
-    description: "Une billetterie pour des événements — concerts, sport, théâtre, festivals — avec recherche par lieu et date.",
+    description:
+      "Une billetterie pour des événements — concerts, sport, théâtre, festivals — avec recherche par lieu et date.",
     features: [
       "Catégories dédiées : Concerts, Sport, Théâtre, Festivals",
       "Recherche par lieu, date et nombre de participants",
@@ -184,11 +184,9 @@ const modules = [
     icon: TrainFront,
     title: "Trains",
     route: "/trains",
-    description: "Recherche de trajets en train, un complément utile aux vols pour les liaisons régionales ou nationales.",
-    features: [
-      "Origine, destination et dates aller-retour",
-      "Choix de la classe et du nombre de passagers",
-    ],
+    description:
+      "Recherche de trajets en train, un complément utile aux vols pour les liaisons régionales ou nationales.",
+    features: ["Origine, destination et dates aller-retour", "Choix de la classe et du nombre de passagers"],
     src: shotTrains,
   },
 ];
@@ -249,16 +247,15 @@ const PlatformPresentation = () => {
 
       {/* Hero */}
       <section className="relative py-16 md:py-24 bg-[#192443] overflow-hidden">
-        <LazyImage
-          src={bannerPresentation}
-          alt="Bossiz+"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <LazyImage src={bannerPresentation} alt="Bossiz+" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-[#192443]/65" />
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
           <div
             className="absolute top-0 left-0 w-full h-full"
-            style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "32px 32px" }}
+            style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px",
+            }}
           />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
@@ -298,22 +295,16 @@ const PlatformPresentation = () => {
       <main className="flex-1">
         {/* Intro */}
         <section className="container mx-auto px-4 py-14 md:py-16 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-            {t("ux.presentation.docs")}
-          </h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t("ux.presentation.docs")}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Chaque module ci-dessous est illustré par une capture d'écran réelle de la plateforme en production —
-            aucune manipulation nécessaire pour vous faire une idée complète du site.
+            Chaque module ci-dessous est illustré par une capture d'écran réelle de la plateforme en production — aucune
+            manipulation nécessaire pour vous faire une idée complète du site.
           </p>
         </section>
 
         {/* Module-by-module walkthrough */}
         {modules.map(({ id, icon: Icon, title, route, description, features, src }, index) => (
-          <section
-            id={id}
-            key={id}
-            className={`scroll-mt-32 py-12 md:py-16 ${index % 2 === 1 ? "bg-muted/30" : ""}`}
-          >
+          <section id={id} key={id} className={`scroll-mt-32 py-12 md:py-16 ${index % 2 === 1 ? "bg-muted/30" : ""}`}>
             <div className="container mx-auto px-4">
               <div
                 className={`max-w-6xl mx-auto flex flex-col gap-8 md:gap-12 items-center ${
@@ -354,9 +345,7 @@ const PlatformPresentation = () => {
         <section className="container mx-auto px-4 py-14 md:py-20">
           <div className="text-center mb-10 md:mb-14">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t("ux.presentation.why")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("ux.presentation.whyDesc")}
-            </p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">{t("ux.presentation.whyDesc")}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-4xl mx-auto">
             {partnerBenefits.map(({ icon: Icon, title, description }) => (
@@ -396,9 +385,7 @@ const PlatformPresentation = () => {
         {/* Final CTA */}
         <section className="container mx-auto px-4 py-14 md:py-20">
           <div className="rounded-2xl bg-[#192443] px-6 py-10 md:px-12 md:py-14 text-center max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              {t("ux.presentation.cta")}
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">{t("ux.presentation.cta")}</h2>
             <p className="text-white/80 mb-8 max-w-xl mx-auto">
               Soumettez votre candidature en quelques minutes, notre équipe vous recontacte après étude de votre
               dossier.

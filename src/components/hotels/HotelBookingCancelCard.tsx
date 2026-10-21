@@ -37,7 +37,12 @@ interface HotelBookingCancelCardProps {
 // Annulation en ligne d'une réservation d'hôtel partenaire : les frais et le
 // remboursement sont calculés par le serveur (cancel-hotel-booking, dry_run)
 // et montrés avant confirmation.
-export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onCancelled }: HotelBookingCancelCardProps) {
+export function HotelBookingCancelCard({
+  bookingId,
+  cancellation,
+  cancelled,
+  onCancelled,
+}: HotelBookingCancelCardProps) {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -48,8 +53,12 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
         <CardContent className="p-5 text-sm space-y-1">
           <p className="font-semibold">Réservation annulée</p>
           <p>Frais d'annulation : {cancellation?.fee ? formatFcfa(cancellation.fee) : "aucun"}</p>
-          {!!cancellation?.refund && <p>Remboursement : {formatFcfa(cancellation.refund)} sur votre moyen de paiement.</p>}
-          {!!cancellation?.feeDueToHotel && <p>Frais à régler à l'établissement : {formatFcfa(cancellation.feeDueToHotel)}.</p>}
+          {!!cancellation?.refund && (
+            <p>Remboursement : {formatFcfa(cancellation.refund)} sur votre moyen de paiement.</p>
+          )}
+          {!!cancellation?.feeDueToHotel && (
+            <p>Frais à régler à l'établissement : {formatFcfa(cancellation.feeDueToHotel)}.</p>
+          )}
         </CardContent>
       </Card>
     );
@@ -60,7 +69,11 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
       body: { booking_id: bookingId, dry_run: dryRun },
     });
     if (error || !data?.success) {
-      throw new Error(error ? await getEdgeFunctionErrorMessage(error, "Annulation impossible.") : data?.error || "Annulation impossible.");
+      throw new Error(
+        error
+          ? await getEdgeFunctionErrorMessage(error, "Annulation impossible.")
+          : data?.error || "Annulation impossible.",
+      );
     }
     return data;
   };
@@ -82,7 +95,11 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
     setLoading(true);
     try {
       const data = await call(false);
-      toast.success(data.refund > 0 ? `Réservation annulée. ${formatFcfa(data.refund)} vous seront remboursés.` : "Réservation annulée.");
+      toast.success(
+        data.refund > 0
+          ? `Réservation annulée. ${formatFcfa(data.refund)} vous seront remboursés.`
+          : "Réservation annulée.",
+      );
       setOpen(false);
       onCancelled();
     } catch (error) {
@@ -110,7 +127,9 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
       <AlertDialog open={open} onOpenChange={(value) => !loading && setOpen(value)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{quote?.cancellable ? "Annuler cette réservation ?" : "Annulation en ligne impossible"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {quote?.cancellable ? "Annuler cette réservation ?" : "Annulation en ligne impossible"}
+            </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
                 {quote && !quote.cancellable ? (
@@ -120,7 +139,9 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
                     <ul className="space-y-1">
                       {quote.lines.map((line, i) => (
                         <li key={i} className="flex justify-between gap-3">
-                          <span>{line.room} · {line.feePercent === 0 ? "sans frais" : `${line.feePercent} % de frais`}</span>
+                          <span>
+                            {line.room} · {line.feePercent === 0 ? "sans frais" : `${line.feePercent} % de frais`}
+                          </span>
                           <span className="whitespace-nowrap">{line.fee > 0 ? formatFcfa(line.fee) : "0 FCFA"}</span>
                         </li>
                       ))}
@@ -128,7 +149,8 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
                     <p className="font-semibold text-foreground">Frais d'annulation : {formatFcfa(quote.fee)}</p>
                     {quote.paid > 0 ? (
                       <p className="text-foreground">
-                        Remboursement : <strong>{formatFcfa(quote.refund)}</strong> sur le moyen de paiement utilisé, sous 10 jours ouvrés.
+                        Remboursement : <strong>{formatFcfa(quote.refund)}</strong> sur le moyen de paiement utilisé,
+                        sous 10 jours ouvrés.
                       </p>
                     ) : quote.fee > 0 && quote.payAtProperty ? (
                       <p>Ces frais sont à régler directement à l'établissement.</p>
@@ -140,7 +162,9 @@ export function HotelBookingCancelCard({ bookingId, cancellation, cancelled, onC
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>{quote?.cancellable ? "Garder ma réservation" : "Fermer"}</AlertDialogCancel>
+            <AlertDialogCancel disabled={loading}>
+              {quote?.cancellable ? "Garder ma réservation" : "Fermer"}
+            </AlertDialogCancel>
             {quote?.cancellable && (
               <AlertDialogAction
                 onClick={(e) => {

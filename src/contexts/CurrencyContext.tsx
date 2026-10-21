@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 import { singletonContext } from "@/lib/singletonContext";
 
 interface CurrencyContextType {
@@ -10,9 +10,9 @@ const CurrencyContext = singletonContext<CurrencyContextType | undefined>("Curre
 
 // Single currency: XOF (Franc CFA)
 const FIXED_CURRENCY = {
-  code: 'XOF',
-  symbol: 'FCFA',
-  name: 'Franc CFA'
+  code: "XOF",
+  symbol: "FCFA",
+  name: "Franc CFA",
 };
 
 export const currencies = [FIXED_CURRENCY];
@@ -22,20 +22,16 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const formatPrice = (amount: number, currency?: string): string => {
     // Always format as XOF
-    return `${Math.round(amount).toLocaleString('fr-FR')} FCFA`;
+    return `${Math.round(amount).toLocaleString("fr-FR")} FCFA`;
   };
 
-  return (
-    <CurrencyContext.Provider value={{ selectedCurrency, formatPrice }}>
-      {children}
-    </CurrencyContext.Provider>
-  );
+  return <CurrencyContext.Provider value={{ selectedCurrency, formatPrice }}>{children}</CurrencyContext.Provider>;
 };
 
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
   if (context === undefined) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
+    throw new Error("useCurrency must be used within a CurrencyProvider");
   }
   return context;
 };

@@ -33,17 +33,17 @@ export const useWellnessServices = () => {
     try {
       setLoading(true);
       const { data, error: fetchError } = await supabase
-        .from('wellness_services')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .from("wellness_services")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setWellnessServices((data || []).map(toWellnessService));
       setError(null);
     } catch (err) {
-      console.error('Error fetching wellness services:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      console.error("Error fetching wellness services:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }

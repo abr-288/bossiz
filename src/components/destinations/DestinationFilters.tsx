@@ -57,9 +57,10 @@ export const DestinationFilters = ({
             className={`
               inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
               transition-all duration-base ease-standard
-              ${selectedCategory === category.id
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                : "bg-card/80 backdrop-blur-sm border border-border/50 text-foreground hover:bg-muted hover:border-primary/30"
+              ${
+                selectedCategory === category.id
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "bg-card/80 backdrop-blur-sm border border-border/50 text-foreground hover:bg-muted hover:border-primary/30"
               }
             `}
           >
@@ -71,11 +72,7 @@ export const DestinationFilters = ({
 
       {/* Results count */}
       {totalResults !== undefined && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <Badge variant="secondary" className="text-sm font-normal">
             {totalResults} destination{totalResults !== 1 ? "s" : ""} trouvée{totalResults !== 1 ? "s" : ""}
           </Badge>

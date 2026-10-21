@@ -9,13 +9,7 @@ interface PaginationProps {
   totalItems?: number;
 }
 
-export const Pagination = ({
-  currentPage,
-  totalPages,
-  onPageChange,
-  itemsPerPage,
-  totalItems,
-}: PaginationProps) => {
+export const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, totalItems }: PaginationProps) => {
   if (totalPages <= 1) return null;
 
   const getPageNumbers = () => {
@@ -46,14 +40,9 @@ export const Pagination = ({
           Affichage de {startItem} à {endItem} sur {totalItems} résultats
         </p>
       )}
-      
+
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
+        <Button variant="outline" size="sm" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
           <ChevronLeft className="h-4 w-4" />
           Précédent
         </Button>
@@ -61,11 +50,7 @@ export const Pagination = ({
         <div className="flex gap-1">
           {pages[0] > 1 && (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(1)}
-              >
+              <Button variant="outline" size="sm" onClick={() => onPageChange(1)}>
                 1
               </Button>
               {pages[0] > 2 && <span className="px-2 py-1">...</span>}
@@ -85,14 +70,8 @@ export const Pagination = ({
 
           {pages[pages.length - 1] < totalPages && (
             <>
-              {pages[pages.length - 1] < totalPages - 1 && (
-                <span className="px-2 py-1">...</span>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(totalPages)}
-              >
+              {pages[pages.length - 1] < totalPages - 1 && <span className="px-2 py-1">...</span>}
+              <Button variant="outline" size="sm" onClick={() => onPageChange(totalPages)}>
                 {totalPages}
               </Button>
             </>

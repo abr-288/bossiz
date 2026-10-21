@@ -36,11 +36,15 @@ const BottomNav = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setIsLoggedIn(!!session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => setIsLoggedIn(!!session));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => setIsLoggedIn(!!session));
     return () => subscription.unsubscribe();
   }, []);
 
-  const hidden = HIDDEN_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`) || pathname.startsWith(`${prefix}-`));
+  const hidden = HIDDEN_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`) || pathname.startsWith(`${prefix}-`),
+  );
 
   // Les éléments fixés en bas (chat, invites) lisent cette variable pour se
   // placer au-dessus de la barre ; le contenu de la page réserve sa hauteur.

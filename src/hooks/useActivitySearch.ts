@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { useLocalizedRows } from "@/lib/translatableContent";
 
 export interface Activity {
@@ -39,26 +39,26 @@ export const useActivitySearch = () => {
     setLoading(true);
     try {
       let query = supabase
-        .from('activities')
-        .select('*')
-        .eq('available', true)
-        .order('featured', { ascending: false })
-        .order('rating', { ascending: false });
+        .from("activities")
+        .select("*")
+        .eq("available", true)
+        .order("featured", { ascending: false })
+        .order("rating", { ascending: false });
 
       if (filters?.location) {
-        query = query.ilike('location', `%${filters.location}%`);
+        query = query.ilike("location", `%${filters.location}%`);
       }
 
       if (filters?.category) {
-        query = query.eq('category', filters.category);
+        query = query.eq("category", filters.category);
       }
 
       if (filters?.minPrice) {
-        query = query.gte('price_per_unit', filters.minPrice);
+        query = query.gte("price_per_unit", filters.minPrice);
       }
 
       if (filters?.maxPrice) {
-        query = query.lte('price_per_unit', filters.maxPrice);
+        query = query.lte("price_per_unit", filters.maxPrice);
       }
 
       const { data, error } = await query;
@@ -67,11 +67,11 @@ export const useActivitySearch = () => {
 
       setActivities(data || []);
     } catch (error) {
-      console.error('Error searching activities:', error);
+      console.error("Error searching activities:", error);
       toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les activités',
-        variant: 'destructive',
+        title: "Erreur",
+        description: "Impossible de charger les activités",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);

@@ -22,7 +22,7 @@ export const CarLocationAutocomplete = ({
   value,
   onChange,
   placeholder = "Ville ou aéroport",
-  className
+  className,
 }: CarLocationAutocompleteProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -39,8 +39,8 @@ export const CarLocationAutocomplete = ({
       debounceTimer.current = setTimeout(async () => {
         setLoading(true);
         try {
-          const { data } = await supabase.functions.invoke('car-location-autocomplete', {
-            body: { query: value }
+          const { data } = await supabase.functions.invoke("car-location-autocomplete", {
+            body: { query: value },
           });
 
           if (data?.success && data.suggestions) {
@@ -48,7 +48,7 @@ export const CarLocationAutocomplete = ({
             setIsOpen(true);
           }
         } catch (error) {
-          console.error('Autocomplete error:', error);
+          console.error("Autocomplete error:", error);
         } finally {
           setLoading(false);
         }
@@ -107,14 +107,16 @@ export const CarLocationAutocomplete = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate text-foreground group-hover:text-primary">
-                      {suggestion.name}
+                    <p className="font-medium truncate text-foreground group-hover:text-primary">{suggestion.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {suggestion.type === "airport" ? "Aéroport" : "Ville"} • {suggestion.country}
                     </p>
-                    <p className="text-sm text-muted-foreground">{suggestion.type === "airport" ? "Aéroport" : "Ville"} • {suggestion.country}</p>
                   </div>
                   {suggestion.averagePrice && (
                     <div className="text-right flex-shrink-0">
-                      <p className="font-semibold text-primary">{suggestion.averagePrice}€<span className="text-xs">/jour</span></p>
+                      <p className="font-semibold text-primary">
+                        {suggestion.averagePrice}€<span className="text-xs">/jour</span>
+                      </p>
                       {suggestion.priceRange && (
                         <p className="text-xs text-muted-foreground">{suggestion.priceRange}</p>
                       )}

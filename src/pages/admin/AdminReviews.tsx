@@ -67,13 +67,14 @@ const AdminReviews = () => {
 
   const approvedReviews = reviews.filter((r) => r.status === "approved");
   const pendingReviews = reviews.filter((r) => r.status === "pending");
-  const avgRating = approvedReviews.length > 0
-    ? (approvedReviews.reduce((s, r) => s + r.rating, 0) / approvedReviews.length).toFixed(1)
-    : "0";
+  const avgRating =
+    approvedReviews.length > 0
+      ? (approvedReviews.reduce((s, r) => s + r.rating, 0) / approvedReviews.length).toFixed(1)
+      : "0";
 
   const renderStars = (rating: number) => (
     <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map(i => (
+      {[1, 2, 3, 4, 5].map((i) => (
         <Star key={i} className={`h-4 w-4 ${i <= rating ? "fill-gold text-gold" : "text-muted-foreground"}`} />
       ))}
     </div>
@@ -132,9 +133,7 @@ const AdminReviews = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {approvedReviews.filter(r => r.rating === 5).length}
-              </div>
+              <div className="text-2xl font-bold">{approvedReviews.filter((r) => r.rating === 5).length}</div>
             </CardContent>
           </Card>
         </div>
@@ -142,7 +141,9 @@ const AdminReviews = () => {
         <Card>
           <CardHeader>
             <CardTitle>{t("ux.bo.reviewList")}</CardTitle>
-            <CardDescription>{reviews.length} avis au total, {pendingReviews.length} en attente de modération</CardDescription>
+            <CardDescription>
+              {reviews.length} avis au total, {pendingReviews.length} en attente de modération
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>

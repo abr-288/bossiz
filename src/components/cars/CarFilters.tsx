@@ -8,18 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { 
-  Search, 
-  SlidersHorizontal, 
-  X,
-  Car,
-  Settings,
-  Fuel,
-  Building2,
-  Gauge,
-  Clock,
-  Shield
-} from "lucide-react";
+import { Search, SlidersHorizontal, X, Car, Settings, Fuel, Building2, Gauge, Clock, Shield } from "lucide-react";
 import { carLabel } from "@/lib/carLabels";
 
 interface CarFiltersProps {
@@ -71,22 +60,22 @@ export const CarFilters = ({
   const { formatPrice } = useCurrency();
 
   const categories = [
-    { value: 'all', label: t('ux.car.allCategories') },
-    { value: 'mini', label: 'Mini' },
-    { value: 'economy', label: t('ux.car.economy') },
-    { value: 'compact', label: t('ux.car.compact') },
-    { value: 'sedan', label: t('ux.car.sedan') },
-    { value: 'suv', label: t('ux.car.suv') },
-    { value: 'luxury', label: t('ux.car.luxury') },
-    { value: 'minivan', label: t('ux.car.minivan') },
+    { value: "all", label: t("ux.car.allCategories") },
+    { value: "mini", label: "Mini" },
+    { value: "economy", label: t("ux.car.economy") },
+    { value: "compact", label: t("ux.car.compact") },
+    { value: "sedan", label: t("ux.car.sedan") },
+    { value: "suv", label: t("ux.car.suv") },
+    { value: "luxury", label: t("ux.car.luxury") },
+    { value: "minivan", label: t("ux.car.minivan") },
   ];
 
-  const transmissions = ['Automatique', 'Manuelle'];
-  const fuelTypes = ['Essence', 'Diesel', 'Hybride', 'Électrique'];
+  const transmissions = ["Automatique", "Manuelle"];
+  const fuelTypes = ["Essence", "Diesel", "Hybride", "Électrique"];
 
   const toggleTransmission = (trans: string) => {
     if (selectedTransmissions.includes(trans)) {
-      setSelectedTransmissions(selectedTransmissions.filter(t => t !== trans));
+      setSelectedTransmissions(selectedTransmissions.filter((t) => t !== trans));
     } else {
       setSelectedTransmissions([...selectedTransmissions, trans]);
     }
@@ -94,7 +83,7 @@ export const CarFilters = ({
 
   const toggleFuelType = (fuel: string) => {
     if (selectedFuelTypes.includes(fuel)) {
-      setSelectedFuelTypes(selectedFuelTypes.filter(f => f !== fuel));
+      setSelectedFuelTypes(selectedFuelTypes.filter((f) => f !== fuel));
     } else {
       setSelectedFuelTypes([...selectedFuelTypes, fuel]);
     }
@@ -102,7 +91,7 @@ export const CarFilters = ({
 
   const toggleProvider = (provider: string) => {
     if (selectedProviders.includes(provider)) {
-      setSelectedProviders(selectedProviders.filter(p => p !== provider));
+      setSelectedProviders(selectedProviders.filter((p) => p !== provider));
     } else {
       setSelectedProviders([...selectedProviders, provider]);
     }
@@ -113,7 +102,7 @@ export const CarFilters = ({
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">{t('cars.filters')}</h2>
+          <h2 className="text-lg font-semibold">{t("cars.filters")}</h2>
           {activeFiltersCount > 0 && (
             <Badge variant="secondary" className="ml-2">
               {activeFiltersCount}
@@ -136,7 +125,7 @@ export const CarFilters = ({
             {t("ux.carFilters.search")}
           </Label>
           <Input
-            placeholder={t('carFilters.brandModelPlaceholder')}
+            placeholder={t("carFilters.brandModelPlaceholder")}
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
             className="mt-2"
@@ -171,7 +160,7 @@ export const CarFilters = ({
         {/* Price Range */}
         <div>
           <Label className="text-sm font-medium mb-3 flex items-center justify-between">
-            <span>{t('cars.pricePerDay')}</span>
+            <span>{t("cars.pricePerDay")}</span>
             <span className="text-primary font-semibold">
               {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
             </span>
@@ -206,10 +195,7 @@ export const CarFilters = ({
                   checked={selectedTransmissions.includes(trans)}
                   onCheckedChange={() => toggleTransmission(trans)}
                 />
-                <label
-                  htmlFor={`trans-${trans}`}
-                  className="text-sm cursor-pointer flex-1"
-                >
+                <label htmlFor={`trans-${trans}`} className="text-sm cursor-pointer flex-1">
                   {carLabel(t, trans)}
                 </label>
               </div>
@@ -233,10 +219,7 @@ export const CarFilters = ({
                   checked={selectedFuelTypes.includes(fuel)}
                   onCheckedChange={() => toggleFuelType(fuel)}
                 />
-                <label
-                  htmlFor={`fuel-${fuel}`}
-                  className="text-sm cursor-pointer flex-1"
-                >
+                <label htmlFor={`fuel-${fuel}`} className="text-sm cursor-pointer flex-1">
                   {carLabel(t, fuel)}
                 </label>
               </div>
@@ -295,10 +278,7 @@ export const CarFilters = ({
                       checked={selectedProviders.includes(provider)}
                       onCheckedChange={() => toggleProvider(provider)}
                     />
-                    <label
-                      htmlFor={`provider-${provider}`}
-                      className="text-sm cursor-pointer flex-1 truncate"
-                    >
+                    <label htmlFor={`provider-${provider}`} className="text-sm cursor-pointer flex-1 truncate">
                       {provider}
                     </label>
                   </div>

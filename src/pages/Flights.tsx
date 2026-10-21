@@ -63,7 +63,6 @@ const Flights = () => {
   const [stopsFilter, setStopsFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("best");
 
-
   // Use live trending destinations
   const { data: trendingDestinations, isLoading: loadingTrends } = useDestinations();
 
@@ -71,19 +70,19 @@ const Flights = () => {
     // If we have dynamic data, use it
     if (trendingDestinations && trendingDestinations.length > 0) {
       return trendingDestinations
-        .filter(d => d.trending || d.rating >= 4.5)
+        .filter((d) => d.trending || d.rating >= 4.5)
         .slice(0, 8)
-        .map(dest => {
+        .map((dest) => {
           // Attempt to find IATA code, default to a sensible mapping or the current list if failed
           const iata = getIataByCity(dest.name) || getIataByCity(dest.location);
           if (!iata) return null;
-          
+
           return {
             from: "ABJ",
             to: iata,
             fromCity: "Abidjan",
             toCity: dest.name,
-            flag: getCountryFlag(dest.country)
+            flag: getCountryFlag(dest.country),
           };
         })
         .filter((route): route is NonNullable<typeof route> => route !== null);
@@ -102,7 +101,14 @@ const Flights = () => {
     ];
   }, [trendingDestinations]);
 
-  const mapFlightData = (data: FlightOffer[], from: string, to: string, date: string, returnDate?: string, travelClass: string = "ECONOMY"): MappedFlight[] => {
+  const mapFlightData = (
+    data: FlightOffer[],
+    from: string,
+    to: string,
+    date: string,
+    returnDate?: string,
+    travelClass: string = "ECONOMY",
+  ): MappedFlight[] => {
     return data.map((offer) => {
       const firstItinerary = offer.itineraries?.[0];
       const segments = firstItinerary?.segments || [];
@@ -111,7 +117,7 @@ const Flights = () => {
 
       const airlineCode = offer.validatingAirlineCodes?.[0] || firstSegment?.carrierCode || "XX";
       const airline = offer.carrierName || getAirlineName(airlineCode);
-      
+
       // Extract flight number from segment
       const flightNumber = firstSegment?.number || firstSegment?.flightNumber || "";
 
@@ -119,13 +125,10 @@ const Flights = () => {
         typeof offer.price === "object" && (offer.price?.grandTotal || offer.price?.total)
           ? parseFloat(offer.price.grandTotal || offer.price.total || "0")
           : typeof offer.price === "number"
-          ? offer.price
-          : 0;
+            ? offer.price
+            : 0;
 
-      const cabin =
-        offer.travelerPricings?.[0]?.fareDetailsBySegment?.[0]?.cabin ||
-        travelClass ||
-        "ECONOMY";
+      const cabin = offer.travelerPricings?.[0]?.fareDetailsBySegment?.[0]?.cabin || travelClass || "ECONOMY";
 
       return {
         id: offer.id || Math.random().toString(),
@@ -151,13 +154,13 @@ const Flights = () => {
   // Load default results on mount
   useEffect(() => {
     const hasSearchParams = searchParams.get("from") && searchParams.get("to") && searchParams.get("date");
-    
+
     if (!hasSearchParams && flights.length === 0 && !loading) {
       const loadDefaultFlights = async () => {
         setIsDefaultResults(true);
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 14);
-        const dateStr = futureDate.toISOString().split('T')[0];
+        const dateStr = futureDate.toISOString().split("T")[0];
 
         const result = await searchFlights({
           origin: "ABJ",
@@ -185,7 +188,7 @@ const Flights = () => {
     const children = parseInt(searchParams.get("children") || "0", 10);
     const travelClass = searchParams.get("class") || "ECONOMY";
 
-    if (!from || from.trim() === '' || !to || to.trim() === '' || !date || Number.isNaN(adults)) {
+    if (!from || from.trim() === "" || !to || to.trim() === "" || !date || Number.isNaN(adults)) {
       return;
     }
 
@@ -223,7 +226,6 @@ const Flights = () => {
     setDialogOpen(true);
   };
 
-
   const parseDuration = (duration: string): number => {
     const match = duration.match(/PT(\d+)H(\d+)M/);
     if (!match) return 0;
@@ -247,7 +249,7 @@ const Flights = () => {
         return durationA - durationB;
       }
       // "best" = combination of price and duration
-      return (a.price / 100 + parseDuration(a.duration)) - (b.price / 100 + parseDuration(b.duration));
+      return a.price / 100 + parseDuration(a.duration) - (b.price / 100 + parseDuration(b.duration));
     });
 
   return (
@@ -258,17 +260,21 @@ const Flights = () => {
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
         <LazyImage
           src={bannerFlights}
-          alt={t('pages.flights.title')}
+          alt={t("pages.flights.title")}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+        ></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t('pages.flights.title')}</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+              {t("pages.flights.title")}
+            </h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
-              {t('pages.flights.subtitle')}
+              {t("pages.flights.subtitle")}
             </p>
           </div>
           {hasSearched && (
@@ -276,21 +282,21 @@ const Flights = () => {
               <Link to={`/flight-comparison?${searchParams.toString()}`}>
                 <Button className="gap-2">
                   <TrendingUp className="h-4 w-4" />
-                  {t('pages.flights.comparePrices')}
+                  {t("pages.flights.comparePrices")}
                 </Button>
               </Link>
             </div>
           )}
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <FlightSearchForm />
           </div>
 
           {/* Popular Destinations */}
-          <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <p className="text-white/80 text-sm mb-3 text-center">{t('pages.flights.popularFromAbidjan')}</p>
+          <div className="mt-8 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <p className="text-white/80 text-sm mb-3 text-center">{t("pages.flights.popularFromAbidjan")}</p>
             {loadingTrends ? (
               <div className="flex justify-center gap-2">
-                {[1, 2, 3, 4].map(i => (
+                {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="h-9 w-24 bg-white/10 animate-pulse rounded-full" />
                 ))}
               </div>
@@ -299,7 +305,7 @@ const Flights = () => {
                 {popularRoutes.map((route) => {
                   const futureDate = new Date();
                   futureDate.setDate(futureDate.getDate() + 14);
-                  const dateStr = futureDate.toISOString().split('T')[0];
+                  const dateStr = futureDate.toISOString().split("T")[0];
                   const searchUrl = buildVolsBossizSearchUrl({
                     origin: route.from,
                     destination: route.to,
@@ -324,7 +330,6 @@ const Flights = () => {
         </div>
       </div>
 
-
       {/* Main Content */}
       <div className="flex-1 bg-muted/20">
         <div className="container mx-auto px-4 py-10 md:py-16">
@@ -344,9 +349,7 @@ const Flights = () => {
 
           {!hasSearched && !loading && !isDefaultResults && flights.length === 0 && (
             <div className="space-y-4">
-              <p className="text-center text-muted-foreground mb-4">
-                {t('pages.flights.loadingPopular')}
-              </p>
+              <p className="text-center text-muted-foreground mb-4">{t("pages.flights.loadingPopular")}</p>
               {Array.from({ length: 5 }).map((_, i) => (
                 <FlightCardSkeleton key={i} />
               ))}
@@ -356,7 +359,7 @@ const Flights = () => {
           {(hasSearched || isDefaultResults) && !loading && filteredAndSortedFlights.length === 0 && (
             <EmptyState
               icon={Plane}
-              title={t('pages.flights.results.noResultsDesc')}
+              title={t("pages.flights.results.noResultsDesc")}
               description={t("ux.empty.flightsDesc")}
             />
           )}
@@ -368,16 +371,12 @@ const Flights = () => {
                 <Plane className="w-8 h-8 text-primary" />
               </div>
               <div className="text-center md:text-left">
-                <h2 className="text-xl md:text-2xl font-bold text-foreground">
-                  {t('pages.flights.featured.title')}
-                </h2>
-                <p className="text-muted-foreground mt-2 max-w-xl">
-                  {t('pages.flights.featured.subtitle')}
-                </p>
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">{t("pages.flights.featured.title")}</h2>
+                <p className="text-muted-foreground mt-2 max-w-xl">{t("pages.flights.featured.subtitle")}</p>
               </div>
               <div className="md:ml-auto">
                 <Badge variant="secondary" className="px-4 py-2 rounded-full font-semibold">
-                  {t('pages.flights.featured.trending')}
+                  {t("pages.flights.featured.trending")}
                 </Badge>
               </div>
             </div>
@@ -402,36 +401,44 @@ const Flights = () => {
                 {/* Sort Tabs */}
                 <Tabs value={sortBy} onValueChange={setSortBy}>
                   <TabsList className="w-full justify-start bg-card border border-border h-auto p-0">
-                    <TabsTrigger 
-                      value="best" 
+                    <TabsTrigger
+                      value="best"
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">{t('pages.flights.sort.best')}</span>
+                        <span className="font-semibold text-sm">{t("pages.flights.sort.best")}</span>
                         <span className="text-xs text-muted-foreground">
-                          <Price amount={filteredAndSortedFlights[0]?.price || 0} fromCurrency="EUR" /> · {filteredAndSortedFlights[0]?.duration}
+                          <Price amount={filteredAndSortedFlights[0]?.price || 0} fromCurrency="EUR" /> ·{" "}
+                          {filteredAndSortedFlights[0]?.duration}
                         </span>
                       </div>
                     </TabsTrigger>
-                    <TabsTrigger 
+                    <TabsTrigger
                       value="cheapest"
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">{t('pages.flights.filters.cheapest')}</span>
+                        <span className="font-semibold text-sm">{t("pages.flights.filters.cheapest")}</span>
                         <span className="text-xs text-muted-foreground">
-                          <Price amount={Math.min(...filteredAndSortedFlights.map(f => f.price))} fromCurrency="EUR" />
+                          <Price
+                            amount={Math.min(...filteredAndSortedFlights.map((f) => f.price))}
+                            fromCurrency="EUR"
+                          />
                         </span>
                       </div>
                     </TabsTrigger>
-                    <TabsTrigger 
+                    <TabsTrigger
                       value="fastest"
                       className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
                     >
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold text-sm">{t('pages.flights.filters.fastest')}</span>
+                        <span className="font-semibold text-sm">{t("pages.flights.filters.fastest")}</span>
                         <span className="text-xs text-muted-foreground">
-                          {filteredAndSortedFlights.sort((a, b) => parseDuration(a.duration) - parseDuration(b.duration))[0]?.duration}
+                          {
+                            filteredAndSortedFlights.sort(
+                              (a, b) => parseDuration(a.duration) - parseDuration(b.duration),
+                            )[0]?.duration
+                          }
                         </span>
                       </div>
                     </TabsTrigger>
@@ -464,7 +471,7 @@ const Flights = () => {
                 <div className="sticky top-24 bg-brand rounded-2xl p-8 text-center shadow-xl border border-white/10 overflow-hidden group">
                   {/* Decorative background element */}
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl group-hover:bg-secondary/30 transition-colors" />
-                  
+
                   <div className="relative z-10">
                     <div className="w-20 h-20 mx-auto mb-6 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/20 group-hover:scale-110 transition-transform duration-slow ease-standard">
                       <Shield className="w-10 h-10 text-secondary" />
@@ -472,13 +479,9 @@ const Flights = () => {
                     <h3 className="font-bold text-xl mb-3 text-white leading-tight">
                       {t("ux.flights.guaranteeTitle")}
                     </h3>
-                    <p className="text-sm text-white/70 mb-8 leading-relaxed">
-                      {t("ux.flights.guaranteeText")}
-                    </p>
+                    <p className="text-sm text-white/70 mb-8 leading-relaxed">{t("ux.flights.guaranteeText")}</p>
                     <Link to="/help">
-                      <Button className="w-full">
-                        {t("ux.flights.learnMore")}
-                      </Button>
+                      <Button className="w-full">{t("ux.flights.learnMore")}</Button>
                     </Link>
                   </div>
                 </div>
@@ -490,13 +493,7 @@ const Flights = () => {
 
       <Footer />
 
-      {selectedFlight && (
-        <FlightBookingDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          flight={selectedFlight}
-        />
-      )}
+      {selectedFlight && <FlightBookingDialog open={dialogOpen} onOpenChange={setDialogOpen} flight={selectedFlight} />}
     </div>
   );
 };

@@ -58,7 +58,11 @@ export function BookingStatusBadge({ status, className }: StatusBadgeProps) {
   const { t } = useTranslation();
   const variant = BOOKING_STATUS_VARIANT[status] || "outline";
   const label = t(`booking.status.${status}`, status);
-  return <Badge variant={variant} className={className}>{label}</Badge>;
+  return (
+    <Badge variant={variant} className={className}>
+      {label}
+    </Badge>
+  );
 }
 
 export function PaymentStatusBadge({ status, className }: StatusBadgeProps) {
@@ -66,5 +70,9 @@ export function PaymentStatusBadge({ status, className }: StatusBadgeProps) {
   const variant = PAYMENT_STATUS_VARIANT[status] || "outline";
   const labelKey = PAYMENT_STATUS_LABEL_KEY[status] || status;
   const label = t(`booking.payment.${labelKey}`, status);
-  return <Badge variant={variant} className={className}>{label}</Badge>;
+  return (
+    <Badge variant={variant} className={className}>
+      {label}
+    </Badge>
+  );
 }

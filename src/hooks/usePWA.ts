@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 export const usePWA = () => {
@@ -12,8 +12,10 @@ export const usePWA = () => {
 
   useEffect(() => {
     // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as Navigator & { standalone?: boolean }).standalone === true) {
+    if (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+    ) {
       setIsInstalled(true);
     }
 
@@ -23,16 +25,16 @@ export const usePWA = () => {
       setIsInstallable(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener("beforeinstallprompt", handler);
 
-    window.addEventListener('appinstalled', () => {
+    window.addEventListener("appinstalled", () => {
       setIsInstalled(true);
       setIsInstallable(false);
       setDeferredPrompt(null);
     });
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener("beforeinstallprompt", handler);
     };
   }, []);
 
@@ -42,15 +44,15 @@ export const usePWA = () => {
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
+
+      if (outcome === "accepted") {
         setIsInstallable(false);
         setDeferredPrompt(null);
         return true;
       }
       return false;
     } catch (error) {
-      console.error('Error installing PWA:', error);
+      console.error("Error installing PWA:", error);
       return false;
     }
   };

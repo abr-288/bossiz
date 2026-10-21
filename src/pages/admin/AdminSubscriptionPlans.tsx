@@ -34,7 +34,18 @@ interface SubscriptionPlan {
   is_active: boolean;
 }
 
-const ICONS = ["Building2", "Crown", "FileCheck", "Plane", "Users", "Briefcase", "GraduationCap", "CalendarDays", "Star", "Heart"];
+const ICONS = [
+  "Building2",
+  "Crown",
+  "FileCheck",
+  "Plane",
+  "Users",
+  "Briefcase",
+  "GraduationCap",
+  "CalendarDays",
+  "Star",
+  "Heart",
+];
 const COLORS = [
   { value: "from-primary to-primary/80", label: "Primary" },
   { value: "from-amber-500 to-amber-600", label: "Amber" },
@@ -119,20 +130,15 @@ export default function AdminSubscriptionPlans() {
     try {
       const dataToSave = {
         ...formData,
-        features: featuresText.split("\n").filter(f => f.trim()),
+        features: featuresText.split("\n").filter((f) => f.trim()),
       };
 
       if (editingPlan) {
-        const { error } = await supabase
-          .from("subscription_plans")
-          .update(dataToSave)
-          .eq("id", editingPlan.id);
+        const { error } = await supabase.from("subscription_plans").update(dataToSave).eq("id", editingPlan.id);
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.planUpdated2") });
       } else {
-        const { error } = await supabase
-          .from("subscription_plans")
-          .insert(dataToSave);
+        const { error } = await supabase.from("subscription_plans").insert(dataToSave);
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.planCreated2") });
       }
@@ -174,10 +180,7 @@ export default function AdminSubscriptionPlans() {
 
   const togglePopular = async (plan: SubscriptionPlan) => {
     try {
-      const { error } = await supabase
-        .from("subscription_plans")
-        .update({ popular: !plan.popular })
-        .eq("id", plan.id);
+      const { error } = await supabase.from("subscription_plans").update({ popular: !plan.popular }).eq("id", plan.id);
       if (error) throw error;
       fetchPlans();
     } catch (error) {
@@ -215,7 +218,11 @@ export default function AdminSubscriptionPlans() {
                 <Loader2 className="w-8 h-8 animate-spin" />
               </div>
             ) : plans.length === 0 ? (
-              <EmptyState icon={Layers} title={t("ux.bo.noSubscriptionPlan")} description={t("ux.bo.createPlanOfferCustomers")} />
+              <EmptyState
+                icon={Layers}
+                title={t("ux.bo.noSubscriptionPlan")}
+                description={t("ux.bo.createPlanOfferCustomers")}
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -243,7 +250,9 @@ export default function AdminSubscriptionPlans() {
                       </TableCell>
                       <TableCell>
                         <span className="font-semibold">{plan.price}</span>
-                        {plan.price_note && <span className="text-xs text-muted-foreground ml-1">{plan.price_note}</span>}
+                        {plan.price_note && (
+                          <span className="text-xs text-muted-foreground ml-1">{plan.price_note}</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Switch checked={plan.popular} onCheckedChange={() => togglePopular(plan)} />
@@ -330,7 +339,9 @@ export default function AdminSubscriptionPlans() {
                     </SelectTrigger>
                     <SelectContent>
                       {ICONS.map((icon) => (
-                        <SelectItem key={icon} value={icon}>{icon}</SelectItem>
+                        <SelectItem key={icon} value={icon}>
+                          {icon}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -343,7 +354,9 @@ export default function AdminSubscriptionPlans() {
                     </SelectTrigger>
                     <SelectContent>
                       {COLORS.map((color) => (
-                        <SelectItem key={color.value} value={color.value}>{color.label}</SelectItem>
+                        <SelectItem key={color.value} value={color.value}>
+                          {color.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -395,7 +408,9 @@ export default function AdminSubscriptionPlans() {
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  {t("ux.bo.cancel")}
+                </Button>
                 <Button onClick={handleSave} disabled={isSaving}>
                   {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {editingPlan ? t("ux.bo.update") : "Créer"}

@@ -17,7 +17,16 @@ import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "react-router-dom";
 
-const CRAFT_TYPES = ["Sculpture sur bois", "Bijoux & Accessoires", "Textile & Tissage", "Poterie & Céramique", "Maroquinerie", "Peinture & Art", "Vannerie", "Autre"];
+const CRAFT_TYPES = [
+  "Sculpture sur bois",
+  "Bijoux & Accessoires",
+  "Textile & Tissage",
+  "Poterie & Céramique",
+  "Maroquinerie",
+  "Peinture & Art",
+  "Vannerie",
+  "Autre",
+];
 
 const waLink = (whatsapp: string, message: string) =>
   `https://wa.me/${whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`;
@@ -34,12 +43,15 @@ const Artisans = () => {
     let result = artisans;
     if (search) {
       const s = search.toLowerCase();
-      result = result.filter(a =>
-        a.name.toLowerCase().includes(s) || a.location.toLowerCase().includes(s) || a.craft_type.toLowerCase().includes(s)
+      result = result.filter(
+        (a) =>
+          a.name.toLowerCase().includes(s) ||
+          a.location.toLowerCase().includes(s) ||
+          a.craft_type.toLowerCase().includes(s),
       );
     }
     if (craftFilter !== "all") {
-      result = result.filter(a => a.craft_type === craftFilter);
+      result = result.filter((a) => a.craft_type === craftFilter);
     }
     return result;
   }, [artisans, search, craftFilter]);
@@ -56,12 +68,8 @@ const Artisans = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t("ux.artisans.title")}
-          </h1>
-          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            {t("ux.artisans.subtitle")}
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.artisans.title")}</h1>
+          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">{t("ux.artisans.subtitle")}</p>
         </div>
       </div>
 
@@ -76,7 +84,11 @@ const Artisans = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("ux.artisans.allCrafts")}</SelectItem>
-              {CRAFT_TYPES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {CRAFT_TYPES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -84,16 +96,18 @@ const Artisans = () => {
         {loading ? (
           <CardGridSkeleton />
         ) : error ? (
-          <Card className="p-12 text-center text-muted-foreground">
-            {t("ux.artisans.loadError")}
-          </Card>
+          <Card className="p-12 text-center text-muted-foreground">{t("ux.artisans.loadError")}</Card>
         ) : filtered.length === 0 ? (
           <Card>
             <EmptyState
               icon={Hammer}
               title={t("ux.artisans.emptyTitle")}
               description={t("ux.artisans.emptyDesc")}
-              action={<Button variant="outline" asChild><Link to="/devenir-partenaire">{t("ux.artisans.join")}</Link></Button>}
+              action={
+                <Button variant="outline" asChild>
+                  <Link to="/devenir-partenaire">{t("ux.artisans.join")}</Link>
+                </Button>
+              }
             />
           </Card>
         ) : (
@@ -117,9 +131,7 @@ const Artisans = () => {
                     <MapPin className="w-4 h-4 flex-shrink-0" />
                     <span className="text-sm truncate">{artisan.location}</span>
                   </div>
-                  {artisan.bio && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{artisan.bio}</p>
-                  )}
+                  {artisan.bio && <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{artisan.bio}</p>}
                   {artisan.products.length > 0 && (
                     <p className="text-xs text-muted-foreground mb-3">
                       {artisan.products.length} création{artisan.products.length > 1 ? "s" : ""} à découvrir
@@ -161,7 +173,10 @@ const Artisans = () => {
                   {selectedArtisan.whatsapp && (
                     <Button asChild className="gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white">
                       <a
-                        href={waLink(selectedArtisan.whatsapp, `Bonjour, je vous contacte depuis Bossiz+ au sujet de vos créations (${selectedArtisan.name}).`)}
+                        href={waLink(
+                          selectedArtisan.whatsapp,
+                          `Bonjour, je vous contacte depuis Bossiz+ au sujet de vos créations (${selectedArtisan.name}).`,
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -186,7 +201,12 @@ const Artisans = () => {
                     {selectedArtisan.products.map((product, i) => (
                       <Card key={i} className="overflow-hidden">
                         {product.image_url && (
-                          <img src={product.image_url} alt={product.name} className="w-full h-32 object-cover" loading="lazy" />
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-32 object-cover"
+                            loading="lazy"
+                          />
                         )}
                         <CardContent className="p-3">
                           <p className="font-medium text-sm">{product.name}</p>

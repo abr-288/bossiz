@@ -47,30 +47,32 @@ export const useCreateBooking = () => {
   const createBooking = async (params: CreateBookingParams) => {
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         toast.error("Vous devez être connecté pour réserver");
         return null;
       }
 
-      const { data, error } = await supabase.functions.invoke('create-booking', {
+      const { data, error } = await supabase.functions.invoke("create-booking", {
         body: params,
       });
 
       if (error) {
-        console.error('Booking error:', error);
+        console.error("Booking error:", error);
         throw error;
       }
 
       if (!data.success) {
-        throw new Error(data.error || 'Failed to create booking');
+        throw new Error(data.error || "Failed to create booking");
       }
 
       toast.success("Réservation créée avec succès !");
       return data.booking_id;
     } catch (error: unknown) {
-      console.error('Create booking error:', error);
+      console.error("Create booking error:", error);
       toast.error(error instanceof Error ? error.message : "Erreur lors de la création de la réservation");
       return null;
     } finally {

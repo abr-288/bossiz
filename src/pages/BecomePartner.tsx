@@ -10,13 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Handshake,
   BadgePercent,
@@ -64,35 +58,13 @@ const carPlanLabels: Record<string, string> = {
   flotte: "Flotte",
 };
 
-const commonConditions = [
-  "ux.partnerForm.common1",
-  "ux.partnerForm.common2",
-  "ux.partnerForm.common3",
-];
+const commonConditions = ["ux.partnerForm.common1", "ux.partnerForm.common2", "ux.partnerForm.common3"];
 
 const conditionsByType: Record<PartnerTypeValue, string[]> = {
-  hotel: [
-    "ux.partnerForm.signup",
-    "ux.partnerForm.hotel2",
-    "ux.partnerForm.share24",
-    "ux.partnerForm.hotel4",
-  ],
-  restaurant: [
-    "ux.partnerForm.signup",
-    "ux.partnerForm.restaurant2",
-    "ux.partnerForm.restaurant3",
-  ],
-  activity: [
-    "ux.partnerForm.signup",
-    "ux.partnerForm.share24",
-    "ux.partnerForm.activity3",
-  ],
-  artisan: [
-    "ux.partnerForm.signup",
-    "ux.partnerForm.artisan2",
-    "ux.partnerForm.artisan3",
-    "ux.partnerForm.artisan4",
-  ],
+  hotel: ["ux.partnerForm.signup", "ux.partnerForm.hotel2", "ux.partnerForm.share24", "ux.partnerForm.hotel4"],
+  restaurant: ["ux.partnerForm.signup", "ux.partnerForm.restaurant2", "ux.partnerForm.restaurant3"],
+  activity: ["ux.partnerForm.signup", "ux.partnerForm.share24", "ux.partnerForm.activity3"],
+  artisan: ["ux.partnerForm.signup", "ux.partnerForm.artisan2", "ux.partnerForm.artisan3", "ux.partnerForm.artisan4"],
   wellness: [
     "ux.partnerForm.wellness1",
     "ux.partnerForm.signup",
@@ -100,20 +72,12 @@ const conditionsByType: Record<PartnerTypeValue, string[]> = {
     "ux.partnerForm.wellness4",
     "ux.partnerForm.wellness5",
   ],
-  cars: [
-    "ux.partnerForm.cars1",
-    "ux.partnerForm.cars2",
-    "ux.partnerForm.cars3",
-  ],
+  cars: ["ux.partnerForm.cars1", "ux.partnerForm.cars2", "ux.partnerForm.cars3"],
 };
 
 // Conditions affichées aux loueurs quand le paiement des forfaits voiture est
 // désactivé depuis l'admin (publication gratuite).
-const freeCarConditions = [
-  "ux.partnerForm.signup",
-  "ux.partnerForm.carsFree1",
-  "ux.partnerForm.carsFree2",
-];
+const freeCarConditions = ["ux.partnerForm.signup", "ux.partnerForm.carsFree1", "ux.partnerForm.carsFree2"];
 
 const benefits = [
   {
@@ -163,7 +127,7 @@ const BecomePartner = () => {
   const [partnerType, setPartnerType] = useState<PartnerTypeValue | "">(initialType);
   const [preferredPayoutMethod, setPreferredPayoutMethod] = useState<JekoPayoutMethod | "">("");
   const [carPlan, setCarPlan] = useState(
-    requestedCarPlan && carPlanLabels[requestedCarPlan] ? requestedCarPlan : "decouverte"
+    requestedCarPlan && carPlanLabels[requestedCarPlan] ? requestedCarPlan : "decouverte",
   );
   const [acceptedConditions, setAcceptedConditions] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
@@ -240,7 +204,9 @@ const BecomePartner = () => {
     const typeLabel = typeKey ? tFr(typeKey) : undefined;
     const finalDescription = [
       typeLabel ? `Type de partenariat : ${typeLabel}` : null,
-      carPlanPaymentsEnabled && partnerType === "cars" ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}` : null,
+      carPlanPaymentsEnabled && partnerType === "cars"
+        ? `Forfait souhaité : ${carPlanLabels[carPlan] || carPlan}`
+        : null,
       formData.description || null,
     ]
       .filter(Boolean)
@@ -290,9 +256,12 @@ const BecomePartner = () => {
     setSubmitted(false);
   };
 
-  const typeConditions = partnerType === "cars" && !carPlanPaymentsEnabled
-    ? freeCarConditions
-    : partnerType ? conditionsByType[partnerType] : [];
+  const typeConditions =
+    partnerType === "cars" && !carPlanPaymentsEnabled
+      ? freeCarConditions
+      : partnerType
+        ? conditionsByType[partnerType]
+        : [];
   const activeConditions = partnerType ? [...typeConditions, ...commonConditions] : [];
   const selectedTypeMeta = partnerTypeOptions.find((o) => o.value === partnerType);
 
@@ -309,7 +278,13 @@ const BecomePartner = () => {
         />
         <div className="absolute inset-0 bg-brand/65" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+          <div
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
@@ -487,7 +462,8 @@ const BecomePartner = () => {
 
                         <div className="space-y-2">
                           <label className="text-sm font-medium block">
-                            Moyen souhaité pour recevoir vos reversements Jèko <span className="text-destructive">*</span>
+                            Moyen souhaité pour recevoir vos reversements Jèko{" "}
+                            <span className="text-destructive">*</span>
                           </label>
                           <Select
                             value={preferredPayoutMethod}
@@ -498,13 +474,13 @@ const BecomePartner = () => {
                             </SelectTrigger>
                             <SelectContent>
                               {JEKO_PAYOUT_METHODS.map((method) => (
-                                <SelectItem key={method.value} value={method.value}>{method.label}</SelectItem>
+                                <SelectItem key={method.value} value={method.value}>
+                                  {method.label}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
-                          <p className="text-xs text-muted-foreground">
-                            {t("ux.becomePartner.payoutLater")}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{t("ux.becomePartner.payoutLater")}</p>
                         </div>
 
                         <div className="space-y-2">
@@ -514,7 +490,11 @@ const BecomePartner = () => {
                               {logoUploading ? (
                                 <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
                               ) : logoUrl ? (
-                                <img src={logoUrl} alt={t("ux.becomePartner.logo")} className="w-full h-full object-cover" />
+                                <img
+                                  src={logoUrl}
+                                  alt={t("ux.becomePartner.logo")}
+                                  className="w-full h-full object-cover"
+                                />
                               ) : (
                                 <ImagePlus className="w-5 h-5 text-muted-foreground/50" />
                               )}
@@ -535,7 +515,11 @@ const BecomePartner = () => {
                                   disabled={logoUploading}
                                   onClick={() => logoInputRef.current?.click()}
                                 >
-                                  {logoUploading ? t("ux.becomePartner.uploading") : logoUrl ? t("ux.becomePartner.changeLogo") : t("ux.becomePartner.chooseFile")}
+                                  {logoUploading
+                                    ? t("ux.becomePartner.uploading")
+                                    : logoUrl
+                                      ? t("ux.becomePartner.changeLogo")
+                                      : t("ux.becomePartner.chooseFile")}
                                 </Button>
                                 {logoUrl && !logoUploading && (
                                   <Button
@@ -550,17 +534,13 @@ const BecomePartner = () => {
                                   </Button>
                                 )}
                               </div>
-                              <p className="text-xs text-muted-foreground">
-                                {t("ux.becomePartner.logoHint")}
-                              </p>
+                              <p className="text-xs text-muted-foreground">{t("ux.becomePartner.logoHint")}</p>
                             </div>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium block">
-                            {t("ux.becomePartner.formDescription")}
-                          </label>
+                          <label className="text-sm font-medium block">{t("ux.becomePartner.formDescription")}</label>
                           <Textarea
                             placeholder={t("ux.becomePartner.descPlaceholder")}
                             rows={5}
@@ -588,7 +568,9 @@ const BecomePartner = () => {
                               className="rounded-lg border border-border bg-muted/40 p-4 space-y-3"
                             >
                               <p className="text-sm font-semibold">
-                                {t("ux.partnerForm.conditionsFor", { type: selectedTypeMeta ? t(selectedTypeMeta.label) : "" })}
+                                {t("ux.partnerForm.conditionsFor", {
+                                  type: selectedTypeMeta ? t(selectedTypeMeta.label) : "",
+                                })}
                               </p>
                               <ul className="space-y-2">
                                 {activeConditions.map((condition) => (
@@ -627,11 +609,7 @@ const BecomePartner = () => {
                           )}
                         </AnimatePresence>
 
-                        <UnifiedSubmitButton
-                          loading={loading}
-                          fullWidth
-                          disabled={!partnerType || !acceptedConditions}
-                        >
+                        <UnifiedSubmitButton loading={loading} fullWidth disabled={!partnerType || !acceptedConditions}>
                           {t("ux.becomePartner.formSubmit")}
                         </UnifiedSubmitButton>
                       </UnifiedForm>

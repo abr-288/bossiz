@@ -66,7 +66,9 @@ export default function ResetPassword() {
       done = true;
       setStatus("ready");
     };
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) markReady();
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -74,7 +76,9 @@ export default function ResetPassword() {
     });
     const timeout = setTimeout(async () => {
       if (done) return;
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) return markReady();
       done = true;
       setInvalidReason(link.hasHashSession ? "expired" : "missing");
@@ -242,7 +246,9 @@ export default function ResetPassword() {
                       aria-describedby="password-rule"
                       className="h-12"
                     />
-                    <p id="password-rule" className="text-sm text-muted-foreground">{t("ux.reset.rule")}</p>
+                    <p id="password-rule" className="text-sm text-muted-foreground">
+                      {t("ux.reset.rule")}
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">{t("ux.reset.confirmPassword")}</Label>
@@ -258,7 +264,9 @@ export default function ResetPassword() {
                     />
                   </div>
                   {errorMessage && (
-                    <p role="alert" className="text-sm text-destructive">{errorMessage}</p>
+                    <p role="alert" className="text-sm text-destructive">
+                      {errorMessage}
+                    </p>
                   )}
                 </div>
 

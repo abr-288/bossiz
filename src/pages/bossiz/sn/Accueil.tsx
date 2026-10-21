@@ -72,16 +72,17 @@ const BossizSNAccueil = () => {
       {/* Contact CTA */}
       <section className="py-24 bg-bossiz-navy-dark">
         <div className="max-w-5xl mx-auto px-6 lg:px-10 text-center">
-          <h2 className="font-extrabold text-3xl md:text-5xl text-white mb-16">
-            {content.contactCta.title}
-          </h2>
+          <h2 className="font-extrabold text-3xl md:text-5xl text-white mb-16">{content.contactCta.title}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 max-w-2xl mx-auto">
             <div>
               <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-6 h-6 text-bossiz-gold-light" strokeWidth={1.5} />
               </div>
-              <a href={`mailto:${content.contact.email}`} className="text-white font-semibold hover:text-bossiz-gold-light">
+              <a
+                href={`mailto:${content.contact.email}`}
+                className="text-white font-semibold hover:text-bossiz-gold-light"
+              >
                 {content.contact.email}
               </a>
             </div>

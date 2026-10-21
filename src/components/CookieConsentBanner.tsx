@@ -42,7 +42,8 @@ export function CookieConsentBanner() {
                 {t("ux.cookies.intro")}{" "}
                 <Link to="/politique-cookies" className="underline hover:text-primary">
                   {t("ux.cookies.policyLink")}
-                </Link>.
+                </Link>
+                .
               </p>
               {expanded && (
                 <div className="pt-3 space-y-3 max-w-xl">
@@ -55,14 +56,18 @@ export function CookieConsentBanner() {
                   </div>
                   <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
                     <div>
-                      <Label htmlFor="cookie-pref" className="font-medium text-sm cursor-pointer">{t("ux.cookies.preferences")}</Label>
+                      <Label htmlFor="cookie-pref" className="font-medium text-sm cursor-pointer">
+                        {t("ux.cookies.preferences")}
+                      </Label>
                       <p className="text-xs text-muted-foreground">{t("ux.cookies.preferencesDesc")}</p>
                     </div>
                     <Switch id="cookie-pref" checked={preferences} onCheckedChange={setPreferences} />
                   </div>
                   <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-3">
                     <div>
-                      <Label htmlFor="cookie-analytics" className="font-medium text-sm cursor-pointer">{t("ux.cookies.analytics")}</Label>
+                      <Label htmlFor="cookie-analytics" className="font-medium text-sm cursor-pointer">
+                        {t("ux.cookies.analytics")}
+                      </Label>
                       <p className="text-xs text-muted-foreground">{t("ux.cookies.analyticsDesc")}</p>
                     </div>
                     <Switch id="cookie-analytics" checked={analytics} onCheckedChange={setAnalytics} />

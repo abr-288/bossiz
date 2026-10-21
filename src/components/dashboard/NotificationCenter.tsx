@@ -4,11 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { currentLocaleTag } from "@/lib/dateLocale";
 
 export interface Notification {
@@ -26,11 +22,7 @@ interface NotificationCenterProps {
   onClearAll: () => void;
 }
 
-export const NotificationCenter = ({
-  notifications,
-  onMarkAsRead,
-  onClearAll,
-}: NotificationCenterProps) => {
+export const NotificationCenter = ({ notifications, onMarkAsRead, onClearAll }: NotificationCenterProps) => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const getIcon = (type: string) => {
@@ -65,32 +57,20 @@ export const NotificationCenter = ({
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Notifications</h3>
           {notifications.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearAll}
-              className="text-xs"
-            >
+            <Button variant="ghost" size="sm" onClick={onClearAll} className="text-xs">
               Tout effacer
             </Button>
           )}
         </div>
         <ScrollArea className="h-[400px]">
           {notifications.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Aucune notification
-            </p>
+            <p className="text-sm text-muted-foreground text-center py-8">Aucune notification</p>
           ) : (
             <div className="space-y-2">
               {notifications.map((notification) => (
-                <Card
-                  key={notification.id}
-                  className={`p-3 ${!notification.read ? "bg-accent" : ""}`}
-                >
+                <Card key={notification.id} className={`p-3 ${!notification.read ? "bg-accent" : ""}`}>
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0">
-                      {getIcon(notification.type)}
-                    </div>
+                    <div className="flex-shrink-0">{getIcon(notification.type)}</div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-start justify-between">
                         <p className="text-sm font-medium">{notification.title}</p>
@@ -104,9 +84,7 @@ export const NotificationCenter = ({
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {notification.message}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{notification.message}</p>
                       <p className="text-xs text-muted-foreground">
                         {notification.timestamp.toLocaleString(currentLocaleTag(), {
                           day: "numeric",

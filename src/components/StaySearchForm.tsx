@@ -10,12 +10,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  UnifiedForm, 
-  UnifiedAutocomplete, 
-  UnifiedDatePicker, 
+import {
+  UnifiedForm,
+  UnifiedAutocomplete,
+  UnifiedDatePicker,
   UnifiedSubmitButton,
-  FormProgressBar
+  FormProgressBar,
 } from "@/components/forms";
 
 export const StaySearchForm = () => {
@@ -43,10 +43,10 @@ export const StaySearchForm = () => {
     };
 
     const validation = safeValidate(staySearchSchema, formData);
-    
+
     if (!validation.success) {
       const filteredErrors: Record<string, string> = {};
-      Object.keys(validation.errors).forEach(key => {
+      Object.keys(validation.errors).forEach((key) => {
         if (touched[key]) {
           filteredErrors[key] = validation.errors[key];
         }
@@ -54,7 +54,7 @@ export const StaySearchForm = () => {
       setErrors(filteredErrors);
     } else {
       const clearedErrors = { ...errors };
-      Object.keys(touched).forEach(key => {
+      Object.keys(touched).forEach((key) => {
         delete clearedErrors[key];
       });
       setErrors(clearedErrors);
@@ -62,7 +62,7 @@ export const StaySearchForm = () => {
   }, [destination, checkIn, checkOut, guests, propertyType, touched]);
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -88,8 +88,8 @@ export const StaySearchForm = () => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
+        title: t("validation.errorTitle"),
+        description: t("validation.errorDescription"),
         variant: "destructive",
       });
       return;
@@ -108,20 +108,11 @@ export const StaySearchForm = () => {
 
   const hasErrors = Object.keys(errors).length > 0;
   const totalFields = 4;
-  const completedFields = [
-    destination,
-    checkIn,
-    checkOut,
-    guests > 0
-  ].filter(Boolean).length;
+  const completedFields = [destination, checkIn, checkOut, guests > 0].filter(Boolean).length;
 
   return (
     <UnifiedForm onSubmit={handleSearch} variant="search" className="w-full max-w-6xl mx-auto space-y-6">
-      <FormProgressBar 
-        totalFields={totalFields} 
-        completedFields={completedFields}
-        className="mb-2"
-      />
+      <FormProgressBar totalFields={totalFields} completedFields={completedFields} className="mb-2" />
 
       <AnimatePresence>
         {hasErrors && (
@@ -132,9 +123,7 @@ export const StaySearchForm = () => {
           >
             <Alert variant="destructive" className="py-2">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription className="text-xs font-medium">
-                {t("ux.staySearch.fixErrors")}
-              </AlertDescription>
+              <AlertDescription className="text-xs font-medium">{t("ux.staySearch.fixErrors")}</AlertDescription>
             </Alert>
           </motion.div>
         )}
@@ -173,9 +162,7 @@ export const StaySearchForm = () => {
             className="w-full"
           />
           {errors.checkIn && touched.checkIn && (
-            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider">
-              {errors.checkIn}
-            </p>
+            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider">{errors.checkIn}</p>
           )}
         </div>
 
@@ -191,9 +178,7 @@ export const StaySearchForm = () => {
             className="w-full"
           />
           {errors.checkOut && touched.checkOut && (
-            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider">
-              {errors.checkOut}
-            </p>
+            <p className="text-xs text-destructive mt-1 font-bold uppercase tracking-wider">{errors.checkOut}</p>
           )}
         </div>
 
@@ -203,14 +188,19 @@ export const StaySearchForm = () => {
               <Building2 className="w-4 h-4 text-primary" />
               {t("search.type")}
             </label>
-            <Select 
-              value={propertyType} 
+            <Select
+              value={propertyType}
               onValueChange={(value) => {
                 setPropertyType(value as typeof propertyType);
                 handleBlur("propertyType");
               }}
             >
-              <SelectTrigger className={cn("h-12 bg-white/50 backdrop-blur-sm border-2 font-medium truncate", errors.propertyType && touched.propertyType && "border-destructive")}>
+              <SelectTrigger
+                className={cn(
+                  "h-12 bg-white/50 backdrop-blur-sm border-2 font-medium truncate",
+                  errors.propertyType && touched.propertyType && "border-destructive",
+                )}
+              >
                 <SelectValue placeholder={t("search.allCategories")} />
               </SelectTrigger>
               <SelectContent>
@@ -230,14 +220,19 @@ export const StaySearchForm = () => {
               <Users className="w-4 h-4 text-primary" />
               {t("search.guests")}
             </label>
-            <Select 
-              value={guests.toString()} 
+            <Select
+              value={guests.toString()}
               onValueChange={(value) => {
                 setGuests(parseInt(value));
                 handleBlur("guests");
               }}
             >
-              <SelectTrigger className={cn("h-12 bg-white/50 backdrop-blur-sm border-2 font-medium", errors.guests && touched.guests && "border-destructive")}>
+              <SelectTrigger
+                className={cn(
+                  "h-12 bg-white/50 backdrop-blur-sm border-2 font-medium",
+                  errors.guests && touched.guests && "border-destructive",
+                )}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -252,10 +247,13 @@ export const StaySearchForm = () => {
         </div>
 
         <div className="sm:col-span-2 lg:col-span-3 min-w-0">
-          <UnifiedSubmitButton 
+          <UnifiedSubmitButton
             fullWidth
             disabled={hasErrors}
-            className={cn("h-12 shadow-xl shadow-primary/20 font-extrabold", hasErrors && "opacity-50 cursor-not-allowed")}
+            className={cn(
+              "h-12 shadow-xl shadow-primary/20 font-extrabold",
+              hasErrors && "opacity-50 cursor-not-allowed",
+            )}
           >
             {t("search.search")}
           </UnifiedSubmitButton>

@@ -39,17 +39,17 @@ export const useEventSearch = () => {
     setError(null);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('search-events', {
-        body: params
+      const { data, error: functionError } = await supabase.functions.invoke("search-events", {
+        body: params,
       });
 
       if (functionError) throw functionError;
-      
+
       return data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
       setError(errorMessage);
-      console.error('Event search error:', err);
+      console.error("Event search error:", err);
       return null;
     } finally {
       setLoading(false);

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { usePWA } from '@/hooks/usePWA';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { usePWA } from "@/hooks/usePWA";
 import {
   Smartphone,
   Download,
@@ -15,13 +15,13 @@ import {
   Star,
   ArrowLeft,
   ExternalLink,
-  Settings
-} from 'lucide-react';
+  Settings,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { whatsAppLink } from "@/lib/contactNumbers";
 
-const APK_DOWNLOAD_URL = '/downloads/bossiz.apk';
+const APK_DOWNLOAD_URL = "/downloads/bossiz.apk";
 
 const InstallAndroid = () => {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ const InstallAndroid = () => {
   const { isInstallable, isInstalled, install } = usePWA();
   const [isAndroid, setIsAndroid] = useState(false);
   const [isChrome, setIsChrome] = useState(false);
-  const [installStatus, setInstallStatus] = useState<'checking' | 'compatible' | 'incompatible'>('checking');
+  const [installStatus, setInstallStatus] = useState<"checking" | "compatible" | "incompatible">("checking");
 
   useEffect(() => {
     // Détection du navigateur et de l'appareil
@@ -44,9 +44,9 @@ const InstallAndroid = () => {
     setIsChrome(isChromeBrowser);
 
     if (isAndroidDevice && isChromeBrowser) {
-      setInstallStatus('compatible');
+      setInstallStatus("compatible");
     } else {
-      setInstallStatus('incompatible');
+      setInstallStatus("incompatible");
     }
   }, []);
 
@@ -57,7 +57,7 @@ const InstallAndroid = () => {
     } else {
       // Pas de prompt disponible (déjà installée, ou navigateur non compatible) :
       // on renvoie vers les instructions manuelles détaillées.
-      navigate('/install');
+      navigate("/install");
     }
   };
 
@@ -65,34 +65,30 @@ const InstallAndroid = () => {
     {
       icon: <Zap className="w-5 h-5 text-info" />,
       title: t("ux.installAndroid.fast"),
-      description: t("ux.installAndroid.fastDesc")
+      description: t("ux.installAndroid.fastDesc"),
     },
     {
       icon: <Shield className="w-5 h-5 text-success" />,
       title: t("ux.installAndroid.secure"),
-      description: t("ux.installAndroid.secureDesc")
+      description: t("ux.installAndroid.secureDesc"),
     },
     {
       icon: <Star className="w-5 h-5 text-warning-foreground" />,
       title: t("ux.installAndroid.push"),
-      description: t("ux.installAndroid.pushDesc")
+      description: t("ux.installAndroid.pushDesc"),
     },
     {
       icon: <Download className="w-5 h-5 text-primary" />,
       title: t("ux.installAndroid.offline"),
-      description: t("ux.installAndroid.offlineDesc")
-    }
+      description: t("ux.installAndroid.offlineDesc"),
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/40 via-muted/20 to-muted/20">
       <div className="container mx-auto px-4 py-8">
         {/* Bouton de retour */}
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="mb-8 flex items-center gap-2"
-        >
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-8 flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" />
           {t("ux.installAndroid.back")}
         </Button>
@@ -103,26 +99,20 @@ const InstallAndroid = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-success rounded-2xl mb-6 shadow-lg">
               <Smartphone className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              {t("ux.installAndroid.title")}
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {t("ux.installAndroid.subtitle")}
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t("ux.installAndroid.title")}</h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">{t("ux.installAndroid.subtitle")}</p>
           </div>
 
           {/* Statut de compatibilité */}
           <div className="mb-8">
-            {installStatus === 'checking' && (
+            {installStatus === "checking" && (
               <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  {t("ux.installAndroid.checking")}
-                </AlertDescription>
+                <AlertDescription>{t("ux.installAndroid.checking")}</AlertDescription>
               </Alert>
             )}
-            
-            {installStatus === 'compatible' && (
+
+            {installStatus === "compatible" && (
               <Alert className="border-success/30 bg-success/10">
                 <CheckCircle2 className="h-4 w-4 text-success" />
                 <AlertDescription className="text-success">
@@ -130,8 +120,8 @@ const InstallAndroid = () => {
                 </AlertDescription>
               </Alert>
             )}
-            
-            {installStatus === 'incompatible' && (
+
+            {installStatus === "incompatible" && (
               <Alert className="border-warning-foreground/20 bg-warning">
                 <AlertCircle className="h-4 w-4 text-warning-foreground" />
                 <AlertDescription className="text-warning-foreground">
@@ -148,12 +138,8 @@ const InstallAndroid = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-success rounded-xl mb-4">
                 <Download className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-2xl font-bold text-foreground mb-2">
-                {t("ux.installAndroid.apk")}
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                {t("ux.installAndroid.notOnStore")}
-              </CardDescription>
+              <CardTitle className="text-2xl font-bold text-foreground mb-2">{t("ux.installAndroid.apk")}</CardTitle>
+              <CardDescription className="text-muted-foreground">{t("ux.installAndroid.notOnStore")}</CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
               <Button
@@ -174,8 +160,13 @@ const InstallAndroid = () => {
                 </h4>
                 <ol className="space-y-1.5 text-sm text-foreground list-decimal list-inside">
                   <li>Ouvrez le fichier téléchargé depuis vos notifications ou "Téléchargements"</li>
-                  <li>Android affichera un avertissement "source inconnue" — c'est normal pour toute app installée hors Play Store</li>
-                  <li>Appuyez sur "Paramètres" dans l'avertissement, puis autorisez l'installation depuis cette source</li>
+                  <li>
+                    Android affichera un avertissement "source inconnue" — c'est normal pour toute app installée hors
+                    Play Store
+                  </li>
+                  <li>
+                    Appuyez sur "Paramètres" dans l'avertissement, puis autorisez l'installation depuis cette source
+                  </li>
                   <li>{t("ux.installAndroid.goBackConfirm")}</li>
                 </ol>
               </div>
@@ -192,9 +183,7 @@ const InstallAndroid = () => {
                 <CardTitle className="text-2xl font-bold text-foreground mb-2">
                   {t("ux.installAndroid.pwaAlt")}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  {t("ux.installAndroid.pwaAltDesc")}
-                </CardDescription>
+                <CardDescription className="text-muted-foreground">{t("ux.installAndroid.pwaAltDesc")}</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="space-y-4 mb-6">
@@ -220,7 +209,11 @@ const InstallAndroid = () => {
                   size="lg"
                 >
                   <Download className="w-5 h-5 mr-2" />
-                  {isInstalled ? t("ux.installAndroid.already") : isInstallable ? t("ux.installAndroid.installNow") : t("ux.installAndroid.seeInstructions")}
+                  {isInstalled
+                    ? t("ux.installAndroid.already")
+                    : isInstallable
+                      ? t("ux.installAndroid.installNow")
+                      : t("ux.installAndroid.seeInstructions")}
                 </Button>
               </CardContent>
             </Card>
@@ -231,9 +224,7 @@ const InstallAndroid = () => {
                 <CardTitle className="text-2xl font-bold text-foreground mb-2">
                   {t("ux.installAndroid.features")}
                 </CardTitle>
-                <CardDescription>
-                  {t("ux.installAndroid.featuresDesc")}
-                </CardDescription>
+                <CardDescription>{t("ux.installAndroid.featuresDesc")}</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="space-y-4">
@@ -241,12 +232,8 @@ const InstallAndroid = () => {
                     <div key={index} className="flex items-start gap-4 p-3 rounded-lg bg-muted">
                       {feature.icon}
                       <div>
-                        <h4 className="font-semibold text-foreground mb-1">
-                          {feature.title}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {feature.description}
-                        </p>
+                        <h4 className="font-semibold text-foreground mb-1">{feature.title}</h4>
+                        <p className="text-sm text-muted-foreground">{feature.description}</p>
                       </div>
                     </div>
                   ))}
@@ -261,9 +248,7 @@ const InstallAndroid = () => {
               <CardTitle className="text-2xl font-bold text-foreground mb-2">
                 {t("ux.installAndroid.instructions")}
               </CardTitle>
-              <CardDescription>
-                {t("ux.installAndroid.instructionsDesc")}
-              </CardDescription>
+              <CardDescription>{t("ux.installAndroid.instructionsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="grid md:grid-cols-2 gap-6">
@@ -322,12 +307,10 @@ const InstallAndroid = () => {
 
           {/* Footer actions */}
           <div className="text-center">
-            <p className="text-muted-foreground mb-4">
-              {t("ux.installAndroid.help")}
-            </p>
+            <p className="text-muted-foreground mb-4">{t("ux.installAndroid.help")}</p>
             <Button
               variant="outline"
-              onClick={() => (supportWhatsApp ? window.open(supportWhatsApp, '_blank') : navigate('/contact'))}
+              onClick={() => (supportWhatsApp ? window.open(supportWhatsApp, "_blank") : navigate("/contact"))}
               className="border-success text-success hover:bg-success/10"
             >
               <ExternalLink className="w-4 h-4 mr-2" />

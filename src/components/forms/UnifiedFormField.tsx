@@ -93,11 +93,11 @@ export const UnifiedFormField = ({
     >
       {label && (
         <div className="flex items-center gap-2">
-          <Label 
+          <Label
             htmlFor={fieldId}
             className={cn(
               "text-sm font-semibold text-foreground flex items-center gap-2",
-              required && "after:content-['*'] after:text-destructive after:ml-0.5"
+              required && "after:content-['*'] after:text-destructive after:ml-0.5",
             )}
           >
             {Icon && <Icon className="w-4 h-4 text-primary" />}
@@ -130,7 +130,7 @@ export const UnifiedFormField = ({
               "transition-all duration-base ease-standard",
               "placeholder:text-muted-foreground/60",
               error && touched && "border-destructive focus:border-destructive",
-              !error && touched && value && "border-success focus:ring-success"
+              !error && touched && value && "border-success focus:ring-success",
             )}
           />
         ) : type === "tel" ? (
@@ -146,7 +146,7 @@ export const UnifiedFormField = ({
             disabled={disabled}
             className={cn(
               error && touched && "[&_input]:border-destructive",
-              !error && touched && value && "[&_input]:border-success"
+              !error && touched && value && "[&_input]:border-success",
             )}
           />
         ) : (
@@ -178,7 +178,7 @@ export const UnifiedFormField = ({
                 "placeholder:text-muted-foreground/60",
                 "font-medium",
                 error && touched && "border-destructive focus:border-destructive",
-                !error && touched && value && "border-success focus:ring-success"
+                !error && touched && value && "border-success focus:ring-success",
               )}
             />
           </>

@@ -23,9 +23,7 @@ export function notifyProfileUpdated() {
   window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
 }
 
-export function getUserPhotoFromMetadata(user: {
-  user_metadata?: Record<string, unknown>;
-}): string | undefined {
+export function getUserPhotoFromMetadata(user: { user_metadata?: Record<string, unknown> }): string | undefined {
   const metadata = user.user_metadata || {};
   const photo = metadata.avatar_url ?? metadata.picture ?? metadata.photo_url;
   return typeof photo === "string" && photo.trim() ? photo : undefined;

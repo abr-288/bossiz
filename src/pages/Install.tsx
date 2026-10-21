@@ -1,6 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Smartphone, Check, Wifi, Zap, Bell, Apple, Chrome, Share2, MoreVertical, Plus, ArrowDown, Shield, Clock, Globe } from "lucide-react";
+import {
+  Download,
+  Smartphone,
+  Check,
+  Wifi,
+  Zap,
+  Bell,
+  Apple,
+  Chrome,
+  Share2,
+  MoreVertical,
+  Plus,
+  ArrowDown,
+  Shield,
+  Clock,
+  Globe,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstallDropdown from "@/components/InstallDropdown";
@@ -26,7 +42,7 @@ const Install = () => {
   const handleInstallClick = async () => {
     const success = await install();
     if (success) {
-      console.log('App installed successfully');
+      console.log("App installed successfully");
     }
   };
 
@@ -36,7 +52,7 @@ const Install = () => {
       await subscribe();
       sendNotification(t("ux.install.notifOn"), {
         body: t("ux.install.notifOnDesc"),
-        tag: 'welcome'
+        tag: "welcome",
       });
     }
   };
@@ -45,60 +61,63 @@ const Install = () => {
     {
       icon: Zap,
       title: t("ux.install.fast"),
-      description: t("ux.install.fastDesc")
+      description: t("ux.install.fastDesc"),
     },
     {
       icon: Wifi,
       title: t("ux.install.offline"),
-      description: t("ux.install.offlineDesc")
+      description: t("ux.install.offlineDesc"),
     },
     {
       icon: Bell,
       title: "Notifications",
-      description: t("ux.install.alertsDesc")
+      description: t("ux.install.alertsDesc"),
     },
     {
       icon: Shield,
       title: t("ux.install.secure"),
-      description: t("ux.install.secureDesc")
+      description: t("ux.install.secureDesc"),
     },
     {
       icon: Clock,
       title: t("ux.install.upToDate"),
-      description: t("ux.install.upToDateDesc")
+      description: t("ux.install.upToDateDesc"),
     },
     {
       icon: Globe,
       title: "Multi-plateforme",
-      description: t("ux.install.allDevices")
-    }
+      description: t("ux.install.allDevices"),
+    },
   ];
 
   return (
     <div className="min-h-screen flex flex-col pt-16">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="relative bg-brand text-brand-foreground py-16 md:py-24 overflow-hidden">
         <img src={heroImage} alt={t("ux.install.title")} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-brand/85" />
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ 
-            backgroundImage: 'radial-gradient(circle at 25px 25px, white 2px, transparent 0)',
-            backgroundSize: '50px 50px'
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "radial-gradient(circle at 25px 25px, white 2px, transparent 0)",
+              backgroundSize: "50px 50px",
+            }}
+          />
         </div>
-        
+
         <div className="container max-w-4xl px-4 relative z-10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: MOTION.slow }}
             className="text-center"
           >
             {/* App Icon Preview */}
-            <motion.div 
+            <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
@@ -107,15 +126,11 @@ const Install = () => {
               <Logo variant="dark" showWordmark={false} className="w-16 h-16 md:w-24 md:h-24" />
             </motion.div>
 
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              {t("ux.install.titleShort")}
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8">
-              {t("ux.install.subtitle")}
-            </p>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">{t("ux.install.titleShort")}</h1>
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8">{t("ux.install.subtitle")}</p>
 
             {isInstalled ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="inline-flex items-center gap-2 bg-success/15 border border-success/30 rounded-full px-6 py-3"
@@ -124,12 +139,8 @@ const Install = () => {
                 <span className="font-medium">{t("ux.install.installed")}</span>
               </motion.div>
             ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <InstallDropdown 
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                <InstallDropdown
                   size="lg"
                   className="bg-white text-brand hover:bg-white/90 shadow-lg h-14 px-6 text-lg font-semibold"
                 />
@@ -141,20 +152,21 @@ const Install = () => {
 
       <div className="flex-1 bg-gradient-to-b from-background to-muted/20 py-10 md:py-16">
         <div className="container max-w-4xl px-4">
-          
           {/* Installation Instructions */}
           {!isInstalled && !isInstallable && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="grid gap-6 mb-12"
             >
               {/* iOS Instructions */}
-              <Card className={cn(
-                "overflow-hidden transition-all duration-slow ease-standard",
-                isIOS && "ring-2 ring-primary shadow-lg"
-              )}>
+              <Card
+                className={cn(
+                  "overflow-hidden transition-all duration-slow ease-standard",
+                  isIOS && "ring-2 ring-primary shadow-lg",
+                )}
+              >
                 <CardHeader className="bg-brand text-white">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
@@ -220,10 +232,12 @@ const Install = () => {
               </Card>
 
               {/* Android Instructions */}
-              <Card className={cn(
-                "overflow-hidden transition-all duration-slow ease-standard",
-                isAndroid && "ring-2 ring-primary shadow-lg"
-              )}>
+              <Card
+                className={cn(
+                  "overflow-hidden transition-all duration-slow ease-standard",
+                  isAndroid && "ring-2 ring-primary shadow-lg",
+                )}
+              >
                 <CardHeader className="bg-gradient-to-r from-success to-success/80 text-success-foreground">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
@@ -319,28 +333,22 @@ const Install = () => {
 
           {/* Notifications Card */}
           {isSupported && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Bell className="w-5 h-5 text-primary" />
                     {t("ux.install.push")}
                   </CardTitle>
-                  <CardDescription>
-                    {t("ux.install.pushDesc")}
-                  </CardDescription>
+                  <CardDescription>{t("ux.install.pushDesc")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {permission === 'granted' ? (
+                  {permission === "granted" ? (
                     <div className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-lg">
                       <Check className="w-5 h-5" />
                       <span className="font-medium">{t("ux.install.notifOn")}</span>
                     </div>
-                  ) : permission === 'denied' ? (
+                  ) : permission === "denied" ? (
                     <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
                       {t("ux.install.denied")}
                     </div>

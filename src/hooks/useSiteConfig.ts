@@ -131,9 +131,7 @@ export const useSiteConfig = () => {
 
   const fetchConfig = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from("site_config")
-        .select("config_key, config_value");
+      const { data, error } = await supabase.from("site_config").select("config_key, config_value");
 
       if (error) throw error;
 

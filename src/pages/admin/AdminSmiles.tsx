@@ -210,7 +210,13 @@ export default function AdminSmiles() {
   const statCards = stats
     ? [
         { label: t("ux.smilesAdmin.statMembers"), value: fmt(stats.members) },
-        { label: t("ux.smilesAdmin.statOutstanding"), value: fmt(stats.outstanding), hint: t("ux.smilesAdmin.statOutstandingHint", { amount: fmt(stats.outstanding * Number(settings.point_value_xof || 1)) }) },
+        {
+          label: t("ux.smilesAdmin.statOutstanding"),
+          value: fmt(stats.outstanding),
+          hint: t("ux.smilesAdmin.statOutstandingHint", {
+            amount: fmt(stats.outstanding * Number(settings.point_value_xof || 1)),
+          }),
+        },
         { label: t("ux.smilesAdmin.statEarned"), value: `+${fmt(stats.earned_30d)}` },
         { label: t("ux.smilesAdmin.statUsed"), value: `−${fmt(stats.used_30d)}` },
         { label: t("ux.smilesAdmin.statExpired"), value: `−${fmt(stats.expired_30d)}` },
@@ -305,10 +311,16 @@ export default function AdminSmiles() {
                               <p className="text-xs text-muted-foreground">{member.email}</p>
                             </TableCell>
                             <TableCell className="font-mono text-sm">{member.referral_code || "-"}</TableCell>
-                            <TableCell className="text-right font-semibold tabular-nums">{fmt(member.balance)}</TableCell>
-                            <TableCell className="text-right tabular-nums text-muted-foreground">{fmt(member.lifetime)}</TableCell>
+                            <TableCell className="text-right font-semibold tabular-nums">
+                              {fmt(member.balance)}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums text-muted-foreground">
+                              {fmt(member.lifetime)}
+                            </TableCell>
                             <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                              {member.last_activity ? new Date(member.last_activity).toLocaleDateString(currentLocaleTag()) : "-"}
+                              {member.last_activity
+                                ? new Date(member.last_activity).toLocaleDateString(currentLocaleTag())
+                                : "-"}
                             </TableCell>
                             <TableCell className="text-right">
                               <Button size="sm" variant="outline" onClick={() => void openMember(member)}>
@@ -348,7 +360,11 @@ export default function AdminSmiles() {
                           onChange={(e) => setSettings((form) => ({ ...form, [key]: e.target.value }))}
                           className={percent ? "pr-8" : undefined}
                         />
-                        {percent && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">%</span>}
+                        {percent && (
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            %
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground">{t(`ux.smilesAdmin.help_${key}`)}</p>
                     </div>
@@ -378,7 +394,9 @@ export default function AdminSmiles() {
                         <p className="mt-2 font-semibold">{t(`ux.smiles.tier_${tier.code}`, tier.name)}</p>
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor={`tier-min-${tier.code}`} className="text-xs text-muted-foreground">{t("ux.smilesAdmin.tierMin")}</Label>
+                        <Label htmlFor={`tier-min-${tier.code}`} className="text-xs text-muted-foreground">
+                          {t("ux.smilesAdmin.tierMin")}
+                        </Label>
                         <Input
                           id={`tier-min-${tier.code}`}
                           type="number"
@@ -386,12 +404,18 @@ export default function AdminSmiles() {
                           disabled={index === 0}
                           value={tier.min_points}
                           onChange={(e) =>
-                            setTiers((list) => list.map((item) => (item.code === tier.code ? { ...item, min_points: Number(e.target.value) } : item)))
+                            setTiers((list) =>
+                              list.map((item) =>
+                                item.code === tier.code ? { ...item, min_points: Number(e.target.value) } : item,
+                              ),
+                            )
                           }
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor={`tier-mult-${tier.code}`} className="text-xs text-muted-foreground">{t("ux.smilesAdmin.tierMultiplier")}</Label>
+                        <Label htmlFor={`tier-mult-${tier.code}`} className="text-xs text-muted-foreground">
+                          {t("ux.smilesAdmin.tierMultiplier")}
+                        </Label>
                         <Input
                           id={`tier-mult-${tier.code}`}
                           type="number"
@@ -399,7 +423,11 @@ export default function AdminSmiles() {
                           step="0.05"
                           value={tier.multiplier}
                           onChange={(e) =>
-                            setTiers((list) => list.map((item) => (item.code === tier.code ? { ...item, multiplier: Number(e.target.value) } : item)))
+                            setTiers((list) =>
+                              list.map((item) =>
+                                item.code === tier.code ? { ...item, multiplier: Number(e.target.value) } : item,
+                              ),
+                            )
                           }
                         />
                       </div>
@@ -434,23 +462,41 @@ export default function AdminSmiles() {
 
               <div className="rounded-2xl bg-primary/5 p-4 text-center">
                 <p className="text-sm text-muted-foreground">{t("ux.smilesAdmin.colBalance")}</p>
-                <p className="text-3xl font-extrabold tabular-nums">{fmt(selected.balance)} <span className="text-base font-semibold text-muted-foreground">Smiles</span></p>
+                <p className="text-3xl font-extrabold tabular-nums">
+                  {fmt(selected.balance)} <span className="text-base font-semibold text-muted-foreground">Smiles</span>
+                </p>
               </div>
 
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-2">
-                  <Button type="button" variant={mode === "add" ? "default" : "outline"} onClick={() => setMode("add")} className="gap-2">
+                  <Button
+                    type="button"
+                    variant={mode === "add" ? "default" : "outline"}
+                    onClick={() => setMode("add")}
+                    className="gap-2"
+                  >
                     <Plus className="h-4 w-4" />
                     {t("ux.smilesAdmin.add")}
                   </Button>
-                  <Button type="button" variant={mode === "remove" ? "destructive" : "outline"} onClick={() => setMode("remove")} className="gap-2">
+                  <Button
+                    type="button"
+                    variant={mode === "remove" ? "destructive" : "outline"}
+                    onClick={() => setMode("remove")}
+                    className="gap-2"
+                  >
                     <Minus className="h-4 w-4" />
                     {t("ux.smilesAdmin.remove")}
                   </Button>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="adjust-points">{t("ux.smilesAdmin.points")}</Label>
-                  <Input id="adjust-points" type="number" min={1} value={points} onChange={(e) => setPoints(e.target.value)} />
+                  <Input
+                    id="adjust-points"
+                    type="number"
+                    min={1}
+                    value={points}
+                    onChange={(e) => setPoints(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="adjust-reason">{t("ux.smilesAdmin.reason")}</Label>
@@ -482,14 +528,28 @@ export default function AdminSmiles() {
                               ? row.description
                               : t(`ux.smiles.kind_${row.kind}`, row.description ?? row.kind)}
                           </p>
-                          <p className="text-xs text-muted-foreground">{new Date(row.created_at).toLocaleString(currentLocaleTag())}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(row.created_at).toLocaleString(currentLocaleTag())}
+                          </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className={cn("font-semibold tabular-nums", row.status === "cancelled" ? "text-muted-foreground line-through" : row.points > 0 ? "text-success" : "")}>
-                            {row.points > 0 ? "+" : "−"}{fmt(Math.abs(row.points))}
+                          <p
+                            className={cn(
+                              "font-semibold tabular-nums",
+                              row.status === "cancelled"
+                                ? "text-muted-foreground line-through"
+                                : row.points > 0
+                                  ? "text-success"
+                                  : "",
+                            )}
+                          >
+                            {row.points > 0 ? "+" : "−"}
+                            {fmt(Math.abs(row.points))}
                           </p>
                           {row.status !== "posted" && (
-                            <Badge variant="outline" className="text-[10px]">{t(`ux.smilesAdmin.status_${row.status}`)}</Badge>
+                            <Badge variant="outline" className="text-[10px]">
+                              {t(`ux.smilesAdmin.status_${row.status}`)}
+                            </Badge>
                           )}
                         </div>
                       </li>

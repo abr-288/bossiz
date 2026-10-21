@@ -7,21 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Pencil, Trash2, Eye, EyeOff, MoveUp, MoveDown } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -51,7 +38,9 @@ const defaultAd = {
   description: "",
   image_url: "",
   link_url: "",
-  get link_text() { return i18n.t("ux.bo.learnMore"); },
+  get link_text() {
+    return i18n.t("ux.bo.learnMore");
+  },
   background_color: "#1e3a5f",
   text_color: "#ffffff",
   is_active: true,
@@ -71,10 +60,7 @@ export default function AdminAdvertisements() {
 
   const fetchAds = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("advertisements")
-      .select("*")
-      .order("sort_order", { ascending: true });
+    const { data, error } = await supabase.from("advertisements").select("*").order("sort_order", { ascending: true });
 
     if (!error && data) {
       setAds(data);
@@ -117,10 +103,7 @@ export default function AdminAdvertisements() {
     }
 
     if (editingAd?.id) {
-      const { error } = await supabase
-        .from("advertisements")
-        .update(formData)
-        .eq("id", editingAd.id);
+      const { error } = await supabase.from("advertisements").update(formData).eq("id", editingAd.id);
 
       if (error) {
         toast.error(t("ux.bo.errorWhileUpdating"));
@@ -130,9 +113,7 @@ export default function AdminAdvertisements() {
         fetchAds();
       }
     } else {
-      const { error } = await supabase
-        .from("advertisements")
-        .insert([formData]);
+      const { error } = await supabase.from("advertisements").insert([formData]);
 
       if (error) {
         toast.error(t("ux.bo.errorWhileCreating"));
@@ -147,10 +128,7 @@ export default function AdminAdvertisements() {
   const handleDelete = async (id: string) => {
     if (!confirm(t("ux.bo.deleteAdvertisement"))) return;
 
-    const { error } = await supabase
-      .from("advertisements")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("advertisements").delete().eq("id", id);
 
     if (error) {
       toast.error(t("ux.bo.errorWhileDeleting"));
@@ -161,10 +139,7 @@ export default function AdminAdvertisements() {
   };
 
   const handleToggleActive = async (ad: Advertisement) => {
-    const { error } = await supabase
-      .from("advertisements")
-      .update({ is_active: !ad.is_active })
-      .eq("id", ad.id);
+    const { error } = await supabase.from("advertisements").update({ is_active: !ad.is_active }).eq("id", ad.id);
 
     if (!error) {
       fetchAds();
@@ -175,11 +150,11 @@ export default function AdminAdvertisements() {
   const handleMoveOrder = async (ad: Advertisement, direction: "up" | "down") => {
     const currentIndex = ads.findIndex((a) => a.id === ad.id);
     const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-    
+
     if (newIndex < 0 || newIndex >= ads.length) return;
 
     const otherAd = ads[newIndex];
-    
+
     await Promise.all([
       supabase.from("advertisements").update({ sort_order: newIndex }).eq("id", ad.id),
       supabase.from("advertisements").update({ sort_order: currentIndex }).eq("id", otherAd.id),
@@ -194,9 +169,7 @@ export default function AdminAdvertisements() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{t("ux.bo.advertisementManagement")}</h1>
-            <p className="text-muted-foreground">
-              {t("ux.bo.manageAdvertisingBannersShownSite")}
-            </p>
+            <p className="text-muted-foreground">{t("ux.bo.manageAdvertisingBannersShownSite")}</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -207,9 +180,7 @@ export default function AdminAdvertisements() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {editingAd ? t("ux.bo.editAdvertisement") : t("ux.bo.newAdvertisement")}
-                </DialogTitle>
+                <DialogTitle>{editingAd ? t("ux.bo.editAdvertisement") : t("ux.bo.newAdvertisement")}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
@@ -292,7 +263,12 @@ export default function AdminAdvertisements() {
                     <Input
                       type="datetime-local"
                       value={formData.starts_at ? formData.starts_at.slice(0, 16) : ""}
-                      onChange={(e) => setFormData({ ...formData, starts_at: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          starts_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                        })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -300,7 +276,12 @@ export default function AdminAdvertisements() {
                     <Input
                       type="datetime-local"
                       value={formData.expires_at ? formData.expires_at.slice(0, 16) : ""}
-                      onChange={(e) => setFormData({ ...formData, expires_at: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          expires_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -319,18 +300,14 @@ export default function AdminAdvertisements() {
                       <CardTitle className="text-sm">{t("ux.bo.preview")}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div 
+                      <div
                         className="rounded-lg overflow-hidden"
                         style={{ backgroundColor: formData.background_color }}
                       >
                         <div className="flex flex-col sm:flex-row items-center">
                           {formData.image_url && (
                             <div className="w-full sm:w-1/3 h-32 overflow-hidden">
-                              <img
-                                src={formData.image_url}
-                                alt="Preview"
-                                className="w-full h-full object-cover"
-                              />
+                              <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
                             </div>
                           )}
                           <div className="flex-1 p-4" style={{ color: formData.text_color }}>
@@ -347,9 +324,7 @@ export default function AdminAdvertisements() {
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
                     {t("ux.bo.cancel")}
                   </Button>
-                  <Button onClick={handleSave}>
-                    {editingAd ? t("ux.bo.update") : "Créer"}
-                  </Button>
+                  <Button onClick={handleSave}>{editingAd ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </div>
             </DialogContent>
@@ -420,9 +395,7 @@ export default function AdminAdvertisements() {
                           )}
                           <div>
                             <p className="font-medium">{ad.title}</p>
-                            <p className="text-sm text-muted-foreground truncate max-w-xs">
-                              {ad.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground truncate max-w-xs">{ad.description}</p>
                           </div>
                         </div>
                       </TableCell>
@@ -445,12 +418,8 @@ export default function AdminAdvertisements() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          {ad.starts_at && (
-                            <p>Début: {format(new Date(ad.starts_at), "dd/MM/yyyy")}</p>
-                          )}
-                          {ad.expires_at && (
-                            <p>Fin: {format(new Date(ad.expires_at), "dd/MM/yyyy")}</p>
-                          )}
+                          {ad.starts_at && <p>Début: {format(new Date(ad.starts_at), "dd/MM/yyyy")}</p>}
+                          {ad.expires_at && <p>Fin: {format(new Date(ad.expires_at), "dd/MM/yyyy")}</p>}
                           {!ad.starts_at && !ad.expires_at && (
                             <span className="text-muted-foreground">{t("ux.bo.permanent")}</span>
                           )}

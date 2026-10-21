@@ -39,30 +39,20 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
               "hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
               isSelected
                 ? "border-primary bg-primary/5 shadow-sm"
-                : "border-border bg-card hover:border-muted-foreground/30"
+                : "border-border bg-card hover:border-muted-foreground/30",
             )}
           >
             {/* Icon container */}
-            <div
-              className={cn(
-                "flex items-center justify-center w-12 h-12 rounded-lg border",
-                method.color
-              )}
-            >
+            <div className={cn("flex items-center justify-center w-12 h-12 rounded-lg border", method.color)}>
               {method.icon}
             </div>
 
             {/* Text content */}
             <div className="flex-1 text-left">
-              <p className={cn(
-                "font-semibold text-sm",
-                isSelected ? "text-primary" : "text-foreground"
-              )}>
+              <p className={cn("font-semibold text-sm", isSelected ? "text-primary" : "text-foreground")}>
                 {method.name}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {method.description}
-              </p>
+              <p className="text-xs text-muted-foreground">{method.description}</p>
             </div>
 
             {/* Selected indicator */}

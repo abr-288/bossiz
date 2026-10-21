@@ -22,10 +22,10 @@ export const NotificationPrompt = () => {
 
   useEffect(() => {
     // Show prompt if notifications are supported and permission hasn't been decided
-    if (isSupported && permission === 'default' && cookieChoiceMade && isRelevantPage) {
+    if (isSupported && permission === "default" && cookieChoiceMade && isRelevantPage) {
       // Wait a bit before showing to not overwhelm the user
       const timer = setTimeout(() => {
-        const dismissed = localStorage.getItem('notification-prompt-dismissed');
+        const dismissed = localStorage.getItem("notification-prompt-dismissed");
         if (!dismissed) {
           setIsVisible(true);
         }
@@ -41,14 +41,14 @@ export const NotificationPrompt = () => {
       await subscribe();
       sendNotification(t("ux.notifications.enabledTitle"), {
         body: t("ux.notifications.enabledBody"),
-        tag: 'welcome'
+        tag: "welcome",
       });
     }
     setIsVisible(false);
   };
 
   const handleDismiss = () => {
-    localStorage.setItem('notification-prompt-dismissed', 'true');
+    localStorage.setItem("notification-prompt-dismissed", "true");
     setIsVisible(false);
   };
 
@@ -71,15 +71,13 @@ export const NotificationPrompt = () => {
             <Bell className="h-5 w-5 text-primary" />
             {t("ux.notifications.title")}
           </CardTitle>
-          <CardDescription>
-            {t("ux.notifications.description")}
-          </CardDescription>
+          <CardDescription>{t("ux.notifications.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="text-sm text-muted-foreground">
-            • {t("ux.notifications.bullet1")}<br/>
-            • {t("ux.notifications.bullet2")}<br/>
-            • {t("ux.notifications.bullet3")}
+            • {t("ux.notifications.bullet1")}
+            <br />• {t("ux.notifications.bullet2")}
+            <br />• {t("ux.notifications.bullet3")}
           </div>
           <div className="flex gap-2">
             <Button onClick={handleEnable} className="flex-1">

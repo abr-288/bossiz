@@ -1,7 +1,20 @@
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, TrendingDown, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { format, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isWeekend, getDay, getMonth } from "date-fns";
+import {
+  format,
+  addDays,
+  parseISO,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
+  addMonths,
+  subMonths,
+  isWeekend,
+  getDay,
+  getMonth,
+} from "date-fns";
 import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,53 +41,53 @@ const generateHotelPrice = (date: Date, basePrice: number): number => {
   const dayOfWeek = getDay(date);
   const month = getMonth(date);
   const isWeekendDay = isWeekend(date);
-  
+
   // Prix de base pour un hôtel
   let price = basePrice;
-  
+
   // Week-end: +30-50% (les hôtels sont plus chers le week-end)
   if (isWeekendDay) {
     price *= 1.3 + Math.random() * 0.2;
   }
-  
+
   // Vendredi soir: +20% (début de week-end)
   if (dayOfWeek === 5) {
     price *= 1.2;
   }
-  
+
   // Mardi/Mercredi: -15-20% (jours les moins chers pour hôtels)
   if (dayOfWeek === 2 || dayOfWeek === 3) {
     price *= 0.8 - Math.random() * 0.05;
   }
-  
+
   // Haute saison (été: juin, juillet, août)
   if (month >= 5 && month <= 7) {
     price *= 1.4 + Math.random() * 0.2;
   }
-  
+
   // Vacances de Noël/Nouvel An (décembre)
   if (month === 11) {
     price *= 1.5 + Math.random() * 0.1;
   }
-  
+
   // Basse saison (janvier, février, novembre)
   if (month === 0 || month === 1 || month === 10) {
     price *= 0.7 + Math.random() * 0.1;
   }
-  
+
   // Variation aléatoire ±15% pour simuler la disponibilité
   price *= 0.85 + Math.random() * 0.3;
-  
+
   return Math.round(price);
 };
 
-export const HotelPriceCalendar = ({ 
-  checkInDate, 
-  prices = {}, 
-  currency = "€", 
-  onDateSelect, 
+export const HotelPriceCalendar = ({
+  checkInDate,
+  prices = {},
+  currency = "€",
+  onDateSelect,
   basePrice = 120,
-  viewMode: initialViewMode = "week"
+  viewMode: initialViewMode = "week",
 }: HotelPriceCalendarProps) => {
   const { t } = useTranslation();
   const baseDate = parseISO(checkInDate);
@@ -84,10 +97,10 @@ export const HotelPriceCalendar = ({
   // Génération des prix avec cache
   const pricesWithDefaults = useMemo(() => {
     const result: Record<string, number> = { ...prices };
-    
+
     if (viewMode === "week") {
       const weekDates = Array.from({ length: 7 }, (_, i) => addDays(baseDate, i - 3));
-      weekDates.forEach(date => {
+      weekDates.forEach((date) => {
         const dateStr = format(date, "yyyy-MM-dd");
         if (!result[dateStr]) {
           result[dateStr] = generateHotelPrice(date, basePrice);
@@ -97,15 +110,15 @@ export const HotelPriceCalendar = ({
       const start = startOfMonth(currentMonth);
       const end = endOfMonth(currentMonth);
       const monthDates = eachDayOfInterval({ start, end });
-      
-      monthDates.forEach(date => {
+
+      monthDates.forEach((date) => {
         const dateStr = format(date, "yyyy-MM-dd");
         if (!result[dateStr]) {
           result[dateStr] = generateHotelPrice(date, basePrice);
         }
       });
     }
-    
+
     return result;
   }, [viewMode, baseDate, currentMonth, prices, basePrice]);
 
@@ -123,20 +136,20 @@ export const HotelPriceCalendar = ({
     const { min, max } = priceStats;
     const range = max - min;
     const position = (price - min) / range;
-    
+
     if (position < 0.33) return "text-success bg-success/10 border-success/30";
     if (position < 0.66) return "text-warning-foreground bg-warning border-warning-foreground/20";
     return "text-destructive bg-destructive/10 border-destructive/30";
   };
 
-  const handlePrevMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
-  const handleNextMonth = () => setCurrentMonth(prev => addMonths(prev, 1));
+  const handlePrevMonth = () => setCurrentMonth((prev) => subMonths(prev, 1));
+  const handleNextMonth = () => setCurrentMonth((prev) => addMonths(prev, 1));
 
   if (viewMode === "week") {
     const dates = Array.from({ length: 7 }, (_, i) => addDays(baseDate, i - 3));
 
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-background rounded-lg border border-border p-4"
@@ -148,17 +161,12 @@ export const HotelPriceCalendar = ({
               Prix par nuit - Meilleur: <Price amount={priceStats.min} fromCurrency={currency} />
             </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setViewMode("month")}
-            className="text-xs"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setViewMode("month")} className="text-xs">
             <CalendarIcon className="h-3 w-3 mr-1" />
             {t("ux.priceCalendar.month")}
           </Button>
         </div>
-        
+
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
           {dates.map((date) => {
             const dateStr = format(date, "yyyy-MM-dd");
@@ -168,7 +176,7 @@ export const HotelPriceCalendar = ({
             const isPast = date < new Date();
             const dayOfWeek = getDay(date);
             const isWeekendDay = isWeekend(date);
-            
+
             return (
               <motion.button
                 key={dateStr}
@@ -181,8 +189,8 @@ export const HotelPriceCalendar = ({
                   isPast
                     ? "opacity-40 cursor-not-allowed bg-muted/50"
                     : isSelected
-                    ? "border-primary bg-primary/10 shadow-lg ring-2 ring-primary/20"
-                    : colorClass
+                      ? "border-primary bg-primary/10 shadow-lg ring-2 ring-primary/20"
+                      : colorClass,
                 )}
               >
                 <span className="text-xs font-medium capitalize opacity-80">
@@ -194,18 +202,12 @@ export const HotelPriceCalendar = ({
                 <span className="text-lg font-bold mt-1">
                   <Price amount={price} fromCurrency={currency} />
                 </span>
-                <span className="text-[11px] text-muted-foreground mt-0.5">
-                  {t("ux.priceCalendar.perNight")}
-                </span>
+                <span className="text-[11px] text-muted-foreground mt-0.5">{t("ux.priceCalendar.perNight")}</span>
                 {price === priceStats.min && !isPast && (
-                  <span className="text-[11px] font-semibold text-success mt-0.5">
-                    {t("ux.priceCalendar.best")}
-                  </span>
+                  <span className="text-[11px] font-semibold text-success mt-0.5">{t("ux.priceCalendar.best")}</span>
                 )}
                 {isWeekendDay && !isPast && (
-                  <span className="text-[11px] font-medium text-warning-foreground mt-0.5">
-                    Week-end
-                  </span>
+                  <span className="text-[11px] font-medium text-warning-foreground mt-0.5">Week-end</span>
                 )}
               </motion.button>
             );
@@ -228,7 +230,7 @@ export const HotelPriceCalendar = ({
   const days = eachDayOfInterval({ start, end });
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="bg-background rounded-lg border border-border p-4"
@@ -245,7 +247,7 @@ export const HotelPriceCalendar = ({
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm">
             <TrendingDown className="h-4 w-4 text-success" />
@@ -253,12 +255,7 @@ export const HotelPriceCalendar = ({
               Min: <Price amount={priceStats.min} fromCurrency={currency} />
             </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setViewMode("week")}
-            className="text-xs"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setViewMode("week")} className="text-xs">
             {t("ux.priceCalendar.week")}
           </Button>
         </div>
@@ -266,7 +263,7 @@ export const HotelPriceCalendar = ({
 
       {/* Jours de la semaine */}
       <div className="grid grid-cols-7 gap-2 mb-2">
-        {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map(day => (
+        {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
           <div key={day} className="text-center text-xs font-semibold text-muted-foreground py-2">
             {day}
           </div>
@@ -299,25 +296,17 @@ export const HotelPriceCalendar = ({
                   isSelected
                     ? "border-primary bg-primary/10 shadow-md ring-2 ring-primary/20"
                     : isPast
-                    ? "opacity-40 cursor-not-allowed bg-muted/50"
-                    : colorClass
+                      ? "opacity-40 cursor-not-allowed bg-muted/50"
+                      : colorClass,
                 )}
               >
-                {isWeekendDay && !isPast && (
-                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-gold" />
-                )}
-                <span className="text-xs font-medium mb-1">
-                  {format(date, "d")}
-                </span>
+                {isWeekendDay && !isPast && <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-gold" />}
+                <span className="text-xs font-medium mb-1">{format(date, "d")}</span>
                 <span className="text-xs font-bold">
                   <Price amount={price} fromCurrency={currency} className="text-[11px]" />
                 </span>
-                <span className="text-[11px] text-muted-foreground">
-                  /nuit
-                </span>
-                {price === priceStats.min && !isPast && (
-                  <TrendingDown className="h-3 w-3 text-success mt-0.5" />
-                )}
+                <span className="text-[11px] text-muted-foreground">/nuit</span>
+                {price === priceStats.min && !isPast && <TrendingDown className="h-3 w-3 text-success mt-0.5" />}
               </motion.button>
             );
           })}

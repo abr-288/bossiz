@@ -54,10 +54,7 @@ export default function AdminServices() {
   const fetchServices = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("services").select("*").order("created_at", { ascending: false });
 
       if (error) throw error;
       setServices(data || []);
@@ -77,10 +74,7 @@ export default function AdminServices() {
     e.preventDefault();
     try {
       if (editingService) {
-        const { error } = await supabase
-          .from("services")
-          .update(formData)
-          .eq("id", editingService.id);
+        const { error } = await supabase.from("services").update(formData).eq("id", editingService.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.serviceUpdatedSuccessfully") });
@@ -153,7 +147,8 @@ export default function AdminServices() {
   };
 
   const filteredServices = services.filter((service) => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       service.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === "all" || service.type === typeFilter;
     return matchesSearch && matchesType;
@@ -173,9 +168,7 @@ export default function AdminServices() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {editingService ? t("ux.bo.editService") : t("ux.bo.createService")}
-                </DialogTitle>
+                <DialogTitle>{editingService ? t("ux.bo.editService") : t("ux.bo.createService")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -191,7 +184,7 @@ export default function AdminServices() {
                     <Label>{t("ux.bo.type")}</Label>
                     <Select
                       value={formData.type}
-                      onValueChange={(value: "hotel" | "flight" | "car" | "tour" | "event" | "flight_hotel") => 
+                      onValueChange={(value: "hotel" | "flight" | "car" | "tour" | "event" | "flight_hotel") =>
                         setFormData({ ...formData, type: value })
                       }
                     >
@@ -279,9 +272,7 @@ export default function AdminServices() {
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                     {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">
-                    {editingService ? t("ux.bo.update") : "Créer"}
-                  </Button>
+                  <Button type="submit">{editingService ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -351,11 +342,7 @@ export default function AdminServices() {
                       <Button size="sm" variant="ghost" onClick={() => handleEdit(service)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(service.id)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(service.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

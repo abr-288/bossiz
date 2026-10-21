@@ -32,17 +32,13 @@ const SupportCategory = () => {
   const filteredFaqs = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return faqs;
-    return faqs.filter(
-      (faq) =>
-        faq.question.toLowerCase().includes(query) ||
-        faq.answer.toLowerCase().includes(query)
-    );
+    return faqs.filter((faq) => faq.question.toLowerCase().includes(query) || faq.answer.toLowerCase().includes(query));
   }, [faqs, searchQuery]);
 
   const otherCategories = SUPPORT_CATEGORIES.filter((c) => c.id !== categoryId);
 
   const handleChatClick = () => {
-    window.dispatchEvent(new CustomEvent('open-live-chat'));
+    window.dispatchEvent(new CustomEvent("open-live-chat"));
   };
 
   if (!category) {
@@ -53,9 +49,7 @@ const SupportCategory = () => {
           <p className="text-muted-foreground mb-6">
             {t("pages.support.search.noResults", { query: categoryId ?? "" })}
           </p>
-          <Button onClick={() => navigate("/support")}>
-            {t("pages.support.categoryPage.backToSupport")}
-          </Button>
+          <Button onClick={() => navigate("/support")}>{t("pages.support.categoryPage.backToSupport")}</Button>
         </main>
         <Footer />
       </div>
@@ -75,9 +69,7 @@ const SupportCategory = () => {
             {t("pages.support.categoryPage.breadcrumbHome")}
           </Link>
           <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-foreground font-medium">
-            {t(`pages.support.categories.${category.id}.title`)}
-          </span>
+          <span className="text-foreground font-medium">{t(`pages.support.categories.${category.id}.title`)}</span>
         </nav>
 
         {/* Category header */}
@@ -118,12 +110,8 @@ const SupportCategory = () => {
                   <Accordion type="single" collapsible className="w-full">
                     {filteredFaqs.map((faq, index) => (
                       <AccordionItem key={index} value={`item-${index}`}>
-                        <AccordionTrigger className="text-left">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                          {faq.answer}
-                        </AccordionContent>
+                        <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
                       </AccordionItem>
                     ))}
                   </Accordion>
@@ -131,11 +119,7 @@ const SupportCategory = () => {
               </CardContent>
             </Card>
 
-            <Button
-              variant="ghost"
-              className="mt-6 gap-2 text-muted-foreground"
-              onClick={() => navigate("/support")}
-            >
+            <Button variant="ghost" className="mt-6 gap-2 text-muted-foreground" onClick={() => navigate("/support")}>
               <ArrowLeft className="w-4 h-4" />
               {t("pages.support.categoryPage.backToSupport")}
             </Button>
@@ -177,7 +161,7 @@ const SupportCategory = () => {
                       <Phone className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-bold text-sm">{t('pages.support.callUs')}</p>
+                      <p className="font-bold text-sm">{t("pages.support.callUs")}</p>
                       <p className="text-xs text-muted-foreground">+225 27 20 00 00 00</p>
                     </div>
                   </CardContent>
@@ -188,7 +172,7 @@ const SupportCategory = () => {
                       <Mail className="w-5 h-5 text-secondary" />
                     </div>
                     <div>
-                      <p className="font-bold text-sm">{t('pages.support.writeToUs')}</p>
+                      <p className="font-bold text-sm">{t("pages.support.writeToUs")}</p>
                       <p className="text-xs text-muted-foreground">support@bossiz.com</p>
                     </div>
                   </CardContent>
@@ -199,10 +183,10 @@ const SupportCategory = () => {
                       <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center flex-shrink-0">
                         <MessageCircle className="w-5 h-5 text-primary" />
                       </div>
-                      <p className="font-bold text-sm">{t('pages.support.contact.chat')}</p>
+                      <p className="font-bold text-sm">{t("pages.support.contact.chat")}</p>
                     </div>
                     <Button size="sm" className="w-full font-bold rounded-lg" onClick={handleChatClick}>
-                      {t('pages.support.startChat')}
+                      {t("pages.support.startChat")}
                     </Button>
                   </CardContent>
                 </Card>

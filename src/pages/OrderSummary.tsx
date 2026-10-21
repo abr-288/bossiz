@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, Clock, Shield, Star, ArrowLeft, ArrowRight, Download } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useToast } from '@/hooks/use-toast';
-import { autoConvertAndFormat } from '@/utils/currencyConverter';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { CheckCircle2, Clock, Shield, Star, ArrowLeft, ArrowRight, Download } from "lucide-react";
+import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
+import { autoConvertAndFormat } from "@/utils/currencyConverter";
+import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { MOTION } from "@/lib/motion";
 
@@ -18,7 +18,7 @@ interface OrderItem {
   description: string;
   price: number;
   currency: string;
-  billingCycle: 'monthly' | 'yearly';
+  billingCycle: "monthly" | "yearly";
   trialDays: number;
   features: string[];
   discount?: number;
@@ -48,8 +48,8 @@ const OrderSummary = () => {
   const [orderData, setOrderData] = useState<OrderSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const orderId = searchParams.get('orderId');
-  const planId = searchParams.get('planId');
+  const orderId = searchParams.get("orderId");
+  const planId = searchParams.get("planId");
 
   useEffect(() => {
     const fetchOrderData = async () => {
@@ -68,13 +68,13 @@ const OrderSummary = () => {
           throw new Error(t("ux.order.notFoundToast"));
         }
       } catch (error) {
-        console.error('Error fetching order:', error);
+        console.error("Error fetching order:", error);
         toast({
-          title: 'Erreur',
+          title: "Erreur",
           description: t("ux.order.loadError"),
-          variant: 'destructive',
+          variant: "destructive",
         });
-        navigate('/');
+        navigate("/");
       } finally {
         setLoading(false);
       }
@@ -86,14 +86,14 @@ const OrderSummary = () => {
   const handlePrint = () => {
     if (!orderData) return;
     const p = (key: string, options?: Record<string, unknown>) => t(`ux.print.${key}`, options);
-    const cycle = (c: string) => (c === 'monthly' ? p('monthly') : p('annual'));
+    const cycle = (c: string) => (c === "monthly" ? p("monthly") : p("annual"));
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(`
         <html lang="${i18n.language}">
           <head>
-            <title>${p('title')} - Bossiz Conciergerie</title>
+            <title>${p("title")} - Bossiz Conciergerie</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; }
               .header { text-align: center; margin-bottom: 30px; }
@@ -105,31 +105,35 @@ const OrderSummary = () => {
           </head>
           <body>
             <div class="header">
-              <h1>${p('title')}</h1>
+              <h1>${p("title")}</h1>
               <h2>Bossiz Conciergerie</h2>
             </div>
             <div class="order-info">
-              <p><strong>${p('orderNumber')}:</strong> ${orderData.orderId}</p>
-              <p><strong>${p('date')}:</strong> ${new Date(orderData.orderDate).toLocaleDateString(i18n.language)}</p>
-              <p><strong>${p('customer')}:</strong> ${orderData.customerInfo.name}</p>
-              <p><strong>${p('email')}:</strong> ${orderData.customerInfo.email}</p>
+              <p><strong>${p("orderNumber")}:</strong> ${orderData.orderId}</p>
+              <p><strong>${p("date")}:</strong> ${new Date(orderData.orderDate).toLocaleDateString(i18n.language)}</p>
+              <p><strong>${p("customer")}:</strong> ${orderData.customerInfo.name}</p>
+              <p><strong>${p("email")}:</strong> ${orderData.customerInfo.email}</p>
             </div>
-            ${orderData.items.map(item => `
+            ${orderData.items
+              .map(
+                (item) => `
               <div class="item">
                 <h3>${item.name} - ${cycle(item.billingCycle)}</h3>
                 <p>${item.description}</p>
-                <p><strong>${p('price')}:</strong> ${autoConvertAndFormat(item.price, item.currency)}</p>
-                ${item.trialDays > 0 ? `<p><strong>${p('trialDays')}:</strong> ${p('days', { count: item.trialDays })}</p>` : ''}
+                <p><strong>${p("price")}:</strong> ${autoConvertAndFormat(item.price, item.currency)}</p>
+                ${item.trialDays > 0 ? `<p><strong>${p("trialDays")}:</strong> ${p("days", { count: item.trialDays })}</p>` : ""}
                 <ul>
-                  ${item.features.map(feature => `<li>${feature}</li>`).join('')}
+                  ${item.features.map((feature) => `<li>${feature}</li>`).join("")}
                 </ul>
               </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div class="total">
-              <p>${p('total')}: ${autoConvertAndFormat(orderData.total, orderData.currency)}</p>
+              <p>${p("total")}: ${autoConvertAndFormat(orderData.total, orderData.currency)}</p>
             </div>
             <div class="footer">
-              <p>${p('thanks')}</p>
+              <p>${p("thanks")}</p>
             </div>
           </body>
         </html>
@@ -142,59 +146,63 @@ const OrderSummary = () => {
   const handleDownloadPDF = () => {
     if (!orderData) return;
     const p = (key: string, options?: Record<string, unknown>) => t(`ux.print.${key}`, options);
-    const cycle = (c: string) => (c === 'monthly' ? p('monthly') : p('annual'));
-    const title = p('title').toUpperCase();
+    const cycle = (c: string) => (c === "monthly" ? p("monthly") : p("annual"));
+    const title = p("title").toUpperCase();
 
     // Récapitulatif texte dans la langue de l'utilisateur
     const pdfContent = `
 ${title}
-${'='.repeat(title.length)}
+${"=".repeat(title.length)}
 
 BOSSIZ CONCIERGERIE
 ${new Date().toLocaleDateString(currentLocaleTag())}
 
-${p('orderNumber').toUpperCase()}: ${orderData.orderId}
+${p("orderNumber").toUpperCase()}: ${orderData.orderId}
 
-${p('customerInfo').toUpperCase()}
+${p("customerInfo").toUpperCase()}
 -----------------
-${p('name')}: ${orderData.customerInfo.name}
-${p('email')}: ${orderData.customerInfo.email}
-${p('phone')}: ${orderData.customerInfo.phone}
+${p("name")}: ${orderData.customerInfo.name}
+${p("email")}: ${orderData.customerInfo.email}
+${p("phone")}: ${orderData.customerInfo.phone}
 
-${p('orderDetail').toUpperCase()}
+${p("orderDetail").toUpperCase()}
 ---------------------
 
-${orderData.items.map(item => `
+${orderData.items
+  .map(
+    (item) => `
 ${item.name.toUpperCase()} - ${cycle(item.billingCycle).toUpperCase()}
-${'='.repeat(50)}
+${"=".repeat(50)}
 ${item.description}
 
-${p('price')}: ${autoConvertAndFormat(item.price, item.currency)}
-${item.trialDays > 0 ? `${p('trialDays')}: ${p('days', { count: item.trialDays })}` : ''}
-${item.discount > 0 ? `${p('discount')}: ${item.discount}%` : ''}
+${p("price")}: ${autoConvertAndFormat(item.price, item.currency)}
+${item.trialDays > 0 ? `${p("trialDays")}: ${p("days", { count: item.trialDays })}` : ""}
+${item.discount > 0 ? `${p("discount")}: ${item.discount}%` : ""}
 
-${p('features').toUpperCase()}:
-${item.features.map(feature => `• ${feature}`).join('\n')}
+${p("features").toUpperCase()}:
+${item.features.map((feature) => `• ${feature}`).join("\n")}
 
-`).join('')}
+`,
+  )
+  .join("")}
 
-${p('financial').toUpperCase()}
+${p("financial").toUpperCase()}
 ----------------------
-${p('subtotal')}: ${autoConvertAndFormat(orderData.subtotal, orderData.currency)}
-${orderData.discount > 0 ? `${p('discount')}: ${autoConvertAndFormat(orderData.discount, orderData.currency)}` : ''}
-${p('total')}: ${autoConvertAndFormat(orderData.total, orderData.currency)}
+${p("subtotal")}: ${autoConvertAndFormat(orderData.subtotal, orderData.currency)}
+${orderData.discount > 0 ? `${p("discount")}: ${autoConvertAndFormat(orderData.discount, orderData.currency)}` : ""}
+${p("total")}: ${autoConvertAndFormat(orderData.total, orderData.currency)}
 
-${p('paymentMethod').toUpperCase()}: ${orderData.paymentMethod}
+${p("paymentMethod").toUpperCase()}: ${orderData.paymentMethod}
 
-${p('thanks')}
+${p("thanks")}
     `;
 
     // Télécharger comme fichier texte
-    const blob = new Blob([pdfContent], { type: 'text/plain' });
+    const blob = new Blob([pdfContent], { type: "text/plain" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${t('ux.print.fileName')}-${orderData.orderId}.txt`;
+    a.download = `${t("ux.print.fileName")}-${orderData.orderId}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -207,7 +215,7 @@ ${p('thanks')}
   };
 
   const handleBackToSubscriptions = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleProceedToPayment = () => {
@@ -229,9 +237,7 @@ ${p('thanks')}
       <div className="min-h-screen bg-muted/40 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-foreground mb-4">{t("ux.order.notFound")}</h2>
-          <Button onClick={handleBackToSubscriptions}>
-            {t("ux.order.backToPlans")}
-          </Button>
+          <Button onClick={handleBackToSubscriptions}>{t("ux.order.backToPlans")}</Button>
         </div>
       </div>
     );
@@ -248,29 +254,18 @@ ${p('thanks')}
           className="mb-8"
         >
           <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={handleBackToSubscriptions}
-              className="flex items-center gap-2"
-            >
+            <Button variant="outline" onClick={handleBackToSubscriptions} className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               {t("ux.order.back")}
             </Button>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handlePrint}
-                className="flex items-center gap-2"
-              >
+              <Button variant="outline" onClick={handlePrint} className="flex items-center gap-2">
                 <Download className="w-4 h-4" />
                 {t("ux.order.print")}
               </Button>
-              <Button
-                onClick={handleDownloadPDF}
-                className="flex items-center gap-2 bg-info hover:bg-info/90"
-              >
+              <Button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-info hover:bg-info/90">
                 <Download className="w-4 h-4" />
-                {t('pages.orderSummary.downloadPdf')}
+                {t("pages.orderSummary.downloadPdf")}
               </Button>
             </div>
           </div>
@@ -286,7 +281,7 @@ ${p('thanks')}
             <CardHeader className="bg-info text-info-foreground">
               <CardTitle className="text-2xl font-bold flex items-center gap-3">
                 <Shield className="w-8 h-8" />
-                {t('pages.orderSummary.title')}
+                {t("pages.orderSummary.title")}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -294,9 +289,15 @@ ${p('thanks')}
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">{t("ux.order.orderInfo")}</h3>
                   <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">{t("ux.order.number")}</span> {orderData.orderId}</p>
-                    <p><span className="font-medium">{t("ux.order.date")}</span> {new Date(orderData.orderDate).toLocaleDateString(i18n.language)}</p>
-                    <p><span className="font-medium">{t("ux.order.status")}</span> 
+                    <p>
+                      <span className="font-medium">{t("ux.order.number")}</span> {orderData.orderId}
+                    </p>
+                    <p>
+                      <span className="font-medium">{t("ux.order.date")}</span>{" "}
+                      {new Date(orderData.orderDate).toLocaleDateString(i18n.language)}
+                    </p>
+                    <p>
+                      <span className="font-medium">{t("ux.order.status")}</span>
                       <Badge className="ml-2 bg-success/10 text-success">{t("ux.order.awaitingPayment")}</Badge>
                     </p>
                   </div>
@@ -304,8 +305,12 @@ ${p('thanks')}
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">{t("ux.order.paymentMethod")}</h3>
                   <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">{t("ux.order.provider")}</span> {orderData.paymentMethod}</p>
-                    <p><span className="font-medium">{t("ux.order.currency")}</span> {orderData.currency}</p>
+                    <p>
+                      <span className="font-medium">{t("ux.order.provider")}</span> {orderData.paymentMethod}
+                    </p>
+                    <p>
+                      <span className="font-medium">{t("ux.order.currency")}</span> {orderData.currency}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -369,18 +374,16 @@ ${p('thanks')}
                           {autoConvertAndFormat(item.price, item.currency)}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {item.billingCycle === 'monthly' ? t('ux.print.monthly') : t('ux.print.annual')}
+                          {item.billingCycle === "monthly" ? t("ux.print.monthly") : t("ux.print.annual")}
                         </p>
                       </div>
                     </div>
-                    
+
                     {item.trialDays > 0 && (
                       <div className="mb-4 p-3 bg-success/10 border border-success/30 rounded-lg">
                         <div className="flex items-center gap-2 text-success">
                           <Clock className="w-4 h-4" />
-                          <span className="font-medium">
-                            {item.trialDays} jours d'essai gratuits
-                          </span>
+                          <span className="font-medium">{item.trialDays} jours d'essai gratuits</span>
                         </div>
                       </div>
                     )}
@@ -421,34 +424,28 @@ ${p('thanks')}
             <CardHeader className="bg-success text-success-foreground">
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="w-6 h-6" />
-                {t('pages.orderSummary.financialSummary')}
+                {t("pages.orderSummary.financialSummary")}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex justify-between text-lg">
                   <span>{t("ux.order.subtotal")}</span>
-                  <span className="font-medium">
-                    {autoConvertAndFormat(orderData.subtotal, orderData.currency)}
-                  </span>
+                  <span className="font-medium">{autoConvertAndFormat(orderData.subtotal, orderData.currency)}</span>
                 </div>
-                
+
                 {orderData.discount > 0 && (
                   <div className="flex justify-between text-lg text-success">
                     <span>{t("ux.order.discount")}</span>
-                    <span className="font-medium">
-                      -{autoConvertAndFormat(orderData.discount, orderData.currency)}
-                    </span>
+                    <span className="font-medium">-{autoConvertAndFormat(orderData.discount, orderData.currency)}</span>
                   </div>
                 )}
-                
+
                 <Separator />
-                
+
                 <div className="flex justify-between text-2xl font-bold text-foreground">
                   <span>{t("ux.order.total")}</span>
-                  <span className="text-info">
-                    {autoConvertAndFormat(orderData.total, orderData.currency)}
-                  </span>
+                  <span className="text-info">{autoConvertAndFormat(orderData.total, orderData.currency)}</span>
                 </div>
               </div>
             </CardContent>
@@ -462,18 +459,14 @@ ${p('thanks')}
           transition={{ duration: MOTION.slow, delay: 0.5 }}
           className="flex justify-center gap-4"
         >
-          <Button
-            variant="outline"
-            onClick={handleBackToSubscriptions}
-            className="px-8 py-3 text-lg"
-          >
+          <Button variant="outline" onClick={handleBackToSubscriptions} className="px-8 py-3 text-lg">
             {t("ux.order.changePlan")}
           </Button>
           <Button
             onClick={handleProceedToPayment}
             className="px-8 py-3 text-lg bg-info hover:bg-info/90 flex items-center gap-2"
           >
-            {t('booking.summary.proceedToPayment')}
+            {t("booking.summary.proceedToPayment")}
             <ArrowRight className="w-5 h-5" />
           </Button>
         </motion.div>

@@ -8,8 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Globe, 
+import {
+  Globe,
   Settings,
   Eye,
   EyeOff,
@@ -25,7 +25,7 @@ import {
   RotateCcw,
   Star,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
 } from "lucide-react";
 import { useHomepageConfigContext } from "@/contexts/HomepageConfigContext";
 import type { HomepageFeature, HomepageSection } from "@/hooks/useHomepageConfig";
@@ -39,19 +39,27 @@ const AdminHomepageConfig = () => {
   const [activeTab, setActiveTab] = useState("sections");
   const [editingFeature, setEditingFeature] = useState<string | null>(null);
 
-  const handleFeatureUpdate = async <K extends keyof HomepageFeature>(featureId: string, field: K, value: HomepageFeature[K]) => {
+  const handleFeatureUpdate = async <K extends keyof HomepageFeature>(
+    featureId: string,
+    field: K,
+    value: HomepageFeature[K],
+  ) => {
     await updateFeature(featureId, { [field]: value } as Partial<HomepageFeature>);
   };
 
-  const handleSectionUpdate = async <K extends keyof HomepageSection>(sectionId: string, field: K, value: HomepageSection[K]) => {
+  const handleSectionUpdate = async <K extends keyof HomepageSection>(
+    sectionId: string,
+    field: K,
+    value: HomepageSection[K],
+  ) => {
     await updateSection(sectionId, { [field]: value } as Partial<HomepageSection>);
   };
 
-  const moveFeature = async (featureId: string, direction: 'up' | 'down') => {
-    const currentIndex = config.features.findIndex(f => f.id === featureId);
+  const moveFeature = async (featureId: string, direction: "up" | "down") => {
+    const currentIndex = config.features.findIndex((f) => f.id === featureId);
     if (currentIndex === -1) return;
 
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
     if (newIndex < 0 || newIndex >= config.features.length) return;
 
     const newFeatures = [...config.features];
@@ -64,15 +72,15 @@ const AdminHomepageConfig = () => {
     }
   };
 
-  const moveSection = async (sectionId: string, direction: 'up' | 'down') => {
+  const moveSection = async (sectionId: string, direction: "up" | "down") => {
     const sections = Object.entries(config.sections)
       .map(([key, section]) => ({ id: key, ...section }))
       .sort((a, b) => a.order - b.order);
 
-    const currentIndex = sections.findIndex(s => s.id === sectionId);
+    const currentIndex = sections.findIndex((s) => s.id === sectionId);
     if (currentIndex === -1) return;
 
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
     if (newIndex < 0 || newIndex >= sections.length) return;
 
     const newSections = [...sections];
@@ -89,10 +97,10 @@ const AdminHomepageConfig = () => {
     const newFeature = {
       title: t("ux.bo.newFeature"),
       description: t("ux.bo.descriptionNewFeature"),
-      icon: 'Star',
-      color: 'from-blue-500 to-blue-600'
+      icon: "Star",
+      color: "from-blue-500 to-blue-600",
     };
-    
+
     // Ajouter via l'API (simulation)
     toast({
       title: t("ux.bo.featureAdded"),
@@ -124,9 +132,7 @@ const AdminHomepageConfig = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{t("ux.bo.homepageConfiguration")}</h1>
-            <p className="text-muted-foreground">
-              {t("ux.bo.manageContentLookHomepage")}
-            </p>
+            <p className="text-muted-foreground">{t("ux.bo.manageContentLookHomepage")}</p>
           </div>
           <Button onClick={refetch} className="gap-2">
             <Settings className="w-4 h-4" />
@@ -157,7 +163,7 @@ const AdminHomepageConfig = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {Object.entries(config.sections)
-                    .sort(([,a], [,b]) => a.order - b.order)
+                    .sort(([, a], [, b]) => a.order - b.order)
                     .map(([sectionId, section]) => (
                       <Card key={sectionId} className="border">
                         <CardContent className="p-4">
@@ -165,15 +171,19 @@ const AdminHomepageConfig = () => {
                             <div className="flex items-center gap-2">
                               <Label className="font-medium">{section.title}</Label>
                               <Badge variant={section.visible ? "default" : "secondary"}>
-                                {section.visible ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
-                                {section.visible ? 'Visible' : 'Masquée'}
+                                {section.visible ? (
+                                  <Eye className="w-3 h-3 mr-1" />
+                                ) : (
+                                  <EyeOff className="w-3 h-3 mr-1" />
+                                )}
+                                {section.visible ? "Visible" : "Masquée"}
                               </Badge>
                             </div>
                             <div className="flex items-center gap-1">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => moveSection(sectionId, 'up')}
+                                onClick={() => moveSection(sectionId, "up")}
                                 disabled={section.order === 1}
                               >
                                 <ArrowUp className="w-4 h-4" />
@@ -181,40 +191,40 @@ const AdminHomepageConfig = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => moveSection(sectionId, 'down')}
+                                onClick={() => moveSection(sectionId, "down")}
                                 disabled={section.order === Object.keys(config.sections).length}
                               >
                                 <ArrowDown className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-3">
                             <div>
                               <Label htmlFor={`title-${sectionId}`}>{t("ux.bo.title2")}</Label>
                               <Input
                                 id={`title-${sectionId}`}
                                 value={section.title}
-                                onChange={(e) => handleSectionUpdate(sectionId, 'title', e.target.value)}
+                                onChange={(e) => handleSectionUpdate(sectionId, "title", e.target.value)}
                                 className="mt-1"
                               />
                             </div>
-                            
+
                             <div>
                               <Label htmlFor={`subtitle-${sectionId}`}>{t("ux.bo.subtitle")}</Label>
                               <Input
                                 id={`subtitle-${sectionId}`}
                                 value={section.subtitle}
-                                onChange={(e) => handleSectionUpdate(sectionId, 'subtitle', e.target.value)}
+                                onChange={(e) => handleSectionUpdate(sectionId, "subtitle", e.target.value)}
                                 className="mt-1"
                               />
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
                               <Switch
                                 id={`visible-${sectionId}`}
                                 checked={section.visible}
-                                onCheckedChange={(checked) => handleSectionUpdate(sectionId, 'visible', checked)}
+                                onCheckedChange={(checked) => handleSectionUpdate(sectionId, "visible", checked)}
                               />
                               <Label htmlFor={`visible-${sectionId}`}>{t("ux.bo.visiblePage")}</Label>
                             </div>
@@ -248,13 +258,15 @@ const AdminHomepageConfig = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-2">
-                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center text-white`}>
-                              {feature.icon === 'Shield' && <Shield className="w-5 h-5" />}
-                              {feature.icon === 'Award' && <Award className="w-5 h-5" />}
-                              {feature.icon === 'Headphones' && <Headphones className="w-5 h-5" />}
-                              {feature.icon === 'Star' && <Star className="w-5 h-5" />}
-                              {feature.icon === 'Smartphone' && <Smartphone className="w-5 h-5" />}
-                              {feature.icon === 'RotateCcw' && <RotateCcw className="w-5 h-5" />}
+                            <div
+                              className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center text-white`}
+                            >
+                              {feature.icon === "Shield" && <Shield className="w-5 h-5" />}
+                              {feature.icon === "Award" && <Award className="w-5 h-5" />}
+                              {feature.icon === "Headphones" && <Headphones className="w-5 h-5" />}
+                              {feature.icon === "Star" && <Star className="w-5 h-5" />}
+                              {feature.icon === "Smartphone" && <Smartphone className="w-5 h-5" />}
+                              {feature.icon === "RotateCcw" && <RotateCcw className="w-5 h-5" />}
                             </div>
                             <span className="font-medium">{feature.title}</span>
                           </div>
@@ -262,7 +274,7 @@ const AdminHomepageConfig = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => moveFeature(feature.id, 'up')}
+                              onClick={() => moveFeature(feature.id, "up")}
                               disabled={index === 0}
                             >
                               <ArrowUp className="w-4 h-4" />
@@ -270,49 +282,45 @@ const AdminHomepageConfig = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => moveFeature(feature.id, 'down')}
+                              onClick={() => moveFeature(feature.id, "down")}
                               disabled={index === config.features.length - 1}
                             >
                               <ArrowDown className="w-4 h-4" />
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => deleteFeature(feature.id)}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => deleteFeature(feature.id)}>
                               <X className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-3">
                           <div>
                             <Label htmlFor={`feature-title-${feature.id}`}>{t("ux.bo.title2")}</Label>
                             <Input
                               id={`feature-title-${feature.id}`}
                               value={feature.title}
-                              onChange={(e) => handleFeatureUpdate(feature.id, 'title', e.target.value)}
+                              onChange={(e) => handleFeatureUpdate(feature.id, "title", e.target.value)}
                               className="mt-1"
                             />
                           </div>
-                          
+
                           <div>
                             <Label htmlFor={`feature-description-${feature.id}`}>{t("ux.bo.description")}</Label>
                             <Textarea
                               id={`feature-description-${feature.id}`}
                               value={feature.description}
-                              onChange={(e) => handleFeatureUpdate(feature.id, 'description', e.target.value)}
+                              onChange={(e) => handleFeatureUpdate(feature.id, "description", e.target.value)}
                               className="mt-1"
                               rows={3}
                             />
                           </div>
-                          
+
                           <div>
                             <Label htmlFor={`feature-color-${feature.id}`}>{t("ux.bo.color")}</Label>
                             <Input
                               id={`feature-color-${feature.id}`}
                               value={feature.color}
-                              onChange={(e) => handleFeatureUpdate(feature.id, 'color', e.target.value)}
+                              onChange={(e) => handleFeatureUpdate(feature.id, "color", e.target.value)}
                               className="mt-1"
                               placeholder="from-blue-500 to-blue-600"
                             />

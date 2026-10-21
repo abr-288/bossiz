@@ -51,8 +51,8 @@ export const HotelAutocomplete = ({
 
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.functions.invoke('hotel-autocomplete', {
-          body: { query: value }
+        const { data, error } = await supabase.functions.invoke("hotel-autocomplete", {
+          body: { query: value },
         });
 
         if (error) throw error;
@@ -62,7 +62,7 @@ export const HotelAutocomplete = ({
           setIsOpen(data.data.length > 0);
         }
       } catch (error) {
-        console.error('Autocomplete error:', error);
+        console.error("Autocomplete error:", error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
@@ -84,31 +84,29 @@ export const HotelAutocomplete = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        setHighlightedIndex((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        );
+        setHighlightedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
           handleSelect(suggestions[highlightedIndex]);
         }
         break;
-      case 'Escape':
+      case "Escape":
         setIsOpen(false);
         break;
     }
@@ -151,7 +149,7 @@ export const HotelAutocomplete = ({
               className={cn(
                 "w-full flex items-start gap-3 p-3 hover:bg-accent transition-colors text-left",
                 highlightedIndex === index && "bg-accent",
-                index !== suggestions.length - 1 && "border-b border-border"
+                index !== suggestions.length - 1 && "border-b border-border",
               )}
             >
               <div className="w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-muted">
@@ -165,23 +163,19 @@ export const HotelAutocomplete = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {suggestion.type === 'HOTEL' ? (
+                    {suggestion.type === "HOTEL" ? (
                       <Hotel className="w-4 h-4 text-primary flex-shrink-0" />
                     ) : (
                       <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
                     )}
-                    <h4 className="font-semibold text-sm text-foreground truncate">
-                      {suggestion.name}
-                    </h4>
+                    <h4 className="font-semibold text-sm text-foreground truncate">{suggestion.name}</h4>
                   </div>
                   {suggestion.average_price && (
                     <div className="flex flex-col items-end flex-shrink-0">
                       <span className="text-xs font-semibold text-primary">
                         <Price amount={suggestion.average_price} fromCurrency="EUR" />
                       </span>
-                      <span className="text-xs text-muted-foreground">
-                        Prix moyen/nuit
-                      </span>
+                      <span className="text-xs text-muted-foreground">Prix moyen/nuit</span>
                     </div>
                   )}
                 </div>
@@ -189,12 +183,11 @@ export const HotelAutocomplete = ({
                   {suggestion.country} {suggestion.region && `• ${suggestion.region}`}
                 </p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs text-muted-foreground">
-                    {suggestion.description}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{suggestion.description}</p>
                   {suggestion.price_range && (
                     <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      <Price amount={suggestion.price_range.min} fromCurrency="EUR" /> - <Price amount={suggestion.price_range.max} fromCurrency="EUR" />
+                      <Price amount={suggestion.price_range.min} fromCurrency="EUR" /> -{" "}
+                      <Price amount={suggestion.price_range.max} fromCurrency="EUR" />
                     </span>
                   )}
                 </div>

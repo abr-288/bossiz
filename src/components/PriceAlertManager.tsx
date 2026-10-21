@@ -1,30 +1,38 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Bell, BellOff, Trash2, Plane, Hotel, Car } from 'lucide-react';
-import { usePriceAlerts, PriceAlert } from '@/hooks/usePriceAlerts';
-import { useCurrency } from '@/contexts/CurrencyContext';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Bell, BellOff, Trash2, Plane, Hotel, Car } from "lucide-react";
+import { usePriceAlerts, PriceAlert } from "@/hooks/usePriceAlerts";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { format } from "date-fns";
 import { EmptyState } from "@/components/ui/empty-state";
 import { currentDateFnsLocale } from "@/lib/dateLocale";
 
 const getServiceIcon = (type: string) => {
   switch (type) {
-    case 'flight': return <Plane className="h-4 w-4" />;
-    case 'hotel': return <Hotel className="h-4 w-4" />;
-    case 'car': return <Car className="h-4 w-4" />;
-    default: return <Bell className="h-4 w-4" />;
+    case "flight":
+      return <Plane className="h-4 w-4" />;
+    case "hotel":
+      return <Hotel className="h-4 w-4" />;
+    case "car":
+      return <Car className="h-4 w-4" />;
+    default:
+      return <Bell className="h-4 w-4" />;
   }
 };
 
 const getServiceLabel = (type: string) => {
   switch (type) {
-    case 'flight': return 'Vol';
-    case 'hotel': return 'Hôtel';
-    case 'car': return 'Voiture';
-    default: return type;
+    case "flight":
+      return "Vol";
+    case "hotel":
+      return "Hôtel";
+    case "car":
+      return "Voiture";
+    default:
+      return type;
   }
 };
 
@@ -89,45 +97,47 @@ export const PriceAlertManager = () => {
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2">
                         {getServiceIcon(alert.service_type)}
-                        <Badge variant="outline">
-                          {getServiceLabel(alert.service_type)}
-                        </Badge>
-                        <Badge variant={alert.is_active ? 'default' : 'secondary'}>
-                          {alert.is_active ? 'Active' : 'Inactive'}
+                        <Badge variant="outline">{getServiceLabel(alert.service_type)}</Badge>
+                        <Badge variant={alert.is_active ? "default" : "secondary"}>
+                          {alert.is_active ? "Active" : "Inactive"}
                         </Badge>
                       </div>
-                      
+
                       <div className="space-y-1">
                         <div className="font-medium">
                           {alert.origin && `${alert.origin} → `}
                           {alert.destination}
                         </div>
-                        
+
                         {alert.departure_date && (
                           <div className="text-sm text-muted-foreground">
-                            Départ: {format(new Date(alert.departure_date), 'dd MMMM yyyy', { locale: currentDateFnsLocale() })}
-                            {alert.return_date && ` - Retour: ${format(new Date(alert.return_date), 'dd MMMM yyyy', { locale: currentDateFnsLocale() })}`}
+                            Départ:{" "}
+                            {format(new Date(alert.departure_date), "dd MMMM yyyy", { locale: currentDateFnsLocale() })}
+                            {alert.return_date &&
+                              ` - Retour: ${format(new Date(alert.return_date), "dd MMMM yyyy", { locale: currentDateFnsLocale() })}`}
                           </div>
                         )}
-                        
+
                         {alert.current_price && (
                           <div className="text-sm">
-                            Prix actuel: <span className="font-semibold">{formatPrice(alert.current_price, alert.currency)}</span>
+                            Prix actuel:{" "}
+                            <span className="font-semibold">{formatPrice(alert.current_price, alert.currency)}</span>
                           </div>
                         )}
-                        
+
                         {alert.target_price && (
                           <div className="text-sm text-success">
-                            Prix cible: <span className="font-semibold">{formatPrice(alert.target_price, alert.currency)}</span>
+                            Prix cible:{" "}
+                            <span className="font-semibold">{formatPrice(alert.target_price, alert.currency)}</span>
                           </div>
                         )}
-                        
+
                         <div className="text-xs text-muted-foreground">
                           Alerte si baisse de {alert.alert_threshold}%
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <Switch
                         checked={alert.is_active}

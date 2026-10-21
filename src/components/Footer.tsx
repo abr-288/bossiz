@@ -20,19 +20,19 @@ const Footer = () => {
   // L'application n'est pas sur les stores : la page /install explique
   // l'installation depuis le navigateur pour chaque appareil.
   const handleAppInstall = () => {
-    window.location.href = '/install';
+    window.location.href = "/install";
   };
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.error(t("footer.newsletter.emailRequired"));
       return;
     }
 
     const result = await subscribe(email);
-    
+
     if (result) {
       toast.success(result.message || t("footer.newsletter.subscribeSuccess"));
       setEmail("");
@@ -60,45 +60,66 @@ const Footer = () => {
               ) : (
                 <Logo variant="light" showWordmark={false} className="h-10 md:h-12 w-auto" />
               )}
-              <span className="text-xl md:text-2xl font-bold text-white">
-                {config.branding.siteName}
-              </span>
+              <span className="text-xl md:text-2xl font-bold text-white">{config.branding.siteName}</span>
             </div>
-            <p className="text-white/80 text-sm">
-              {(isFrench && config.branding.tagline) || t("footer.description")}
-            </p>
+            <p className="text-white/80 text-sm">{(isFrench && config.branding.tagline) || t("footer.description")}</p>
             <div className="flex gap-2 md:gap-3 justify-center sm:justify-start">
               {config.social.facebook && (
                 <a href={config.social.facebook} target="_blank" rel="noopener noreferrer">
-                  <Button aria-label="Facebook" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
+                  <Button
+                    aria-label="Facebook"
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors"
+                  >
                     <Facebook className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.twitter && (
                 <a href={config.social.twitter} target="_blank" rel="noopener noreferrer">
-                  <Button aria-label="Twitter" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
+                  <Button
+                    aria-label="Twitter"
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors"
+                  >
                     <Twitter className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.instagram && (
                 <a href={config.social.instagram} target="_blank" rel="noopener noreferrer">
-                  <Button aria-label="Instagram" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
+                  <Button
+                    aria-label="Instagram"
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors"
+                  >
                     <Instagram className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.youtube && (
                 <a href={config.social.youtube} target="_blank" rel="noopener noreferrer">
-                  <Button aria-label="YouTube" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
+                  <Button
+                    aria-label="YouTube"
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors"
+                  >
                     <Youtube className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
               )}
               {config.social.linkedin && (
                 <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">
-                  <Button aria-label="LinkedIn" size="icon" variant="outline" className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors">
+                  <Button
+                    aria-label="LinkedIn"
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full h-10 w-10 bg-transparent text-white border-white/20 hover:bg-white hover:text-brand transition-colors"
+                  >
                     <Linkedin className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </a>
@@ -111,7 +132,12 @@ const Footer = () => {
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.services")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
-                <a href="https://vols.bossiz.com/" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-secondary transition-smooth">
+                <a
+                  href="https://vols.bossiz.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/80 hover:text-secondary transition-smooth"
+                >
                   {t("footer.flights")}
                 </a>
               </li>
@@ -186,14 +212,12 @@ const Footer = () => {
               <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">
                 {(isFrench && config.footer.newsletterTitle) || t("footer.newsletter.title")}
               </h3>
-              <p className="text-white/80 text-xs md:text-sm mb-3 md:mb-4">
-                {t("footer.newsletter.description")}
-              </p>
+              <p className="text-white/80 text-xs md:text-sm mb-3 md:mb-4">{t("footer.newsletter.description")}</p>
               <form onSubmit={handleNewsletterSubmit} className="space-y-2">
                 <div className="flex gap-2">
-                  <Input 
+                  <Input
                     placeholder={t("footer.newsletter.placeholder")}
-                    type="email" 
+                    type="email"
                     className="flex-1 text-sm"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -203,9 +227,7 @@ const Footer = () => {
                     <Mail className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
-                <p className="text-xs text-white/70">
-                  {t("footer.privacy")}
-                </p>
+                <p className="text-xs text-white/70">{t("footer.privacy")}</p>
               </form>
             </div>
           )}
@@ -214,7 +236,8 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-primary-light flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <p className="text-white/80 text-sm">
-            {(isFrench && config.footer.copyright) || `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
+            {(isFrench && config.footer.copyright) ||
+              `© ${new Date().getFullYear()} ${config.branding.siteName}. ${t("footer.rights")}.`}
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
             <Link to="/terms" className="text-white/80 hover:text-secondary transition-smooth">

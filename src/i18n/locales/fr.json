@@ -740,13 +740,25 @@
         "sectionTitle": "Comment pouvons-nous vous aider ?",
         "sectionSubtitle": "Choisissez une catégorie pour trouver rapidement une réponse",
         "allCategories": "Toutes les catégories",
-        "booking": { "title": "Réservations & Modifications", "description": "Modifier, consulter ou gérer votre réservation" },
+        "booking": {
+          "title": "Réservations & Modifications",
+          "description": "Modifier, consulter ou gérer votre réservation"
+        },
         "payment": { "title": "Paiement & Facturation", "description": "Moyens de paiement, factures et transactions" },
-        "refunds": { "title": "Remboursements & Annulations", "description": "Demander un remboursement ou annuler un voyage" },
+        "refunds": {
+          "title": "Remboursements & Annulations",
+          "description": "Demander un remboursement ou annuler un voyage"
+        },
         "baggage": { "title": "Bagages", "description": "Franchise, bagages supplémentaires et objets interdits" },
-        "children": { "title": "Voyager avec des enfants", "description": "Tarifs, conditions et accompagnement des mineurs" },
+        "children": {
+          "title": "Voyager avec des enfants",
+          "description": "Tarifs, conditions et accompagnement des mineurs"
+        },
         "documents": { "title": "Documents de voyage", "description": "Passeport, visa et pièces d'identité requises" },
-        "delays": { "title": "Retards & Annulations de vol", "description": "Que faire en cas de perturbation de votre vol" }
+        "delays": {
+          "title": "Retards & Annulations de vol",
+          "description": "Que faire en cas de perturbation de votre vol"
+        }
       },
       "manageBooking": {
         "title": "Gérer ma réservation",
@@ -908,7 +920,11 @@
         "phone": { "title": "Téléphone", "description": "Support disponible 24h/24 et 7j/7" },
         "whatsapp": { "title": "WhatsApp", "description": "Réponse rapide, du lundi au dimanche" },
         "email": { "title": "Email", "description": "Réponse sous 24h" },
-        "chat": { "title": "Chat en direct", "description": "Réponse immédiate, assistant disponible en continu", "cta": "Démarrer une conversation" }
+        "chat": {
+          "title": "Chat en direct",
+          "description": "Réponse immédiate, assistant disponible en continu",
+          "cta": "Démarrer une conversation"
+        }
       }
     },
     "stays": {
@@ -1442,65 +1458,33 @@
     "seasons": {
       "spring": {
         "name": "Printemps",
-        "months": [
-          "Mars",
-          "Avril",
-          "Mai"
-        ],
+        "months": ["Mars", "Avril", "Mai"],
         "description": "Climat doux et nature en fleurs",
-        "advantages": [
-          "Températures agréables",
-          "Moins de touristes",
-          "Prix avantageux"
-        ],
+        "advantages": ["Températures agréables", "Moins de touristes", "Prix avantageux"],
         "temperature": "15-25°C",
         "rainfall": "Modéré"
       },
       "summer": {
         "name": "Été",
-        "months": [
-          "Juin",
-          "Juillet",
-          "Août"
-        ],
+        "months": ["Juin", "Juillet", "Août"],
         "description": "Saison haute et animations",
-        "advantages": [
-          "Nombreux événements",
-          "Vie nocturne active",
-          "Tous services ouverts"
-        ],
+        "advantages": ["Nombreux événements", "Vie nocturne active", "Tous services ouverts"],
         "temperature": "25-35°C",
         "rainfall": "Faible"
       },
       "autumn": {
         "name": "Automne",
-        "months": [
-          "Septembre",
-          "Octobre",
-          "Novembre"
-        ],
+        "months": ["Septembre", "Octobre", "Novembre"],
         "description": "Ambiance paisible et authentique",
-        "advantages": [
-          "Températures douces",
-          "Couleurs magnifiques",
-          "Tarifs réduits"
-        ],
+        "advantages": ["Températures douces", "Couleurs magnifiques", "Tarifs réduits"],
         "temperature": "15-25°C",
         "rainfall": "Modéré à élevé"
       },
       "winter": {
         "name": "Hiver",
-        "months": [
-          "Décembre",
-          "Janvier",
-          "Février"
-        ],
+        "months": ["Décembre", "Janvier", "Février"],
         "description": "Calme et découverte culturelle",
-        "advantages": [
-          "Peu de touristes",
-          "Prix très attractifs",
-          "Authenticité locale"
-        ],
+        "advantages": ["Peu de touristes", "Prix très attractifs", "Authenticité locale"],
         "temperature": "5-15°C",
         "rainfall": "Élevé"
       }
@@ -1801,162 +1785,82 @@
       "voyage": {
         "title": "Voyage & Séjours",
         "description": "Organisation complète de vos déplacements : vols, hébergements et itinéraires sur-mesure.",
-        "features": [
-          "Réservations vols & hôtels",
-          "Itinéraires personnalisés",
-          "Accueil VIP aéroport"
-        ]
+        "features": ["Réservations vols & hôtels", "Itinéraires personnalisés", "Accueil VIP aéroport"]
       },
       "immobilier": {
         "title": "Immobilier",
         "description": "Recherche, gestion locative et suivi de vos biens immobiliers en toute sérénité.",
-        "features": [
-          "Recherche de biens",
-          "Gestion locative",
-          "Suivi administratif"
-        ]
+        "features": ["Recherche de biens", "Gestion locative", "Suivi administratif"]
       },
       "transport": {
         "title": "Transport Privé",
         "description": "Chauffeurs privés, véhicules de prestige et transferts disponibles à toute heure.",
-        "features": [
-          "Chauffeur privé",
-          "Véhicules de prestige",
-          "Transferts 24/7"
-        ]
+        "features": ["Chauffeur privé", "Véhicules de prestige", "Transferts 24/7"]
       },
       "evenementiel": {
         "title": "Événementiel",
         "description": "Conception et organisation d'événements privés ou professionnels d'exception.",
-        "features": [
-          "Événements privés",
-          "Séminaires & réceptions",
-          "Coordination complète"
-        ]
+        "features": ["Événements privés", "Séminaires & réceptions", "Coordination complète"]
       }
     },
     "servicesSN": {
       "voyage": {
-        "features": [
-          "Vols & hôtels au Sénégal",
-          "Excursions Gorée & Saint-Louis",
-          "Accueil VIP à Dakar"
-        ]
+        "features": ["Vols & hôtels au Sénégal", "Excursions Gorée & Saint-Louis", "Accueil VIP à Dakar"]
       },
       "immobilier": {
-        "features": [
-          "Recherche de biens à Dakar",
-          "Gestion locative",
-          "Suivi administratif"
-        ]
+        "features": ["Recherche de biens à Dakar", "Gestion locative", "Suivi administratif"]
       },
       "transport": {
-        "features": [
-          "Chauffeur privé",
-          "Véhicules de prestige",
-          "Transferts Rallye Dakar"
-        ]
+        "features": ["Chauffeur privé", "Véhicules de prestige", "Transferts Rallye Dakar"]
       },
       "evenementiel": {
-        "features": [
-          "Événements privés",
-          "Excursions à Saly",
-          "Coordination complète"
-        ]
+        "features": ["Événements privés", "Excursions à Saly", "Coordination complète"]
       }
     },
     "additionalServices": {
       "personnel": {
         "title": "Assistant Personnel",
-        "items": [
-          "Gestion d'agenda",
-          "Courses & démarches",
-          "Assistance dédiée"
-        ]
+        "items": ["Gestion d'agenda", "Courses & démarches", "Assistance dédiée"]
       },
       "quotidien": {
         "title": "Assistance Quotidienne",
-        "items": [
-          "Ménage & entretien",
-          "Gestion des factures",
-          "Coordination fournisseurs"
-        ]
+        "items": ["Ménage & entretien", "Gestion des factures", "Coordination fournisseurs"]
       },
       "bien-etre": {
         "title": "Bien-être",
-        "items": [
-          "Spa & massages",
-          "Coach sportif",
-          "Rendez-vous santé"
-        ]
+        "items": ["Spa & massages", "Coach sportif", "Rendez-vous santé"]
       },
       "loisirs": {
         "title": "Loisirs",
-        "items": [
-          "Réservations culturelles",
-          "Activités sur-mesure",
-          "Accès VIP"
-        ]
+        "items": ["Réservations culturelles", "Activités sur-mesure", "Accès VIP"]
       },
       "gastronomie": {
         "title": "Gastronomie",
-        "items": [
-          "Chef privé",
-          "Réservations restaurants",
-          "Cave à vin sur-mesure"
-        ]
+        "items": ["Chef privé", "Réservations restaurants", "Cave à vin sur-mesure"]
       },
       "shopping": {
         "title": "Shopping",
-        "items": [
-          "Personal shopper",
-          "Livraisons express",
-          "Accès boutiques privées"
-        ]
+        "items": ["Personal shopper", "Livraisons express", "Accès boutiques privées"]
       }
     },
     "additionalServicesSN": {
       "personnel": {
-        "items": [
-          "Gestion d'agenda",
-          "Courses & démarches",
-          "Assistance dédiée à Dakar"
-        ]
+        "items": ["Gestion d'agenda", "Courses & démarches", "Assistance dédiée à Dakar"]
       },
       "quotidien": {
-        "items": [
-          "Ménage & entretien",
-          "Gestion des factures",
-          "Coordination fournisseurs"
-        ]
+        "items": ["Ménage & entretien", "Gestion des factures", "Coordination fournisseurs"]
       },
       "bien-etre": {
-        "items": [
-          "Spa & massages",
-          "Coach sportif",
-          "Rendez-vous santé"
-        ]
+        "items": ["Spa & massages", "Coach sportif", "Rendez-vous santé"]
       },
       "loisirs": {
-        "items": [
-          "Excursions à Gorée & Saint-Louis",
-          "Activités sur-mesure",
-          "Accès VIP"
-        ]
+        "items": ["Excursions à Gorée & Saint-Louis", "Activités sur-mesure", "Accès VIP"]
       },
       "gastronomie": {
-        "items": [
-          "Chef privé",
-          "Réservations restaurants",
-          "Découverte gastronomie locale"
-        ]
+        "items": ["Chef privé", "Réservations restaurants", "Découverte gastronomie locale"]
       },
       "shopping": {
-        "items": [
-          "Personal shopper",
-          "Livraisons express",
-          "Accès marchés & boutiques locales"
-        ]
+        "items": ["Personal shopper", "Livraisons express", "Accès marchés & boutiques locales"]
       }
     },
     "plans": {

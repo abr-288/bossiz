@@ -37,9 +37,7 @@ const WellnessBeauty = () => {
     let result = wellnessServices;
     if (locationFilter) {
       const search = locationFilter.toLowerCase();
-      result = result.filter((s) =>
-        s.location.toLowerCase().includes(search) || s.name.toLowerCase().includes(search)
-      );
+      result = result.filter((s) => s.location.toLowerCase().includes(search) || s.name.toLowerCase().includes(search));
     }
     if (categoryFilter !== "all") {
       result = result.filter((s) => s.category === categoryFilter);
@@ -59,12 +57,8 @@ const WellnessBeauty = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t("ux.wellness.title")}
-          </h1>
-          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            {t("ux.wellness.subtitle")}
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.wellness.title")}</h1>
+          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">{t("ux.wellness.subtitle")}</p>
         </div>
       </div>
 
@@ -84,7 +78,9 @@ const WellnessBeauty = () => {
             <SelectContent>
               <SelectItem value="all">{t("ux.wellness.allCategories")}</SelectItem>
               {Object.entries(categoryLabels).map(([value, label]) => (
-                <SelectItem key={value} value={value}>{label}</SelectItem>
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -93,16 +89,18 @@ const WellnessBeauty = () => {
         {loading ? (
           <CardGridSkeleton />
         ) : error ? (
-          <Card className="p-12 text-center text-muted-foreground">
-            {t("ux.wellness.loadError")}
-          </Card>
+          <Card className="p-12 text-center text-muted-foreground">{t("ux.wellness.loadError")}</Card>
         ) : filtered.length === 0 ? (
           <Card>
             <EmptyState
               icon={Sparkles}
               title={t("ux.wellness.emptyTitle")}
               description={t("ux.wellness.emptyDesc")}
-              action={<Button variant="outline" asChild><Link to="/devenir-partenaire?type=wellness">{t("ux.wellness.join")}</Link></Button>}
+              action={
+                <Button variant="outline" asChild>
+                  <Link to="/devenir-partenaire?type=wellness">{t("ux.wellness.join")}</Link>
+                </Button>
+              }
             />
           </Card>
         ) : (
@@ -143,7 +141,10 @@ const WellnessBeauty = () => {
 
                   <div className="mt-auto pt-3 flex items-center justify-between gap-3">
                     {service.phone && (
-                      <a href={`tel:${service.phone}`} className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary">
+                      <a
+                        href={`tel:${service.phone}`}
+                        className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary"
+                      >
                         <Phone className="w-3.5 h-3.5" />
                         {service.phone}
                       </a>
@@ -166,11 +167,7 @@ const WellnessBeauty = () => {
       </main>
 
       {selectedService && (
-        <WellnessBookingDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          wellnessService={selectedService}
-        />
+        <WellnessBookingDialog open={dialogOpen} onOpenChange={setDialogOpen} wellnessService={selectedService} />
       )}
 
       <Footer />

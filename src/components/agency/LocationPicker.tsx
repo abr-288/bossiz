@@ -62,7 +62,10 @@ export function LocationPicker({ value, onChange, required = false, showLocation
   return (
     <section className="space-y-3 rounded-lg border p-4" aria-label={t("ux.bo.preciseLocation")}>
       <div>
-        <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" />{t("ux.bo.serviceLocation")}</Label>
+        <Label className="flex items-center gap-2">
+          <MapPin className="h-4 w-4" />
+          {t("ux.bo.serviceLocation")}
+        </Label>
         <p className="mt-1 text-xs text-muted-foreground">{t("ux.bo.enterAddressThenPasteGoogle")}</p>
       </div>
       {showLocation && (
@@ -86,13 +89,51 @@ export function LocationPicker({ value, onChange, required = false, showLocation
         aria-label={t("ux.bo.mapsLocationLink")}
       />
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1"><Label className="text-xs" htmlFor="partner-latitude">Latitude</Label><Input id="partner-latitude" type="number" step="any" min="-90" max="90" value={value.latitude ?? ""} onChange={(event) => update({ latitude: event.target.value === "" ? null : Number(event.target.value) })} placeholder="5.3364" /></div>
-        <div className="space-y-1"><Label className="text-xs" htmlFor="partner-longitude">Longitude</Label><Input id="partner-longitude" type="number" step="any" min="-180" max="180" value={value.longitude ?? ""} onChange={(event) => update({ longitude: event.target.value === "" ? null : Number(event.target.value) })} placeholder="-4.0267" /></div>
+        <div className="space-y-1">
+          <Label className="text-xs" htmlFor="partner-latitude">
+            Latitude
+          </Label>
+          <Input
+            id="partner-latitude"
+            type="number"
+            step="any"
+            min="-90"
+            max="90"
+            value={value.latitude ?? ""}
+            onChange={(event) => update({ latitude: event.target.value === "" ? null : Number(event.target.value) })}
+            placeholder="5.3364"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs" htmlFor="partner-longitude">
+            Longitude
+          </Label>
+          <Input
+            id="partner-longitude"
+            type="number"
+            step="any"
+            min="-180"
+            max="180"
+            value={value.longitude ?? ""}
+            onChange={(event) => update({ longitude: event.target.value === "" ? null : Number(event.target.value) })}
+            placeholder="-4.0267"
+          />
+        </div>
       </div>
       {hasCoordinates && (
         <div className="space-y-2">
-          <iframe title={t("ux.bo.locationPreview")} src={mapEmbedUrl} className="h-40 w-full rounded-md border" loading="lazy" />
-          <a className="inline-flex items-center gap-1 text-sm text-primary underline" href={`https://www.google.com/maps/search/?api=1&query=${value.latitude},${value.longitude}`} target="_blank" rel="noreferrer">
+          <iframe
+            title={t("ux.bo.locationPreview")}
+            src={mapEmbedUrl}
+            className="h-40 w-full rounded-md border"
+            loading="lazy"
+          />
+          <a
+            className="inline-flex items-center gap-1 text-sm text-primary underline"
+            href={`https://www.google.com/maps/search/?api=1&query=${value.latitude},${value.longitude}`}
+            target="_blank"
+            rel="noreferrer"
+          >
             Ouvrir ce point dans Google Maps <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>

@@ -42,12 +42,12 @@ const HotelsPartners = () => {
   useEffect(() => {
     const loadPartnerHotels = async () => {
       const today = new Date();
-      const checkIn = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const checkOut = new Date(today.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const checkIn = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      const checkOut = new Date(today.getTime() + 33 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
       try {
         const result = await searchHotels({
-          location: 'partner',
+          location: "partner",
           checkIn,
           checkOut,
           adults: 2,
@@ -61,16 +61,16 @@ const HotelsPartners = () => {
             (result.data.services as PartnerHotelResult[]).map((hotel) => ({
               id: hotel.id,
               name: hotel.name,
-              location: hotel.location || 'Abidjan',
-              price: Math.round((typeof hotel.price === 'object' ? hotel.price.grandTotal : hotel.price) ?? 0),
-              currency: hotel.currency || 'FCFA',
+              location: hotel.location || "Abidjan",
+              price: Math.round((typeof hotel.price === "object" ? hotel.price.grandTotal : hotel.price) ?? 0),
+              currency: hotel.currency || "FCFA",
               rating: hotel.rating ?? 0,
               image: hotel.image,
-            }))
+            })),
           );
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des hôtels partenaires:', error);
+        console.error("Erreur lors du chargement des hôtels partenaires:", error);
       } finally {
         setLoadingPartners(false);
       }
@@ -91,7 +91,10 @@ const HotelsPartners = () => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+        ></div>
         <div className="relative z-10 container mx-auto px-4 py-12 text-center animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Trouvez votre hôtel</h1>
           <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
@@ -130,43 +133,36 @@ const HotelsPartners = () => {
           <CardGridSkeleton />
         ) : partnerHotels.length > 0 ? (
           <div className="max-w-6xl mx-auto mt-12 md:mt-16">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-              Nos hôtels partenaires à Abidjan
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Nos hôtels partenaires à Abidjan</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {partnerHotels.map((hotel) => (
                 <Link key={hotel.id} to={`/hotels/partenaires/${hotel.id}`} className="block">
-                <Card
-                  className="h-full overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-slow ease-standard rounded-2xl hover-lift"
-                >
-                  <div className="relative h-48">
-                    <LazyImage
-                      src={hotel.image}
-                      alt={hotel.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <Badge className="absolute top-3 right-3 bg-background/90 text-foreground border">
-                      <Star className="w-3 h-3 mr-1 fill-gold text-gold" />
-                      {hotel.rating}
-                    </Badge>
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{hotel.name}</h3>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3">
-                      <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span>{hotel.location}</span>
+                  <Card className="h-full overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-slow ease-standard rounded-2xl hover-lift">
+                    <div className="relative h-48">
+                      <LazyImage src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
+                      <Badge className="absolute top-3 right-3 bg-background/90 text-foreground border">
+                        <Star className="w-3 h-3 mr-1 fill-gold text-gold" />
+                        {hotel.rating}
+                      </Badge>
                     </div>
-                    {hotel.price > 0 ? (
-                      <p className="text-xl font-bold text-primary">
-                        <span className="text-sm font-medium text-muted-foreground">À partir de </span>
-                        {hotel.price.toLocaleString()} <span className="text-sm font-medium text-muted-foreground">{hotel.currency}/nuit</span>
-                      </p>
-                    ) : (
-                      <p className="text-sm font-medium text-muted-foreground">Prix sur demande</p>
-                    )}
-                    <p className="mt-2 text-sm font-medium text-primary">Voir les disponibilités →</p>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-lg mb-1">{hotel.name}</h3>
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3">
+                        <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{hotel.location}</span>
+                      </div>
+                      {hotel.price > 0 ? (
+                        <p className="text-xl font-bold text-primary">
+                          <span className="text-sm font-medium text-muted-foreground">À partir de </span>
+                          {hotel.price.toLocaleString()}{" "}
+                          <span className="text-sm font-medium text-muted-foreground">{hotel.currency}/nuit</span>
+                        </p>
+                      ) : (
+                        <p className="text-sm font-medium text-muted-foreground">Prix sur demande</p>
+                      )}
+                      <p className="mt-2 text-sm font-medium text-primary">Voir les disponibilités →</p>
+                    </CardContent>
+                  </Card>
                 </Link>
               ))}
             </div>

@@ -9,5 +9,6 @@ export const JEKO_PAYOUT_METHODS = [
 
 export type JekoPayoutMethod = (typeof JEKO_PAYOUT_METHODS)[number]["value"];
 
-export const JEKO_PAYOUT_METHOD_LABELS: Record<JekoPayoutMethod, string> =
-  Object.fromEntries(JEKO_PAYOUT_METHODS.map(({ value, label }) => [value, label])) as Record<JekoPayoutMethod, string>;
+export const JEKO_PAYOUT_METHOD_LABELS: Record<JekoPayoutMethod, string> = Object.fromEntries(
+  JEKO_PAYOUT_METHODS.map(({ value, label }) => [value, label]),
+) as Record<JekoPayoutMethod, string>;

@@ -3,25 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  XCircle, 
-  Smartphone, 
-  Monitor, 
-  Globe, 
-  Download, 
-  RefreshCw, 
-  Settings, 
-  Wifi, 
-  Battery, 
+import {
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Smartphone,
+  Monitor,
+  Globe,
+  Download,
+  RefreshCw,
+  Settings,
+  Wifi,
+  Battery,
   HardDrive,
   Chrome,
   Compass,
   Square,
   Apple,
   Tablet,
-  Info
+  Info,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PageHero } from "@/components/PageHero";
@@ -47,20 +47,20 @@ interface DeviceInfo {
 const Compatibility = () => {
   const { t } = useTranslation();
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
-    userAgent: '',
-    platform: '',
-    language: '',
+    userAgent: "",
+    platform: "",
+    language: "",
     cookieEnabled: false,
     jsEnabled: true,
-    screenResolution: '',
-    connectionType: '',
-    memory: ''
+    screenResolution: "",
+    connectionType: "",
+    memory: "",
   });
 
   const [compatibility, setCompatibility] = useState({
     isCompatible: true,
     issues: [] as string[],
-    recommendations: [] as string[]
+    recommendations: [] as string[],
   });
 
   useEffect(() => {
@@ -73,8 +73,8 @@ const Compatibility = () => {
       cookieEnabled: navigator.cookieEnabled,
       jsEnabled: true,
       screenResolution: `${screen.width}x${screen.height}`,
-      connectionType: nav.connection?.effectiveType || 'Unknown',
-      memory: nav.deviceMemory ? `${nav.deviceMemory}GB` : 'Unknown'
+      connectionType: nav.connection?.effectiveType || "Unknown",
+      memory: nav.deviceMemory ? `${nav.deviceMemory}GB` : "Unknown",
     };
     setDeviceInfo(info);
 
@@ -91,8 +91,8 @@ const Compatibility = () => {
     let isCompatible = true;
 
     // Check for old browsers
-    if (ua.includes('msie') || ua.includes('trident')) {
-      issues.push('Internet Explorer n\'est plus supporté');
+    if (ua.includes("msie") || ua.includes("trident")) {
+      issues.push("Internet Explorer n'est plus supporté");
       recommendations.push(t("ux.compat.useBrowser"));
       isCompatible = false;
     }
@@ -111,7 +111,7 @@ const Compatibility = () => {
     }
 
     // Check screen resolution
-    const [width] = info.screenResolution.split('x').map(Number);
+    const [width] = info.screenResolution.split("x").map(Number);
     if (width < 320) {
       issues.push(t("ux.compat.smallScreen"));
       recommendations.push(t("ux.compat.smallScreenFix"));
@@ -119,7 +119,7 @@ const Compatibility = () => {
     }
 
     // Check for old iOS
-    if (ua.includes('iphone') || ua.includes('ipad')) {
+    if (ua.includes("iphone") || ua.includes("ipad")) {
       const iosMatch = ua.match(/os (\d+)_/);
       if (iosMatch && parseInt(iosMatch[1]) < 12) {
         issues.push(t("ux.compat.oldIos"));
@@ -129,7 +129,7 @@ const Compatibility = () => {
     }
 
     // Check for old Android
-    if (ua.includes('android')) {
+    if (ua.includes("android")) {
       const androidMatch = ua.match(/android (\d+)/);
       if (androidMatch && parseInt(androidMatch[1]) < 6) {
         issues.push(t("ux.compat.oldAndroid"));
@@ -141,95 +141,98 @@ const Compatibility = () => {
     setCompatibility({
       isCompatible,
       issues,
-      recommendations
+      recommendations,
     });
   };
 
   const getBrowserIcon = () => {
     const ua = deviceInfo.userAgent.toLowerCase();
-    if (ua.includes('chrome')) return <Chrome className="w-6 h-6" />;
-    if (ua.includes('safari')) return <Apple className="w-6 h-6" />;
-    if (ua.includes('firefox')) return <Compass className="w-6 h-6" />;
-    if (ua.includes('edge')) return <Square className="w-6 h-6" />;
+    if (ua.includes("chrome")) return <Chrome className="w-6 h-6" />;
+    if (ua.includes("safari")) return <Apple className="w-6 h-6" />;
+    if (ua.includes("firefox")) return <Compass className="w-6 h-6" />;
+    if (ua.includes("edge")) return <Square className="w-6 h-6" />;
     return <Globe className="w-6 h-6" />;
   };
 
   const getPlatformIcon = () => {
     const ua = deviceInfo.userAgent.toLowerCase();
-    if (ua.includes('iphone') || ua.includes('ipad')) return <Apple className="w-6 h-6" />;
-    if (ua.includes('android')) return <Tablet className="w-6 h-6" />;
-    if (ua.includes('windows')) return <Monitor className="w-6 h-6" />;
+    if (ua.includes("iphone") || ua.includes("ipad")) return <Apple className="w-6 h-6" />;
+    if (ua.includes("android")) return <Tablet className="w-6 h-6" />;
+    if (ua.includes("windows")) return <Monitor className="w-6 h-6" />;
     return <Monitor className="w-6 h-6" />;
   };
 
   const supportedBrowsers = [
     {
-      name: 'Chrome',
-      version: '90+',
+      name: "Chrome",
+      version: "90+",
       icon: <Chrome className="w-8 h-8" />,
-      platforms: ['Windows', 'macOS', 'Linux', 'Android', 'iOS'],
-      downloadUrl: 'https://www.google.com/chrome/'
+      platforms: ["Windows", "macOS", "Linux", "Android", "iOS"],
+      downloadUrl: "https://www.google.com/chrome/",
     },
     {
-      name: 'Safari',
-      version: '12+',
+      name: "Safari",
+      version: "12+",
       icon: <Apple className="w-8 h-8" />,
-      platforms: ['macOS', 'iOS'],
-      downloadUrl: 'https://www.apple.com/safari/'
+      platforms: ["macOS", "iOS"],
+      downloadUrl: "https://www.apple.com/safari/",
     },
     {
-      name: 'Firefox',
-      version: '88+',
+      name: "Firefox",
+      version: "88+",
       icon: <Compass className="w-8 h-8" />,
-      platforms: ['Windows', 'macOS', 'Linux', 'Android'],
-      downloadUrl: 'https://www.mozilla.org/firefox/'
+      platforms: ["Windows", "macOS", "Linux", "Android"],
+      downloadUrl: "https://www.mozilla.org/firefox/",
     },
     {
-      name: 'Edge',
-      version: '90+',
+      name: "Edge",
+      version: "90+",
       icon: <Square className="w-8 h-8" />,
-      platforms: ['Windows', 'macOS', 'Android', 'iOS'],
-      downloadUrl: 'https://www.microsoft.com/edge/'
-    }
+      platforms: ["Windows", "macOS", "Android", "iOS"],
+      downloadUrl: "https://www.microsoft.com/edge/",
+    },
   ];
 
   const troubleshootingSteps = [
     {
       icon: <RefreshCw className="w-5 h-5" />,
       title: t("ux.compat.refresh"),
-      description: t("ux.compat.refreshDesc")
+      description: t("ux.compat.refreshDesc"),
     },
     {
       icon: <Settings className="w-5 h-5" />,
       title: t("ux.compat.checkSettings"),
-      description: t("ux.compat.checkSettingsDesc")
+      description: t("ux.compat.checkSettingsDesc"),
     },
     {
       icon: <Wifi className="w-5 h-5" />,
       title: t("ux.compat.checkConnection"),
-      description: t("ux.misc.stableConnection")
+      description: t("ux.misc.stableConnection"),
     },
     {
       icon: <Battery className="w-5 h-5" />,
       title: t("ux.misc.powerSaver"),
-      description: t("ux.compat.powerSaveDesc")
+      description: t("ux.compat.powerSaveDesc"),
     },
     {
       icon: <HardDrive className="w-5 h-5" />,
       title: t("ux.compat.clearCache"),
-      description: t("ux.compat.clearCacheDesc")
-    }
+      description: t("ux.compat.clearCacheDesc"),
+    },
   ];
 
   return (
     <div className="min-h-screen bg-muted/40">
       <PageHero image={heroImage} title={t("ux.compat.title")} subtitle={t("ux.compat.subtitle")} />
       <div className="container max-w-4xl mx-auto px-4 py-8">
-
         {/* Compatibility Status */}
-        <Card className={`mb-8 ${compatibility.isCompatible ? 'border-success/30 bg-success/10' : 'border-warning-foreground/20 bg-warning'}`}>
+        <Card
+          className={`mb-8 ${compatibility.isCompatible ? "border-success/30 bg-success/10" : "border-warning-foreground/20 bg-warning"}`}
+        >
           <CardHeader>
-            <CardTitle className={`flex items-center gap-2 ${compatibility.isCompatible ? 'text-success' : 'text-warning-foreground'}`}>
+            <CardTitle
+              className={`flex items-center gap-2 ${compatibility.isCompatible ? "text-success" : "text-warning-foreground"}`}
+            >
               {compatibility.isCompatible ? (
                 <>
                   <CheckCircle2 className="w-6 h-6" />
@@ -245,9 +248,7 @@ const Compatibility = () => {
           </CardHeader>
           <CardContent>
             {compatibility.isCompatible ? (
-              <p className="text-success">
-                {t("ux.compat.okDesc")}
-              </p>
+              <p className="text-success">{t("ux.compat.okDesc")}</p>
             ) : (
               <div className="space-y-4">
                 <div>
@@ -284,9 +285,7 @@ const Compatibility = () => {
               <Smartphone className="w-6 h-6" />
               {t("ux.compat.deviceInfo")}
             </CardTitle>
-            <CardDescription>
-              {t("ux.compat.deviceInfoDesc")}
-            </CardDescription>
+            <CardDescription>{t("ux.compat.deviceInfoDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -331,9 +330,7 @@ const Compatibility = () => {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>{t("ux.compat.browsers")}</CardTitle>
-            <CardDescription>
-              {t("ux.compat.browsersDesc")}
-            </CardDescription>
+            <CardDescription>{t("ux.compat.browsersDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -346,14 +343,12 @@ const Compatibility = () => {
                     </div>
                     <Badge variant="outline">{browser.version}</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Plateformes: {browser.platforms.join(', ')}
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <p className="text-sm text-muted-foreground mb-3">Plateformes: {browser.platforms.join(", ")}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="w-full"
-                    onClick={() => window.open(browser.downloadUrl, '_blank')}
+                    onClick={() => window.open(browser.downloadUrl, "_blank")}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     {t("ux.compat.download")}
@@ -368,9 +363,7 @@ const Compatibility = () => {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>{t("ux.compat.troubleshoot")}</CardTitle>
-            <CardDescription>
-              {t("ux.compat.troubleshootDesc")}
-            </CardDescription>
+            <CardDescription>{t("ux.compat.troubleshootDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -404,18 +397,11 @@ const Compatibility = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
-          <Button 
-            onClick={() => window.location.href = '/'}
-            className="flex-1"
-          >
+          <Button onClick={() => (window.location.href = "/")} className="flex-1">
             <RefreshCw className="w-4 h-4 mr-2" />
             {t("ux.compat.backHome")}
           </Button>
-          <Button 
-            variant="outline"
-            onClick={() => window.location.reload()}
-            className="flex-1"
-          >
+          <Button variant="outline" onClick={() => window.location.reload()} className="flex-1">
             <RefreshCw className="w-4 h-4 mr-2" />
             {t("ux.compat.reload")}
           </Button>

@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,7 +48,9 @@ const buildSlots = (open: string, close: string, intervalMinutes: number): strin
   let minutes = openH * 60 + openM;
   const endMinutes = closeH * 60 + closeM;
   while (minutes + intervalMinutes <= endMinutes) {
-    const h = Math.floor(minutes / 60).toString().padStart(2, "0");
+    const h = Math.floor(minutes / 60)
+      .toString()
+      .padStart(2, "0");
     const m = (minutes % 60).toString().padStart(2, "0");
     slots.push(`${h}:${m}`);
     minutes += intervalMinutes;
@@ -67,10 +76,15 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setCustomerEmail(user.email || "");
-        supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle().then(({ data }) => {
-          if (data?.full_name) setCustomerName(data.full_name);
-          if (data?.phone) setCustomerPhone(data.phone);
-        });
+        supabase
+          .from("profiles")
+          .select("full_name, phone")
+          .eq("id", user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (data?.full_name) setCustomerName(data.full_name);
+            if (data?.phone) setCustomerPhone(data.phone);
+          });
       }
     });
   }, [open]);
@@ -114,7 +128,9 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
   const remainingForSlot = (slot: string) => restaurant.max_covers_per_slot - (coversBySlot[slot] || 0);
 
   const handleSubmit = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error("Connectez-vous pour réserver une table");
       onOpenChange(false);
@@ -239,13 +255,19 @@ export const RestaurantReservationDialog = ({ open, onOpenChange, restaurant }: 
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>Annuler</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
+            Annuler
+          </Button>
           <Button
             onClick={handleSubmit}
-            disabled={submitting || !selectedTime || !customerName.trim() || !customerPhone.trim() || !customerEmail.trim()}
+            disabled={
+              submitting || !selectedTime || !customerName.trim() || !customerPhone.trim() || !customerEmail.trim()
+            }
             className="gradient-primary"
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+            {submitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
               <>
                 <Users className="w-4 h-4 mr-2" />
                 Confirmer la réservation

@@ -71,15 +71,10 @@ const THEMES: Record<string, MemberCardTheme> = {
 const fallbackTheme = (planId: string): MemberCardTheme => {
   let hue = 0;
   for (const char of planId) hue = (hue * 31 + char.charCodeAt(0)) % 360;
-  return make(
-    [`hsl(${hue} 45% 34%)`, `hsl(${hue} 55% 18%)`, `hsl(${hue} 60% 8%)`],
-    SILVER,
-    Star,
-  );
+  return make([`hsl(${hue} 45% 34%)`, `hsl(${hue} 55% 18%)`, `hsl(${hue} 60% 8%)`], SILVER, Star);
 };
 
-export const memberCardTheme = (planId: string): MemberCardTheme =>
-  THEMES[planId] ?? fallbackTheme(planId);
+export const memberCardTheme = (planId: string): MemberCardTheme => THEMES[planId] ?? fallbackTheme(planId);
 
 export const foilGradient = (theme: MemberCardTheme, angle = 115): string => {
   const stops = theme.foil.map((color, i) => `${color} ${Math.round((i / (theme.foil.length - 1)) * 100)}%`);

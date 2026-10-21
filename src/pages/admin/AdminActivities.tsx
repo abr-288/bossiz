@@ -42,10 +42,7 @@ export default function AdminActivities() {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("activities")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("activities").select("*").order("created_at", { ascending: false });
 
       if (error) throw error;
       setActivities(data || []);
@@ -65,10 +62,7 @@ export default function AdminActivities() {
     e.preventDefault();
     try {
       if (editingActivity) {
-        const { error } = await supabase
-          .from("activities")
-          .update(formData)
-          .eq("id", editingActivity.id);
+        const { error } = await supabase.from("activities").update(formData).eq("id", editingActivity.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.activityUpdatedSuccessfully") });
@@ -140,10 +134,11 @@ export default function AdminActivities() {
     });
   };
 
-  const filteredActivities = activities.filter((activity) =>
-    activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    activity.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    activity.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredActivities = activities.filter(
+    (activity) =>
+      activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      activity.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      activity.category.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -160,9 +155,7 @@ export default function AdminActivities() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {editingActivity ? t("ux.bo.editActivity") : t("ux.bo.createActivity")}
-                </DialogTitle>
+                <DialogTitle>{editingActivity ? t("ux.bo.editActivity") : t("ux.bo.createActivity")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -246,9 +239,7 @@ export default function AdminActivities() {
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                     {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">
-                    {editingActivity ? t("ux.bo.update") : "Créer"}
-                  </Button>
+                  <Button type="submit">{editingActivity ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -306,11 +297,7 @@ export default function AdminActivities() {
                       <Button size="sm" variant="ghost" onClick={() => handleEdit(activity)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(activity.id)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(activity.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

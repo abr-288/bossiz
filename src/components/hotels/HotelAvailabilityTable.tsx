@@ -1,20 +1,8 @@
 import { Fragment, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BedDouble, Check, Coffee, Maximize, User, Wallet } from "lucide-react";
 import { cancellationLabel, formatFcfa, lateCancellationLabel, type HotelRate, type HotelRoomType } from "@/lib/hotels";
 
@@ -41,7 +29,11 @@ const MAX_PER_RATE = 10;
 
 function Occupancy({ count }: { count: number }) {
   return (
-    <span className="inline-flex items-center gap-0.5" title={`${count} voyageur${count > 1 ? "s" : ""}`} aria-label={`${count} voyageur${count > 1 ? "s" : ""}`}>
+    <span
+      className="inline-flex items-center gap-0.5"
+      title={`${count} voyageur${count > 1 ? "s" : ""}`}
+      aria-label={`${count} voyageur${count > 1 ? "s" : ""}`}
+    >
       {Array.from({ length: Math.min(count, 4) }).map((_, i) => (
         <User key={i} className="h-4 w-4" />
       ))}
@@ -54,11 +46,19 @@ function RateOptions({ rate }: { rate: HotelRate }) {
   return (
     <ul className="space-y-1 text-sm">
       {rate.breakfast_included ? (
-        <li className="flex items-start gap-1.5 text-success"><Coffee className="h-4 w-4 mt-0.5 flex-shrink-0" />Petit-déjeuner inclus</li>
+        <li className="flex items-start gap-1.5 text-success">
+          <Coffee className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          Petit-déjeuner inclus
+        </li>
       ) : (
-        <li className="flex items-start gap-1.5 text-muted-foreground"><Coffee className="h-4 w-4 mt-0.5 flex-shrink-0" />Petit-déjeuner non inclus</li>
+        <li className="flex items-start gap-1.5 text-muted-foreground">
+          <Coffee className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          Petit-déjeuner non inclus
+        </li>
       )}
-      <li className={`flex items-start gap-1.5 ${rate.free_cancellation ? "text-success font-medium" : "text-muted-foreground"}`}>
+      <li
+        className={`flex items-start gap-1.5 ${rate.free_cancellation ? "text-success font-medium" : "text-muted-foreground"}`}
+      >
         <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
         <span>
           {cancellationLabel(rate)}
@@ -164,15 +164,24 @@ export function HotelAvailabilityTable({
           </p>
         )}
         {roomType.bed_info && (
-          <p className="flex items-center gap-1.5 text-sm"><BedDouble className="h-4 w-4 flex-shrink-0" />{roomType.bed_info}</p>
+          <p className="flex items-center gap-1.5 text-sm">
+            <BedDouble className="h-4 w-4 flex-shrink-0" />
+            {roomType.bed_info}
+          </p>
         )}
         {roomType.size_m2 && (
-          <p className="flex items-center gap-1.5 text-sm"><Maximize className="h-4 w-4 flex-shrink-0" />{roomType.size_m2} m²</p>
+          <p className="flex items-center gap-1.5 text-sm">
+            <Maximize className="h-4 w-4 flex-shrink-0" />
+            {roomType.size_m2} m²
+          </p>
         )}
         {!compact && roomType.amenities.length > 0 && (
           <ul className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-xs text-muted-foreground">
             {roomType.amenities.slice(0, 8).map((a) => (
-              <li key={a} className="flex items-center gap-1"><Check className="h-3 w-3 text-success" />{a}</li>
+              <li key={a} className="flex items-center gap-1">
+                <Check className="h-3 w-3 text-success" />
+                {a}
+              </li>
             ))}
           </ul>
         )}
@@ -193,7 +202,10 @@ export function HotelAvailabilityTable({
       {unitsSelected > 0 ? (
         <>
           <p className="text-sm">
-            <span className="font-semibold">{unitsSelected} logement{unitsSelected > 1 ? "s" : ""}</span> pour
+            <span className="font-semibold">
+              {unitsSelected} logement{unitsSelected > 1 ? "s" : ""}
+            </span>{" "}
+            pour
           </p>
           <p className="text-2xl font-bold">{formatFcfa(total)}</p>
           <p className="text-xs text-muted-foreground">
@@ -247,7 +259,9 @@ export function HotelAvailabilityTable({
                         {roomSummary(roomType)}
                       </td>
                     )}
-                    <td className="p-3 align-top border-r"><Occupancy count={rate.occupancy} /></td>
+                    <td className="p-3 align-top border-r">
+                      <Occupancy count={rate.occupancy} />
+                    </td>
                     <td className="p-3 align-top border-r">
                       <p className="text-base font-bold">{formatFcfa(rate.price_per_night * stayNights)}</p>
                       {nights > 1 && (
@@ -255,7 +269,9 @@ export function HotelAvailabilityTable({
                       )}
                       <p className="text-xs text-muted-foreground">Taxes et frais compris</p>
                     </td>
-                    <td className="p-3 align-top border-r"><RateOptions rate={rate} /></td>
+                    <td className="p-3 align-top border-r">
+                      <RateOptions rate={rate} />
+                    </td>
                     <td className="p-3 align-top">{quantitySelect(roomType, rate)}</td>
                   </tr>
                 ))}
@@ -317,7 +333,12 @@ export function HotelAvailabilityTable({
         </div>
       </div>
 
-      <Dialog open={!!detailRoom} onOpenChange={(open) => { if (!open) setDetailRoom(null); }}>
+      <Dialog
+        open={!!detailRoom}
+        onOpenChange={(open) => {
+          if (!open) setDetailRoom(null);
+        }}
+      >
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           {detailRoom && (
             <>
@@ -328,25 +349,33 @@ export function HotelAvailabilityTable({
                     detailRoom.bed_info,
                     detailRoom.size_m2 ? `${detailRoom.size_m2} m²` : null,
                     `Jusqu'à ${detailRoom.max_guests} voyageur${detailRoom.max_guests > 1 ? "s" : ""}`,
-                  ].filter(Boolean).join(" · ")}
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </DialogDescription>
               </DialogHeader>
               {detailRoom.images.length > 0 && (
                 <div className="grid grid-cols-2 gap-2">
                   {detailRoom.images.map((url, i) => (
-                    <img key={url} src={url} alt={`${detailRoom.name} - photo ${i + 1}`} className={`w-full rounded object-cover ${i === 0 ? "col-span-2 aspect-video" : "aspect-[4/3]"}`} />
+                    <img
+                      key={url}
+                      src={url}
+                      alt={`${detailRoom.name} - photo ${i + 1}`}
+                      className={`w-full rounded object-cover ${i === 0 ? "col-span-2 aspect-video" : "aspect-[4/3]"}`}
+                    />
                   ))}
                 </div>
               )}
-              {detailRoom.description && (
-                <p className="text-sm whitespace-pre-line">{detailRoom.description}</p>
-              )}
+              {detailRoom.description && <p className="text-sm whitespace-pre-line">{detailRoom.description}</p>}
               {detailRoom.amenities.length > 0 && (
                 <div>
                   <p className="font-semibold mb-2">Équipements</p>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm">
                     {detailRoom.amenities.map((a) => (
-                      <li key={a} className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" />{a}</li>
+                      <li key={a} className="flex items-center gap-1.5">
+                        <Check className="h-4 w-4 text-success" />
+                        {a}
+                      </li>
                     ))}
                   </ul>
                 </div>

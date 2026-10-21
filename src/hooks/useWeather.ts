@@ -21,21 +21,21 @@ export const useWeather = () => {
     setError(null);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('get-weather', {
-        body: { city }
+      const { data, error: functionError } = await supabase.functions.invoke("get-weather", {
+        body: { city },
       });
 
       if (functionError) throw functionError;
-      
+
       if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch weather');
+        throw new Error(data.error || "Failed to fetch weather");
       }
 
       return data.data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
       setError(errorMessage);
-      console.error('Weather error:', err);
+      console.error("Weather error:", err);
       return null;
     } finally {
       setLoading(false);

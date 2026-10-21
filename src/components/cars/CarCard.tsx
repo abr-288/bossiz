@@ -5,19 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
-import { 
-  Users, 
-  Briefcase, 
-  Fuel, 
-  Settings, 
-  Snowflake, 
+import {
+  Users,
+  Briefcase,
+  Fuel,
+  Settings,
+  Snowflake,
   Check,
   Star,
   Gauge,
   DoorOpen,
   Info,
   Shield,
-  MapPin
+  MapPin,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { carLabel } from "@/lib/carLabels";
@@ -69,27 +69,25 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
 
   const getCategoryColor = (category: string) => {
     const cat = category.toLowerCase();
-    if (cat.includes('luxe') || cat.includes('luxury') || cat.includes('premium')) return 'bg-warning text-warning-foreground border-warning-foreground/20';
-    if (cat.includes('suv') || cat.includes('4x4')) return 'bg-success/10 text-success border-success/30';
-    if (cat.includes('économique') || cat.includes('economy') || cat.includes('mini')) return 'bg-info/10 text-info border-info/20';
-    if (cat.includes('berline') || cat.includes('sedan')) return 'bg-primary/10 text-primary border-primary/40';
-    return 'bg-muted text-muted-foreground border-border';
+    if (cat.includes("luxe") || cat.includes("luxury") || cat.includes("premium"))
+      return "bg-warning text-warning-foreground border-warning-foreground/20";
+    if (cat.includes("suv") || cat.includes("4x4")) return "bg-success/10 text-success border-success/30";
+    if (cat.includes("économique") || cat.includes("economy") || cat.includes("mini"))
+      return "bg-info/10 text-info border-info/20";
+    if (cat.includes("berline") || cat.includes("sedan")) return "bg-primary/10 text-primary border-primary/40";
+    return "bg-muted text-muted-foreground border-border";
   };
 
   const getFuelIcon = (fuel: string) => {
     const f = fuel.toLowerCase();
-    if (f.includes('électrique') || f.includes('electric')) return '⚡';
-    if (f.includes('hybride') || f.includes('hybrid')) return '🔋';
-    if (f.includes('diesel')) return '🛢️';
-    return '⛽';
+    if (f.includes("électrique") || f.includes("electric")) return "⚡";
+    if (f.includes("hybride") || f.includes("hybrid")) return "🔋";
+    if (f.includes("diesel")) return "🛢️";
+    return "⛽";
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: MOTION.slow }}
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: MOTION.slow }}>
       <Card className="overflow-hidden hover:shadow-xl transition-all duration-slow ease-standard group border-border/50 bg-card">
         {/* Image Section */}
         <div className="relative h-48 md:h-56 overflow-hidden bg-muted">
@@ -99,7 +97,7 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow ease-standard"
             onError={() => setImageError(true)}
           />
-          
+
           {/* Overlay badges */}
           <div className="absolute top-3 left-3 flex flex-wrap gap-2">
             <Badge className={`${getCategoryColor(car.category)} border font-medium`}>
@@ -137,12 +135,10 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
           {/* Header: Name & Rating */}
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg md:text-xl font-bold text-foreground truncate">
-                {car.name}
-              </h3>
+              <h3 className="text-lg md:text-xl font-bold text-foreground truncate">{car.name}</h3>
               {car.year && (
                 <p className="text-sm text-muted-foreground">
-                  {car.year} • {car.engineSize || ''}
+                  {car.year} • {car.engineSize || ""}
                 </p>
               )}
             </div>
@@ -207,7 +203,7 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
             )}
             {car.fuelPolicy && (
               <Badge variant="outline" className="text-xs capitalize">
-                {car.fuelPolicy === 'full-to-full' ? t('ux.car.fullToFull') : car.fuelPolicy}
+                {car.fuelPolicy === "full-to-full" ? t("ux.car.fullToFull") : car.fuelPolicy}
               </Badge>
             )}
           </div>
@@ -216,7 +212,10 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
           {car.deposit && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4 p-2 bg-muted/50 rounded-lg">
               <Shield className="w-4 h-4" />
-              <span>{t('carCard.deposit')}: <Price amount={car.deposit} fromCurrency="EUR" className="font-medium text-foreground" /></span>
+              <span>
+                {t("carCard.deposit")}:{" "}
+                <Price amount={car.deposit} fromCurrency="EUR" className="font-medium text-foreground" />
+              </span>
             </div>
           )}
 
@@ -226,7 +225,7 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
           {/* Price & Actions */}
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-xs text-muted-foreground mb-1">{t('carCard.totalPrice')}</p>
+              <p className="text-xs text-muted-foreground mb-1">{t("carCard.totalPrice")}</p>
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl md:text-3xl font-bold text-primary">
                   <Price amount={car.price} fromCurrency="EUR" showLoader />
@@ -235,16 +234,11 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onViewDetails(car)}
-                className="hidden sm:flex"
-              >
+              <Button variant="outline" size="sm" onClick={() => onViewDetails(car)} className="hidden sm:flex">
                 <Info className="w-4 h-4 mr-1" />
                 {t("ux.car.details")}
               </Button>
-              <Button 
+              <Button
                 onClick={() => onBook(car)}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
               >

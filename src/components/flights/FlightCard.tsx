@@ -7,12 +7,12 @@ import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
 
 const formatDuration = (duration: string): string => {
-  if (!duration) return '';
+  if (!duration) return "";
   const match = duration.match(/PT(\d+)H(\d+)?M?/);
   if (match) {
-    const hours = match[1] || '0';
-    const minutes = match[2] || '0';
-    return `${hours}h${minutes.padStart(2, '0')}`;
+    const hours = match[1] || "0";
+    const minutes = match[2] || "0";
+    return `${hours}h${minutes.padStart(2, "0")}`;
   }
   return duration;
 };
@@ -72,7 +72,7 @@ export const FlightCard = ({
                 onError={(e) => {
                   // Fallback to text if image fails to load
                   const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
+                  target.style.display = "none";
                   target.parentElement!.innerHTML = `<span class="text-lg font-bold text-primary">${airlineCode.substring(0, 2)}</span>`;
                 }}
               />
@@ -90,7 +90,10 @@ export const FlightCard = ({
               <span className="text-lg sm:text-xl lg:text-2xl font-bold">{formatTime(departureTime)}</span>
               <span className="text-sm font-medium">{getCityName(departureAirport)}</span>
               <span className="text-xs text-muted-foreground">{departureAirport}</span>
-              <span className="text-xs text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate" title={getAirportName(departureAirport)}>
+              <span
+                className="text-xs text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate"
+                title={getAirportName(departureAirport)}
+              >
                 {getAirportName(departureAirport)}
               </span>
             </div>
@@ -106,33 +109,39 @@ export const FlightCard = ({
               {/* Flight Path Line */}
               <div className="w-full flex items-center gap-2 my-1">
                 <div className="flex-1 h-[2px] bg-border relative">
-                  {stops > 0 && Array.from({ length: stops }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-background"
-                      style={{ left: `${((i + 1) / (stops + 1)) * 100}%`, transform: 'translate(-50%, -50%)' }}
-                    />
-                  ))}
+                  {stops > 0 &&
+                    Array.from({ length: stops }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-background"
+                        style={{ left: `${((i + 1) / (stops + 1)) * 100}%`, transform: "translate(-50%, -50%)" }}
+                      />
+                    ))}
                 </div>
                 <Plane className="h-4 w-4 text-secondary" />
               </div>
 
               {/* Stops Badge */}
-              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium animate-fade-in ${stops === 0
-                  ? 'bg-success/10 text-success'
-                  : stops === 1
-                    ? 'bg-warning text-warning-foreground'
-                    : 'bg-destructive/10 text-destructive'
-                }`}>
+              <div
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium animate-fade-in ${
+                  stops === 0
+                    ? "bg-success/10 text-success"
+                    : stops === 1
+                      ? "bg-warning text-warning-foreground"
+                      : "bg-destructive/10 text-destructive"
+                }`}
+              >
                 {stops === 0 ? (
                   <>
                     <CircleCheck className="h-3.5 w-3.5" />
-                    <span>{t('flightCard.directFlight')}</span>
+                    <span>{t("flightCard.directFlight")}</span>
                   </>
                 ) : (
                   <>
                     <Circle className="h-3.5 w-3.5" />
-                    <span>{stops} {t('pages.flights.results.stops')}</span>
+                    <span>
+                      {stops} {t("pages.flights.results.stops")}
+                    </span>
                   </>
                 )}
               </div>
@@ -143,7 +152,10 @@ export const FlightCard = ({
               <span className="text-lg sm:text-xl lg:text-2xl font-bold">{formatTime(arrivalTime)}</span>
               <span className="text-sm font-medium">{getCityName(arrivalAirport)}</span>
               <span className="text-xs text-muted-foreground">{arrivalAirport}</span>
-              <span className="text-xs text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate text-right" title={getAirportName(arrivalAirport)}>
+              <span
+                className="text-xs text-muted-foreground/70 max-w-[80px] sm:max-w-[120px] truncate text-right"
+                title={getAirportName(arrivalAirport)}
+              >
                 {getAirportName(arrivalAirport)}
               </span>
             </div>
@@ -162,18 +174,13 @@ export const FlightCard = ({
             className="hidden sm:block absolute -left-[9px] -bottom-[9px] w-[18px] h-[18px] rounded-full bg-background"
           />
           <div className="text-left sm:text-center">
-            <div className="text-xs text-secondary font-medium">
-              {t('flightCard.seatsAvailable')}
-            </div>
+            <div className="text-xs text-secondary font-medium">{t("flightCard.seatsAvailable")}</div>
             <div className="text-2xl lg:text-3xl font-bold text-primary font-mono">
               <Price amount={price} fromCurrency={currency} showLoader />
             </div>
           </div>
-          <Button
-            onClick={onSelect}
-            className="sm:w-full font-semibold"
-          >
-            {t('search.book')}
+          <Button onClick={onSelect} className="sm:w-full font-semibold">
+            {t("search.book")}
           </Button>
         </div>
       </div>

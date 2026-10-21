@@ -32,45 +32,45 @@ export const useDestinations = (options: UseDestinationsOptions = {}) => {
   const { query, category, enabled = true } = options;
 
   return useQuery({
-    queryKey: ['destinations', query, category],
+    queryKey: ["destinations", query, category],
     queryFn: async () => {
-      console.log('Fetching destinations from TripAdvisor API...');
-      
+      console.log("Fetching destinations from TripAdvisor API...");
+
       const params = new URLSearchParams();
-      if (query) params.append('query', query);
-      if (category && category !== 'all') params.append('category', category);
-      
-      const { data, error } = await supabase.functions.invoke('search-destinations', {
+      if (query) params.append("query", query);
+      if (category && category !== "all") params.append("category", category);
+
+      const { data, error } = await supabase.functions.invoke("search-destinations", {
         headers: {},
       });
-      
+
       // If params exist, call with URL params
       if (params.toString()) {
         const response = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-destinations?${params.toString()}`,
           {
             headers: {
-              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-              'Content-Type': 'application/json',
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+              "Content-Type": "application/json",
             },
-          }
+          },
         );
-        
+
         if (!response.ok) {
-          throw new Error('Failed to fetch destinations');
+          throw new Error("Failed to fetch destinations");
         }
-        
+
         const result = await response.json();
-        console.log('Destinations received:', result.total, 'from', result.source);
+        console.log("Destinations received:", result.total, "from", result.source);
         return result.destinations as Destination[];
       }
-      
+
       if (error) {
-        console.error('Error fetching destinations:', error);
+        console.error("Error fetching destinations:", error);
         throw error;
       }
-      
-      console.log('Destinations received:', data?.total, 'from', data?.source);
+
+      console.log("Destinations received:", data?.total, "from", data?.source);
       return data.destinations as Destination[];
     },
     staleTime: 1000 * 60 * 30, // Cache for 30 minutes

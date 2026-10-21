@@ -2,20 +2,8 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format, isSameDay, parseISO, startOfMonth, endOfMonth } from "date-fns";
 import { Calendar as CalendarIcon, Filter, MapPin, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -84,19 +72,22 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
   const datesWithBookings = useMemo(() => {
     const monthStart = startOfMonth(selectedMonth);
     const monthEnd = endOfMonth(selectedMonth);
-    
-    return filteredBookings.reduce((acc, booking) => {
-      const startDate = parseISO(booking.start_date);
-      const endDate = booking.end_date ? parseISO(booking.end_date) : startDate;
-      
-      if (startDate >= monthStart && startDate <= monthEnd) {
-        const dateKey = format(startDate, "yyyy-MM-dd");
-        if (!acc[dateKey]) acc[dateKey] = [];
-        acc[dateKey].push(booking);
-      }
-      
-      return acc;
-    }, {} as Record<string, Booking[]>);
+
+    return filteredBookings.reduce(
+      (acc, booking) => {
+        const startDate = parseISO(booking.start_date);
+        const endDate = booking.end_date ? parseISO(booking.end_date) : startDate;
+
+        if (startDate >= monthStart && startDate <= monthEnd) {
+          const dateKey = format(startDate, "yyyy-MM-dd");
+          if (!acc[dateKey]) acc[dateKey] = [];
+          acc[dateKey].push(booking);
+        }
+
+        return acc;
+      },
+      {} as Record<string, Booking[]>,
+    );
   }, [filteredBookings, selectedMonth]);
 
   // Custom day content to show booking indicators
@@ -108,7 +99,8 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
   }, [datesWithBookings]);
 
   const modifiersClassNames = {
-    booked: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-primary",
+    booked:
+      "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-primary",
   };
 
   const getServiceTypeLabel = (type: string) => {
@@ -217,9 +209,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
           </CardHeader>
           <CardContent>
             {bookingsForSelectedDate.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {t("ux.calendar.noneOnDate")}
-              </div>
+              <div className="text-center py-8 text-muted-foreground">{t("ux.calendar.noneOnDate")}</div>
             ) : (
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
                 {bookingsForSelectedDate.map((booking) => (
@@ -260,9 +250,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t("ux.calendar.details")}</DialogTitle>
-            <DialogDescription>
-              #{selectedBooking?.id.substring(0, 8).toUpperCase()}
-            </DialogDescription>
+            <DialogDescription>#{selectedBooking?.id.substring(0, 8).toUpperCase()}</DialogDescription>
           </DialogHeader>
           {selectedBooking && (
             <div className="space-y-4">
@@ -273,9 +261,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Type</label>
-                  <p className="font-semibold">
-                    {getServiceTypeLabel(selectedBooking.services?.type ?? "")}
-                  </p>
+                  <p className="font-semibold">{getServiceTypeLabel(selectedBooking.services?.type ?? "")}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Destination</label>
@@ -308,7 +294,11 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">{t("ux.calendar.total")}</label>
                   <p className="font-semibold">
-                    <Price amount={Number(selectedBooking.total_price)} fromCurrency={selectedBooking.currency} showLoader />
+                    <Price
+                      amount={Number(selectedBooking.total_price)}
+                      fromCurrency={selectedBooking.currency}
+                      showLoader
+                    />
                   </p>
                 </div>
                 <div className="col-span-2">
@@ -333,9 +323,7 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
             {Object.entries(BOOKING_STATUS_DOT_COLOR).map(([status, color]) => (
               <div key={status} className="flex items-center gap-2">
                 <div className={cn("w-3 h-3 rounded-full", color)} />
-                <span className="text-sm">
-                  {t(`booking.status.${status}`, status)}
-                </span>
+                <span className="text-sm">{t(`booking.status.${status}`, status)}</span>
               </div>
             ))}
           </div>

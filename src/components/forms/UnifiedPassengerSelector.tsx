@@ -54,32 +54,33 @@ export const UnifiedPassengerSelector = ({
 
   const getDisplayText = () => {
     const parts: string[] = [];
-    if (value.adults > 0) parts.push(`${value.adults} adulte${value.adults > 1 ? 's' : ''}`);
-    if (value.children > 0) parts.push(`${value.children} enfant${value.children > 1 ? 's' : ''}`);
-    if (showInfants && (value.infants || 0) > 0) parts.push(`${value.infants} bébé${(value.infants || 0) > 1 ? 's' : ''}`);
-    if (showRooms && (value.rooms || 0) > 0) parts.push(`${value.rooms} chambre${(value.rooms || 0) > 1 ? 's' : ''}`);
-    
-    return parts.length > 0 ? parts.join(', ') : 'Sélectionner';
+    if (value.adults > 0) parts.push(`${value.adults} adulte${value.adults > 1 ? "s" : ""}`);
+    if (value.children > 0) parts.push(`${value.children} enfant${value.children > 1 ? "s" : ""}`);
+    if (showInfants && (value.infants || 0) > 0)
+      parts.push(`${value.infants} bébé${(value.infants || 0) > 1 ? "s" : ""}`);
+    if (showRooms && (value.rooms || 0) > 0) parts.push(`${value.rooms} chambre${(value.rooms || 0) > 1 ? "s" : ""}`);
+
+    return parts.length > 0 ? parts.join(", ") : "Sélectionner";
   };
 
-  const CounterRow = ({ 
-    label, 
-    description, 
-    count, 
-    onIncrement, 
-    onDecrement, 
+  const CounterRow = ({
+    label,
+    description,
+    count,
+    onIncrement,
+    onDecrement,
     min = 0,
-    max = 9 
-  }: { 
-    label: string; 
-    description?: string; 
-    count: number; 
-    onIncrement: () => void; 
+    max = 9,
+  }: {
+    label: string;
+    description?: string;
+    count: number;
+    onIncrement: () => void;
     onDecrement: () => void;
     min?: number;
     max?: number;
   }) => (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       className="flex items-center justify-between py-3 border-b border-border last:border-0"
@@ -100,7 +101,9 @@ export const UnifiedPassengerSelector = ({
         >
           <Minus className="h-4 w-4" />
         </Button>
-        <span className="font-bold text-lg min-w-[24px] text-center tabular-nums" aria-live="polite">{count}</span>
+        <span className="font-bold text-lg min-w-[24px] text-center tabular-nums" aria-live="polite">
+          {count}
+        </span>
         <Button
           aria-label={`Ajouter : ${label}`}
           type="button"
@@ -124,10 +127,10 @@ export const UnifiedPassengerSelector = ({
       className={cn("space-y-2", className)}
     >
       {label && (
-        <Label 
+        <Label
           className={cn(
             "text-sm font-semibold text-foreground flex items-center gap-2",
-            required && "after:content-['*'] after:text-destructive after:ml-0.5"
+            required && "after:content-['*'] after:text-destructive after:ml-0.5",
           )}
         >
           <Users className="w-4 h-4 text-primary" />
@@ -143,13 +146,13 @@ export const UnifiedPassengerSelector = ({
               "w-full h-12 justify-start text-left font-medium",
               "border-2 border-input hover:border-primary/50",
               "transition-all duration-base ease-standard",
-              "group overflow-hidden"
+              "group overflow-hidden",
             )}
           >
             <Users className="mr-2 h-5 w-5 flex-shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
             <span className="flex-1 truncate text-sm">{getDisplayText()}</span>
             <span className="text-xs text-muted-foreground ml-2 flex-shrink-0 hidden sm:inline">
-              {getTotalPassengers()} voyageur{getTotalPassengers() > 1 ? 's' : ''}
+              {getTotalPassengers()} voyageur{getTotalPassengers() > 1 ? "s" : ""}
             </span>
           </Button>
         </PopoverTrigger>
@@ -159,8 +162,8 @@ export const UnifiedPassengerSelector = ({
               label="Adultes"
               description="12 ans et plus"
               count={value.adults}
-              onIncrement={() => updateCount('adults', 1)}
-              onDecrement={() => updateCount('adults', -1)}
+              onIncrement={() => updateCount("adults", 1)}
+              onDecrement={() => updateCount("adults", -1)}
               min={1}
               max={maxAdults}
             />
@@ -168,8 +171,8 @@ export const UnifiedPassengerSelector = ({
               label="Enfants"
               description="2-11 ans"
               count={value.children}
-              onIncrement={() => updateCount('children', 1)}
-              onDecrement={() => updateCount('children', -1)}
+              onIncrement={() => updateCount("children", 1)}
+              onDecrement={() => updateCount("children", -1)}
               max={maxChildren}
             />
             {showInfants && (
@@ -177,8 +180,8 @@ export const UnifiedPassengerSelector = ({
                 label="Bébés"
                 description="0-2 ans"
                 count={value.infants || 0}
-                onIncrement={() => updateCount('infants', 1)}
-                onDecrement={() => updateCount('infants', -1)}
+                onIncrement={() => updateCount("infants", 1)}
+                onDecrement={() => updateCount("infants", -1)}
                 max={value.adults}
               />
             )}
@@ -186,17 +189,14 @@ export const UnifiedPassengerSelector = ({
               <CounterRow
                 label="Chambres"
                 count={value.rooms || 1}
-                onIncrement={() => updateCount('rooms', 1)}
-                onDecrement={() => updateCount('rooms', -1)}
+                onIncrement={() => updateCount("rooms", 1)}
+                onDecrement={() => updateCount("rooms", -1)}
                 min={1}
                 max={9}
               />
             )}
           </div>
-          <Button
-            onClick={() => setOpen(false)}
-            className="w-full mt-4 bg-primary hover:bg-primary/90 font-semibold"
-          >
+          <Button onClick={() => setOpen(false)} className="w-full mt-4 bg-primary hover:bg-primary/90 font-semibold">
             Valider
           </Button>
         </PopoverContent>

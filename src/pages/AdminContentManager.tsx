@@ -1,32 +1,38 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { useContentManagement, PageSection, CustomizablePlan, Testimonial, ValueProposition } from '@/hooks/useContentManagement';
-import { 
-  Settings, 
-  Type, 
-  Palette, 
-  Layout, 
-  MessageSquare, 
-  Star, 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  Save, 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import {
+  useContentManagement,
+  PageSection,
+  CustomizablePlan,
+  Testimonial,
+  ValueProposition,
+} from "@/hooks/useContentManagement";
+import {
+  Settings,
+  Type,
+  Palette,
+  Layout,
+  MessageSquare,
+  Star,
+  Plus,
+  Edit2,
+  Trash2,
+  Save,
   X,
   MoveUp,
-  MoveDown
-} from 'lucide-react';
-import { getErrorMessage } from '@/lib/errorMessage';
+  MoveDown,
+} from "lucide-react";
+import { getErrorMessage } from "@/lib/errorMessage";
 
 const AdminContentManager = () => {
   const navigate = useNavigate();
@@ -44,7 +50,7 @@ const AdminContentManager = () => {
     updateTestimonial,
     updateValueProposition,
     updateGlobalSetting,
-    getGlobalSetting
+    getGlobalSetting,
   } = useContentManagement();
 
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -59,15 +65,24 @@ const AdminContentManager = () => {
   const [valueForm, setValueForm] = useState<Partial<ValueProposition>>({});
 
   const colorOptions = [
-    { value: 'black', label: 'Noir', class: 'bg-black' },
-    { value: 'primary', label: 'Primaire', class: 'bg-primary' },
-    { value: 'secondary', label: 'Secondaire', class: 'bg-secondary' },
-    { value: 'white', label: 'Blanc', class: 'bg-white border' },
-    { value: 'gray', label: 'Gris', class: 'bg-muted-foreground' },
+    { value: "black", label: "Noir", class: "bg-black" },
+    { value: "primary", label: "Primaire", class: "bg-primary" },
+    { value: "secondary", label: "Secondaire", class: "bg-secondary" },
+    { value: "white", label: "Blanc", class: "bg-white border" },
+    { value: "gray", label: "Gris", class: "bg-muted-foreground" },
   ];
 
   const iconOptions = [
-    'Crown', 'Zap', 'Shield', 'Star', 'Heart', 'MessageCircle', 'Phone', 'Mail', 'Calendar', 'CreditCard'
+    "Crown",
+    "Zap",
+    "Shield",
+    "Star",
+    "Heart",
+    "MessageCircle",
+    "Phone",
+    "Mail",
+    "Calendar",
+    "CreditCard",
   ];
 
   const handleSectionUpdate = async (id: string) => {
@@ -76,14 +91,14 @@ const AdminContentManager = () => {
       setEditingSection(null);
       setSectionForm({});
       toast({
-        title: 'Section mise à jour',
-        description: 'Les modifications ont été enregistrées avec succès.',
+        title: "Section mise à jour",
+        description: "Les modifications ont été enregistrées avec succès.",
       });
     } catch (error) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description: getErrorMessage(error),
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   };
@@ -94,14 +109,14 @@ const AdminContentManager = () => {
       setEditingPlan(null);
       setPlanForm({});
       toast({
-        title: 'Plan mis à jour',
-        description: 'Les modifications ont été enregistrées avec succès.',
+        title: "Plan mis à jour",
+        description: "Les modifications ont été enregistrées avec succès.",
       });
     } catch (error) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description: getErrorMessage(error),
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   };
@@ -112,14 +127,14 @@ const AdminContentManager = () => {
       setEditingTestimonial(null);
       setTestimonialForm({});
       toast({
-        title: 'Témoignage mis à jour',
-        description: 'Les modifications ont été enregistrées avec succès.',
+        title: "Témoignage mis à jour",
+        description: "Les modifications ont été enregistrées avec succès.",
       });
     } catch (error) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description: getErrorMessage(error),
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   };
@@ -130,14 +145,14 @@ const AdminContentManager = () => {
       setEditingValue(null);
       setValueForm({});
       toast({
-        title: 'Valeur mise à jour',
-        description: 'Les modifications ont été enregistrées avec succès.',
+        title: "Valeur mise à jour",
+        description: "Les modifications ont été enregistrées avec succès.",
       });
     } catch (error) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description: getErrorMessage(error),
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   };
@@ -146,14 +161,14 @@ const AdminContentManager = () => {
     try {
       await updateGlobalSetting(key, value);
       toast({
-        title: 'Paramètre mis à jour',
-        description: 'Le paramètre a été enregistré avec succès.',
+        title: "Paramètre mis à jour",
+        description: "Le paramètre a été enregistré avec succès.",
       });
     } catch (error) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description: getErrorMessage(error),
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   };
@@ -174,10 +189,7 @@ const AdminContentManager = () => {
             <h1 className="text-3xl font-bold text-black mb-2">Gestion du Contenu</h1>
             <p className="text-foreground">Modifiez le contenu, les couleurs et les textes de votre site</p>
           </div>
-          <Button 
-            onClick={() => navigate('/admin')}
-            className="bg-black hover:bg-gray-800 text-white"
-          >
+          <Button onClick={() => navigate("/admin")} className="bg-black hover:bg-gray-800 text-white">
             Retour Admin
           </Button>
         </div>
@@ -204,9 +216,7 @@ const AdminContentManager = () => {
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={section.is_visible}
-                          onCheckedChange={(checked) => 
-                            handleSectionUpdate(section.id, { is_visible: checked })
-                          }
+                          onCheckedChange={(checked) => handleSectionUpdate(section.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -225,7 +235,7 @@ const AdminContentManager = () => {
                           <Label htmlFor={`title-${section.id}`}>Titre</Label>
                           <Input
                             id={`title-${section.id}`}
-                            value={sectionForm.title ?? section.title ?? ''}
+                            value={sectionForm.title ?? section.title ?? ""}
                             onChange={(e) => setSectionForm({ ...sectionForm, title: e.target.value })}
                             placeholder="Titre de la section"
                           />
@@ -234,7 +244,7 @@ const AdminContentManager = () => {
                           <Label htmlFor={`subtitle-${section.id}`}>Sous-titre</Label>
                           <Input
                             id={`subtitle-${section.id}`}
-                            value={sectionForm.subtitle ?? section.subtitle ?? ''}
+                            value={sectionForm.subtitle ?? section.subtitle ?? ""}
                             onChange={(e) => setSectionForm({ ...sectionForm, subtitle: e.target.value })}
                             placeholder="Sous-titre de la section"
                           />
@@ -243,7 +253,7 @@ const AdminContentManager = () => {
                           <Label htmlFor={`button-text-${section.id}`}>Texte du bouton</Label>
                           <Input
                             id={`button-text-${section.id}`}
-                            value={sectionForm.button_text ?? section.button_text ?? ''}
+                            value={sectionForm.button_text ?? section.button_text ?? ""}
                             onChange={(e) => setSectionForm({ ...sectionForm, button_text: e.target.value })}
                             placeholder="Texte du bouton"
                           />
@@ -274,7 +284,7 @@ const AdminContentManager = () => {
                         <Label htmlFor={`description-${section.id}`}>Description</Label>
                         <Textarea
                           id={`description-${section.id}`}
-                          value={sectionForm.description ?? section.description ?? ''}
+                          value={sectionForm.description ?? section.description ?? ""}
                           onChange={(e) => setSectionForm({ ...sectionForm, description: e.target.value })}
                           placeholder="Description de la section"
                           rows={3}
@@ -285,8 +295,8 @@ const AdminContentManager = () => {
                           <Save className="w-4 h-4 mr-2" />
                           Sauvegarder
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => {
                             setEditingSection(null);
                             setSectionForm({});
@@ -316,9 +326,7 @@ const AdminContentManager = () => {
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={plan.is_visible}
-                          onCheckedChange={(checked) => 
-                            handlePlanUpdate(plan.id, { is_visible: checked })
-                          }
+                          onCheckedChange={(checked) => handlePlanUpdate(plan.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -382,7 +390,7 @@ const AdminContentManager = () => {
                         <Label htmlFor={`plan-description-${plan.id}`}>Description</Label>
                         <Textarea
                           id={`plan-description-${plan.id}`}
-                          value={planForm.description ?? plan.description ?? ''}
+                          value={planForm.description ?? plan.description ?? ""}
                           onChange={(e) => setPlanForm({ ...planForm, description: e.target.value })}
                           rows={2}
                         />
@@ -390,11 +398,13 @@ const AdminContentManager = () => {
                       <div>
                         <Label>Caractéristiques (une par ligne)</Label>
                         <Textarea
-                          value={planForm.features?.join('\n') ?? plan.features.join('\n')}
-                          onChange={(e) => setPlanForm({ 
-                            ...planForm, 
-                            features: e.target.value.split('\n').filter(f => f.trim()) 
-                          })}
+                          value={planForm.features?.join("\n") ?? plan.features.join("\n")}
+                          onChange={(e) =>
+                            setPlanForm({
+                              ...planForm,
+                              features: e.target.value.split("\n").filter((f) => f.trim()),
+                            })
+                          }
                           rows={4}
                           placeholder="Caractéristique 1&#10;Caractéristique 2&#10;Caractéristique 3"
                         />
@@ -404,8 +414,8 @@ const AdminContentManager = () => {
                           <Save className="w-4 h-4 mr-2" />
                           Sauvegarder
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => {
                             setEditingPlan(null);
                             setPlanForm({});
@@ -439,16 +449,22 @@ const AdminContentManager = () => {
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={testimonial.is_visible}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             handleTestimonialUpdate(testimonial.id, { is_visible: checked })
                           }
                         />
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setEditingTestimonial(editingTestimonial === testimonial.id ? null : testimonial.id)}
+                          onClick={() =>
+                            setEditingTestimonial(editingTestimonial === testimonial.id ? null : testimonial.id)
+                          }
                         >
-                          {editingTestimonial === testimonial.id ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
+                          {editingTestimonial === testimonial.id ? (
+                            <X className="w-4 h-4" />
+                          ) : (
+                            <Edit2 className="w-4 h-4" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -468,7 +484,7 @@ const AdminContentManager = () => {
                           <Label htmlFor={`testimonial-role-${testimonial.id}`}>Rôle</Label>
                           <Input
                             id={`testimonial-role-${testimonial.id}`}
-                            value={testimonialForm.role ?? testimonial.role ?? ''}
+                            value={testimonialForm.role ?? testimonial.role ?? ""}
                             onChange={(e) => setTestimonialForm({ ...testimonialForm, role: e.target.value })}
                           />
                         </div>
@@ -476,7 +492,9 @@ const AdminContentManager = () => {
                           <Label htmlFor={`testimonial-rating-${testimonial.id}`}>Note</Label>
                           <Select
                             value={String(testimonialForm.rating ?? testimonial.rating)}
-                            onValueChange={(value) => setTestimonialForm({ ...testimonialForm, rating: parseInt(value) })}
+                            onValueChange={(value) =>
+                              setTestimonialForm({ ...testimonialForm, rating: parseInt(value) })
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue />
@@ -510,8 +528,8 @@ const AdminContentManager = () => {
                           <Save className="w-4 h-4 mr-2" />
                           Sauvegarder
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => {
                             setEditingTestimonial(null);
                             setTestimonialForm({});
@@ -534,15 +552,11 @@ const AdminContentManager = () => {
                 <Card key={value.id} className="border-2 border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-bold text-black">
-                        {value.title}
-                      </CardTitle>
+                      <CardTitle className="text-lg font-bold text-black">{value.title}</CardTitle>
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={value.is_visible}
-                          onCheckedChange={(checked) => 
-                            handleValueUpdate(value.id, { is_visible: checked })
-                          }
+                          onCheckedChange={(checked) => handleValueUpdate(value.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -619,8 +633,8 @@ const AdminContentManager = () => {
                           <Save className="w-4 h-4 mr-2" />
                           Sauvegarder
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => {
                             setEditingValue(null);
                             setValueForm({});
@@ -642,46 +656,34 @@ const AdminContentManager = () => {
               {globalSettings.map((setting) => (
                 <Card key={setting.id} className="border-2 border-border">
                   <CardHeader>
-                    <CardTitle className="text-lg font-bold text-black">
-                      {setting.setting_key}
-                    </CardTitle>
-                    {setting.description && (
-                      <p className="text-sm text-muted-foreground">{setting.description}</p>
-                    )}
+                    <CardTitle className="text-lg font-bold text-black">{setting.setting_key}</CardTitle>
+                    {setting.description && <p className="text-sm text-muted-foreground">{setting.description}</p>}
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-4">
-                      {setting.setting_type === 'boolean' ? (
+                      {setting.setting_type === "boolean" ? (
                         <Switch
-                          checked={setting.setting_value === 'true'}
-                          onCheckedChange={(checked) => 
-                            handleGlobalSettingUpdate(setting.setting_key, String(checked))
-                          }
+                          checked={setting.setting_value === "true"}
+                          onCheckedChange={(checked) => handleGlobalSettingUpdate(setting.setting_key, String(checked))}
                         />
-                      ) : setting.setting_type === 'color' ? (
+                      ) : setting.setting_type === "color" ? (
                         <div className="flex items-center gap-2">
                           <Input
                             type="color"
                             value={setting.setting_value}
-                            onChange={(e) => 
-                              handleGlobalSettingUpdate(setting.setting_key, e.target.value)
-                            }
+                            onChange={(e) => handleGlobalSettingUpdate(setting.setting_key, e.target.value)}
                             className="w-20 h-10"
                           />
                           <Input
                             value={setting.setting_value}
-                            onChange={(e) => 
-                              handleGlobalSettingUpdate(setting.setting_key, e.target.value)
-                            }
+                            onChange={(e) => handleGlobalSettingUpdate(setting.setting_key, e.target.value)}
                             placeholder="#000000"
                           />
                         </div>
                       ) : (
                         <Input
                           value={setting.setting_value}
-                          onChange={(e) => 
-                            handleGlobalSettingUpdate(setting.setting_key, e.target.value)
-                          }
+                          onChange={(e) => handleGlobalSettingUpdate(setting.setting_key, e.target.value)}
                           placeholder={setting.description}
                         />
                       )}

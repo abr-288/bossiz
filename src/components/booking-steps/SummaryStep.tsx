@@ -1,5 +1,17 @@
 import { motion } from "framer-motion";
-import { Plane, User, Briefcase, Armchair, CreditCard, Calendar, Clock, MapPin, LogIn, AlertTriangle, Timer } from "lucide-react";
+import {
+  Plane,
+  User,
+  Briefcase,
+  Armchair,
+  CreditCard,
+  Calendar,
+  Clock,
+  MapPin,
+  LogIn,
+  AlertTriangle,
+  Timer,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSecureFlightBooking, FlightData, PassengerData } from "@/hooks/useSecureFlightBooking";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import { CurrencyConverter } from "@/utils/currencyConverter";
 import type { BookingPreferences } from "@/components/booking-steps/PreferencesStep";
@@ -93,8 +99,17 @@ export const SummaryStep = ({
   const [myCompanies, setMyCompanies] = useState<{ id: string; name: string }[]>([]);
   const [billToCompanyId, setBillToCompanyId] = useState<string | null>(null);
   const [travelPolicy, setTravelPolicy] = useState<{ max_amount: number; currency: string } | null>(null);
-  
-  const { prebook, checkout, prebookingData, checkoutData, loading: secureLoading, isPrebookingValid, getRemainingSeconds, reset } = useSecureFlightBooking();
+
+  const {
+    prebook,
+    checkout,
+    prebookingData,
+    checkoutData,
+    loading: secureLoading,
+    isPrebookingValid,
+    getRemainingSeconds,
+    reset,
+  } = useSecureFlightBooking();
   const { createBooking, loading: bookingLoading } = useCreateBooking();
   const navigate = useNavigate();
 
@@ -111,7 +126,11 @@ export const SummaryStep = ({
       .eq("config_key", "booking_payment_policy")
       .maybeSingle()
       .then(({ data }) => {
-        const policy = data?.config_value as { enabledServiceTypes?: unknown; depositEnabled?: boolean; depositPercent?: number } | null;
+        const policy = data?.config_value as {
+          enabledServiceTypes?: unknown;
+          depositEnabled?: boolean;
+          depositPercent?: number;
+        } | null;
         const allowedTypes = Array.isArray(policy?.enabledServiceTypes) ? policy.enabledServiceTypes : [];
         const isAllowed = policy?.depositEnabled !== false && allowedTypes.includes(serviceType);
         setDepositAvailable(isAllowed);
@@ -147,7 +166,7 @@ export const SummaryStep = ({
       const interval = setInterval(() => {
         const remaining = getRemainingSeconds();
         setRemainingTime(remaining);
-        
+
         if (remaining <= 0) {
           clearInterval(interval);
           toast.error(t("ux.summary.expiredToast"), {
@@ -155,26 +174,30 @@ export const SummaryStep = ({
           });
         }
       }, 1000);
-      
+
       return () => clearInterval(interval);
     }
   }, [prebookingData, getRemainingSeconds]);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     setIsAuthenticated(!!user);
     if (user) {
       const { data } = await supabase
         .from("company_members")
         .select("company_id, companies(name)")
         .eq("user_id", user.id);
-      setMyCompanies((data || []).map((m) => ({ id: m.company_id, name: m.companies?.name || t("ux.summary.company") })));
+      setMyCompanies(
+        (data || []).map((m) => ({ id: m.company_id, name: m.companies?.name || t("ux.summary.company") })),
+      );
     }
   };
 
   // Convert frontend passenger format to API format
   const convertPassengers = (passengers: Passenger[]): PassengerData[] => {
-    return passengers.map(p => ({
+    return passengers.map((p) => ({
       first_name: p.firstName,
       last_name: p.lastName,
       date_of_birth: p.dateOfBirth,
@@ -187,7 +210,7 @@ export const SummaryStep = ({
   // Convert frontend flight data to API format
   const convertFlightData = (): FlightData | null => {
     if (!flightData) return null;
-    
+
     return {
       origin: flightData.origin,
       destination: flightData.destination,
@@ -197,12 +220,12 @@ export const SummaryStep = ({
       arrival_time: flightData.arrivalTime,
       duration: flightData.duration,
       airline: flightData.airline,
-      airline_code: flightData.airlineCode || '',
+      airline_code: flightData.airlineCode || "",
       flight_number: flightData.flightNumber,
       price: parseFloat(flightData.price),
       stops: flightData.stops,
       fare: flightData.fare,
-      provider: 'amadeus',
+      provider: "amadeus",
     };
   };
 
@@ -210,21 +233,23 @@ export const SummaryStep = ({
   const formatRemainingTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   /**
    * SECURE BOOKING FLOW - Step 1: Pre-book (mandatory for flights)
    */
   const handlePrebook = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       setShowLoginDialog(true);
       return;
     }
 
-    if (serviceType === 'flight' && flightData) {
+    if (serviceType === "flight" && flightData) {
       const apiFlightData = convertFlightData();
       if (!apiFlightData) {
         toast.error(t("ux.summary.invalidFlight"));
@@ -237,13 +262,16 @@ export const SummaryStep = ({
         adultsCount,
         childrenCount,
         selectedOptions,
-        selectedPreferences
+        selectedPreferences,
       );
 
       if (result.success) {
         setIsPrebookingDone(true);
         toast.success(t("ux.summary.fareLocked"), {
-          description: t("ux.summary.fareLockedDesc", { ref: result.booking_reference, minutes: result.expires_in_seconds! / 60 }),
+          description: t("ux.summary.fareLockedDesc", {
+            ref: result.booking_reference,
+            minutes: result.expires_in_seconds! / 60,
+          }),
         });
       }
     } else {
@@ -256,8 +284,10 @@ export const SummaryStep = ({
    * SECURE BOOKING FLOW - Step 2: Checkout and Payment
    */
   const handlePayment = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       setShowLoginDialog(true);
       return;
@@ -265,7 +295,7 @@ export const SummaryStep = ({
 
     try {
       // For flights, validate pre-booking first
-      if (serviceType === 'flight' && prebookingData) {
+      if (serviceType === "flight" && prebookingData) {
         if (!isPrebookingValid()) {
           toast.error(t("ux.summary.expiredToast"), {
             description: t("ux.summary.expiredToastDesc"),
@@ -277,20 +307,20 @@ export const SummaryStep = ({
 
         // Call checkout to get signed price summary
         const checkoutResult = await checkout();
-        
+
         if (!checkoutResult.success) {
           return;
         }
 
         // Use server-calculated price from checkout
         const serverPrice = checkoutResult.checkout!.price_breakdown.total_amount;
-        
+
         // Create booking with server-validated data
         const bookingId = await createBooking({
-          service_type: 'flight',
+          service_type: "flight",
           service_name: `Vol ${flightData?.origin} - ${flightData?.destination}`,
           service_description: `${flightData?.airline} - ${flightData?.flightNumber}`,
-          location: flightData?.origin || '',
+          location: flightData?.origin || "",
           start_date: startDate,
           end_date: endDate || startDate,
           guests: adultsCount + childrenCount,
@@ -329,7 +359,7 @@ export const SummaryStep = ({
         // Stay and activity use their dedicated catalogs; tours already refer
         // to the generic services catalog. Other types have no reusable row.
         // create-booking verifies catalog-backed prices server-side.
-        const verifiableServiceId = ['stay', 'activity', 'tour'].includes(serviceType) ? serviceId : undefined;
+        const verifiableServiceId = ["stay", "activity", "tour"].includes(serviceType) ? serviceId : undefined;
 
         const bookingId = await createBooking({
           service_id: verifiableServiceId,
@@ -370,21 +400,24 @@ export const SummaryStep = ({
   };
 
   const handleLoginRedirect = () => {
-    sessionStorage.setItem('pendingBooking', JSON.stringify({
-      flightData,
-      serviceType,
-      serviceName,
-      servicePrice,
-      serviceLocation,
-      startDate,
-      endDate,
-      passengers,
-      selectedOptions,
-      selectedPreferences,
-      adultsCount,
-      childrenCount,
-    }));
-    navigate('/auth');
+    sessionStorage.setItem(
+      "pendingBooking",
+      JSON.stringify({
+        flightData,
+        serviceType,
+        serviceName,
+        servicePrice,
+        serviceLocation,
+        startDate,
+        endDate,
+        passengers,
+        selectedOptions,
+        selectedPreferences,
+        adultsCount,
+        childrenCount,
+      }),
+    );
+    navigate("/auth");
   };
 
   // Price calculations - DISPLAY ONLY (real price comes from server)
@@ -393,22 +426,22 @@ export const SummaryStep = ({
       "cabin-large": 15000,
       "checked-20": 25000,
       "checked-30": 40000,
-      "breakfast": 8000,
+      breakfast: 8000,
       "wifi-premium": 3000,
       "late-checkout": 15000,
       "room-upgrade": 25000,
       "full-insurance": 15000,
-      "gps": 5000,
+      gps: 5000,
       "child-seat": 8000,
       "extra-driver": 10000,
       "guide-private": 25000,
-      "meals": 15000,
+      meals: 15000,
       "photo-pack": 20000,
       "transport-vip": 35000,
-      "premium": 15000,
-      "support": 10000,
+      premium: 15000,
+      support: 10000,
     };
-    
+
     return Object.entries(selectedOptions).reduce((total, [id, quantity]) => {
       return total + (optionPrices[id] || 0) * quantity;
     }, 0);
@@ -448,21 +481,17 @@ export const SummaryStep = ({
   const displayPriceBreakdown = prebookingData?.price_breakdown || checkoutData?.checkout?.price_breakdown;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
         <h2 className="text-2xl font-bold text-primary mb-2">{t("ux.summary.title")}</h2>
-        <p className="text-muted-foreground">
-          {t("ux.summary.subtitle")}
-        </p>
+        <p className="text-muted-foreground">{t("ux.summary.subtitle")}</p>
       </div>
 
       {/* Pre-booking timer alert */}
       {isPrebookingDone && prebookingData && remainingTime > 0 && (
-        <Alert className={`border-2 ${remainingTime < 120 ? 'border-destructive bg-destructive/10' : 'border-gold bg-gold/10'}`}>
+        <Alert
+          className={`border-2 ${remainingTime < 120 ? "border-destructive bg-destructive/10" : "border-gold bg-gold/10"}`}
+        >
           <Timer className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <div>
@@ -485,9 +514,9 @@ export const SummaryStep = ({
           <AlertDescription>
             <span className="font-semibold">{t("ux.summary.fareExpired")}</span>
             <span className="ml-2">{t("ux.summary.restartBooking")}</span>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="ml-4"
               onClick={() => {
                 reset();
@@ -543,7 +572,11 @@ export const SummaryStep = ({
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{flightData.stops === 0 ? t("ux.summary.direct") : t("ux.summary.stops", { count: flightData.stops })}</span>
+                      <span>
+                        {flightData.stops === 0
+                          ? t("ux.summary.direct")
+                          : t("ux.summary.stops", { count: flightData.stops })}
+                      </span>
                     </div>
                   </div>
                 </>
@@ -560,16 +593,12 @@ export const SummaryStep = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("ux.summary.startDate")}</span>
-                      <span className="font-medium">
-                        {new Date(startDate).toLocaleDateString(i18n.language)}
-                      </span>
+                      <span className="font-medium">{new Date(startDate).toLocaleDateString(i18n.language)}</span>
                     </div>
                     {endDate && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{t("ux.summary.endDate")}</span>
-                        <span className="font-medium">
-                          {new Date(endDate).toLocaleDateString(i18n.language)}
-                        </span>
+                        <span className="font-medium">{new Date(endDate).toLocaleDateString(i18n.language)}</span>
                       </div>
                     )}
                   </div>
@@ -592,7 +621,8 @@ export const SummaryStep = ({
                       {passenger.firstName} {passenger.lastName}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {passenger.documentType === "passport" ? t("ux.passenger.passport") : t("ux.passenger.idCard")} : {passenger.documentNumber}
+                      {passenger.documentType === "passport" ? t("ux.passenger.passport") : t("ux.passenger.idCard")} :{" "}
+                      {passenger.documentNumber}
                     </p>
                   </div>
                   <Badge variant="secondary">
@@ -604,7 +634,7 @@ export const SummaryStep = ({
           </Card>
 
           {/* Options */}
-          {Object.keys(selectedOptions).some(key => selectedOptions[key] > 0) && (
+          {Object.keys(selectedOptions).some((key) => selectedOptions[key] > 0) && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Briefcase className="h-5 w-5 text-primary" />
@@ -615,7 +645,9 @@ export const SummaryStep = ({
                   if (quantity === 0) return null;
                   return (
                     <div key={id} className="flex justify-between items-center">
-                      <span className="text-sm">{id} ({quantity}x)</span>
+                      <span className="text-sm">
+                        {id} ({quantity}x)
+                      </span>
                     </div>
                   );
                 })}
@@ -697,22 +729,17 @@ export const SummaryStep = ({
                   )}
                 </>
               )}
-              
+
               <Separator />
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-lg">{t("ux.summary.total")}</span>
                 <span className="font-bold text-2xl text-primary">
-                  <Price
-                    amount={getTotalPrice()}
-                    showLoader
-                  />
+                  <Price amount={getTotalPrice()} showLoader />
                 </span>
               </div>
-              
+
               {displayPriceBreakdown && (
-                <p className="text-xs text-muted-foreground text-center">
-                  {t("ux.summary.serverPrice")}
-                </p>
+                <p className="text-xs text-muted-foreground text-center">{t("ux.summary.serverPrice")}</p>
               )}
             </div>
 
@@ -731,7 +758,9 @@ export const SummaryStep = ({
                 >
                   <option value="">{t("ux.summary.myself")}</option>
                   {myCompanies.map((c) => (
-                    <option key={c.id} value={c.id}>{t("ux.summary.billTo", { name: c.name })}</option>
+                    <option key={c.id} value={c.id}>
+                      {t("ux.summary.billTo", { name: c.name })}
+                    </option>
                   ))}
                 </select>
                 {billToCompanyId && (
@@ -743,7 +772,8 @@ export const SummaryStep = ({
                         </Badge>
                       ) : (
                         <Badge variant="destructive" className="gap-1.5">
-                          <AlertTriangle className="w-3 h-3" /> {t("ux.summary.policyOver")} <Price amount={travelPolicy.max_amount} fromCurrency={travelPolicy.currency} />)
+                          <AlertTriangle className="w-3 h-3" /> {t("ux.summary.policyOver")}{" "}
+                          <Price amount={travelPolicy.max_amount} fromCurrency={travelPolicy.currency} />)
                         </Badge>
                       )
                     ) : (
@@ -751,9 +781,7 @@ export const SummaryStep = ({
                         {t("ux.summary.noPolicy")}
                       </Badge>
                     )}
-                    <p className="text-xs text-muted-foreground">
-                      {t("ux.summary.approvalNote")}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{t("ux.summary.approvalNote")}</p>
                   </>
                 )}
               </div>
@@ -770,7 +798,9 @@ export const SummaryStep = ({
                       className={`w-full p-3 rounded-lg border-2 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : "border-border"}`}
                     >
                       <span className="font-medium">{t("ux.summary.payFull")}</span>
-                      <span className="block text-sm text-muted-foreground"><Price amount={getTotalPrice()} /></span>
+                      <span className="block text-sm text-muted-foreground">
+                        <Price amount={getTotalPrice()} />
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -779,7 +809,9 @@ export const SummaryStep = ({
                     >
                       <span className="font-medium">{t("ux.summary.deposit", { percent: depositPercent })}</span>
                       <span className="block text-sm text-muted-foreground">
-                        <Price amount={Math.ceil(getTotalPrice() * depositPercent / 100)} /> {t("ux.summary.payNow")} <Price amount={getTotalPrice() - Math.ceil(getTotalPrice() * depositPercent / 100)} /> {t("ux.summary.onSite")}
+                        <Price amount={Math.ceil((getTotalPrice() * depositPercent) / 100)} /> {t("ux.summary.payNow")}{" "}
+                        <Price amount={getTotalPrice() - Math.ceil((getTotalPrice() * depositPercent) / 100)} />{" "}
+                        {t("ux.summary.onSite")}
                       </span>
                     </button>
                   </div>
@@ -790,9 +822,7 @@ export const SummaryStep = ({
                   </div>
                   <div>
                     <p className="font-medium">{t("ux.summary.securePayment")}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {t("ux.summary.securePaymentDesc")}
-                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{t("ux.summary.securePaymentDesc")}</p>
                   </div>
                 </div>
               </div>
@@ -800,36 +830,21 @@ export const SummaryStep = ({
 
             <div className="booking-actions space-y-3">
               {/* For flights: Two-step process */}
-              {serviceType === 'flight' && !isPrebookingDone && (
-                <UnifiedSubmitButton
-                  variant="default"
-                  fullWidth
-                  loading={loading}
-                  onClick={handlePrebook}
-                >
+              {serviceType === "flight" && !isPrebookingDone && (
+                <UnifiedSubmitButton variant="default" fullWidth loading={loading} onClick={handlePrebook}>
                   {t("ux.summary.lockFare")}
                 </UnifiedSubmitButton>
               )}
-              
-              {serviceType === 'flight' && isPrebookingDone && remainingTime > 0 && (
-                <UnifiedSubmitButton
-                  variant="payment"
-                  fullWidth
-                  loading={loading}
-                  onClick={handlePayment}
-                >
+
+              {serviceType === "flight" && isPrebookingDone && remainingTime > 0 && (
+                <UnifiedSubmitButton variant="payment" fullWidth loading={loading} onClick={handlePayment}>
                   {billToCompanyId ? t("ux.summary.submitApproval") : t("ux.summary.proceedPayment")}
                 </UnifiedSubmitButton>
               )}
 
               {/* For non-flight services: Direct payment */}
-              {serviceType !== 'flight' && (
-                <UnifiedSubmitButton
-                  variant="payment"
-                  fullWidth
-                  loading={loading}
-                  onClick={handlePayment}
-                >
+              {serviceType !== "flight" && (
+                <UnifiedSubmitButton variant="payment" fullWidth loading={loading} onClick={handlePayment}>
                   {billToCompanyId ? t("ux.summary.submitApproval") : t("ux.summary.proceedPayment")}
                 </UnifiedSubmitButton>
               )}
@@ -850,14 +865,10 @@ export const SummaryStep = ({
               <LogIn className="h-5 w-5 text-primary" />
               {t("ux.summary.loginRequired")}
             </DialogTitle>
-            <DialogDescription>
-              {t("ux.summary.loginRequiredDesc")}
-            </DialogDescription>
+            <DialogDescription>{t("ux.summary.loginRequiredDesc")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
-            <p className="text-sm text-muted-foreground">
-              {t("ux.summary.loginBenefits")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("ux.summary.loginBenefits")}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
               <li className="flex items-center gap-2">
                 <span className="text-primary">✓</span> {t("ux.summary.benefitTrack")}

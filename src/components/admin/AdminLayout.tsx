@@ -22,8 +22,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         navigate("/auth");
         return;
@@ -74,13 +76,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="min-h-screen flex w-full bg-muted/10">
         <div className="fixed top-0 left-0 right-0 h-1 z-banner bg-brand" />
         <AdminSidebar />
-        
+
         <div className="flex-1 flex flex-col min-w-0">
           <header className="min-h-14 md:h-16 border-b bg-background flex items-center justify-between gap-2 px-3 md:px-6 sticky top-0 z-50">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="touch-target" />
               <Link to="/">
-                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("ux.bo.backHome")} title={t("ux.bo.backHome")}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  aria-label={t("ux.bo.backHome")}
+                  title={t("ux.bo.backHome")}
+                >
                   <Home className="h-4 w-4" />
                 </Button>
               </Link>

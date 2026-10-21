@@ -5,28 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
@@ -57,12 +38,42 @@ interface Stay {
 }
 
 const stayTypes = [
-  { value: "apartment", get label() { return i18n.t("ux.bo.apartment"); } },
-  { value: "villa", get label() { return i18n.t("ux.bo.villa"); } },
-  { value: "house", get label() { return i18n.t("ux.bo.house"); } },
-  { value: "bungalow", get label() { return i18n.t("ux.bo.bungalow"); } },
-  { value: "chalet", get label() { return i18n.t("ux.bo.chalet"); } },
-  { value: "studio", get label() { return i18n.t("ux.bo.studio"); } },
+  {
+    value: "apartment",
+    get label() {
+      return i18n.t("ux.bo.apartment");
+    },
+  },
+  {
+    value: "villa",
+    get label() {
+      return i18n.t("ux.bo.villa");
+    },
+  },
+  {
+    value: "house",
+    get label() {
+      return i18n.t("ux.bo.house");
+    },
+  },
+  {
+    value: "bungalow",
+    get label() {
+      return i18n.t("ux.bo.bungalow");
+    },
+  },
+  {
+    value: "chalet",
+    get label() {
+      return i18n.t("ux.bo.chalet");
+    },
+  },
+  {
+    value: "studio",
+    get label() {
+      return i18n.t("ux.bo.studio");
+    },
+  },
 ];
 
 export default function AgencyStays() {
@@ -95,14 +106,12 @@ export default function AgencyStays() {
   }, []);
 
   const fetchAgencyAndStays = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: agency } = await supabase
-      .from("agencies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .single();
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
 
     if (!agency) return;
     setAgencyId(agency.id);
@@ -144,17 +153,12 @@ export default function AgencyStays() {
       };
 
       if (editingStay) {
-        const { error } = await supabase
-          .from("stays")
-          .update(stayData)
-          .eq("id", editingStay.id);
+        const { error } = await supabase.from("stays").update(stayData).eq("id", editingStay.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.stayUpdated") });
       } else {
-        const { error } = await supabase
-          .from("stays")
-          .insert(stayData);
+        const { error } = await supabase.from("stays").insert(stayData);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.stayCreated") });
@@ -223,9 +227,7 @@ export default function AgencyStays() {
     });
   };
 
-  const filteredStays = stays.filter((s) =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStays = stays.filter((s) => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <AgencyLayout>
@@ -235,18 +237,22 @@ export default function AgencyStays() {
             <h1 className="text-2xl font-bold">{t("ux.bo.myStays")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.manageStayAccommodations")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newStay")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newStay")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>
-                  {editingStay ? t("ux.bo.editStay") : t("ux.bo.newStay2")}
-                </DialogTitle>
+                <DialogTitle>{editingStay ? t("ux.bo.editStay") : t("ux.bo.newStay2")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -260,21 +266,27 @@ export default function AgencyStays() {
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.type2")}</Label>
-                    <Select
-                      value={formData.type}
-                      onValueChange={(v) => setFormData({ ...formData, type: v })}
-                    >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         {stayTypes.map((t) => (
-                          <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                          <SelectItem key={t.value} value={t.value}>
+                            {t.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <LocationPicker
-                  value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }}
+                  value={{
+                    location: formData.location,
+                    maps_url: formData.maps_url,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  }}
                   onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
                   required
                 />
@@ -299,9 +311,15 @@ export default function AgencyStays() {
                       required
                     />
                   </div>
-                  <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
+                  <div className="flex items-end pb-2 text-sm text-muted-foreground">
+                    {t("ux.bo.priceShownChargedXofFcfa")}
+                  </div>
                 </div>
-                <AvailableDatesInput dates={formData.available_dates} onChange={(available_dates) => setFormData({ ...formData, available_dates })} label={t("ux.bo.specialAvailabilityDates")} />
+                <AvailableDatesInput
+                  dates={formData.available_dates}
+                  onChange={(available_dates) => setFormData({ ...formData, available_dates })}
+                  label={t("ux.bo.specialAvailabilityDates")}
+                />
                 <div className="space-y-2">
                   <Label>{t("ux.bo.description")}</Label>
                   <Textarea
@@ -360,7 +378,9 @@ export default function AgencyStays() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
                 </TableRow>
               ) : filteredStays.length === 0 ? (
                 <TableRow>
@@ -380,7 +400,9 @@ export default function AgencyStays() {
                     </TableCell>
                     <TableCell>{stay.location}</TableCell>
                     <TableCell>{stay.duration}</TableCell>
-                    <TableCell>{stay.price_per_unit} {stay.currency}</TableCell>
+                    <TableCell>
+                      {stay.price_per_unit} {stay.currency}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={stay.available ? "default" : "secondary"}>
                         {stay.available ? t("ux.bo.available") : "Indisponible"}
@@ -390,7 +412,12 @@ export default function AgencyStays() {
                       <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(stay)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(stay.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(stay.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

@@ -30,8 +30,8 @@ export function MFAVerification({ onSuccess, onBack }: MFAVerificationProps) {
         console.error("Error listing MFA factors:", error);
         return;
       }
-      
-      const totpFactor = data.totp.find(f => f.status === 'verified');
+
+      const totpFactor = data.totp.find((f) => f.status === "verified");
       if (totpFactor) {
         setFactorId(totpFactor.id);
       }
@@ -72,7 +72,7 @@ export function MFAVerification({ onSuccess, onBack }: MFAVerificationProps) {
       if (verifyError) throw verifyError;
 
       toast.success("Vérification réussie !");
-      
+
       if (onSuccess) {
         onSuccess();
       } else {
@@ -154,9 +154,7 @@ export function MFAVerification({ onSuccess, onBack }: MFAVerificationProps) {
               <Shield className="h-10 w-10 text-primary" />
             </motion.div>
             <CardTitle className="text-2xl">Vérification 2FA</CardTitle>
-            <CardDescription>
-              Entrez le code de votre application d'authentification
-            </CardDescription>
+            <CardDescription>Entrez le code de votre application d'authentification</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <motion.div
@@ -198,11 +196,7 @@ export function MFAVerification({ onSuccess, onBack }: MFAVerificationProps) {
                 className="w-full h-12"
                 disabled={loading || verificationCode.length !== 6}
               >
-                {loading ? (
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                ) : (
-                  <Check className="mr-2 h-5 w-5" />
-                )}
+                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Check className="mr-2 h-5 w-5" />}
                 Vérifier
               </Button>
             </motion.div>

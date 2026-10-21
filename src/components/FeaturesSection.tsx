@@ -15,8 +15,14 @@ const FEATURE_KEYS_BY_TITLE: Record<string, string> = {
 };
 // Textes traduits par argument
 const FEATURE_TEXT: Record<string, { title: string; description: string }> = {
-  "secure-booking": { title: "homepage.features.secure-booking.title", description: "homepage.features.secure-booking.description" },
-  "best-prices": { title: "homepage.features.best-prices.title", description: "homepage.features.best-prices.description" },
+  "secure-booking": {
+    title: "homepage.features.secure-booking.title",
+    description: "homepage.features.secure-booking.description",
+  },
+  "best-prices": {
+    title: "homepage.features.best-prices.title",
+    description: "homepage.features.best-prices.description",
+  },
   "support-247": { title: "ux.features.supportTitle", description: "ux.features.supportDesc" },
   "mobile-money": { title: "ux.features.mobileMoneyTitle", description: "ux.features.mobileMoneyDesc" },
   "easy-cancellation": { title: "ux.features.cancellationTitle", description: "ux.features.cancellationDesc" },
@@ -31,12 +37,18 @@ const FeaturesSection = () => {
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
-      case 'Shield': return Shield;
-      case 'Award': return Award;
-      case 'Headphones': return Headphones;
-      case 'Smartphone': return Smartphone;
-      case 'RotateCcw': return RotateCcw;
-      default: return Shield;
+      case "Shield":
+        return Shield;
+      case "Award":
+        return Award;
+      case "Headphones":
+        return Headphones;
+      case "Smartphone":
+        return Smartphone;
+      case "RotateCcw":
+        return RotateCcw;
+      default:
+        return Shield;
     }
   };
 
@@ -76,16 +88,14 @@ const FeaturesSection = () => {
                 key={feature.id}
                 className="flex items-start gap-4 p-5 rounded-xl bg-card border border-border hover:shadow-md transition-shadow"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color || 'from-primary to-primary/80'} bg-opacity-10 flex items-center justify-center flex-shrink-0`}>
+                <div
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color || "from-primary to-primary/80"} bg-opacity-10 flex items-center justify-center flex-shrink-0`}
+                >
                   <IconComponent className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground mb-1">
-                    {title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {description}
-                  </p>
+                  <h3 className="text-sm font-bold text-foreground mb-1">{title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
                 </div>
               </div>
             );

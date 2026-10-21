@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { 
-  UnifiedForm, 
+import {
+  UnifiedForm,
   UnifiedAutocomplete,
   UnifiedDatePicker,
   UnifiedSubmitButton,
-  FormProgressBar
+  FormProgressBar,
 } from "@/components/forms";
 import { useTranslation } from "react-i18next";
 import { flightSearchSchema, type FlightSearchInput } from "@/lib/validationSchemas";
@@ -45,7 +45,7 @@ export const FlightSearchForm = () => {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [travelClass, setTravelClass] = useState<"economy" | "premium_economy" | "business" | "first">("economy");
-  
+
   // État des erreurs de validation
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -67,10 +67,10 @@ export const FlightSearchForm = () => {
     };
 
     const validation = safeValidate(flightSearchSchema, formData);
-    
+
     if (!validation.success) {
       const filteredErrors: Record<string, string> = {};
-      Object.keys(validation.errors).forEach(key => {
+      Object.keys(validation.errors).forEach((key) => {
         if (touched[key]) {
           filteredErrors[key] = validation.errors[key];
         }
@@ -78,7 +78,7 @@ export const FlightSearchForm = () => {
       setErrors(filteredErrors);
     } else {
       const clearedErrors = { ...errors };
-      Object.keys(touched).forEach(key => {
+      Object.keys(touched).forEach((key) => {
         delete clearedErrors[key];
       });
       setErrors(clearedErrors);
@@ -92,12 +92,12 @@ export const FlightSearchForm = () => {
   };
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setTouched({
       origin: true,
       destination: true,
@@ -131,7 +131,7 @@ export const FlightSearchForm = () => {
         description: "Veuillez corriger les erreurs dans le formulaire",
         variant: "destructive",
       });
-      
+
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -175,19 +175,13 @@ export const FlightSearchForm = () => {
   return (
     <UnifiedForm onSubmit={handleSearch} variant="search" className="max-w-5xl mx-auto space-y-4">
       {/* Barre de progression */}
-      <FormProgressBar 
-        totalFields={totalFields} 
-        completedFields={completedFields}
-        className="mb-2"
-      />
+      <FormProgressBar totalFields={totalFields} completedFields={completedFields} className="mb-2" />
 
       {/* Alert d'erreur générale */}
       {hasErrors && (
         <Alert variant="destructive" className="py-2">
           <AlertCircle className="h-3.5 w-3.5" />
-          <AlertDescription className="text-xs">
-            Veuillez corriger les erreurs dans le formulaire
-          </AlertDescription>
+          <AlertDescription className="text-xs">Veuillez corriger les erreurs dans le formulaire</AlertDescription>
         </Alert>
       )}
 
@@ -195,7 +189,7 @@ export const FlightSearchForm = () => {
       <div className="flex gap-2">
         {[
           { value: "round-trip", label: t("search.roundTrip") },
-          { value: "one-way", label: t("search.oneWay") }
+          { value: "one-way", label: t("search.oneWay") },
         ].map(({ value, label }) => (
           <motion.button
             key={value}
@@ -209,7 +203,7 @@ export const FlightSearchForm = () => {
               "px-4 py-2 rounded-lg font-medium transition-all duration-base ease-standard text-sm border",
               tripType === value
                 ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                : "bg-background text-foreground border-border hover:border-primary/50"
+                : "bg-background text-foreground border-border hover:border-primary/50",
             )}
           >
             {label}
@@ -233,7 +227,9 @@ export const FlightSearchForm = () => {
             className={cn(errors.origin && touched.origin ? "border-destructive" : "")}
           />
           {errors.origin && touched.origin && (
-            <p role="alert" className="text-sm text-destructive mt-1">{errors.origin}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">
+              {errors.origin}
+            </p>
           )}
         </div>
 
@@ -264,16 +260,15 @@ export const FlightSearchForm = () => {
             className={cn(errors.destination && touched.destination ? "border-destructive" : "")}
           />
           {errors.destination && touched.destination && (
-            <p role="alert" className="text-sm text-destructive mt-1">{errors.destination}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">
+              {errors.destination}
+            </p>
           )}
         </div>
       </div>
 
       {/* Ligne 2: Dates */}
-      <div className={cn(
-        "grid gap-3",
-        tripType === "round-trip" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"
-      )}>
+      <div className={cn("grid gap-3", tripType === "round-trip" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
         <div>
           <UnifiedDatePicker
             label={t("search.departureDate")}
@@ -287,7 +282,9 @@ export const FlightSearchForm = () => {
             required
           />
           {errors.departureDate && touched.departureDate && (
-            <p role="alert" className="text-sm text-destructive mt-1">{errors.departureDate}</p>
+            <p role="alert" className="text-sm text-destructive mt-1">
+              {errors.departureDate}
+            </p>
           )}
         </div>
 
@@ -305,7 +302,9 @@ export const FlightSearchForm = () => {
               required
             />
             {errors.returnDate && touched.returnDate && (
-              <p role="alert" className="text-sm text-destructive mt-1">{errors.returnDate}</p>
+              <p role="alert" className="text-sm text-destructive mt-1">
+                {errors.returnDate}
+              </p>
             )}
           </div>
         )}
@@ -327,14 +326,16 @@ export const FlightSearchForm = () => {
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-foreground">{t("search.class.title")}</label>
-          <Select 
-            value={travelClass} 
+          <Select
+            value={travelClass}
             onValueChange={(value) => {
               setTravelClass(value as typeof travelClass);
               handleBlur("travelClass");
             }}
           >
-            <SelectTrigger className={cn("h-11 bg-background", errors.travelClass && touched.travelClass && "border-destructive")}>
+            <SelectTrigger
+              className={cn("h-11 bg-background", errors.travelClass && touched.travelClass && "border-destructive")}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover">
@@ -347,10 +348,8 @@ export const FlightSearchForm = () => {
         </div>
       </div>
 
-
-
       {/* Submit Button */}
-      <UnifiedSubmitButton 
+      <UnifiedSubmitButton
         variant="search"
         disabled={hasErrors}
         className={cn("w-full h-12 text-base font-semibold", hasErrors && "opacity-50 cursor-not-allowed")}

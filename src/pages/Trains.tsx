@@ -95,8 +95,8 @@ const Trains = () => {
         const trainsData: RawTrain[] = Array.isArray(result.data)
           ? result.data
           : Array.isArray(result.trains)
-          ? result.trains
-          : [];
+            ? result.trains
+            : [];
 
         if (trainsData.length === 0) {
           setTrains([]);
@@ -104,11 +104,12 @@ const Trains = () => {
         }
 
         const mapped: MappedTrain[] = trainsData.map((train) => {
-          const price = typeof train.price === "object" 
-            ? parseFloat(String(train.price.total || train.price.amount || 0))
-            : typeof train.price === "number"
-            ? train.price
-            : 0;
+          const price =
+            typeof train.price === "object"
+              ? parseFloat(String(train.price.total || train.price.amount || 0))
+              : typeof train.price === "number"
+                ? train.price
+                : 0;
 
           return {
             id: train.id || Math.random().toString(),
@@ -140,30 +141,24 @@ const Trains = () => {
 
   // Available operators
   const availableOperators = useMemo(() => {
-    const operators = [...new Set(trains.map(t => t.operator))];
+    const operators = [...new Set(trains.map((t) => t.operator))];
     return operators.sort();
   }, [trains]);
 
   // Available train types
   const availableTrainTypes = useMemo(() => {
-    const types = [...new Set(trains.map(t => t.trainType))];
+    const types = [...new Set(trains.map((t) => t.trainType))];
     return types.sort();
   }, [trains]);
 
   const toggleOperator = (operator: string) => {
-    setSelectedOperators(prev =>
-      prev.includes(operator)
-        ? prev.filter(o => o !== operator)
-        : [...prev, operator]
+    setSelectedOperators((prev) =>
+      prev.includes(operator) ? prev.filter((o) => o !== operator) : [...prev, operator],
     );
   };
 
   const toggleTrainType = (type: string) => {
-    setSelectedTrainTypes(prev =>
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
+    setSelectedTrainTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
   };
 
   // Parse duration to hours
@@ -174,7 +169,7 @@ const Trains = () => {
 
   // Filter and sort trains
   const filteredAndSortedTrains = useMemo(() => {
-    const filtered = trains.filter(train => {
+    const filtered = trains.filter((train) => {
       // Price filter
       if (train.price < priceRange[0] || train.price > priceRange[1]) return false;
 
@@ -236,18 +231,18 @@ const Trains = () => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+        ></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-              {t("ux.trains.title")}
-            </h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.trains.title")}</h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
               {t("ux.trains.subtitle")}
             </p>
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <TrainSearchForm />
           </div>
         </div>
@@ -274,11 +269,7 @@ const Trains = () => {
           {!loading && !error && hasSearched && trains.length === 0 && (
             <Card>
               <CardContent className="p-0">
-                <EmptyState
-                  icon={Train}
-                  title={t("ux.trains.emptyTitle")}
-                  description={t("ux.trains.emptyDesc")}
-                />
+                <EmptyState icon={Train} title={t("ux.trains.emptyTitle")} description={t("ux.trains.emptyDesc")} />
               </CardContent>
             </Card>
           )}
@@ -287,9 +278,7 @@ const Trains = () => {
             <>
               {/* Filter Bar - Mobile/Desktop */}
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                <p className="text-sm text-muted-foreground">
-                  {filteredAndSortedTrains.length} train(s) trouvé(s)
-                </p>
+                <p className="text-sm text-muted-foreground">{filteredAndSortedTrains.length} train(s) trouvé(s)</p>
 
                 <div className="flex items-center gap-4">
                   <div className="hidden md:block">
@@ -354,8 +343,12 @@ const Trains = () => {
                         onValueChange={(value) => setPriceRange(value as [number, number])}
                       />
                       <div className="flex justify-between text-sm">
-                        <span><Price amount={priceRange[0]} fromCurrency="XOF" /></span>
-                        <span><Price amount={priceRange[1]} fromCurrency="XOF" /></span>
+                        <span>
+                          <Price amount={priceRange[0]} fromCurrency="XOF" />
+                        </span>
+                        <span>
+                          <Price amount={priceRange[1]} fromCurrency="XOF" />
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
@@ -435,7 +428,9 @@ const Trains = () => {
                                 <p className="text-sm text-muted-foreground">{train.trainType}</p>
                               </div>
                             </div>
-                            <Badge variant="outline" className="mt-2">{train.class}</Badge>
+                            <Badge variant="outline" className="mt-2">
+                              {train.class}
+                            </Badge>
                           </div>
 
                           <div className="md:col-span-5">
@@ -512,9 +507,7 @@ const Trains = () => {
               <CardContent className="pt-6 text-center">
                 <Train className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-xl font-semibold mb-2">{t("ux.trains.searchTitle")}</h3>
-                <p className="text-muted-foreground">
-                  {t("ux.trains.searchDesc")}
-                </p>
+                <p className="text-muted-foreground">{t("ux.trains.searchDesc")}</p>
               </CardContent>
             </Card>
           )}

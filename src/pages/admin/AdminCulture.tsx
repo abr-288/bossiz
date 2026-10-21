@@ -5,30 +5,12 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -146,12 +128,20 @@ export default function AdminCulture() {
     const link = form.link_url.trim();
     const sourceUrl = form.image_source_url.trim();
     if ((link && !isHttpUrl(link)) || (sourceUrl && !isHttpUrl(sourceUrl))) {
-      toast({ title: "Lien invalide", description: "Les liens doivent commencer par https://", variant: "destructive" });
+      toast({
+        title: "Lien invalide",
+        description: "Les liens doivent commencer par https://",
+        variant: "destructive",
+      });
       return;
     }
     const slug = slugify(form.slug.trim() || form.title);
     if (!slug) {
-      toast({ title: "Adresse invalide", description: "Indiquez un titre ou une adresse de page.", variant: "destructive" });
+      toast({
+        title: "Adresse invalide",
+        description: "Indiquez un titre ou une adresse de page.",
+        variant: "destructive",
+      });
       return;
     }
     const gallery = form.gallery
@@ -187,7 +177,11 @@ export default function AdminCulture() {
     setSaving(false);
     if (error) {
       if ((error as { code?: string }).code === "23505") {
-        toast({ title: "Adresse déjà utilisée", description: `Un autre article utilise déjà l'adresse /culture/${slug}.`, variant: "destructive" });
+        toast({
+          title: "Adresse déjà utilisée",
+          description: `Un autre article utilise déjà l'adresse /culture/${slug}.`,
+          variant: "destructive",
+        });
         return;
       }
       return showError(error);
@@ -198,7 +192,10 @@ export default function AdminCulture() {
   };
 
   const toggle = async (entry: CultureEntry, field: "published" | "featured") => {
-    const { error } = await supabase.from("culture_entries").update({ [field]: !entry[field] }).eq("id", entry.id);
+    const { error } = await supabase
+      .from("culture_entries")
+      .update({ [field]: !entry[field] })
+      .eq("id", entry.id);
     if (error) return showError(error);
     await refreshEntries();
   };
@@ -216,7 +213,9 @@ export default function AdminCulture() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Culture</h1>
-            <p className="text-muted-foreground">Contenu de la page publique /culture et de la section Culture de l'accueil.</p>
+            <p className="text-muted-foreground">
+              Contenu de la page publique /culture et de la section Culture de l'accueil.
+            </p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" asChild>
@@ -235,22 +234,37 @@ export default function AdminCulture() {
         <Card>
           <CardHeader>
             <CardTitle>En-tête de la page</CardTitle>
-            <CardDescription>Titre, sous-titre et introduction affichés en haut de /culture (le titre et le sous-titre servent aussi sur l'accueil).</CardDescription>
+            <CardDescription>
+              Titre, sous-titre et introduction affichés en haut de /culture (le titre et le sous-titre servent aussi
+              sur l'accueil).
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Titre</Label>
-                <Input value={pageForm.title} onChange={(e) => setPageForm({ ...pageForm, title: e.target.value })} maxLength={120} />
+                <Input
+                  value={pageForm.title}
+                  onChange={(e) => setPageForm({ ...pageForm, title: e.target.value })}
+                  maxLength={120}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Sous-titre</Label>
-                <Input value={pageForm.subtitle} onChange={(e) => setPageForm({ ...pageForm, subtitle: e.target.value })} maxLength={200} />
+                <Input
+                  value={pageForm.subtitle}
+                  onChange={(e) => setPageForm({ ...pageForm, subtitle: e.target.value })}
+                  maxLength={200}
+                />
               </div>
             </div>
             <div className="space-y-2">
               <Label>Introduction</Label>
-              <Textarea rows={3} value={pageForm.intro} onChange={(e) => setPageForm({ ...pageForm, intro: e.target.value })} />
+              <Textarea
+                rows={3}
+                value={pageForm.intro}
+                onChange={(e) => setPageForm({ ...pageForm, intro: e.target.value })}
+              />
             </div>
             <ImageUpload
               label="Image d'en-tête"
@@ -259,7 +273,9 @@ export default function AdminCulture() {
               onChange={(heroImage) => setPageForm({ ...pageForm, heroImage })}
             />
             <div className="flex justify-end">
-              <Button onClick={savePage} disabled={savingPage}>Enregistrer l'en-tête</Button>
+              <Button onClick={savePage} disabled={savingPage}>
+                Enregistrer l'en-tête
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -279,7 +295,9 @@ export default function AdminCulture() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">Chargement...</TableCell>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    Chargement...
+                  </TableCell>
                 </TableRow>
               ) : !entries?.length ? (
                 <TableRow>
@@ -303,7 +321,9 @@ export default function AdminCulture() {
                         <span className="font-medium">{entry.title}</span>
                       </div>
                     </TableCell>
-                    <TableCell><Badge variant="outline">{cultureCategory(entry.category).label}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{cultureCategory(entry.category).label}</Badge>
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{entry.location || "—"}</TableCell>
                     <TableCell>
                       <Button
@@ -312,11 +332,17 @@ export default function AdminCulture() {
                         aria-label={entry.featured ? "Retirer de la une" : "Mettre à la une"}
                         onClick={() => toggle(entry, "featured")}
                       >
-                        <Star className={`h-4 w-4 ${entry.featured ? "fill-gold text-gold" : "text-muted-foreground"}`} />
+                        <Star
+                          className={`h-4 w-4 ${entry.featured ? "fill-gold text-gold" : "text-muted-foreground"}`}
+                        />
                       </Button>
                     </TableCell>
                     <TableCell>
-                      <Switch checked={entry.published} onCheckedChange={() => toggle(entry, "published")} aria-label="Publiée" />
+                      <Switch
+                        checked={entry.published}
+                        onCheckedChange={() => toggle(entry, "published")}
+                        aria-label="Publiée"
+                      />
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" aria-label="Modifier" onClick={() => openDialog(entry)}>
@@ -342,7 +368,12 @@ export default function AdminCulture() {
           <form onSubmit={saveEntry} className="space-y-4">
             <div className="space-y-2">
               <Label>Titre</Label>
-              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} maxLength={160} required />
+              <Input
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                maxLength={160}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label>Adresse de la page</Label>
@@ -359,36 +390,65 @@ export default function AdminCulture() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Catégorie</Label>
-                <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as CultureCategory })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={form.category}
+                  onValueChange={(v) => setForm({ ...form, category: v as CultureCategory })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     {CULTURE_CATEGORIES.map((c) => (
-                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label>Lieu</Label>
-                <Input placeholder="Ex. : Grand-Bassam" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+                <Input
+                  placeholder="Ex. : Grand-Bassam"
+                  value={form.location}
+                  onChange={(e) => setForm({ ...form, location: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Quand y aller / dates</Label>
-                <Input placeholder="Ex. : Fin octobre, chaque année" value={form.period} onChange={(e) => setForm({ ...form, period: e.target.value })} />
+                <Input
+                  placeholder="Ex. : Fin octobre, chaque année"
+                  value={form.period}
+                  onChange={(e) => setForm({ ...form, period: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Ordre d'affichage</Label>
-                <Input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} />
+                <Input
+                  type="number"
+                  value={form.sort_order}
+                  onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
+                />
               </div>
             </div>
             <div className="space-y-2">
               <Label>Résumé (carte)</Label>
-              <Textarea rows={2} maxLength={400} value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} required />
+              <Textarea
+                rows={2}
+                maxLength={400}
+                value={form.summary}
+                onChange={(e) => setForm({ ...form, summary: e.target.value })}
+                required
+              />
               <p className="text-xs text-muted-foreground">{form.summary.length}/400</p>
             </div>
             <div className="space-y-2">
               <Label>Article</Label>
-              <Textarea rows={12} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
+              <Textarea
+                rows={12}
+                value={form.content}
+                onChange={(e) => setForm({ ...form, content: e.target.value })}
+              />
               <p className="text-xs text-muted-foreground">
                 Séparez les paragraphes par une ligne vide. « ## Titre » crée un intertitre, « - » une liste.
               </p>
@@ -396,24 +456,46 @@ export default function AdminCulture() {
 
             <div className="space-y-3 rounded-md border p-3">
               <p className="text-sm font-medium">Photo principale</p>
-              <ImageUpload label="Envoyer une photo" folder="culture" value={form.image_url} onChange={(image_url) => setForm({ ...form, image_url })} />
+              <ImageUpload
+                label="Envoyer une photo"
+                folder="culture"
+                value={form.image_url}
+                onChange={(image_url) => setForm({ ...form, image_url })}
+              />
               <div className="space-y-2">
                 <Label className="text-xs">ou adresse de la photo (ex. Wikimedia Commons)</Label>
-                <Input type="url" placeholder="https://..." value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+                <Input
+                  type="url"
+                  placeholder="https://..."
+                  value={form.image_url}
+                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label className="text-xs">Légende</Label>
-                  <Input value={form.image_caption} onChange={(e) => setForm({ ...form, image_caption: e.target.value })} />
+                  <Input
+                    value={form.image_caption}
+                    onChange={(e) => setForm({ ...form, image_caption: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Crédit (auteur, licence)</Label>
-                  <Input placeholder="Photo : Nom – CC BY-SA 4.0" value={form.image_credit} onChange={(e) => setForm({ ...form, image_credit: e.target.value })} />
+                  <Input
+                    placeholder="Photo : Nom – CC BY-SA 4.0"
+                    value={form.image_credit}
+                    onChange={(e) => setForm({ ...form, image_credit: e.target.value })}
+                  />
                 </div>
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Page source de la photo</Label>
-                <Input type="url" placeholder="https://commons.wikimedia.org/wiki/File:..." value={form.image_source_url} onChange={(e) => setForm({ ...form, image_source_url: e.target.value })} />
+                <Input
+                  type="url"
+                  placeholder="https://commons.wikimedia.org/wiki/File:..."
+                  value={form.image_source_url}
+                  onChange={(e) => setForm({ ...form, image_source_url: e.target.value })}
+                />
               </div>
             </div>
 
@@ -424,12 +506,34 @@ export default function AdminCulture() {
                   setForm({ ...form, gallery: form.gallery.map((p, j) => (j === i ? { ...p, ...patch } : p)) });
                 return (
                   <div key={i} className="flex gap-3 rounded-md bg-muted/40 p-2">
-                    {photo.url && <img src={photo.url} alt="" className="h-16 w-20 rounded object-cover flex-shrink-0" />}
+                    {photo.url && (
+                      <img src={photo.url} alt="" className="h-16 w-20 rounded object-cover flex-shrink-0" />
+                    )}
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <Input className="sm:col-span-2" type="url" placeholder="Adresse de la photo" value={photo.url} onChange={(e) => update({ url: e.target.value })} />
-                      <Input placeholder="Légende" value={photo.caption ?? ""} onChange={(e) => update({ caption: e.target.value })} />
-                      <Input placeholder="Crédit" value={photo.credit ?? ""} onChange={(e) => update({ credit: e.target.value })} />
-                      <Input className="sm:col-span-2" type="url" placeholder="Page source" value={photo.sourceUrl ?? ""} onChange={(e) => update({ sourceUrl: e.target.value })} />
+                      <Input
+                        className="sm:col-span-2"
+                        type="url"
+                        placeholder="Adresse de la photo"
+                        value={photo.url}
+                        onChange={(e) => update({ url: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Légende"
+                        value={photo.caption ?? ""}
+                        onChange={(e) => update({ caption: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Crédit"
+                        value={photo.credit ?? ""}
+                        onChange={(e) => update({ credit: e.target.value })}
+                      />
+                      <Input
+                        className="sm:col-span-2"
+                        type="url"
+                        placeholder="Page source"
+                        value={photo.sourceUrl ?? ""}
+                        onChange={(e) => update({ sourceUrl: e.target.value })}
+                      />
                     </div>
                     <Button
                       type="button"
@@ -444,7 +548,12 @@ export default function AdminCulture() {
                 );
               })}
               <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setForm({ ...form, gallery: [...form.gallery, { url: "" }] })}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setForm({ ...form, gallery: [...form.gallery, { url: "" }] })}
+                >
                   <Plus className="h-3.5 w-3.5 mr-1" />
                   Ajouter par adresse
                 </Button>
@@ -459,12 +568,16 @@ export default function AdminCulture() {
             </div>
             <div className="space-y-2">
               <Label>Lien « En savoir plus » (optionnel)</Label>
-              <Input type="url" placeholder="https://..." value={form.link_url} onChange={(e) => setForm({ ...form, link_url: e.target.value })} />
+              <Input
+                type="url"
+                placeholder="https://..."
+                value={form.link_url}
+                onChange={(e) => setForm({ ...form, link_url: e.target.value })}
+              />
             </div>
             <div className="flex flex-wrap gap-6">
               <label className="flex items-center gap-2 text-sm">
-                <Switch checked={form.featured} onCheckedChange={(c) => setForm({ ...form, featured: c })} />
-                À la une
+                <Switch checked={form.featured} onCheckedChange={(c) => setForm({ ...form, featured: c })} />À la une
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <Switch checked={form.published} onCheckedChange={(c) => setForm({ ...form, published: c })} />
@@ -472,8 +585,12 @@ export default function AdminCulture() {
               </label>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Annuler</Button>
-              <Button type="submit" disabled={saving}>Enregistrer</Button>
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={saving}>
+                Enregistrer
+              </Button>
             </div>
           </form>
         </DialogContent>

@@ -6,20 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImageGalleryField } from "@/components/agency/ImageGalleryField";
@@ -101,7 +89,10 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
     (error: unknown) =>
       toast({
         title: "Erreur",
-        description: error instanceof Error ? error.message : (error as { message?: string })?.message || "Enregistrement impossible",
+        description:
+          error instanceof Error
+            ? error.message
+            : (error as { message?: string })?.message || "Enregistrement impossible",
         variant: "destructive",
       }),
     [toast],
@@ -127,7 +118,10 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
       const { data: rateRows, error: rateError } = await supabase
         .from("hotel_rates")
         .select("*")
-        .in("room_type_id", roomList.map((r) => r.id))
+        .in(
+          "room_type_id",
+          roomList.map((r) => r.id),
+        )
         .order("occupancy", { ascending: false })
         .order("price_per_night");
       if (rateError) showError(rateError);
@@ -250,7 +244,11 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
     if (!rateRoom) return;
     const price = parseFloat(rateForm.price_per_night);
     if (!Number.isFinite(price) || price <= 0) {
-      toast({ title: "Prix invalide", description: "Indiquez un prix par nuit supérieur à 0.", variant: "destructive" });
+      toast({
+        title: "Prix invalide",
+        description: "Indiquez un prix par nuit supérieur à 0.",
+        variant: "destructive",
+      });
       return;
     }
     const payload = {
@@ -336,24 +334,43 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                         </p>
                       </div>
                       <div className="flex items-start gap-1">
-                        <Button variant="ghost" size="icon" aria-label="Modifier le type" onClick={() => openRoomDialog(room)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Modifier le type"
+                          onClick={() => openRoomDialog(room)}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label="Supprimer le type" onClick={() => deleteRoom(room)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Supprimer le type"
+                          onClick={() => deleteRoom(room)}
+                        >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
                     </div>
                     <div className="p-3 space-y-2">
                       {roomRates.map((rate) => (
-                        <div key={rate.id} className="flex flex-col sm:flex-row sm:items-center gap-2 rounded-md border px-3 py-2 text-sm">
-                          <span className="flex items-center gap-0.5 w-20 flex-shrink-0" title={`${rate.occupancy} voyageur(s)`}>
+                        <div
+                          key={rate.id}
+                          className="flex flex-col sm:flex-row sm:items-center gap-2 rounded-md border px-3 py-2 text-sm"
+                        >
+                          <span
+                            className="flex items-center gap-0.5 w-20 flex-shrink-0"
+                            title={`${rate.occupancy} voyageur(s)`}
+                          >
                             {Array.from({ length: Math.min(rate.occupancy, 6) }).map((_, i) => (
                               <User key={i} className="h-3.5 w-3.5" />
                             ))}
                             {rate.occupancy > 6 && <span className="text-xs">×{rate.occupancy}</span>}
                           </span>
-                          <span className="font-semibold w-32 flex-shrink-0">{formatFcfa(rate.price_per_night)}<span className="text-xs font-normal text-muted-foreground"> /nuit</span></span>
+                          <span className="font-semibold w-32 flex-shrink-0">
+                            {formatFcfa(rate.price_per_night)}
+                            <span className="text-xs font-normal text-muted-foreground"> /nuit</span>
+                          </span>
                           <span className="flex-1 text-xs text-muted-foreground">
                             {[
                               rate.breakfast_included ? "Petit-déjeuner inclus" : null,
@@ -367,10 +384,22 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                           </span>
                           {!rate.is_active && <Badge variant="secondary">Désactivé</Badge>}
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Modifier le tarif" onClick={() => openRateDialog(room, rate)}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              aria-label="Modifier le tarif"
+                              onClick={() => openRateDialog(room, rate)}
+                            >
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Supprimer le tarif" onClick={() => deleteRate(rate)}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              aria-label="Supprimer le tarif"
+                              onClick={() => deleteRate(rate)}
+                            >
                               <Trash2 className="h-3.5 w-3.5 text-destructive" />
                             </Button>
                           </div>
@@ -406,7 +435,9 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                 required
               />
               <datalist id="hotel-room-name-suggestions">
-                {ROOM_NAME_SUGGESTIONS.map((name) => <option key={name} value={name} />)}
+                {ROOM_NAME_SUGGESTIONS.map((name) => (
+                  <option key={name} value={name} />
+                ))}
               </datalist>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -420,16 +451,37 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
               </div>
               <div className="space-y-2">
                 <Label>Surface (m²)</Label>
-                <Input type="number" min="1" value={roomForm.size_m2} onChange={(e) => setRoomForm({ ...roomForm, size_m2: e.target.value })} />
+                <Input
+                  type="number"
+                  min="1"
+                  value={roomForm.size_m2}
+                  onChange={(e) => setRoomForm({ ...roomForm, size_m2: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Voyageurs maximum</Label>
-                <Input type="number" min="1" max="30" value={roomForm.max_guests} onChange={(e) => setRoomForm({ ...roomForm, max_guests: e.target.value })} required />
+                <Input
+                  type="number"
+                  min="1"
+                  max="30"
+                  value={roomForm.max_guests}
+                  onChange={(e) => setRoomForm({ ...roomForm, max_guests: e.target.value })}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label>Nombre d'unités de ce type</Label>
-                <Input type="number" min="1" max="500" value={roomForm.total_units} onChange={(e) => setRoomForm({ ...roomForm, total_units: e.target.value })} required />
-                <p className="text-xs text-muted-foreground">Combien de chambres/appartements identiques vous proposez.</p>
+                <Input
+                  type="number"
+                  min="1"
+                  max="500"
+                  value={roomForm.total_units}
+                  onChange={(e) => setRoomForm({ ...roomForm, total_units: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Combien de chambres/appartements identiques vous proposez.
+                </p>
               </div>
             </div>
             <div className="space-y-2">
@@ -451,9 +503,10 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                       onCheckedChange={(checked) =>
                         setRoomForm({
                           ...roomForm,
-                          amenities: checked === true
-                            ? [...roomForm.amenities, amenity]
-                            : roomForm.amenities.filter((a) => a !== amenity),
+                          amenities:
+                            checked === true
+                              ? [...roomForm.amenities, amenity]
+                              : roomForm.amenities.filter((a) => a !== amenity),
                         })
                       }
                     />
@@ -470,12 +523,19 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
               max={ROOM_GALLERY_MAX}
             />
             <div className="flex items-center gap-2">
-              <Switch checked={roomForm.is_active} onCheckedChange={(c) => setRoomForm({ ...roomForm, is_active: c })} />
+              <Switch
+                checked={roomForm.is_active}
+                onCheckedChange={(c) => setRoomForm({ ...roomForm, is_active: c })}
+              />
               <Label>Proposé à la réservation</Label>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setRoomDialogOpen(false)}>Annuler</Button>
-              <Button type="submit" disabled={saving}>{editingRoom ? "Enregistrer" : "Créer et ajouter un tarif"}</Button>
+              <Button type="button" variant="outline" onClick={() => setRoomDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {editingRoom ? "Enregistrer" : "Créer et ajouter un tarif"}
+              </Button>
             </div>
           </form>
         </DialogContent>
@@ -492,10 +552,14 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
               <div className="space-y-2">
                 <Label>Nombre de voyageurs</Label>
                 <Select value={rateForm.occupancy} onValueChange={(v) => setRateForm({ ...rateForm, occupancy: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     {Array.from({ length: rateRoom?.max_guests || 1 }, (_, i) => i + 1).map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n} voyageur{n > 1 ? "s" : ""}</SelectItem>
+                      <SelectItem key={n} value={String(n)}>
+                        {n} voyageur{n > 1 ? "s" : ""}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -513,12 +577,21 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
             </div>
             <div className="space-y-3 rounded-md border p-3">
               <label className="flex items-center justify-between gap-3 text-sm">
-                <span className="flex items-center gap-2"><Coffee className="h-4 w-4" />Petit-déjeuner inclus</span>
-                <Switch checked={rateForm.breakfast_included} onCheckedChange={(c) => setRateForm({ ...rateForm, breakfast_included: c })} />
+                <span className="flex items-center gap-2">
+                  <Coffee className="h-4 w-4" />
+                  Petit-déjeuner inclus
+                </span>
+                <Switch
+                  checked={rateForm.breakfast_included}
+                  onCheckedChange={(c) => setRateForm({ ...rateForm, breakfast_included: c })}
+                />
               </label>
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span>Annulation gratuite</span>
-                <Switch checked={rateForm.free_cancellation} onCheckedChange={(c) => setRateForm({ ...rateForm, free_cancellation: c })} />
+                <Switch
+                  checked={rateForm.free_cancellation}
+                  onCheckedChange={(c) => setRateForm({ ...rateForm, free_cancellation: c })}
+                />
               </label>
               {rateForm.free_cancellation ? (
                 <div className="space-y-2 pl-1">
@@ -548,21 +621,38 @@ export function HotelRoomsManager({ serviceId, hotelName, open, onOpenChange, on
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground pl-1">Tarif non remboursable : 100 % de frais en cas d'annulation.</p>
+                <p className="text-xs text-muted-foreground pl-1">
+                  Tarif non remboursable : 100 % de frais en cas d'annulation.
+                </p>
               )}
-              <p className="text-xs text-muted-foreground pl-1">Non-présentation du client : 100 % du séjour (contrat de partenariat, art. 7).</p>
+              <p className="text-xs text-muted-foreground pl-1">
+                Non-présentation du client : 100 % du séjour (contrat de partenariat, art. 7).
+              </p>
               <label className="flex items-center justify-between gap-3 text-sm">
-                <span className="flex items-center gap-2"><Wallet className="h-4 w-4" />Paiement sur place (pas de paiement en ligne)</span>
-                <Switch checked={rateForm.pay_at_property} onCheckedChange={(c) => setRateForm({ ...rateForm, pay_at_property: c })} />
+                <span className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  Paiement sur place (pas de paiement en ligne)
+                </span>
+                <Switch
+                  checked={rateForm.pay_at_property}
+                  onCheckedChange={(c) => setRateForm({ ...rateForm, pay_at_property: c })}
+                />
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch checked={rateForm.is_active} onCheckedChange={(c) => setRateForm({ ...rateForm, is_active: c })} />
+              <Switch
+                checked={rateForm.is_active}
+                onCheckedChange={(c) => setRateForm({ ...rateForm, is_active: c })}
+              />
               <Label>Tarif proposé</Label>
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setRateDialogOpen(false)}>Annuler</Button>
-              <Button type="submit" disabled={saving}>Enregistrer</Button>
+              <Button type="button" variant="outline" onClick={() => setRateDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={saving}>
+                Enregistrer
+              </Button>
             </div>
           </form>
         </DialogContent>

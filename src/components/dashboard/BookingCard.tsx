@@ -17,7 +17,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MapPin, Calendar, Users, MoreVertical, Edit, Trash2, CheckCircle, XCircle, FileDown, Loader2, Ticket } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  Users,
+  MoreVertical,
+  Edit,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  FileDown,
+  Loader2,
+  Ticket,
+} from "lucide-react";
 import { useBookingPDF } from "@/hooks/useBookingPDF";
 import { Price } from "@/components/ui/price";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
@@ -81,10 +93,7 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem 
-                  onClick={() => generatePDF(booking.id)}
-                  disabled={isGenerating}
-                >
+                <DropdownMenuItem onClick={() => generatePDF(booking.id)} disabled={isGenerating}>
                   {isGenerating ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : (
@@ -110,10 +119,7 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
                     Annuler
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="text-destructive"
-                >
+                <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Supprimer
                 </DropdownMenuItem>
@@ -137,7 +143,9 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
 
           <div className="flex items-center gap-2 text-sm">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span>{booking.guests} voyageur{booking.guests > 1 ? "s" : ""}</span>
+            <span>
+              {booking.guests} voyageur{booking.guests > 1 ? "s" : ""}
+            </span>
           </div>
 
           {booking.external_ref && (
@@ -192,7 +200,8 @@ export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: 
           <AlertDialogHeader>
             <AlertDialogTitle>Annuler la réservation</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir annuler cette réservation ? Vous pouvez être éligible à un remboursement selon les conditions.
+              Êtes-vous sûr de vouloir annuler cette réservation ? Vous pouvez être éligible à un remboursement selon
+              les conditions.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

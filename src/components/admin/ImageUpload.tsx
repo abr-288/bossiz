@@ -14,12 +14,12 @@ interface ImageUploadProps {
   accept?: string;
 }
 
-export function ImageUpload({ 
-  value, 
-  onChange, 
+export function ImageUpload({
+  value,
+  onChange,
   folder = "general",
   label = "Image",
-  accept = "image/*"
+  accept = "image/*",
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(value || null);
@@ -59,7 +59,9 @@ export function ImageUpload({
 
     try {
       // Get the session token
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error(t("ux.bo.notAuthenticated"));
       }
@@ -73,16 +75,13 @@ export function ImageUpload({
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       if (!supabaseUrl) throw new Error(t("ux.bo.storageConfigurationUnavailable"));
 
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/upload-site-asset`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(`${supabaseUrl}/functions/v1/upload-site-asset`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: formData,
+      });
 
       const result = await response.json();
 
@@ -120,17 +119,12 @@ export function ImageUpload({
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>
-      
+
       <div className="flex gap-2 items-start">
         {/* Preview */}
         {preview ? (
           <div className="relative w-24 h-24 rounded-lg overflow-hidden border bg-muted">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-full object-cover"
-              onError={() => setPreview(null)}
-            />
+            <img src={preview} alt="Preview" className="w-full h-full object-cover" onError={() => setPreview(null)} />
             <button
               type="button"
               aria-label={t("ux.common.removeImage")}
@@ -157,16 +151,10 @@ export function ImageUpload({
             placeholder={t("ux.bo.imageUrlUpload")}
             className="text-sm"
           />
-          
+
           {/* Upload Button */}
           <div className="flex gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={accept}
-              onChange={handleFileSelect}
-              className="hidden"
-            />
+            <input ref={fileInputRef} type="file" accept={accept} onChange={handleFileSelect} className="hidden" />
             <Button
               type="button"
               variant="outline"
@@ -174,11 +162,7 @@ export function ImageUpload({
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
             >
-              {uploading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Upload className="w-4 h-4 mr-2" />
-              )}
+              {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
               {uploading ? "Upload..." : "Télécharger"}
             </Button>
           </div>

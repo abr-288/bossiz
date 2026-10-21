@@ -64,10 +64,10 @@ export const PreferencesStep = ({
     for (let row = 1; row <= rows; row++) {
       for (const letter of letters) {
         if (letter === "") continue;
-        
+
         let type: "standard" | "extra" | "front" = "standard";
         let price = 5000;
-        
+
         if (row <= 3) {
           type = "front";
           price = 15000;
@@ -75,10 +75,10 @@ export const PreferencesStep = ({
           type = "extra";
           price = 10000;
         }
-        
+
         // Disponibilité réelle inconnue : préférence transmise à la compagnie
         const available = true;
-        
+
         seats.push({
           id: `${row}${letter}`,
           row,
@@ -132,23 +132,17 @@ export const PreferencesStep = ({
   // Render flight seat selection
   if (serviceType === "flight") {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
           <h2 className="text-2xl font-bold text-primary mb-2">{t("ux.prefs.seatsTitle")}</h2>
-          <p className="text-muted-foreground">
-            {t("ux.prefs.seatsSubtitle", { count: guestsCount })}
-          </p>
+          <p className="text-muted-foreground">{t("ux.prefs.seatsSubtitle", { count: guestsCount })}</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
           <Card className="p-6 h-fit">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <Armchair className="h-5 w-5 text-primary" />
-              {t('preferencesStep.legend')}
+              {t("preferencesStep.legend")}
             </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
@@ -157,7 +151,9 @@ export const PreferencesStep = ({
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t("ux.prefs.standard")}</p>
-                  <p className="text-xs text-muted-foreground"><Price amount={5000} /></p>
+                  <p className="text-xs text-muted-foreground">
+                    <Price amount={5000} />
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -166,7 +162,9 @@ export const PreferencesStep = ({
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t("ux.prefs.extraLegroom")}</p>
-                  <p className="text-xs text-muted-foreground"><Price amount={10000} /></p>
+                  <p className="text-xs text-muted-foreground">
+                    <Price amount={10000} />
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -175,7 +173,9 @@ export const PreferencesStep = ({
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t("ux.prefs.front")}</p>
-                  <p className="text-xs text-muted-foreground"><Price amount={15000} /></p>
+                  <p className="text-xs text-muted-foreground">
+                    <Price amount={15000} />
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -234,9 +234,7 @@ export const PreferencesStep = ({
 
               {Array.from({ length: rows }, (_, i) => i + 1).map((row) => (
                 <div key={row} className="flex gap-2 justify-center items-center">
-                  <div className="w-8 text-sm font-semibold text-muted-foreground text-right">
-                    {row}
-                  </div>
+                  <div className="w-8 text-sm font-semibold text-muted-foreground text-right">{row}</div>
                   {letters.map((letter, idx) => {
                     if (letter === "") {
                       return <div key={idx} className="w-10" />;
@@ -250,7 +248,11 @@ export const PreferencesStep = ({
                         type="button"
                         onClick={() => handleSeatClick(seat.id)}
                         disabled={!seat.available}
-                        aria-label={seat.available ? t("ux.prefs.seat", { id: seat.id }) : t("ux.prefs.seatUnavailable", { id: seat.id })}
+                        aria-label={
+                          seat.available
+                            ? t("ux.prefs.seat", { id: seat.id })
+                            : t("ux.prefs.seatUnavailable", { id: seat.id })
+                        }
                         aria-pressed={selectedSeats.includes(seat.id)}
                         className={`w-10 h-10 rounded flex items-center justify-center text-xs font-medium transition-all ${getSeatColor(seat)} ${!seat.available ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
                       >
@@ -277,7 +279,7 @@ export const PreferencesStep = ({
           </Button>
           <div className="flex-1">
             <UnifiedSubmitButton variant="booking" fullWidth onClick={onNext}>
-              {t('booking.summary.continueToPayment')}
+              {t("booking.summary.continueToPayment")}
             </UnifiedSubmitButton>
           </div>
         </div>
@@ -288,11 +290,7 @@ export const PreferencesStep = ({
   // Render hotel/stay room preferences
   if (serviceType === "hotel" || serviceType === "stay") {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
           <h2 className="text-2xl font-bold text-primary mb-2">{t("ux.prefs.roomTitle")}</h2>
           <p className="text-muted-foreground">{t("ux.prefs.roomSubtitle")}</p>
@@ -336,14 +334,14 @@ export const PreferencesStep = ({
           <Card className="p-6">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
-              {t('preferencesStep.floorPreferenceLabel')}
+              {t("preferencesStep.floorPreferenceLabel")}
             </h3>
             <Select
               value={selectedPreferences.floorPreference || "any"}
               onValueChange={(value) => handlePreferenceChange("floorPreference", value)}
             >
               <SelectTrigger className="h-12">
-                <SelectValue placeholder={t('preferencesStep.choosePreferencePlaceholder')} />
+                <SelectValue placeholder={t("preferencesStep.choosePreferencePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">{t("ux.prefs.floorAny")}</SelectItem>
@@ -355,14 +353,14 @@ export const PreferencesStep = ({
 
             <h3 className="font-semibold mt-6 mb-4 flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
-              {t('preferencesStep.estimatedArrivalTimeLabel')}
+              {t("preferencesStep.estimatedArrivalTimeLabel")}
             </h3>
             <Select
               value={selectedPreferences.arrivalTime || "14-18"}
               onValueChange={(value) => handlePreferenceChange("arrivalTime", value)}
             >
               <SelectTrigger className="h-12">
-                <SelectValue placeholder={t('preferencesStep.selectPlaceholder')} />
+                <SelectValue placeholder={t("preferencesStep.selectPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="before-14">{t("ux.prefs.before14")}</SelectItem>
@@ -376,17 +374,15 @@ export const PreferencesStep = ({
           <Card className="p-6 md:col-span-2">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <Heart className="h-5 w-5 text-primary" />
-              {t('preferencesStep.hotelSpecialRequestsLabel')}
+              {t("preferencesStep.hotelSpecialRequestsLabel")}
             </h3>
             <Textarea
-              placeholder={t('preferencesStep.hotelSpecialRequestsPlaceholder')}
+              placeholder={t("preferencesStep.hotelSpecialRequestsPlaceholder")}
               value={selectedPreferences.specialRequests || ""}
               onChange={(e) => handlePreferenceChange("specialRequests", e.target.value)}
               className="min-h-[100px]"
             />
-            <p className="text-xs text-muted-foreground mt-2">
-              {t("ux.prefs.specialNote")}
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">{t("ux.prefs.specialNote")}</p>
           </Card>
         </div>
 
@@ -396,7 +392,7 @@ export const PreferencesStep = ({
           </Button>
           <div className="flex-1">
             <UnifiedSubmitButton variant="booking" fullWidth onClick={onNext}>
-              {t('booking.summary.continueToPayment')}
+              {t("booking.summary.continueToPayment")}
             </UnifiedSubmitButton>
           </div>
         </div>
@@ -407,11 +403,7 @@ export const PreferencesStep = ({
   // Render car rental details
   if (serviceType === "car") {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
           <h2 className="text-2xl font-bold text-primary mb-2">{t("ux.prefs.carTitle")}</h2>
           <p className="text-muted-foreground">{t("ux.prefs.carSubtitle")}</p>
@@ -455,7 +447,7 @@ export const PreferencesStep = ({
               onValueChange={(value) => handlePreferenceChange("pickupTime", value)}
             >
               <SelectTrigger className="h-12">
-                <SelectValue placeholder={t('preferencesStep.selectTimePlaceholder')} />
+                <SelectValue placeholder={t("preferencesStep.selectTimePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {Array.from({ length: 13 }, (_, i) => i + 7).map((hour) => (
@@ -472,7 +464,7 @@ export const PreferencesStep = ({
               onValueChange={(value) => handlePreferenceChange("returnTime", value)}
             >
               <SelectTrigger className="h-12">
-                <SelectValue placeholder={t('preferencesStep.selectTimePlaceholder')} />
+                <SelectValue placeholder={t("preferencesStep.selectTimePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {Array.from({ length: 13 }, (_, i) => i + 7).map((hour) => (
@@ -490,7 +482,7 @@ export const PreferencesStep = ({
               {t("ux.prefs.notes")}
             </h3>
             <Textarea
-              placeholder={t('preferencesStep.carNotesPlaceholder')}
+              placeholder={t("preferencesStep.carNotesPlaceholder")}
               value={selectedPreferences.notes || ""}
               onChange={(e) => handlePreferenceChange("notes", e.target.value)}
               className="min-h-[100px]"
@@ -504,7 +496,7 @@ export const PreferencesStep = ({
           </Button>
           <div className="flex-1">
             <UnifiedSubmitButton variant="booking" fullWidth onClick={onNext}>
-              {t('booking.summary.continueToPayment')}
+              {t("booking.summary.continueToPayment")}
             </UnifiedSubmitButton>
           </div>
         </div>
@@ -514,11 +506,7 @@ export const PreferencesStep = ({
 
   // Default: tour/event/other services
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
         <h2 className="text-2xl font-bold text-primary mb-2">{t("ux.prefs.genericTitle")}</h2>
         <p className="text-muted-foreground">{t("ux.prefs.genericSubtitle")}</p>
@@ -528,14 +516,14 @@ export const PreferencesStep = ({
         <Card className="p-6">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            {t('preferencesStep.desiredDepartureTimeLabel')}
+            {t("preferencesStep.desiredDepartureTimeLabel")}
           </h3>
           <Select
             value={selectedPreferences.departureTime || "09:00"}
             onValueChange={(value) => handlePreferenceChange("departureTime", value)}
           >
             <SelectTrigger className="h-12">
-              <SelectValue placeholder={t('preferencesStep.selectTimePlaceholder')} />
+              <SelectValue placeholder={t("preferencesStep.selectTimePlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="06:00">{t("ux.prefs.early")}</SelectItem>
@@ -549,14 +537,14 @@ export const PreferencesStep = ({
         <Card className="p-6">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <Utensils className="h-5 w-5 text-primary" />
-            {t('preferencesStep.dietaryPreferencesLabel')}
+            {t("preferencesStep.dietaryPreferencesLabel")}
           </h3>
           <Select
             value={selectedPreferences.dietaryPreference || "none"}
             onValueChange={(value) => handlePreferenceChange("dietaryPreference", value)}
           >
             <SelectTrigger className="h-12">
-              <SelectValue placeholder={t('preferencesStep.selectPlaceholder')} />
+              <SelectValue placeholder={t("preferencesStep.selectPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">{t("ux.prefs.dietNone")}</SelectItem>
@@ -571,10 +559,10 @@ export const PreferencesStep = ({
         <Card className="p-6 md:col-span-2">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <Heart className="h-5 w-5 text-primary" />
-            {t('preferencesStep.particularRequestsLabel')}
+            {t("preferencesStep.particularRequestsLabel")}
           </h3>
           <Textarea
-            placeholder={t('preferencesStep.genericSpecialRequestsPlaceholder')}
+            placeholder={t("preferencesStep.genericSpecialRequestsPlaceholder")}
             value={selectedPreferences.specialRequests || ""}
             onChange={(e) => handlePreferenceChange("specialRequests", e.target.value)}
             className="min-h-[100px]"
@@ -588,7 +576,7 @@ export const PreferencesStep = ({
         </Button>
         <div className="flex-1">
           <UnifiedSubmitButton variant="booking" fullWidth onClick={onNext}>
-            {t('booking.summary.continueToPayment')}
+            {t("booking.summary.continueToPayment")}
           </UnifiedSubmitButton>
         </div>
       </div>
@@ -597,7 +585,18 @@ export const PreferencesStep = ({
 };
 
 const Utensils = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
     <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
     <path d="M7 2v20" />
     <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />

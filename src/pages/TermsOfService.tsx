@@ -1,7 +1,19 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
-import { FileText, Scale, CreditCard, AlertTriangle, Ban, RefreshCcw, Gavel, ShieldCheck, Plane, Users, Handshake } from "lucide-react";
+import {
+  FileText,
+  Scale,
+  CreditCard,
+  AlertTriangle,
+  Ban,
+  RefreshCcw,
+  Gavel,
+  ShieldCheck,
+  Plane,
+  Users,
+  Handshake,
+} from "lucide-react";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { PageHero } from "@/components/PageHero";
 import heroImage from "@/assets/hero-slide-3.webp";
@@ -232,24 +244,22 @@ const TermsOfService = () => {
       <PageHero
         image={heroImage}
         title={<>Conditions Générales d'Utilisation</>}
-        subtitle={<>Veuillez lire attentivement les conditions suivantes avant d'utiliser les services de {siteName}. 
-              Ces conditions constituent un accord juridiquement contraignant entre vous et {siteName}.</>}
+        subtitle={
+          <>
+            Veuillez lire attentivement les conditions suivantes avant d'utiliser les services de {siteName}. Ces
+            conditions constituent un accord juridiquement contraignant entre vous et {siteName}.
+          </>
+        }
       />
       <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-
           {/* Sections */}
           <div className="space-y-8">
             {sections.map((section, index) => {
               return (
-                <section
-                  key={index}
-                  className="bg-card border border-border rounded-xl p-6 md:p-8"
-                >
+                <section key={index} className="bg-card border border-border rounded-xl p-6 md:p-8">
                   <div className="mb-4">
-                    <h2 className="text-xl font-bold text-foreground">
-                      {section.title}
-                    </h2>
+                    <h2 className="text-xl font-bold text-foreground">{section.title}</h2>
                   </div>
                   <div className="space-y-2">
                     {section.content.map((line, i) => (
@@ -257,8 +267,7 @@ const TermsOfService = () => {
                         key={i}
                         className="text-muted-foreground text-sm leading-relaxed"
                         dangerouslySetInnerHTML={{
-                          __html: line
-                            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>')
+                          __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground">$1</strong>'),
                         }}
                       />
                     ))}

@@ -23,10 +23,10 @@ export const TravelersSelector = ({
 }: TravelersSelectorProps) => {
   const getTravelersText = () => {
     const parts = [];
-    if (adults > 0) parts.push(`${adults} Adulte${adults > 1 ? 's' : ''}`);
-    if (children > 0) parts.push(`${children} Enfant${children > 1 ? 's' : ''}`);
-    if (showRooms && rooms > 0) parts.push(`${rooms} Chambre${rooms > 1 ? 's' : ''}`);
-    return parts.join(', ') || 'Voyageurs';
+    if (adults > 0) parts.push(`${adults} Adulte${adults > 1 ? "s" : ""}`);
+    if (children > 0) parts.push(`${children} Enfant${children > 1 ? "s" : ""}`);
+    if (showRooms && rooms > 0) parts.push(`${rooms} Chambre${rooms > 1 ? "s" : ""}`);
+    return parts.join(", ") || "Voyageurs";
   };
 
   return (
@@ -55,12 +55,7 @@ export const TravelersSelector = ({
                 <Minus className="h-4 w-4" />
               </Button>
               <span className="w-8 text-center font-medium">{adults}</span>
-              <Button
-                aria-label="Augmenter"
-                variant="outline"
-                size="icon"
-                onClick={() => onAdultsChange(adults + 1)}
-              >
+              <Button aria-label="Augmenter" variant="outline" size="icon" onClick={() => onAdultsChange(adults + 1)}>
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -110,12 +105,7 @@ export const TravelersSelector = ({
                   <Minus className="h-4 w-4" />
                 </Button>
                 <span className="w-8 text-center font-medium">{rooms}</span>
-                <Button
-                  aria-label="Augmenter"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => onRoomsChange(rooms + 1)}
-                >
+                <Button aria-label="Augmenter" variant="outline" size="icon" onClick={() => onRoomsChange(rooms + 1)}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>

@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { UnifiedForm, UnifiedAutocomplete, UnifiedFormField, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
+import {
+  UnifiedForm,
+  UnifiedAutocomplete,
+  UnifiedFormField,
+  UnifiedDatePicker,
+  UnifiedSubmitButton,
+} from "@/components/forms";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 
@@ -14,7 +20,7 @@ export const ActivitySearchForm = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const guests = formData.get("guests") as string;
 
@@ -47,29 +53,15 @@ export const ActivitySearchForm = () => {
         </div>
 
         <div className="min-w-0">
-          <UnifiedDatePicker
-            label={t("search.date")}
-            value={date}
-            onChange={setDate}
-            minDate={new Date()}
-          />
+          <UnifiedDatePicker label={t("search.date")} value={date} onChange={setDate} minDate={new Date()} />
         </div>
 
         <div className="min-w-0">
-          <UnifiedFormField
-            label={t("search.guests")}
-            name="guests"
-            type="number"
-            defaultValue="2"
-            min={1}
-            max={20}
-          />
+          <UnifiedFormField label={t("search.guests")} name="guests" type="number" defaultValue="2" min={1} max={20} />
         </div>
 
         <div className="sm:col-span-2 lg:col-span-1 flex items-end">
-          <UnifiedSubmitButton fullWidth>
-            {t("search.search")}
-          </UnifiedSubmitButton>
+          <UnifiedSubmitButton fullWidth>{t("search.search")}</UnifiedSubmitButton>
         </div>
       </div>
 

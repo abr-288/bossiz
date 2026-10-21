@@ -7,29 +7,36 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { 
-  Search, 
-  Eye, 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
-  Building2, 
-  Crown, 
-  FileCheck, 
+import {
+  Search,
+  Eye,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Building2,
+  Crown,
+  FileCheck,
   Plane,
   Mail,
   Phone,
   Calendar,
   MessageSquare,
   Loader2,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
@@ -65,10 +72,18 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  get pending() { return i18n.t("ux.bo.pending2"); },
-  get contacted() { return i18n.t("ux.bo.contacted2"); },
-  get approved() { return i18n.t("ux.bo.approved2"); },
-  get rejected() { return i18n.t("ux.bo.rejected2"); },
+  get pending() {
+    return i18n.t("ux.bo.pending2");
+  },
+  get contacted() {
+    return i18n.t("ux.bo.contacted2");
+  },
+  get approved() {
+    return i18n.t("ux.bo.approved2");
+  },
+  get rejected() {
+    return i18n.t("ux.bo.rejected2");
+  },
 };
 
 export default function AdminSubscriptions() {
@@ -112,10 +127,7 @@ export default function AdminSubscriptions() {
   const updateStatus = async (id: string, status: string) => {
     setIsUpdating(true);
     try {
-      const { error } = await supabase
-        .from("subscription_requests")
-        .update({ status, notes })
-        .eq("id", id);
+      const { error } = await supabase.from("subscription_requests").update({ status, notes }).eq("id", id);
 
       if (error) throw error;
 
@@ -280,9 +292,7 @@ export default function AdminSubscriptions() {
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
             ) : filteredRequests.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                {t("ux.bo.noRequestFound")}
-              </div>
+              <div className="text-center py-12 text-muted-foreground">{t("ux.bo.noRequestFound")}</div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -311,9 +321,7 @@ export default function AdminSubscriptions() {
                         <TableCell>
                           <div>
                             <p className="font-medium">{request.name}</p>
-                            {request.company && (
-                              <p className="text-xs text-muted-foreground">{request.company}</p>
-                            )}
+                            {request.company && <p className="text-xs text-muted-foreground">{request.company}</p>}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -323,9 +331,7 @@ export default function AdminSubscriptions() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={statusColors[request.status]}>
-                            {statusLabels[request.status]}
-                          </Badge>
+                          <Badge className={statusColors[request.status]}>{statusLabels[request.status]}</Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <Dialog>
@@ -344,9 +350,7 @@ export default function AdminSubscriptions() {
                             <DialogContent className="sm:max-w-lg">
                               <DialogHeader>
                                 <DialogTitle>{t("ux.bo.requestDetails")}</DialogTitle>
-                                <DialogDescription>
-                                  Demande pour {request.plan_name}
-                                </DialogDescription>
+                                <DialogDescription>Demande pour {request.plan_name}</DialogDescription>
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
                                 <div className="grid grid-cols-2 gap-4">

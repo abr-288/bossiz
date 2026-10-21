@@ -26,21 +26,21 @@ const BossizCIFormules = () => {
     <BossizSiteLayout country="ci" activePage="formules" tagline={content.tagline}>
       {/* Bannière avec image de fond */}
       <section className="relative h-64 md:h-80 overflow-hidden">
-        <img src={bannerImage} alt="Formules Bossiz Conciergerie" className="absolute inset-0 w-full h-full object-cover" />
+        <img
+          src={bannerImage}
+          alt="Formules Bossiz Conciergerie"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-bossiz-ci-green/80" />
         <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
-          <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">
-            {content.plans.title}
-          </h1>
+          <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">{content.plans.title}</h1>
         </div>
       </section>
 
       <section className="py-24 bg-bossiz-ci-green-pale min-h-[80vh]">
         <div className="max-w-6xl mx-auto px-6 lg:px-10">
           <div className="text-center mb-16 max-w-3xl mx-auto">
-            <p className="text-bossiz-navy-dark/60 leading-relaxed">
-              {content.plans.subtitle}
-            </p>
+            <p className="text-bossiz-navy-dark/60 leading-relaxed">{content.plans.subtitle}</p>
           </div>
 
           <p className="text-center text-sm uppercase tracking-[0.2em] text-bossiz-ci-green font-semibold mb-6">

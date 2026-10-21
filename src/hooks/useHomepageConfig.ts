@@ -57,89 +57,89 @@ export interface HomepageConfig {
 const DEFAULT_HOMEPAGE_CONFIG: HomepageConfig = {
   features: [
     {
-      id: 'mobile-money',
-      key: 'mobile-money',
-      icon: 'Smartphone',
-      title: 'Paiement Mobile Money',
-      description: 'Payez avec Wave, MTN ou Moov, ou par carte bancaire, en toute sécurité.',
-      color: 'from-blue-500 to-blue-600'
+      id: "mobile-money",
+      key: "mobile-money",
+      icon: "Smartphone",
+      title: "Paiement Mobile Money",
+      description: "Payez avec Wave, MTN ou Moov, ou par carte bancaire, en toute sécurité.",
+      color: "from-blue-500 to-blue-600",
     },
     {
-      id: 'support-247',
-      key: 'support-247',
-      icon: 'Headphones',
-      title: 'Support 24/7',
-      description: 'Notre équipe vous répond à toute heure, par chat, téléphone ou e-mail.',
-      color: 'from-orange-500 to-orange-600'
+      id: "support-247",
+      key: "support-247",
+      icon: "Headphones",
+      title: "Support 24/7",
+      description: "Notre équipe vous répond à toute heure, par chat, téléphone ou e-mail.",
+      color: "from-orange-500 to-orange-600",
     },
     {
-      id: 'easy-cancellation',
-      key: 'easy-cancellation',
-      icon: 'RotateCcw',
-      title: 'Annulation simple',
-      description: 'Annulez ou modifiez votre réservation depuis votre compte, selon les conditions de l\'offre.',
-      color: 'from-green-500 to-green-600'
-    }
+      id: "easy-cancellation",
+      key: "easy-cancellation",
+      icon: "RotateCcw",
+      title: "Annulation simple",
+      description: "Annulez ou modifiez votre réservation depuis votre compte, selon les conditions de l'offre.",
+      color: "from-green-500 to-green-600",
+    },
   ],
   destinations: [],
   sections: {
     hero: {
-      id: 'hero',
-      title: 'Hero Section',
-      subtitle: 'Section principale avec recherche',
+      id: "hero",
+      title: "Hero Section",
+      subtitle: "Section principale avec recherche",
       visible: true,
-      order: 1
+      order: 1,
     },
     features: {
-      id: 'features',
-      title: 'Features Section',
-      subtitle: 'Section des fonctionnalités principales',
+      id: "features",
+      title: "Features Section",
+      subtitle: "Section des fonctionnalités principales",
       visible: true,
-      order: 2
+      order: 2,
     },
     destinations: {
-      id: 'destinations',
-      title: 'Popular Destinations',
-      subtitle: 'Section des destinations populaires',
+      id: "destinations",
+      title: "Popular Destinations",
+      subtitle: "Section des destinations populaires",
       visible: true,
-      order: 3
+      order: 3,
     },
     seasonal: {
-      id: 'seasonal',
-      title: 'Seasonal Suggestions',
-      subtitle: 'Section des suggestions saisonnières',
+      id: "seasonal",
+      title: "Seasonal Suggestions",
+      subtitle: "Section des suggestions saisonnières",
       visible: true,
-      order: 4
+      order: 4,
     },
     testimonials: {
-      id: 'testimonials',
-      title: 'Testimonials',
-      subtitle: 'Section des témoignages clients',
+      id: "testimonials",
+      title: "Testimonials",
+      subtitle: "Section des témoignages clients",
       visible: true,
-      order: 5
+      order: 5,
     },
     specialOffers: {
-      id: 'special-offers',
-      title: 'Special Offers',
-      subtitle: 'Section des offres spéciales',
+      id: "special-offers",
+      title: "Special Offers",
+      subtitle: "Section des offres spéciales",
       visible: true,
-      order: 6
+      order: 6,
     },
     aiAdvisor: {
-      id: 'ai-advisor',
-      title: 'AI Travel Advisor',
-      subtitle: 'Section du conseiller voyage IA',
+      id: "ai-advisor",
+      title: "AI Travel Advisor",
+      subtitle: "Section du conseiller voyage IA",
       visible: true,
-      order: 7
+      order: 7,
     },
     bossizPortal: {
-      id: 'bossiz-portal',
-      title: 'Bossiz Portal',
-      subtitle: 'Section du portail Bossiz',
+      id: "bossiz-portal",
+      title: "Bossiz Portal",
+      subtitle: "Section du portail Bossiz",
       visible: true,
-      order: 8
-    }
-  }
+      order: 8,
+    },
+  },
 };
 
 export const useHomepageConfig = () => {
@@ -153,7 +153,7 @@ export const useHomepageConfig = () => {
       const { data: featuresData, error: featuresError } = await supabase
         .from("homepage_features")
         .select("*")
-        .order('order_num', { ascending: true });
+        .order("order_num", { ascending: true });
 
       if (featuresError) throw featuresError;
 
@@ -161,7 +161,7 @@ export const useHomepageConfig = () => {
       const { data: sectionsData, error: sectionsError } = await supabase
         .from("homepage_sections")
         .select("*")
-        .order('order_num', { ascending: true });
+        .order("order_num", { ascending: true });
 
       if (sectionsError) throw sectionsError;
 
@@ -169,27 +169,27 @@ export const useHomepageConfig = () => {
 
       // Mettre à jour les features
       if (featuresData && featuresData.length > 0) {
-        newConfig.features = featuresData.map(feature => ({
+        newConfig.features = featuresData.map((feature) => ({
           id: feature.id,
           key: feature.feature_id,
           translations: (feature as { translations?: ContentTranslations }).translations,
           icon: feature.icon,
           title: feature.title,
           description: feature.description,
-          color: feature.color ?? undefined
+          color: feature.color ?? undefined,
         }));
       }
 
       // Mettre à jour les sections
       if (sectionsData && sectionsData.length > 0) {
-        sectionsData.forEach(section => {
+        sectionsData.forEach((section) => {
           if (section.id in newConfig.sections) {
             newConfig.sections[section.id as keyof typeof newConfig.sections] = {
               id: section.id,
               title: section.title,
-              subtitle: section.subtitle || '',
+              subtitle: section.subtitle || "",
               visible: section.visible,
-              order: section.order_num
+              order: section.order_num,
             };
           }
         });
@@ -203,79 +203,77 @@ export const useHomepageConfig = () => {
     }
   }, []);
 
-  const updateFeature = useCallback(async (featureId: string, updates: Partial<HomepageFeature>) => {
-    try {
-      const { error } = await supabase
-        .from("homepage_features")
-        .update(updates)
-        .eq("id", featureId);
+  const updateFeature = useCallback(
+    async (featureId: string, updates: Partial<HomepageFeature>) => {
+      try {
+        const { error } = await supabase.from("homepage_features").update(updates).eq("id", featureId);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setConfig(prev => ({
-        ...prev,
-        features: prev.features.map(feature => 
-          feature.id === featureId ? { ...feature, ...updates } : feature
-        )
-      }));
+        setConfig((prev) => ({
+          ...prev,
+          features: prev.features.map((feature) => (feature.id === featureId ? { ...feature, ...updates } : feature)),
+        }));
 
-      toast({
-        title: "Succès",
-        description: "Fonctionnalité mise à jour",
-      });
-    } catch (error) {
-      console.error("Error updating feature:", error);
-      toast({
-        title: "Erreur",
-        description: getErrorMessage(error) || "Impossible de mettre à jour la fonctionnalité",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
+        toast({
+          title: "Succès",
+          description: "Fonctionnalité mise à jour",
+        });
+      } catch (error) {
+        console.error("Error updating feature:", error);
+        toast({
+          title: "Erreur",
+          description: getErrorMessage(error) || "Impossible de mettre à jour la fonctionnalité",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
 
-  const updateSection = useCallback(async (sectionId: string, updates: Partial<HomepageSection>) => {
-    try {
-      const { error } = await supabase
-        .from("homepage_sections")
-        .update(updates)
-        .eq("id", sectionId);
+  const updateSection = useCallback(
+    async (sectionId: string, updates: Partial<HomepageSection>) => {
+      try {
+        const { error } = await supabase.from("homepage_sections").update(updates).eq("id", sectionId);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setConfig(prev => ({
-        ...prev,
-        sections: {
-          ...prev.sections,
-          [sectionId]: {
-            ...prev.sections[sectionId as keyof typeof prev.sections],
-            ...updates
-          }
-        }
-      }));
+        setConfig((prev) => ({
+          ...prev,
+          sections: {
+            ...prev.sections,
+            [sectionId]: {
+              ...prev.sections[sectionId as keyof typeof prev.sections],
+              ...updates,
+            },
+          },
+        }));
 
-      toast({
-        title: "Succès",
-        description: "Section mise à jour",
-      });
-    } catch (error) {
-      console.error("Error updating section:", error);
-      toast({
-        title: "Erreur",
-        description: getErrorMessage(error) || "Impossible de mettre à jour la section",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
+        toast({
+          title: "Succès",
+          description: "Section mise à jour",
+        });
+      } catch (error) {
+        console.error("Error updating section:", error);
+        toast({
+          title: "Erreur",
+          description: getErrorMessage(error) || "Impossible de mettre à jour la section",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
 
   useEffect(() => {
     fetchConfig();
   }, [fetchConfig]);
 
-  return { 
-    config, 
-    loading, 
-    updateFeature, 
-    updateSection, 
-    refetch: fetchConfig 
+  return {
+    config,
+    loading,
+    updateFeature,
+    updateSection,
+    refetch: fetchConfig,
   };
 };

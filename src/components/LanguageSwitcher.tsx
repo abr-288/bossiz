@@ -1,12 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Globe, Search, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -35,8 +29,7 @@ const LanguageSwitcher = () => {
     return filtered.length > 0 ? filtered : LANGUAGES;
   }, [config.locale?.availableLanguages]);
 
-  const currentLanguage =
-    enabledLanguages.find((lang) => lang.code === i18n.language) || enabledLanguages[0];
+  const currentLanguage = enabledLanguages.find((lang) => lang.code === i18n.language) || enabledLanguages[0];
 
   const filteredLanguages = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -45,7 +38,7 @@ const LanguageSwitcher = () => {
       (lang) =>
         lang.label.toLowerCase().includes(q) ||
         lang.code.toLowerCase().includes(q) ||
-        lang.nativeRegion.toLowerCase().includes(q)
+        lang.nativeRegion.toLowerCase().includes(q),
     );
   }, [query, enabledLanguages]);
 
@@ -65,7 +58,9 @@ const LanguageSwitcher = () => {
         onClick={() => setOpen(true)}
       >
         <Globe className="w-4 h-4" />
-        <span className="text-xs">{currentLanguage.flag} {currentLanguage.code.toUpperCase()}</span>
+        <span className="text-xs">
+          {currentLanguage.flag} {currentLanguage.code.toUpperCase()}
+        </span>
       </Button>
 
       <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden">
@@ -109,14 +104,12 @@ const LanguageSwitcher = () => {
                       "flex items-center gap-3 w-full p-3 rounded-xl text-left transition-colors",
                       isActive
                         ? "bg-secondary/10 border border-secondary/30"
-                        : "hover:bg-muted border border-transparent"
+                        : "hover:bg-muted border border-transparent",
                     )}
                   >
                     <span className="text-2xl leading-none">{lang.flag}</span>
                     <div className="flex-1 min-w-0">
-                      <p className={cn("font-medium", isActive ? "text-secondary" : "text-foreground")}>
-                        {lang.label}
-                      </p>
+                      <p className={cn("font-medium", isActive ? "text-secondary" : "text-foreground")}>{lang.label}</p>
                       <p className="text-xs text-muted-foreground truncate">{lang.nativeRegion}</p>
                     </div>
                     {isActive && <Check className="w-4 h-4 text-secondary flex-shrink-0" />}

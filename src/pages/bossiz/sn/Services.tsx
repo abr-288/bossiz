@@ -29,26 +29,27 @@ const BossizSNServices = () => {
         <img src={bannerImage} alt="Services Bossiz Sénégal" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-bossiz-teal-dark/80" />
         <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
-          <p className="text-bossiz-gold-light text-sm font-semibold uppercase tracking-[0.25em] mb-3">{content.services.eyebrow}</p>
-          <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">
-            {content.services.title}
-          </h1>
+          <p className="text-bossiz-gold-light text-sm font-semibold uppercase tracking-[0.25em] mb-3">
+            {content.services.eyebrow}
+          </p>
+          <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">{content.services.title}</h1>
         </div>
       </section>
 
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="text-center mb-20 max-w-3xl mx-auto">
-            <p className="text-bossiz-navy-dark/60 leading-relaxed">
-              {content.services.subtitle}
-            </p>
+            <p className="text-bossiz-navy-dark/60 leading-relaxed">{content.services.subtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
             {content.servicesList.map((service) => {
               const Icon = getBossizIcon(service.icon);
               return (
-                <Card key={service.id} className="rounded-xl border-0 border-t-4 border-t-bossiz-gold shadow-md bg-white">
+                <Card
+                  key={service.id}
+                  className="rounded-xl border-0 border-t-4 border-t-bossiz-gold shadow-md bg-white"
+                >
                   <CardContent className="p-8">
                     <div className="w-14 h-14 rounded-full bg-bossiz-cream-mint flex items-center justify-center mb-6">
                       <Icon className="w-6 h-6 text-bossiz-teal-dark" strokeWidth={1.5} />
@@ -79,7 +80,10 @@ const BossizSNServices = () => {
             {content.additionalServicesList.map((service) => {
               const Icon = getBossizIcon(service.icon);
               return (
-                <Card key={service.id} className="rounded-xl border border-bossiz-cream-taupe/40 bg-bossiz-cream-warm/30">
+                <Card
+                  key={service.id}
+                  className="rounded-xl border border-bossiz-cream-taupe/40 bg-bossiz-cream-warm/30"
+                >
                   <CardContent className="p-6 flex items-start gap-4">
                     <div className="w-11 h-11 rounded-full bg-bossiz-cream-mint flex items-center justify-center shrink-0">
                       <Icon className="w-5 h-5 text-bossiz-teal-dark" strokeWidth={1.5} />

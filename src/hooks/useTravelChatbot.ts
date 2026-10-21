@@ -21,18 +21,18 @@ export const useTravelChatbot = () => {
     setError(null);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('travel-chatbot', {
-        body: { messages, locale }
+      const { data, error: functionError } = await supabase.functions.invoke("travel-chatbot", {
+        body: { messages, locale },
       });
 
       if (functionError) throw functionError;
-      if (!data?.reply) throw new Error(data?.error || 'Empty chatbot reply');
+      if (!data?.reply) throw new Error(data?.error || "Empty chatbot reply");
 
       return { reply: data.reply as string, handoff: data.handoff === true };
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
       setError(errorMessage);
-      console.error('Travel chatbot error:', err);
+      console.error("Travel chatbot error:", err);
       // Une panne n'est pas une question mal posée : on laisse le widget
       // afficher son message d'indisponibilité au lieu de « reformulez ».
       throw err;

@@ -31,7 +31,6 @@ const Index = () => {
         {/* Navbar spacer - single bar on mobile, double on desktop */}
         <div className="pt-14 lg:pt-24" />
 
-
         {/* 1. Recherche */}
         <HeroSection />
 
@@ -54,12 +53,8 @@ const Index = () => {
         <section className="py-8 md:py-12 w-full">
           <div className="site-container max-w-4xl">
             <div className="mb-5">
-              <h2 className="text-xl md:text-2xl font-bold text-foreground">
-                {t("pages.index.aiTitle")}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t("pages.index.aiSubtitle")}
-              </p>
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">{t("pages.index.aiTitle")}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{t("pages.index.aiSubtitle")}</p>
             </div>
             <div className="bg-card rounded-xl border border-border p-4 md:p-6 shadow-sm">
               <AITravelAdvisor />

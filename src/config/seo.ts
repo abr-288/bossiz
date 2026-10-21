@@ -44,18 +44,15 @@ const ROUTES: Record<string, RouteSeo> = {
   },
   "/tours": {
     title: "Circuits et guides touristiques en Côte d'Ivoire | Bossiz+",
-    description:
-      "Réservez des circuits touristiques et des guides locaux pour découvrir la Côte d'Ivoire.",
+    description: "Réservez des circuits touristiques et des guides locaux pour découvrir la Côte d'Ivoire.",
   },
   "/restaurants": {
     title: "Restaurants à Abidjan : réservez une table | Bossiz+",
-    description:
-      "Découvrez les restaurants partenaires à Abidjan et réservez votre table en temps réel.",
+    description: "Découvrez les restaurants partenaires à Abidjan et réservez votre table en temps réel.",
   },
   "/artisans": {
     title: "Artisans locaux de Côte d'Ivoire | Bossiz+",
-    description:
-      "Rencontrez les artisans locaux ivoiriens et découvrez leurs créations authentiques.",
+    description: "Rencontrez les artisans locaux ivoiriens et découvrez leurs créations authentiques.",
   },
   "/bien-etre-beaute": {
     title: "Bien-être et beauté : spas, salons, yoga | Bossiz+",
@@ -74,18 +71,15 @@ const ROUTES: Record<string, RouteSeo> = {
   },
   "/activities": {
     title: "Activités et loisirs en Côte d'Ivoire | Bossiz+",
-    description:
-      "Réservez des activités, excursions et expériences à vivre en Côte d'Ivoire.",
+    description: "Réservez des activités, excursions et expériences à vivre en Côte d'Ivoire.",
   },
   "/stays": {
     title: "Séjours en Côte d'Ivoire | Bossiz+",
-    description:
-      "Séjours et hébergements sélectionnés en Côte d'Ivoire, à réserver en ligne.",
+    description: "Séjours et hébergements sélectionnés en Côte d'Ivoire, à réserver en ligne.",
   },
   "/events": {
     title: "Événements en Côte d'Ivoire | Bossiz+",
-    description:
-      "Concerts, festivals et événements en Côte d'Ivoire : découvrez l'agenda et réservez vos places.",
+    description: "Concerts, festivals et événements en Côte d'Ivoire : découvrez l'agenda et réservez vos places.",
   },
   "/trains": {
     title: "Billets de train en Côte d'Ivoire | Bossiz+",
@@ -93,8 +87,7 @@ const ROUTES: Record<string, RouteSeo> = {
   },
   "/flight-hotel": {
     title: "Forfaits vol + hôtel | Bossiz+",
-    description:
-      "Combinez vol et hôtel pour votre voyage en Côte d'Ivoire et voyagez malin.",
+    description: "Combinez vol et hôtel pour votre voyage en Côte d'Ivoire et voyagez malin.",
   },
   "/partenariat": {
     title: "Devenir partenaire Bossiz+ | Hôtels, restaurants, artisans",
@@ -103,13 +96,11 @@ const ROUTES: Record<string, RouteSeo> = {
   },
   "/devenir-partenaire": {
     title: "Déposer une candidature partenaire | Bossiz+",
-    description:
-      "Remplissez le formulaire pour devenir partenaire Bossiz+ et référencer votre activité.",
+    description: "Remplissez le formulaire pour devenir partenaire Bossiz+ et référencer votre activité.",
   },
   "/partenaires/voitures": {
     title: "Partenaires voiture : formules et abonnements | Bossiz+",
-    description:
-      "Loueurs et chauffeurs : découvrez les formules d'abonnement pour proposer vos véhicules sur Bossiz+.",
+    description: "Loueurs et chauffeurs : découvrez les formules d'abonnement pour proposer vos véhicules sur Bossiz+.",
   },
   "/bossiz-portal": {
     title: "Bossiz Conciergerie | Portail",

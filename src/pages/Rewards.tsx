@@ -82,17 +82,26 @@ const Rewards = () => {
   const tierName = t(`ux.smiles.tier_${tierCode}`, summary.tier?.name ?? "Bronze");
   const next = summary.next_tier;
   const progress = next
-    ? Math.min(100, Math.round(((summary.lifetime - (summary.tier?.min_points ?? 0)) / (next.min_points - (summary.tier?.min_points ?? 0))) * 100))
+    ? Math.min(
+        100,
+        Math.round(
+          ((summary.lifetime - (summary.tier?.min_points ?? 0)) / (next.min_points - (summary.tier?.min_points ?? 0))) *
+            100,
+        ),
+      )
     : 100;
   const referralLink = `${window.location.origin}/auth?ref=${summary.referral_code}`;
-  const streakInCycle = s.streak_days > 0 ? (summary.streak % s.streak_days || (summary.streak > 0 ? s.streak_days : 0)) : 0;
+  const streakInCycle =
+    s.streak_days > 0 ? summary.streak % s.streak_days || (summary.streak > 0 ? s.streak_days : 0) : 0;
 
   const handleCheckIn = async () => {
     setCheckingIn(true);
     const result = await checkIn();
     setCheckingIn(false);
     if (result?.awarded) {
-      toast.success(t("ux.smiles.checkinToast", { points: (result.points ?? 0) + (result.bonus ?? 0), streak: result.streak }));
+      toast.success(
+        t("ux.smiles.checkinToast", { points: (result.points ?? 0) + (result.bonus ?? 0), streak: result.streak }),
+      );
     }
   };
 
@@ -120,7 +129,12 @@ const Rewards = () => {
   };
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString(currentLocaleTag(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    new Date(iso).toLocaleDateString(currentLocaleTag(), {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   // Ajustement manuel : le motif saisi par l'équipe est montré au client
   const kindLabel = (row: LoyaltyTransaction) =>
@@ -131,41 +145,44 @@ const Rewards = () => {
   // Carte de parrainage : rendue dans la colonne principale sur mobile
   // (juste après la série), dans la colonne latérale sur ordinateur.
   const referralCard = (ref: typeof referralRef) => (
-            <section
-              ref={ref}
-              className="scroll-mt-20 overflow-hidden rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-success/10 p-5 shadow-sm"
-            >
-              <p className="flex items-center gap-2 font-semibold">
-                <Gift className="h-5 w-5 text-primary" />
-                {t("ux.smiles.referTitle")}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t("ux.smiles.referDesc", { referrer: fmt(s.referral_referrer_points), referee: fmt(s.referral_referee_points) })}
-              </p>
-              <div className="mt-4 flex items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-primary/30 bg-background/70 px-4 py-3">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{t("ux.smiles.yourCode")}</p>
-                  <p className="font-mono text-xl font-bold tracking-widest">{summary.referral_code}</p>
-                </div>
-                <Button size="icon" variant="ghost" onClick={copyLink} aria-label={t("ux.smiles.copyLink")}>
-                  <Copy className="h-5 w-5" />
-                </Button>
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <Button onClick={share}>
-                  <Share2 className="mr-2 h-4 w-4" />
-                  {t("ux.smiles.share")}
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href={`https://wa.me/?text=${encodeURIComponent(shareMessage)}`} target="_blank" rel="noopener noreferrer">
-                    WhatsApp
-                  </a>
-                </Button>
-              </div>
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                {t("ux.smiles.referralsCount", { count: summary.referrals })}
-              </p>
-            </section>
+    <section
+      ref={ref}
+      className="scroll-mt-20 overflow-hidden rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-success/10 p-5 shadow-sm"
+    >
+      <p className="flex items-center gap-2 font-semibold">
+        <Gift className="h-5 w-5 text-primary" />
+        {t("ux.smiles.referTitle")}
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {t("ux.smiles.referDesc", {
+          referrer: fmt(s.referral_referrer_points),
+          referee: fmt(s.referral_referee_points),
+        })}
+      </p>
+      <div className="mt-4 flex items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-primary/30 bg-background/70 px-4 py-3">
+        <div>
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{t("ux.smiles.yourCode")}</p>
+          <p className="font-mono text-xl font-bold tracking-widest">{summary.referral_code}</p>
+        </div>
+        <Button size="icon" variant="ghost" onClick={copyLink} aria-label={t("ux.smiles.copyLink")}>
+          <Copy className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Button onClick={share}>
+          <Share2 className="mr-2 h-4 w-4" />
+          {t("ux.smiles.share")}
+        </Button>
+        <Button variant="outline" asChild>
+          <a href={`https://wa.me/?text=${encodeURIComponent(shareMessage)}`} target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+        </Button>
+      </div>
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        {t("ux.smiles.referralsCount", { count: summary.referrals })}
+      </p>
+    </section>
   );
 
   const scrollToReferral = () => {
@@ -182,9 +199,27 @@ const Rewards = () => {
       disabled: summary.checked_in_today || checkingIn,
       tone: "bg-success/15 text-success",
     },
-    { key: "refer", icon: Send, label: t("ux.smiles.actionRefer"), onClick: scrollToReferral, tone: "bg-primary/10 text-primary" },
-    { key: "use", icon: Ticket, label: t("ux.smiles.actionUse"), onClick: () => setHowToUseOpen(true), tone: "bg-warning/40 text-warning-foreground" },
-    { key: "history", icon: History, label: t("ux.smiles.actionHistory"), onClick: () => historyRef.current?.scrollIntoView({ behavior: "smooth" }), tone: "bg-info/10 text-info" },
+    {
+      key: "refer",
+      icon: Send,
+      label: t("ux.smiles.actionRefer"),
+      onClick: scrollToReferral,
+      tone: "bg-primary/10 text-primary",
+    },
+    {
+      key: "use",
+      icon: Ticket,
+      label: t("ux.smiles.actionUse"),
+      onClick: () => setHowToUseOpen(true),
+      tone: "bg-warning/40 text-warning-foreground",
+    },
+    {
+      key: "history",
+      icon: History,
+      label: t("ux.smiles.actionHistory"),
+      onClick: () => historyRef.current?.scrollIntoView({ behavior: "smooth" }),
+      tone: "bg-info/10 text-info",
+    },
   ];
 
   return (
@@ -199,7 +234,10 @@ const Rewards = () => {
               style={{ background: "linear-gradient(135deg, #0F1A33 0%, #12304A 55%, #0F7B5F 130%)" }}
             >
               <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-              <div className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full" style={{ background: `${tierColor}33` }} />
+              <div
+                className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full"
+                style={{ background: `${tierColor}33` }}
+              />
 
               <div className="relative flex items-center justify-between gap-3">
                 <p className="flex items-center gap-2 text-sm font-medium text-white/80">
@@ -208,7 +246,11 @@ const Rewards = () => {
                 </p>
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
-                  style={{ background: `${tierColor}26`, color: tierColor, boxShadow: `inset 0 0 0 1px ${tierColor}66` }}
+                  style={{
+                    background: `${tierColor}26`,
+                    color: tierColor,
+                    boxShadow: `inset 0 0 0 1px ${tierColor}66`,
+                  }}
                 >
                   <Trophy className="h-3.5 w-3.5" />
                   {tierName}
@@ -229,7 +271,10 @@ const Rewards = () => {
                     <Hourglass className="h-3.5 w-3.5" />
                     {t("ux.smiles.expiringSoon", {
                       points: fmt(summary.expiring_soon),
-                      date: new Date(summary.expiring_by).toLocaleDateString(currentLocaleTag(), { day: "numeric", month: "long" }),
+                      date: new Date(summary.expiring_by).toLocaleDateString(currentLocaleTag(), {
+                        day: "numeric",
+                        month: "long",
+                      }),
                     })}
                   </p>
                 )}
@@ -237,7 +282,10 @@ const Rewards = () => {
 
               <div className="relative mt-6">
                 <div className="h-2 overflow-hidden rounded-full bg-white/15">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: tierColor }} />
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${progress}%`, background: tierColor }}
+                  />
                 </div>
                 <p className="mt-2 text-xs text-white/75">
                   {next
@@ -267,7 +315,11 @@ const Rewards = () => {
                       tone,
                     )}
                   >
-                    {key === "checkin" && checkingIn ? <Loader2 className="h-6 w-6 animate-spin" /> : <Icon className="h-6 w-6" />}
+                    {key === "checkin" && checkingIn ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <Icon className="h-6 w-6" />
+                    )}
                   </span>
                   <span className="text-xs font-medium leading-tight text-foreground">{label}</span>
                 </button>
@@ -283,7 +335,11 @@ const Rewards = () => {
                     {t("ux.smiles.streakTitle", { count: summary.streak })}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {t("ux.smiles.streakDesc", { daily: s.daily_checkin_points, bonus: fmt(s.streak_bonus_points), days: s.streak_days })}
+                    {t("ux.smiles.streakDesc", {
+                      daily: s.daily_checkin_points,
+                      bonus: fmt(s.streak_bonus_points),
+                      days: s.streak_days,
+                    })}
                   </p>
                 </div>
               </div>
@@ -336,12 +392,19 @@ const Rewards = () => {
                           <p className="text-xs text-muted-foreground">{formatDate(row.created_at)}</p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className={cn("text-sm font-bold tabular-nums", positive ? "text-success" : "text-foreground")}>
+                          <p
+                            className={cn(
+                              "text-sm font-bold tabular-nums",
+                              positive ? "text-success" : "text-foreground",
+                            )}
+                          >
                             {positive ? "+" : "−"}
                             {fmt(Math.abs(row.points))}
                           </p>
                           {row.status === "pending" && (
-                            <Badge variant="outline" className="mt-0.5 text-[10px]">{t("ux.smiles.pending")}</Badge>
+                            <Badge variant="outline" className="mt-0.5 text-[10px]">
+                              {t("ux.smiles.pending")}
+                            </Badge>
                           )}
                         </div>
                       </li>
@@ -397,11 +460,22 @@ const Rewards = () => {
               <ul className="space-y-3 text-sm">
                 <li className="flex gap-3">
                   <ShoppingBag className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                  <span>{t("ux.smiles.earnPurchase", { points: nf.format(s.points_per_100_xof), multiplier: nf.format(summary.tier?.multiplier ?? 1) })}</span>
+                  <span>
+                    {t("ux.smiles.earnPurchase", {
+                      points: nf.format(s.points_per_100_xof),
+                      multiplier: nf.format(summary.tier?.multiplier ?? 1),
+                    })}
+                  </span>
                 </li>
                 <li className="flex gap-3">
                   <CalendarCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                  <span>{t("ux.smiles.earnCheckin", { points: s.daily_checkin_points, bonus: fmt(s.streak_bonus_points), days: s.streak_days })}</span>
+                  <span>
+                    {t("ux.smiles.earnCheckin", {
+                      points: s.daily_checkin_points,
+                      bonus: fmt(s.streak_bonus_points),
+                      days: s.streak_days,
+                    })}
+                  </span>
                 </li>
                 <li className="flex gap-3">
                   <Users className="mt-0.5 h-4 w-4 shrink-0 text-success" />
@@ -442,7 +516,9 @@ const Rewards = () => {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-2">
             <Button onClick={() => navigate("/")}>{t("ux.smiles.bookTrip")}</Button>
-            <Button variant="outline" onClick={() => navigate("/booking-history")}>{t("ux.smiles.myBookings")}</Button>
+            <Button variant="outline" onClick={() => navigate("/booking-history")}>
+              {t("ux.smiles.myBookings")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

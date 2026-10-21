@@ -82,7 +82,10 @@ const AdminTranslations = () => {
     setRunning(false);
     if (result?.errors?.length && !result.translated) {
       // Message exact (ex. « Claude 401 : invalid x-api-key ») pour savoir quoi corriger
-      toast.error(t("ux.translations.runError"), { description: String(result.errors[0]).slice(0, 200), duration: 15000 });
+      toast.error(t("ux.translations.runError"), {
+        description: String(result.errors[0]).slice(0, 200),
+        duration: 15000,
+      });
     } else {
       toast.success(t("ux.translations.runDone", { count: result?.translated ?? 0 }));
       if (result?.pending) toast.info(t("ux.translations.runPending", { count: result.pending }));
@@ -94,7 +97,10 @@ const AdminTranslations = () => {
 
   const save = async (row: Row) => {
     const current = row.translations ?? {};
-    const next: ContentTranslations = { ...current, manual: { en: [...(current.manual?.en ?? [])], zh: [...(current.manual?.zh ?? [])] } };
+    const next: ContentTranslations = {
+      ...current,
+      manual: { en: [...(current.manual?.en ?? [])], zh: [...(current.manual?.zh ?? [])] },
+    };
     let changed = false;
     for (const lang of ["en", "zh"] as Lang[]) {
       const values = { ...(current[lang] ?? {}) };
@@ -153,7 +159,9 @@ const AdminTranslations = () => {
 
         {missingColumn && (
           <Card className="border-warning-foreground/30 bg-warning">
-            <CardContent className="p-4 text-sm text-warning-foreground">{t("ux.translations.missingColumn")}</CardContent>
+            <CardContent className="p-4 text-sm text-warning-foreground">
+              {t("ux.translations.missingColumn")}
+            </CardContent>
           </Card>
         )}
 

@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +34,13 @@ interface ArtisanOrderDialogProps {
   product: ArtisanProduct;
 }
 
-export const ArtisanOrderDialog = ({ open, onOpenChange, artisanId, artisanName, product }: ArtisanOrderDialogProps) => {
+export const ArtisanOrderDialog = ({
+  open,
+  onOpenChange,
+  artisanId,
+  artisanName,
+  product,
+}: ArtisanOrderDialogProps) => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState("1");
   const [customerName, setCustomerName] = useState("");
@@ -41,10 +54,15 @@ export const ArtisanOrderDialog = ({ open, onOpenChange, artisanId, artisanName,
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setCustomerEmail(user.email || "");
-        supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle().then(({ data }) => {
-          if (data?.full_name) setCustomerName(data.full_name);
-          if (data?.phone) setCustomerPhone(data.phone);
-        });
+        supabase
+          .from("profiles")
+          .select("full_name, phone")
+          .eq("id", user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (data?.full_name) setCustomerName(data.full_name);
+            if (data?.phone) setCustomerPhone(data.phone);
+          });
       }
     });
   }, [open]);
@@ -54,7 +72,9 @@ export const ArtisanOrderDialog = ({ open, onOpenChange, artisanId, artisanName,
   const total = price * qty;
 
   const handleSubmit = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error("Connectez-vous pour passer commande");
       onOpenChange(false);
@@ -141,18 +161,23 @@ export const ArtisanOrderDialog = ({ open, onOpenChange, artisanId, artisanName,
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Cette demande est transmise à l'artisan, qui vous recontactera pour confirmer la disponibilité et les modalités de paiement/livraison.
+            Cette demande est transmise à l'artisan, qui vous recontactera pour confirmer la disponibilité et les
+            modalités de paiement/livraison.
           </p>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>Annuler</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
+            Annuler
+          </Button>
           <Button
             onClick={handleSubmit}
             disabled={submitting || !customerName.trim() || !customerPhone.trim() || !customerEmail.trim()}
             className="gradient-primary"
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+            {submitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
               <>
                 <ShoppingBag className="w-4 h-4 mr-2" />
                 Envoyer la demande

@@ -38,7 +38,7 @@ export default function AdminUsers() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch profiles with user roles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
@@ -48,9 +48,7 @@ export default function AdminUsers() {
       if (profilesError) throw profilesError;
 
       // Fetch user roles
-      const { data: roles, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("*");
+      const { data: roles, error: rolesError } = await supabase.from("user_roles").select("*");
 
       if (rolesError) throw rolesError;
 
@@ -90,24 +88,19 @@ export default function AdminUsers() {
         .maybeSingle();
 
       if (existingRole) {
-        toast({ 
+        toast({
           title: t("ux.bo.information"),
-          description: t("ux.bo.userAlreadyHasRole") 
+          description: t("ux.bo.userAlreadyHasRole"),
         });
         setDialogOpen(false);
         return;
       }
 
       // Delete old roles
-      await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", editingUser.id);
+      await supabase.from("user_roles").delete().eq("user_id", editingUser.id);
 
       // Insert new role
-      const { error } = await supabase
-        .from("user_roles")
-        .insert([{ user_id: editingUser.id, role: formData.role }]);
+      const { error } = await supabase.from("user_roles").insert([{ user_id: editingUser.id, role: formData.role }]);
 
       if (error) throw error;
 
@@ -132,9 +125,10 @@ export default function AdminUsers() {
     setDialogOpen(true);
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.id.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -189,9 +183,7 @@ export default function AdminUsers() {
                       {user.role === "admin" ? t("ux.bo.administrator") : t("ux.bo.user")}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    {new Date(user.created_at).toLocaleDateString("fr-FR")}
-                  </TableCell>
+                  <TableCell>{new Date(user.created_at).toLocaleDateString("fr-FR")}</TableCell>
                   <TableCell>
                     <Button size="sm" variant="ghost" onClick={() => handleEdit(user)}>
                       <Pencil className="h-4 w-4" />

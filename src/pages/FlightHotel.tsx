@@ -3,10 +3,31 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Plane, Hotel, MapPin, Calendar, Users, Check, Loader2, Star, Package, AlertTriangle,
-  Briefcase, Luggage, Clock, ArrowRight, Wifi, Coffee, Car, Waves, UtensilsCrossed,
-  Filter, SortAsc, ChevronDown, Award, Wind
+import {
+  Plane,
+  Hotel,
+  MapPin,
+  Calendar,
+  Users,
+  Check,
+  Loader2,
+  Star,
+  Package,
+  AlertTriangle,
+  Briefcase,
+  Luggage,
+  Clock,
+  ArrowRight,
+  Wifi,
+  Coffee,
+  Car,
+  Waves,
+  UtensilsCrossed,
+  Filter,
+  SortAsc,
+  ChevronDown,
+  Award,
+  Wind,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +57,11 @@ interface FlightOffer {
   duration: string;
   stops: number;
   travelClass: string;
-  baggage: { cabin: { quantity: number; weight: string }; checked: { quantity: number; weight: string }; extraBagPrice?: number };
+  baggage: {
+    cabin: { quantity: number; weight: string };
+    checked: { quantity: number; weight: string };
+    extraBagPrice?: number;
+  };
   fareType: string;
 }
 
@@ -58,12 +83,20 @@ interface HotelOffer {
 }
 
 const amenityIcons: Record<string, LucideIcon> = {
-  'wifi': Wifi, 'wifi gratuit': Wifi, 'free wifi': Wifi,
-  'piscine': Waves, 'pool': Waves, 'swimming': Waves,
-  'restaurant': UtensilsCrossed, 'dining': UtensilsCrossed,
-  'parking': Car, 'car park': Car,
-  'petit-déjeuner': Coffee, 'breakfast': Coffee,
-  'climatisation': Wind, 'air conditioning': Wind,
+  wifi: Wifi,
+  "wifi gratuit": Wifi,
+  "free wifi": Wifi,
+  piscine: Waves,
+  pool: Waves,
+  swimming: Waves,
+  restaurant: UtensilsCrossed,
+  dining: UtensilsCrossed,
+  parking: Car,
+  "car park": Car,
+  "petit-déjeuner": Coffee,
+  breakfast: Coffee,
+  climatisation: Wind,
+  "air conditioning": Wind,
 };
 
 const getAmenityIcon = (amenity: string) => {
@@ -82,14 +115,14 @@ const FlightHotel = () => {
   const [flights, setFlights] = useState<FlightOffer[]>([]);
   const [hotels, setHotels] = useState<HotelOffer[]>([]);
   const [searchParams, setSearchParams] = useState<FlightHotelSearchParams | null>(null);
-  const [flightSort, setFlightSort] = useState<string>('price');
-  const [hotelSort, setHotelSort] = useState<string>('price');
+  const [flightSort, setFlightSort] = useState<string>("price");
+  const [hotelSort, setHotelSort] = useState<string>("price");
   const { searchPackages, loading } = useFlightHotelSearch();
 
   const handleSearch = async (params: FlightHotelSearchParams) => {
     setSearchParams(params);
     const results = await searchPackages(params);
-    
+
     if (results && results.flights && results.hotels) {
       setFlights(results.flights);
       setHotels(results.hotels);
@@ -104,24 +137,32 @@ const FlightHotel = () => {
   const sortedFlights = useMemo(() => {
     const sorted = [...flights];
     switch (flightSort) {
-      case 'price': return sorted.sort((a, b) => a.price - b.price);
-      case 'duration': return sorted.sort((a, b) => {
-        const durationA = parseInt(a.duration) || 0;
-        const durationB = parseInt(b.duration) || 0;
-        return durationA - durationB;
-      });
-      case 'stops': return sorted.sort((a, b) => a.stops - b.stops);
-      default: return sorted;
+      case "price":
+        return sorted.sort((a, b) => a.price - b.price);
+      case "duration":
+        return sorted.sort((a, b) => {
+          const durationA = parseInt(a.duration) || 0;
+          const durationB = parseInt(b.duration) || 0;
+          return durationA - durationB;
+        });
+      case "stops":
+        return sorted.sort((a, b) => a.stops - b.stops);
+      default:
+        return sorted;
     }
   }, [flights, flightSort]);
 
   const sortedHotels = useMemo(() => {
     const sorted = [...hotels];
     switch (hotelSort) {
-      case 'price': return sorted.sort((a, b) => a.price - b.price);
-      case 'rating': return sorted.sort((a, b) => (b.reviewScore || 0) - (a.reviewScore || 0));
-      case 'stars': return sorted.sort((a, b) => b.rating - a.rating);
-      default: return sorted;
+      case "price":
+        return sorted.sort((a, b) => a.price - b.price);
+      case "rating":
+        return sorted.sort((a, b) => (b.reviewScore || 0) - (a.reviewScore || 0));
+      case "stars":
+        return sorted.sort((a, b) => b.rating - a.rating);
+      default:
+        return sorted;
     }
   }, [hotels, hotelSort]);
 
@@ -134,15 +175,16 @@ const FlightHotel = () => {
   };
 
   const calculateTotal = () => {
-    if (!selectedFlight || !selectedHotel) return { flightTotal: 0, hotelTotal: 0, total: 0, nights: 0, rooms: 0, passengers: 0 };
+    if (!selectedFlight || !selectedHotel)
+      return { flightTotal: 0, hotelTotal: 0, total: 0, nights: 0, rooms: 0, passengers: 0 };
     const nights = calculateNights();
     const rooms = searchParams?.rooms || 1;
     const passengers = (searchParams?.adults || 1) + (searchParams?.children || 0);
-    
+
     const flightTotal = selectedFlight.price * passengers;
     const hotelTotal = selectedHotel.price * nights * rooms;
     const total = flightTotal + hotelTotal;
-    
+
     return { flightTotal, hotelTotal, total, nights, rooms, passengers };
   };
 
@@ -151,7 +193,7 @@ const FlightHotel = () => {
       const flightParam = encodeURIComponent(JSON.stringify(selectedFlight));
       const hotelParam = encodeURIComponent(JSON.stringify(selectedHotel));
       const searchParam = encodeURIComponent(JSON.stringify(searchParams));
-      
+
       navigate(`/flight-hotel/booking?flight=${flightParam}&hotel=${hotelParam}&search=${searchParam}`);
     } else {
       toast.error(t("ux.flightHotel.pickBoth"));
@@ -159,37 +201,39 @@ const FlightHotel = () => {
   };
 
   const getScoreLabel = (score: number) => {
-    if (score >= 9) return 'Exceptionnel';
-    if (score >= 8) return 'Excellent';
+    if (score >= 9) return "Exceptionnel";
+    if (score >= 8) return "Excellent";
     if (score >= 7) return t("ux.flightHotel.veryGood");
-    return 'Bien';
+    return "Bien";
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
-      
+
       <main className="flex-1">
         {/* Hero Section with Search Form */}
         <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
           <LazyImage
             src={bannerFlightHotel}
-            alt={t('pages.flightHotel.title')}
+            alt={t("pages.flightHotel.title")}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+          <div
+            className="absolute inset-0"
+            style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+          ></div>
           <div className="relative z-10 container mx-auto px-4 py-12">
             <div className="text-center mb-8 animate-fade-in">
-
               <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-                {t('pages.flightHotel.title')}
+                {t("pages.flightHotel.title")}
               </h1>
               <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto">
                 {t("ux.flightHotel.subtitle")}
               </p>
             </div>
-            <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
               <FlightHotelSearchForm onSearch={handleSearch} />
             </div>
           </div>
@@ -206,7 +250,7 @@ const FlightHotel = () => {
           {!loading && flights.length === 0 && hotels.length === 0 && (
             <EmptyState
               icon={Package}
-              title={t('pages.flightHotel.noResults')}
+              title={t("pages.flightHotel.noResults")}
               description={t("ux.empty.flightHotelDesc")}
             />
           )}
@@ -238,12 +282,12 @@ const FlightHotel = () => {
 
                   <div className="grid gap-4">
                     {sortedFlights.map((flight) => (
-                      <Card 
-                        key={flight.id} 
+                      <Card
+                        key={flight.id}
                         className={`cursor-pointer transition-all ${
-                          selectedFlight?.id === flight.id 
-                            ? 'ring-2 ring-primary shadow-lg bg-primary/5' 
-                            : 'hover:shadow-md hover:border-primary/30'
+                          selectedFlight?.id === flight.id
+                            ? "ring-2 ring-primary shadow-lg bg-primary/5"
+                            : "hover:shadow-md hover:border-primary/30"
                         }`}
                         onClick={() => setSelectedFlight(flight)}
                       >
@@ -253,18 +297,18 @@ const FlightHotel = () => {
                             <div className="flex items-center gap-3 lg:w-48">
                               <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
                                 {flight.logo ? (
-                                  <img 
-                                    src={flight.logo} 
+                                  <img
+                                    src={flight.logo}
                                     alt={flight.airline}
                                     className="w-10 h-10 object-contain"
                                     onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = 'none';
-                                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                      (e.target as HTMLImageElement).style.display = "none";
+                                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
                                     }}
                                   />
                                 ) : null}
-                                <span className={`text-lg font-bold text-primary ${flight.logo ? 'hidden' : ''}`}>
-                                  {flight.airlineCode || '✈️'}
+                                <span className={`text-lg font-bold text-primary ${flight.logo ? "hidden" : ""}`}>
+                                  {flight.airlineCode || "✈️"}
                                 </span>
                               </div>
                               <div>
@@ -276,10 +320,12 @@ const FlightHotel = () => {
                             {/* Flight Times */}
                             <div className="flex-1 flex items-center justify-between lg:justify-center gap-4">
                               <div className="text-center">
-                                <p className="text-xl font-bold">{flight.departure?.time || '08:00'}</p>
-                                <p className="text-sm text-muted-foreground">{flight.departure?.airport || searchParams?.origin}</p>
+                                <p className="text-xl font-bold">{flight.departure?.time || "08:00"}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {flight.departure?.airport || searchParams?.origin}
+                                </p>
                               </div>
-                              
+
                               <div className="flex flex-col items-center flex-1 max-w-[200px]">
                                 <p className="text-xs text-muted-foreground mb-1">{flight.duration}</p>
                                 <div className="w-full flex items-center gap-1">
@@ -288,13 +334,15 @@ const FlightHotel = () => {
                                   <div className="h-[2px] flex-1 bg-muted-foreground/30"></div>
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  {flight.stops === 0 ? 'Direct' : `${flight.stops} escale(s)`}
+                                  {flight.stops === 0 ? "Direct" : `${flight.stops} escale(s)`}
                                 </p>
                               </div>
 
                               <div className="text-center">
-                                <p className="text-xl font-bold">{flight.arrival?.time || '12:00'}</p>
-                                <p className="text-sm text-muted-foreground">{flight.arrival?.airport || searchParams?.destination}</p>
+                                <p className="text-xl font-bold">{flight.arrival?.time || "12:00"}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {flight.arrival?.airport || searchParams?.destination}
+                                </p>
                               </div>
                             </div>
 
@@ -305,26 +353,31 @@ const FlightHotel = () => {
                                   <TooltipTrigger>
                                     <div className="flex items-center gap-1 text-xs">
                                       <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                      <span>{flight.baggage?.cabin?.quantity || 1}x {flight.baggage?.cabin?.weight || '10kg'}</span>
+                                      <span>
+                                        {flight.baggage?.cabin?.quantity || 1}x{" "}
+                                        {flight.baggage?.cabin?.weight || "10kg"}
+                                      </span>
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>{t("ux.flightHotel.cabinIncluded")}</TooltipContent>
                                 </Tooltip>
-                                
+
                                 <Tooltip>
                                   <TooltipTrigger>
-                                    <div className={`flex items-center gap-1 text-xs ${(flight.baggage?.checked?.quantity || 0) === 0 ? 'text-muted-foreground/50' : ''}`}>
+                                    <div
+                                      className={`flex items-center gap-1 text-xs ${(flight.baggage?.checked?.quantity || 0) === 0 ? "text-muted-foreground/50" : ""}`}
+                                    >
                                       <Luggage className="h-4 w-4" />
                                       <span>
-                                        {(flight.baggage?.checked?.quantity || 0) > 0 
+                                        {(flight.baggage?.checked?.quantity || 0) > 0
                                           ? `${flight.baggage.checked.quantity}x ${flight.baggage.checked.weight}`
                                           : t("ux.flightHotel.notIncluded")}
                                       </span>
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    {(flight.baggage?.checked?.quantity || 0) > 0 
-                                      ? t("ux.flightHotel.checkedIncluded") 
+                                    {(flight.baggage?.checked?.quantity || 0) > 0
+                                      ? t("ux.flightHotel.checkedIncluded")
                                       : `Bagage en soute: +${flight.baggage?.extraBagPrice || 45}€`}
                                   </TooltipContent>
                                 </Tooltip>
@@ -349,10 +402,16 @@ const FlightHotel = () => {
 
                           {/* Fare Type Badge */}
                           <div className="flex gap-2 mt-3 pt-3 border-t">
-                            <Badge variant="outline" className="text-xs">{flight.fareType || 'Standard'}</Badge>
-                            <Badge variant="outline" className="text-xs">{flight.travelClass || t("ux.flightHotel.economy")}</Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {flight.fareType || "Standard"}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {flight.travelClass || t("ux.flightHotel.economy")}
+                            </Badge>
                             {flight.returnFlight && (
-                              <Badge variant="secondary" className="text-xs">Aller-retour</Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                Aller-retour
+                              </Badge>
                             )}
                           </div>
                         </CardContent>
@@ -387,12 +446,12 @@ const FlightHotel = () => {
 
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {sortedHotels.map((hotel) => (
-                      <Card 
+                      <Card
                         key={hotel.id}
                         className={`cursor-pointer transition-all overflow-hidden group ${
-                          selectedHotel?.id === hotel.id 
-                            ? 'ring-2 ring-primary shadow-lg' 
-                            : 'hover:shadow-md hover:border-primary/30'
+                          selectedHotel?.id === hotel.id
+                            ? "ring-2 ring-primary shadow-lg"
+                            : "hover:shadow-md hover:border-primary/30"
                         }`}
                         onClick={() => setSelectedHotel(hotel)}
                       >
@@ -404,7 +463,8 @@ const FlightHotel = () => {
                             className="w-full h-full object-cover transition-transform duration-slow ease-standard group-hover:scale-105"
                             loading="lazy"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945';
+                              (e.target as HTMLImageElement).src =
+                                "https://images.unsplash.com/photo-1566073771259-6a8506099945";
                             }}
                           />
                           {selectedHotel?.id === hotel.id && (
@@ -412,7 +472,7 @@ const FlightHotel = () => {
                               <Check className="text-primary-foreground h-5 w-5" />
                             </div>
                           )}
-                          
+
                           {/* Badges */}
                           <div className="absolute top-3 left-3 flex flex-col gap-2">
                             {(hotel.reviewScore || 0) >= 8.5 && (
@@ -482,7 +542,9 @@ const FlightHotel = () => {
                           </div>
 
                           {/* Room Type */}
-                          <p className="text-sm text-muted-foreground">{hotel.roomType || t("ux.flightHotel.doubleRoom")}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {hotel.roomType || t("ux.flightHotel.doubleRoom")}
+                          </p>
 
                           {/* Price */}
                           <div className="pt-3 border-t flex justify-between items-end">
@@ -510,11 +572,12 @@ const FlightHotel = () => {
                     <CardTitle className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <Package className="h-5 w-5 text-primary" />
-                        {t('pages.flightHotel.yourPackage')}
+                        {t("pages.flightHotel.yourPackage")}
                       </span>
                       {selectedFlight && selectedHotel && searchParams && (
                         <span className="text-sm font-normal text-muted-foreground">
-                          {calculateTotal().nights} nuit{calculateTotal().nights > 1 ? "s" : ""} • {calculateTotal().passengers} passager{calculateTotal().passengers > 1 ? "s" : ""}
+                          {calculateTotal().nights} nuit{calculateTotal().nights > 1 ? "s" : ""} •{" "}
+                          {calculateTotal().passengers} passager{calculateTotal().passengers > 1 ? "s" : ""}
                         </span>
                       )}
                     </CardTitle>
@@ -540,17 +603,18 @@ const FlightHotel = () => {
                           <p className="text-sm text-muted-foreground">{t("ux.flightHotel.noFlight")}</p>
                         )}
                       </div>
-                      
+
                       <div className="space-y-2">
                         <h3 className="font-semibold flex items-center gap-2 text-sm">
                           <Hotel className="h-4 w-4 text-primary" />
-                          {t('confirmation.serviceTypes.hotel')}
+                          {t("confirmation.serviceTypes.hotel")}
                         </h3>
                         {selectedHotel ? (
                           <div className="text-sm bg-muted/50 p-3 rounded-lg">
                             <p className="font-medium line-clamp-1">{selectedHotel.name}</p>
                             <p className="text-muted-foreground text-xs">
-                              {calculateTotal().nights} nuit{calculateTotal().nights > 1 ? 's' : ''} • {calculateTotal().rooms} chambre{(calculateTotal().rooms || 1) > 1 ? 's' : ''}
+                              {calculateTotal().nights} nuit{calculateTotal().nights > 1 ? "s" : ""} •{" "}
+                              {calculateTotal().rooms} chambre{(calculateTotal().rooms || 1) > 1 ? "s" : ""}
                             </p>
                             <p className="text-primary font-semibold mt-1">
                               <Price amount={calculateTotal().hotelTotal || selectedHotel.price} fromCurrency="EUR" />
@@ -582,19 +646,19 @@ const FlightHotel = () => {
                       <Alert className="mt-4 border-warning-foreground/20 bg-warning">
                         <AlertTriangle className="h-4 w-4 text-warning-foreground" />
                         <AlertDescription className="text-warning-foreground text-sm">
-                          {t('pages.flightHotel.availabilityNote')}
+                          {t("pages.flightHotel.availabilityNote")}
                         </AlertDescription>
                       </Alert>
                     )}
                   </CardContent>
                   <CardFooter>
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       size="lg"
                       onClick={handleBooking}
                       disabled={!selectedFlight || !selectedHotel}
                     >
-                      {t('pages.flightHotel.continueBooking')}
+                      {t("pages.flightHotel.continueBooking")}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardFooter>

@@ -35,8 +35,16 @@ const IOSDownloadSection = () => {
   };
 
   const groups: { key: OS; title: string; steps: string[] }[] = [
-    { key: "ios", title: t("ux.app.iosTitle"), steps: [t("ux.app.iosStep1"), t("ux.app.iosStep2"), t("ux.app.iosStep3")] },
-    { key: "android", title: t("ux.app.androidTitle"), steps: [t("ux.app.androidStep1"), t("ux.app.androidStep2"), t("ux.app.androidStep3")] },
+    {
+      key: "ios",
+      title: t("ux.app.iosTitle"),
+      steps: [t("ux.app.iosStep1"), t("ux.app.iosStep2"), t("ux.app.iosStep3")],
+    },
+    {
+      key: "android",
+      title: t("ux.app.androidTitle"),
+      steps: [t("ux.app.androidStep1"), t("ux.app.androidStep2"), t("ux.app.androidStep3")],
+    },
     { key: "desktop", title: t("ux.app.desktopTitle"), steps: [t("ux.app.desktopStep1"), t("ux.app.desktopStep2")] },
   ];
   // Sur téléphone : seulement les étapes de l'appareil
@@ -71,7 +79,10 @@ const IOSDownloadSection = () => {
           >
             <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden">
               {t("ux.app.howTo")}
-              <ChevronDown className="h-4 w-4 transition-transform duration-base ease-standard group-open:rotate-180" aria-hidden="true" />
+              <ChevronDown
+                className="h-4 w-4 transition-transform duration-base ease-standard group-open:rotate-180"
+                aria-hidden="true"
+              />
             </summary>
             <div className={visible.length > 1 ? "mt-3 grid gap-4 md:grid-cols-3" : "mt-3"}>
               {visible.map((group) => (

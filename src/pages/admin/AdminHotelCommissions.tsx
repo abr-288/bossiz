@@ -6,14 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { formatFcfa } from "@/lib/hotels";
@@ -39,7 +32,8 @@ const previousMonth = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 };
 
-const shortDate = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+const shortDate = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 
 // Commission de 10 % sur les séjours d'hôtel payés sur place (contrat
 // hébergement, art. 6.3) : récapitulatif du mois par hôtel, émission de la
@@ -63,7 +57,12 @@ export default function AdminHotelCommissions() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-hotel-onsite-commissions", period] });
 
   const issue = async (row: SummaryRow) => {
-    if (!confirm(`Émettre la facture de ${formatFcfa(row.commission_amount)} pour ${row.agency_name} et l'envoyer par email ?`)) return;
+    if (
+      !confirm(
+        `Émettre la facture de ${formatFcfa(row.commission_amount)} pour ${row.agency_name} et l'envoyer par email ?`,
+      )
+    )
+      return;
     setBusy(row.agency_id);
     try {
       const { data: invoiceId, error } = await supabase.rpc("admin_issue_hotel_onsite_invoice", {
@@ -92,17 +91,40 @@ export default function AdminHotelCommissions() {
     if (!row.invoice_id) return;
     if (status === "cancelled" && !confirm("Annuler cette facture ? Elle pourra être réémise.")) return;
     setBusy(row.agency_id);
-    const { error } = await supabase.rpc("admin_set_hotel_onsite_invoice_status", { p_invoice_id: row.invoice_id, p_status: status });
+    const { error } = await supabase.rpc("admin_set_hotel_onsite_invoice_status", {
+      p_invoice_id: row.invoice_id,
+      p_status: status,
+    });
     setBusy(null);
     if (error) return toast.error(error.message);
     await refresh();
   };
 
   const exportCsv = () => {
-    const lines = [["Hôtel", "Réservation", "Établissement", "Client", "Arrivée", "Départ", "Montant (FCFA)", "Commission 10 % (FCFA)"]];
+    const lines = [
+      [
+        "Hôtel",
+        "Réservation",
+        "Établissement",
+        "Client",
+        "Arrivée",
+        "Départ",
+        "Montant (FCFA)",
+        "Commission 10 % (FCFA)",
+      ],
+    ];
     for (const row of data ?? []) {
       for (const b of row.bookings) {
-        lines.push([row.agency_name, b.bookingId.slice(0, 8).toUpperCase(), b.hotel, b.customer, b.checkIn, b.checkOut, String(b.total), String(Math.round(b.total * 0.1))]);
+        lines.push([
+          row.agency_name,
+          b.bookingId.slice(0, 8).toUpperCase(),
+          b.hotel,
+          b.customer,
+          b.checkIn,
+          b.checkOut,
+          String(b.total),
+          String(Math.round(b.total * 0.1)),
+        ]);
       }
     }
     const csv = lines.map((l) => l.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(";")).join("\n");
@@ -124,13 +146,22 @@ export default function AdminHotelCommissions() {
           <div>
             <h1 className="text-2xl font-bold">Commissions hôtels – paiement sur place</h1>
             <p className="text-muted-foreground">
-              10 % des séjours payés à l'hôtel dont le départ tombe dans le mois, hors annulations et non-présentations déclarées.
+              10 % des séjours payés à l'hôtel dont le départ tombe dans le mois, hors annulations et non-présentations
+              déclarées.
             </p>
           </div>
           <div className="flex items-end gap-2">
             <div className="space-y-1">
-              <Label htmlFor="commission-month" className="text-xs">Mois</Label>
-              <Input id="commission-month" type="month" value={month} max={currentMonth} onChange={(e) => e.target.value && setMonth(e.target.value)} />
+              <Label htmlFor="commission-month" className="text-xs">
+                Mois
+              </Label>
+              <Input
+                id="commission-month"
+                type="month"
+                value={month}
+                max={currentMonth}
+                onChange={(e) => e.target.value && setMonth(e.target.value)}
+              />
             </div>
             <Button variant="outline" onClick={exportCsv} disabled={!data?.length}>
               <Download className="h-4 w-4 mr-2" />
@@ -140,7 +171,9 @@ export default function AdminHotelCommissions() {
         </div>
 
         {month >= currentMonth && (
-          <p className="text-sm text-muted-foreground">Mois en cours : le récapitulatif évolue jusqu'à la fin du mois ; la facture s'émet le mois suivant.</p>
+          <p className="text-sm text-muted-foreground">
+            Mois en cours : le récapitulatif évolue jusqu'à la fin du mois ; la facture s'émet le mois suivant.
+          </p>
         )}
 
         <div className="border rounded-lg">
@@ -158,9 +191,17 @@ export default function AdminHotelCommissions() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8">Chargement...</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    Chargement...
+                  </TableCell>
+                </TableRow>
               ) : error ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-destructive">{(error as Error).message}</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-destructive">
+                    {(error as Error).message}
+                  </TableCell>
+                </TableRow>
               ) : !data?.length ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
@@ -173,8 +214,18 @@ export default function AdminHotelCommissions() {
                   <Fragment key={row.agency_id}>
                     <TableRow>
                       <TableCell>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Détail" onClick={() => setExpanded(expanded === row.agency_id ? null : row.agency_id)}>
-                          {expanded === row.agency_id ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          aria-label="Détail"
+                          onClick={() => setExpanded(expanded === row.agency_id ? null : row.agency_id)}
+                        >
+                          {expanded === row.agency_id ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
                         </Button>
                       </TableCell>
                       <TableCell className="font-medium">{row.agency_name}</TableCell>
@@ -186,10 +237,15 @@ export default function AdminHotelCommissions() {
                           <Badge>Réglée</Badge>
                         ) : row.invoice_status === "issued" ? (
                           <div className="space-y-0.5">
-                            <Badge variant="secondary">Émise · échéance {row.invoice_due_at ? shortDate(row.invoice_due_at) : "—"}</Badge>
-                            {row.invoiced_amount != null && Number(row.invoiced_amount) !== Number(row.commission_amount) && (
-                              <p className="text-xs text-destructive">Facturé {formatFcfa(Number(row.invoiced_amount))} : le récapitulatif a changé depuis.</p>
-                            )}
+                            <Badge variant="secondary">
+                              Émise · échéance {row.invoice_due_at ? shortDate(row.invoice_due_at) : "—"}
+                            </Badge>
+                            {row.invoiced_amount != null &&
+                              Number(row.invoiced_amount) !== Number(row.commission_amount) && (
+                                <p className="text-xs text-destructive">
+                                  Facturé {formatFcfa(Number(row.invoiced_amount))} : le récapitulatif a changé depuis.
+                                </p>
+                              )}
                           </div>
                         ) : (
                           <span className="text-sm text-muted-foreground">Non émise</span>
@@ -197,18 +253,43 @@ export default function AdminHotelCommissions() {
                       </TableCell>
                       <TableCell className="text-right space-x-1">
                         {!row.invoice_id && (
-                          <Button size="sm" disabled={busy === row.agency_id || month >= currentMonth || row.stays_count === 0} onClick={() => issue(row)}>
+                          <Button
+                            size="sm"
+                            disabled={busy === row.agency_id || month >= currentMonth || row.stays_count === 0}
+                            onClick={() => issue(row)}
+                          >
                             Émettre et envoyer
                           </Button>
                         )}
                         {row.invoice_status === "issued" && (
                           <>
-                            <Button size="sm" variant="outline" disabled={busy === row.agency_id} onClick={() => setStatus(row, "paid")}>Marquer réglée</Button>
-                            <Button size="sm" variant="ghost" disabled={busy === row.agency_id} onClick={() => setStatus(row, "cancelled")}>Annuler</Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={busy === row.agency_id}
+                              onClick={() => setStatus(row, "paid")}
+                            >
+                              Marquer réglée
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={busy === row.agency_id}
+                              onClick={() => setStatus(row, "cancelled")}
+                            >
+                              Annuler
+                            </Button>
                           </>
                         )}
                         {row.invoice_status === "paid" && (
-                          <Button size="sm" variant="ghost" disabled={busy === row.agency_id} onClick={() => setStatus(row, "issued")}>Remettre à régler</Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={busy === row.agency_id}
+                            onClick={() => setStatus(row, "issued")}
+                          >
+                            Remettre à régler
+                          </Button>
                         )}
                       </TableCell>
                     </TableRow>
@@ -220,9 +301,12 @@ export default function AdminHotelCommissions() {
                             {row.bookings.map((b) => (
                               <li key={b.bookingId} className="flex flex-wrap justify-between gap-2">
                                 <span>
-                                  {b.bookingId.slice(0, 8).toUpperCase()} · {b.customer} · {b.hotel} · {shortDate(b.checkIn)} → {shortDate(b.checkOut)}
+                                  {b.bookingId.slice(0, 8).toUpperCase()} · {b.customer} · {b.hotel} ·{" "}
+                                  {shortDate(b.checkIn)} → {shortDate(b.checkOut)}
                                 </span>
-                                <span>{formatFcfa(b.total)} → {formatFcfa(Math.round(b.total * 0.1))}</span>
+                                <span>
+                                  {formatFcfa(b.total)} → {formatFcfa(Math.round(b.total * 0.1))}
+                                </span>
                               </li>
                             ))}
                           </ul>
@@ -236,7 +320,9 @@ export default function AdminHotelCommissions() {
           </Table>
         </div>
         {!!data?.length && (
-          <p className="text-sm text-right">Total des commissions du mois : <strong>{formatFcfa(totalCommission)}</strong></p>
+          <p className="text-sm text-right">
+            Total des commissions du mois : <strong>{formatFcfa(totalCommission)}</strong>
+          </p>
         )}
       </div>
     </AdminLayout>

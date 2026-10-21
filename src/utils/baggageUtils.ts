@@ -74,7 +74,7 @@ const defaultPolicies: Record<string, Record<string, BaggageAllowance>> = {
 // Airline-specific overrides (some airlines have different policies)
 const airlineOverrides: Record<string, Partial<Record<string, Record<string, Partial<BaggageAllowance>>>>> = {
   // Low-cost carriers - stricter baggage policies
-  "Fly540": {
+  Fly540: {
     basic: {
       ECONOMY: {
         cabin: { pieces: 1, weightKg: 7, description: "Sac cabine" },
@@ -84,7 +84,7 @@ const airlineOverrides: Record<string, Partial<Record<string, Record<string, Par
       },
     },
   },
-  "Ryanair": {
+  Ryanair: {
     basic: {
       ECONOMY: {
         cabin: { pieces: 1, weightKg: 10, description: "Petit sac" },
@@ -94,7 +94,7 @@ const airlineOverrides: Record<string, Partial<Record<string, Record<string, Par
       },
     },
   },
-  "EasyJet": {
+  EasyJet: {
     basic: {
       ECONOMY: {
         cabin: { pieces: 1, weightKg: 15, description: "Sac cabine" },
@@ -123,7 +123,7 @@ const airlineOverrides: Record<string, Partial<Record<string, Record<string, Par
       },
     },
   },
-  "Emirates": {
+  Emirates: {
     basic: {
       ECONOMY: {
         cabin: { pieces: 1, weightKg: 7, description: "Sac cabine" },
@@ -193,33 +193,38 @@ const airlineOverrides: Record<string, Partial<Record<string, Record<string, Par
 
 // List of known low-cost carriers
 const lowCostCarriers = [
-  "Ryanair", "EasyJet", "Vueling", "Transavia", "Fly540", 
-  "Spirit", "Frontier", "Wizz Air", "Norwegian", "Pegasus"
+  "Ryanair",
+  "EasyJet",
+  "Vueling",
+  "Transavia",
+  "Fly540",
+  "Spirit",
+  "Frontier",
+  "Wizz Air",
+  "Norwegian",
+  "Pegasus",
 ];
 
 export function isLowCostCarrier(airline: string): boolean {
-  return lowCostCarriers.some(lcc => 
-    airline.toLowerCase().includes(lcc.toLowerCase())
-  );
+  return lowCostCarriers.some((lcc) => airline.toLowerCase().includes(lcc.toLowerCase()));
 }
 
 export function getBaggageAllowance(
   airline: string,
   fareType: string = "basic",
-  cabinClass: string = "ECONOMY"
+  cabinClass: string = "ECONOMY",
 ): BaggageAllowance {
   const normalizedFare = fareType.toLowerCase();
   const normalizedClass = cabinClass.toUpperCase();
-  
+
   // Check for airline-specific override first
   const airlinePolicy = airlineOverrides[airline];
   if (airlinePolicy?.[normalizedFare]?.[normalizedClass]) {
     const override = airlinePolicy[normalizedFare]![normalizedClass]!;
-    const defaultPolicy = defaultPolicies[normalizedFare]?.[normalizedClass] || 
-                          defaultPolicies.basic.ECONOMY;
+    const defaultPolicy = defaultPolicies[normalizedFare]?.[normalizedClass] || defaultPolicies.basic.ECONOMY;
     return { ...defaultPolicy, ...override } as BaggageAllowance;
   }
-  
+
   // Fall back to default policy
   const farePolicy = defaultPolicies[normalizedFare] || defaultPolicies.basic;
   return farePolicy[normalizedClass] || farePolicy.ECONOMY || defaultPolicies.basic.ECONOMY;
@@ -233,24 +238,27 @@ const CABIN_DESCRIPTION_KEYS: Record<string, string> = {
   "Petit sac": "smallBag",
 };
 
-export function formatBaggageInfo(allowance: BaggageAllowance, t: TFunction): {
+export function formatBaggageInfo(
+  allowance: BaggageAllowance,
+  t: TFunction,
+): {
   cabinText: string;
   checkedText: string;
   personalItemText: string | null;
 } {
   const descKey = CABIN_DESCRIPTION_KEYS[allowance.cabin.description];
   const cabinLabel = descKey ? t(`ux.baggage.${descKey}`) : allowance.cabin.description;
-  const cabinText = allowance.cabin.pieces > 0
-    ? t("ux.baggage.cabin", { count: allowance.cabin.pieces, label: cabinLabel, kg: allowance.cabin.weightKg })
-    : t("ux.baggage.notIncluded");
+  const cabinText =
+    allowance.cabin.pieces > 0
+      ? t("ux.baggage.cabin", { count: allowance.cabin.pieces, label: cabinLabel, kg: allowance.cabin.weightKg })
+      : t("ux.baggage.notIncluded");
 
-  const checkedText = allowance.checked.included && allowance.checked.pieces > 0
-    ? t("ux.baggage.checked", { count: allowance.checked.pieces, kg: allowance.checked.weightKg })
-    : t("ux.baggage.notIncluded");
+  const checkedText =
+    allowance.checked.included && allowance.checked.pieces > 0
+      ? t("ux.baggage.checked", { count: allowance.checked.pieces, kg: allowance.checked.weightKg })
+      : t("ux.baggage.notIncluded");
 
-  const personalItemText = allowance.personalItem
-    ? t("ux.baggage.personalItem")
-    : null;
+  const personalItemText = allowance.personalItem ? t("ux.baggage.personalItem") : null;
 
   return { cabinText, checkedText, personalItemText };
 }

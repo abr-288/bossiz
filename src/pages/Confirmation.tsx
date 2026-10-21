@@ -9,19 +9,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
-  Loader2, 
-  Home, 
-  Download, 
-  Share2, 
-  Mail, 
-  Plane, 
-  Hotel, 
-  Car, 
-  MapPin, 
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Loader2,
+  Home,
+  Download,
+  Share2,
+  Mail,
+  Plane,
+  Hotel,
+  Car,
+  MapPin,
   Calendar,
   Users,
   CreditCard,
@@ -29,7 +29,7 @@ import {
   Check,
   Printer,
   QrCode,
-  Star
+  Star,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
@@ -68,9 +68,12 @@ const Confirmation = () => {
 
   const getLocale = () => {
     switch (i18n.language) {
-      case 'en': return enUS;
-      case 'zh': return zhCN;
-      default: return fr;
+      case "en":
+        return enUS;
+      case "zh":
+        return zhCN;
+      default:
+        return fr;
     }
   };
 
@@ -85,38 +88,44 @@ const Confirmation = () => {
     const channel = supabase
       .channel(`booking-status-${bookingId}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'bookings',
-          filter: `id=eq.${bookingId}`
+          event: "UPDATE",
+          schema: "public",
+          table: "bookings",
+          filter: `id=eq.${bookingId}`,
         },
         (payload) => {
-          console.log('Booking updated in real-time:', payload);
-          setBooking((prev) => prev && ({
-            ...prev,
-            ...(payload.new as Partial<ConfirmationBooking>),
-            services: prev.services,
-            passengers: prev.passengers
-          }));
-          
+          console.log("Booking updated in real-time:", payload);
+          setBooking(
+            (prev) =>
+              prev && {
+                ...prev,
+                ...(payload.new as Partial<ConfirmationBooking>),
+                services: prev.services,
+                passengers: prev.passengers,
+              },
+          );
+
           // Show toast notification on status change
-          if (['paid', 'partially_paid'].includes(payload.new.payment_status) && !['paid', 'partially_paid'].includes(payload.old?.payment_status)) {
-            toast.success(t('confirmation.paymentReceived'), {
-              description: t('confirmation.confirmedDesc'),
+          if (
+            ["paid", "partially_paid"].includes(payload.new.payment_status) &&
+            !["paid", "partially_paid"].includes(payload.old?.payment_status)
+          ) {
+            toast.success(t("confirmation.paymentReceived"), {
+              description: t("confirmation.confirmedDesc"),
               duration: 5000,
             });
-          } else if (payload.new.status === 'confirmed' && payload.old?.status !== 'confirmed') {
-            toast.success(t('confirmation.bookingConfirmed'), {
-              description: t('confirmation.confirmedDesc'),
+          } else if (payload.new.status === "confirmed" && payload.old?.status !== "confirmed") {
+            toast.success(t("confirmation.bookingConfirmed"), {
+              description: t("confirmation.confirmedDesc"),
               duration: 5000,
             });
           }
-        }
+        },
       )
       .subscribe((status) => {
-        console.log('Realtime subscription status:', status);
+        console.log("Realtime subscription status:", status);
       });
 
     return () => {
@@ -126,7 +135,7 @@ const Confirmation = () => {
 
   const loadBooking = async () => {
     if (!bookingId) {
-      setError(t('confirmation.missingBookingId'));
+      setError(t("confirmation.missingBookingId"));
       setLoading(false);
       return;
     }
@@ -134,11 +143,13 @@ const Confirmation = () => {
     try {
       const { data, error } = await supabase
         .from("bookings")
-        .select(`
+        .select(
+          `
           *,
           services (*),
           passengers (*)
-        `)
+        `,
+        )
         .eq("id", bookingId)
         .single();
 
@@ -149,7 +160,9 @@ const Confirmation = () => {
         supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle(),
       ]);
       setHasReview(!!existingReview);
-      setReviewPromptEnabled((reviewConfig?.config_value as { reviewPromptEnabled?: boolean } | null)?.reviewPromptEnabled !== false);
+      setReviewPromptEnabled(
+        (reviewConfig?.config_value as { reviewPromptEnabled?: boolean } | null)?.reviewPromptEnabled !== false,
+      );
     } catch (err) {
       console.error("Error loading booking:", err);
       setError(getErrorMessage(err) ?? null);
@@ -160,63 +173,67 @@ const Confirmation = () => {
 
   const getServiceIcon = (type: string) => {
     switch (type) {
-      case "flight": return <Plane className="h-6 w-6" />;
+      case "flight":
+        return <Plane className="h-6 w-6" />;
       case "hotel":
-      case "stay": return <Hotel className="h-6 w-6" />;
-      case "car": return <Car className="h-6 w-6" />;
-      default: return <MapPin className="h-6 w-6" />;
+      case "stay":
+        return <Hotel className="h-6 w-6" />;
+      case "car":
+        return <Car className="h-6 w-6" />;
+      default:
+        return <MapPin className="h-6 w-6" />;
     }
   };
 
   const getStatusConfig = () => {
-    if (booking?.status === 'confirmed') {
+    if (booking?.status === "confirmed") {
       return {
         icon: <CheckCircle2 className="h-20 w-20 text-success" />,
-        title: t('confirmation.confirmed'),
-        description: t('confirmation.confirmedDesc'),
+        title: t("confirmation.confirmed"),
+        description: t("confirmation.confirmedDesc"),
         bgClass: "from-primary/10 to-primary/5",
         borderClass: "border-success/30",
       };
-    } else if (booking?.status === 'cancelled' && booking?.payment_status === 'refunded') {
+    } else if (booking?.status === "cancelled" && booking?.payment_status === "refunded") {
       return {
         icon: <XCircle className="h-20 w-20 text-gold" />,
-        title: t('confirmation.cancelled'),
-        description: t('confirmation.cancelledDesc'),
+        title: t("confirmation.cancelled"),
+        description: t("confirmation.cancelledDesc"),
         bgClass: "from-primary/10 to-primary/5",
         borderClass: "border-warning-foreground/20",
       };
-    } else if (booking?.payment_status === 'failed') {
+    } else if (booking?.payment_status === "failed") {
       return {
         icon: <XCircle className="h-20 w-20 text-destructive" />,
-        title: t('confirmation.failed'),
-        description: t('confirmation.failedDesc'),
+        title: t("confirmation.failed"),
+        description: t("confirmation.failedDesc"),
         bgClass: "from-destructive/20 to-destructive/5",
         borderClass: "border-destructive/30",
       };
-    } else if (booking?.payment_status === 'paid' && booking?.status === 'pending') {
+    } else if (booking?.payment_status === "paid" && booking?.status === "pending") {
       // Paid but a flight booking still awaiting a real PNR from the
       // supplier (see create-pnr) - never shown as a green success yet,
       // since it may still automatically resolve to a refund.
       return {
         icon: <Clock className="h-20 w-20 text-gold animate-pulse" />,
-        title: t('confirmation.processingSupplier'),
-        description: t('confirmation.processingSupplierDesc'),
+        title: t("confirmation.processingSupplier"),
+        description: t("confirmation.processingSupplierDesc"),
         bgClass: "from-primary/10 to-primary/5",
         borderClass: "border-warning-foreground/20",
       };
-    } else if (booking?.payment_status === 'pending') {
+    } else if (booking?.payment_status === "pending") {
       return {
         icon: <Clock className="h-20 w-20 text-gold animate-pulse" />,
-        title: t('confirmation.paymentPending'),
-        description: t('confirmation.paymentPendingDesc'),
+        title: t("confirmation.paymentPending"),
+        description: t("confirmation.paymentPendingDesc"),
         bgClass: "from-primary/10 to-primary/5",
         borderClass: "border-warning-foreground/20",
       };
     }
     return {
       icon: <Clock className="h-20 w-20 text-muted-foreground" />,
-      title: t('confirmation.pending'),
-      description: t('confirmation.pendingDesc'),
+      title: t("confirmation.pending"),
+      description: t("confirmation.pendingDesc"),
       bgClass: "from-muted/50 to-muted/20",
       borderClass: "border-border",
     };
@@ -232,7 +249,7 @@ const Confirmation = () => {
     const ref = generateBookingRef();
     await navigator.clipboard.writeText(ref);
     setCopied(true);
-    toast.success(t('confirmation.bookingNumber') + " " + t('common.success').toLowerCase() + "!");
+    toast.success(t("confirmation.bookingNumber") + " " + t("common.success").toLowerCase() + "!");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -242,8 +259,8 @@ const Confirmation = () => {
 
   const handleShare = async () => {
     const shareData = {
-      title: t('confirmation.shareTitle'),
-      text: `${t('confirmation.bookingNumber')} ${generateBookingRef()} - ${booking?.services?.name}`,
+      title: t("confirmation.shareTitle"),
+      text: `${t("confirmation.bookingNumber")} ${generateBookingRef()} - ${booking?.services?.name}`,
       url: window.location.href,
     };
 
@@ -255,7 +272,7 @@ const Confirmation = () => {
       }
     } else {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success(t('confirmation.linkCopied'));
+      toast.success(t("confirmation.linkCopied"));
     }
   };
 
@@ -266,7 +283,7 @@ const Confirmation = () => {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-            <p className="text-muted-foreground">{t('confirmation.loading')}</p>
+            <p className="text-muted-foreground">{t("confirmation.loading")}</p>
           </div>
         </main>
         <Footer />
@@ -284,13 +301,13 @@ const Confirmation = () => {
               <div className="text-center space-y-6">
                 <XCircle className="h-20 w-20 text-destructive mx-auto" />
                 <div>
-                  <h1 className="text-2xl font-bold">{t('confirmation.error')}</h1>
-                  <p className="text-muted-foreground mt-2">{error || t('confirmation.notFound')}</p>
+                  <h1 className="text-2xl font-bold">{t("confirmation.error")}</h1>
+                  <p className="text-muted-foreground mt-2">{error || t("confirmation.notFound")}</p>
                 </div>
                 <Button asChild size="lg">
                   <Link to="/">
                     <Home className="h-4 w-4 mr-2" />
-                    {t('confirmation.backToHome')}
+                    {t("confirmation.backToHome")}
                   </Link>
                 </Button>
               </div>
@@ -326,12 +343,8 @@ const Confirmation = () => {
                   {statusConfig.icon}
                 </motion.div>
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-                    {statusConfig.title}
-                  </h1>
-                  <p className="text-muted-foreground mt-2 max-w-md mx-auto">
-                    {statusConfig.description}
-                  </p>
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground">{statusConfig.title}</h1>
+                  <p className="text-muted-foreground mt-2 max-w-md mx-auto">{statusConfig.description}</p>
                 </div>
               </div>
             </div>
@@ -342,11 +355,9 @@ const Confirmation = () => {
             <CardContent className="py-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="text-center md:text-left">
-                  <p className="text-sm text-muted-foreground mb-1">{t('confirmation.bookingNumber')}</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("confirmation.bookingNumber")}</p>
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl md:text-4xl font-bold text-primary tracking-wider">
-                      {bookingRef}
-                    </span>
+                    <span className="text-3xl md:text-4xl font-bold text-primary tracking-wider">{bookingRef}</span>
                     <Button
                       aria-label="Copier"
                       variant="ghost"
@@ -354,11 +365,7 @@ const Confirmation = () => {
                       onClick={copyToClipboard}
                       className="shrink-0"
                     >
-                      {copied ? (
-                        <Check className="h-5 w-5 text-success" />
-                      ) : (
-                        <Copy className="h-5 w-5" />
-                      )}
+                      {copied ? <Check className="h-5 w-5 text-success" /> : <Copy className="h-5 w-5" />}
                     </Button>
                   </div>
                 </div>
@@ -386,13 +393,19 @@ const Confirmation = () => {
                       <p className="text-sm text-muted-foreground">{booking.services?.location}</p>
                     </div>
                   </div>
-                  
+
                   <Badge variant="secondary" className="mb-4">
-                    {booking.services?.type === "flight" ? t('confirmation.serviceTypes.flight') :
-                     booking.services?.type === "hotel" ? t('confirmation.serviceTypes.hotel') :
-                     booking.services?.type === "car" ? t('confirmation.serviceTypes.car') :
-                     booking.services?.type === "tour" ? t('confirmation.serviceTypes.tour') :
-                     booking.services?.type === "stay" ? t('confirmation.serviceTypes.stay') : t('confirmation.serviceTypes.default')}
+                    {booking.services?.type === "flight"
+                      ? t("confirmation.serviceTypes.flight")
+                      : booking.services?.type === "hotel"
+                        ? t("confirmation.serviceTypes.hotel")
+                        : booking.services?.type === "car"
+                          ? t("confirmation.serviceTypes.car")
+                          : booking.services?.type === "tour"
+                            ? t("confirmation.serviceTypes.tour")
+                            : booking.services?.type === "stay"
+                              ? t("confirmation.serviceTypes.stay")
+                              : t("confirmation.serviceTypes.default")}
                   </Badge>
                 </div>
 
@@ -403,7 +416,7 @@ const Confirmation = () => {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">
                       <Calendar className="h-4 w-4" />
-                      <span>{t('confirmation.startDate')}</span>
+                      <span>{t("confirmation.startDate")}</span>
                     </div>
                     <p className="font-semibold">
                       {format(new Date(booking.start_date), "EEEE d MMMM yyyy", { locale: getLocale() })}
@@ -413,7 +426,7 @@ const Confirmation = () => {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <Calendar className="h-4 w-4" />
-                        <span>{t('confirmation.endDate')}</span>
+                        <span>{t("confirmation.endDate")}</span>
                       </div>
                       <p className="font-semibold">
                         {format(new Date(booking.end_date), "EEEE d MMMM yyyy", { locale: getLocale() })}
@@ -423,9 +436,11 @@ const Confirmation = () => {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">
                       <Users className="h-4 w-4" />
-                      <span>{t('confirmation.participants')}</span>
+                      <span>{t("confirmation.participants")}</span>
                     </div>
-                    <p className="font-semibold">{booking.guests} {t('confirmation.person')}</p>
+                    <p className="font-semibold">
+                      {booking.guests} {t("confirmation.person")}
+                    </p>
                   </div>
                 </div>
 
@@ -436,12 +451,12 @@ const Confirmation = () => {
                   <div>
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Users className="h-4 w-4 text-primary" />
-                      {t('confirmation.participants')}
+                      {t("confirmation.participants")}
                     </h3>
                     <div className="space-y-2">
                       {booking.passengers.map((passenger, index) => (
-                        <div 
-                          key={passenger.id} 
+                        <div
+                          key={passenger.id}
                           className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                         >
                           <div>
@@ -450,12 +465,14 @@ const Confirmation = () => {
                             </p>
                             {passenger.date_of_birth && (
                               <p className="text-xs text-muted-foreground">
-                                {t('confirmation.bornOn')} {format(new Date(passenger.date_of_birth), "dd/MM/yyyy")}
+                                {t("confirmation.bornOn")} {format(new Date(passenger.date_of_birth), "dd/MM/yyyy")}
                               </p>
                             )}
                           </div>
                           <Badge variant="outline" className="text-xs">
-                            {index === 0 ? t('confirmation.passenger.main') : `${t('confirmation.passenger.other')} ${index + 1}`}
+                            {index === 0
+                              ? t("confirmation.passenger.main")
+                              : `${t("confirmation.passenger.other")} ${index + 1}`}
                           </Badge>
                         </div>
                       ))}
@@ -469,7 +486,7 @@ const Confirmation = () => {
                 <div>
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <Mail className="h-4 w-4 text-primary" />
-                    {t('confirmation.contact')}
+                    {t("confirmation.contact")}
                   </h3>
                   <div className="space-y-2 text-sm">
                     <p className="font-medium">{booking.customer_name}</p>
@@ -486,63 +503,58 @@ const Confirmation = () => {
                 <CardContent className="py-6">
                   <h3 className="font-semibold mb-4 flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-primary" />
-                    {booking.payment_status === "partially_paid" ? "Acompte payé" : t('confirmation.amountPaid')}
+                    {booking.payment_status === "partially_paid" ? "Acompte payé" : t("confirmation.amountPaid")}
                   </h3>
                   <div className="text-4xl font-bold text-primary mb-2">
-                    <Price amount={booking.amount_paid || booking.total_price} fromCurrency={booking.currency || "XOF"} />
+                    <Price
+                      amount={booking.amount_paid || booking.total_price}
+                      fromCurrency={booking.currency || "XOF"}
+                    />
                   </div>
                   {booking.payment_status === "partially_paid" && (
                     <p className="text-sm text-muted-foreground mb-3">
-                      Solde de <Price amount={booking.balance_due || 0} fromCurrency={booking.currency || "XOF"} /> à régler sur place.
+                      Solde de <Price amount={booking.balance_due || 0} fromCurrency={booking.currency || "XOF"} /> à
+                      régler sur place.
                     </p>
                   )}
-                  <Badge 
-                    variant={['paid', 'partially_paid'].includes(booking.payment_status) ? 'default' : 'secondary'}
-                    className={['paid', 'partially_paid'].includes(booking.payment_status) ? 'bg-success' : ''}
+                  <Badge
+                    variant={["paid", "partially_paid"].includes(booking.payment_status) ? "default" : "secondary"}
+                    className={["paid", "partially_paid"].includes(booking.payment_status) ? "bg-success" : ""}
                   >
-                    {booking.payment_status === 'paid' ? '✓ ' + t('confirmation.paid') : t('confirmation.pending')}
+                    {booking.payment_status === "paid" ? "✓ " + t("confirmation.paid") : t("confirmation.pending")}
                   </Badge>
-                  {reviewPromptEnabled && booking.status === "confirmed" && ["paid", "partially_paid"].includes(booking.payment_status) && booking.service_id && (
-                    <div className="mt-4 border-t pt-4">
-                      {hasReview ? (
-                        <p className="text-sm text-muted-foreground">Merci, votre avis a bien été envoyé.</p>
-                      ) : (
-                        <Button variant="outline" className="gap-2" onClick={() => setReviewOpen(true)}>
-                          <Star className="h-4 w-4" /> Noter ce service
-                        </Button>
-                      )}
-                    </div>
-                  )}
+                  {reviewPromptEnabled &&
+                    booking.status === "confirmed" &&
+                    ["paid", "partially_paid"].includes(booking.payment_status) &&
+                    booking.service_id && (
+                      <div className="mt-4 border-t pt-4">
+                        {hasReview ? (
+                          <p className="text-sm text-muted-foreground">Merci, votre avis a bien été envoyé.</p>
+                        ) : (
+                          <Button variant="outline" className="gap-2" onClick={() => setReviewOpen(true)}>
+                            <Star className="h-4 w-4" /> Noter ce service
+                          </Button>
+                        )}
+                      </div>
+                    )}
                 </CardContent>
               </Card>
 
               <Card>
                 <CardContent className="py-6 space-y-3">
-                  <h3 className="font-semibold mb-2">{t('confirmation.actions')}</h3>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start"
-                    onClick={handlePrint}
-                  >
+                  <h3 className="font-semibold mb-2">{t("confirmation.actions")}</h3>
+                  <Button variant="outline" className="w-full justify-start" onClick={handlePrint}>
                     <Printer className="h-4 w-4 mr-2" />
-                    {t('confirmation.print')}
+                    {t("confirmation.print")}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start"
-                    onClick={handleShare}
-                  >
+                  <Button variant="outline" className="w-full justify-start" onClick={handleShare}>
                     <Share2 className="h-4 w-4 mr-2" />
-                    {t('confirmation.share')}
+                    {t("confirmation.share")}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start"
-                    asChild
-                  >
+                  <Button variant="outline" className="w-full justify-start" asChild>
                     <Link to={`/support?bookingRef=${bookingRef}`}>
                       <Mail className="h-4 w-4 mr-2" />
-                      {t('confirmation.contactSupport')}
+                      {t("confirmation.contactSupport")}
                     </Link>
                   </Button>
                 </CardContent>
@@ -550,14 +562,12 @@ const Confirmation = () => {
 
               <div className="flex flex-col gap-3">
                 <Button asChild size="lg" className="w-full">
-                  <Link to="/dashboard?tab=bookings">
-                    {t('confirmation.viewBookings')}
-                  </Link>
+                  <Link to="/dashboard?tab=bookings">{t("confirmation.viewBookings")}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="w-full">
                   <Link to="/">
                     <Home className="h-4 w-4 mr-2" />
-                    {t('confirmation.backToHome')}
+                    {t("confirmation.backToHome")}
                   </Link>
                 </Button>
               </div>
@@ -579,14 +589,16 @@ const Confirmation = () => {
           {/* Important Info */}
           <Card className="border-warning-foreground/20 bg-warning">
             <CardContent className="py-4">
-              <h3 className="font-semibold mb-2 text-warning-foreground">
-                {t('confirmation.important')}
-              </h3>
+              <h3 className="font-semibold mb-2 text-warning-foreground">{t("confirmation.important")}</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• {t('confirmation.keepRef')} <strong>{bookingRef}</strong></li>
-                <li>• {t('confirmation.emailSent')} <strong>{booking.customer_email}</strong></li>
-                <li>• {t('confirmation.presentRef')}</li>
-                <li>• {t('confirmation.questions')}</li>
+                <li>
+                  • {t("confirmation.keepRef")} <strong>{bookingRef}</strong>
+                </li>
+                <li>
+                  • {t("confirmation.emailSent")} <strong>{booking.customer_email}</strong>
+                </li>
+                <li>• {t("confirmation.presentRef")}</li>
+                <li>• {t("confirmation.questions")}</li>
               </ul>
             </CardContent>
           </Card>

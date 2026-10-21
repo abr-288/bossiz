@@ -5,28 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -60,20 +41,58 @@ interface Restaurant {
 }
 
 const DAYS: { key: string; label: string }[] = [
-  { key: "mon", get label() { return i18n.t("ux.bo.monday"); } },
-  { key: "tue", get label() { return i18n.t("ux.bo.tuesday"); } },
-  { key: "wed", get label() { return i18n.t("ux.bo.wednesday"); } },
-  { key: "thu", get label() { return i18n.t("ux.bo.thursday"); } },
-  { key: "fri", get label() { return i18n.t("ux.bo.friday"); } },
-  { key: "sat", get label() { return i18n.t("ux.bo.saturday"); } },
-  { key: "sun", get label() { return i18n.t("ux.bo.sunday"); } },
+  {
+    key: "mon",
+    get label() {
+      return i18n.t("ux.bo.monday");
+    },
+  },
+  {
+    key: "tue",
+    get label() {
+      return i18n.t("ux.bo.tuesday");
+    },
+  },
+  {
+    key: "wed",
+    get label() {
+      return i18n.t("ux.bo.wednesday");
+    },
+  },
+  {
+    key: "thu",
+    get label() {
+      return i18n.t("ux.bo.thursday");
+    },
+  },
+  {
+    key: "fri",
+    get label() {
+      return i18n.t("ux.bo.friday");
+    },
+  },
+  {
+    key: "sat",
+    get label() {
+      return i18n.t("ux.bo.saturday");
+    },
+  },
+  {
+    key: "sun",
+    get label() {
+      return i18n.t("ux.bo.sunday");
+    },
+  },
 ];
 
 const emptyOpeningHours = () =>
-  DAYS.reduce((acc, d) => {
-    acc[d.key] = { open: "11:00", close: "22:00", closed: d.key === "sun" };
-    return acc;
-  }, {} as Record<string, { open: string; close: string; closed?: boolean }>);
+  DAYS.reduce(
+    (acc, d) => {
+      acc[d.key] = { open: "11:00", close: "22:00", closed: d.key === "sun" };
+      return acc;
+    },
+    {} as Record<string, { open: string; close: string; closed?: boolean }>,
+  );
 
 const emptyForm = {
   name: "",
@@ -110,14 +129,12 @@ export default function AgencyRestaurants() {
   }, []);
 
   const fetchAgencyAndRestaurants = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: agency } = await supabase
-      .from("agencies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .single();
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
 
     if (!agency) return;
     setAgencyId(agency.id);
@@ -203,10 +220,13 @@ export default function AgencyRestaurants() {
       max_covers_per_slot: restaurant.max_covers_per_slot.toString(),
       average_ticket_price: restaurant.average_ticket_price?.toString() || "",
       available: restaurant.is_active,
-      openingHours: DAYS.reduce((acc, d) => {
-        acc[d.key] = hours[d.key] || { open: "11:00", close: "22:00", closed: true };
-        return acc;
-      }, {} as typeof emptyForm.openingHours),
+      openingHours: DAYS.reduce(
+        (acc, d) => {
+          acc[d.key] = hours[d.key] || { open: "11:00", close: "22:00", closed: true };
+          return acc;
+        },
+        {} as typeof emptyForm.openingHours,
+      ),
     });
     setIsDialogOpen(true);
   };
@@ -232,9 +252,18 @@ export default function AgencyRestaurants() {
             <h1 className="text-2xl font-bold">{t("ux.bo.myRestaurants")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.manageRestaurantsTheirBookingSlots")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newRestaurant")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newRestaurant")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -244,7 +273,11 @@ export default function AgencyRestaurants() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.name2")}</Label>
-                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.cuisine")}</Label>
@@ -258,19 +291,41 @@ export default function AgencyRestaurants() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.cityDistrict")}</Label>
-                    <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.address")}</Label>
-                    <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+                    <Input
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    />
                   </div>
                 </div>
-                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
+                <LocationPicker
+                  value={{
+                    location: formData.location,
+                    maps_url: formData.maps_url,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  }}
+                  onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
+                  required
+                  showLocation={false}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.priceRange")}</Label>
-                    <Select value={formData.price_range} onValueChange={(v) => setFormData({ ...formData, price_range: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={formData.price_range}
+                      onValueChange={(v) => setFormData({ ...formData, price_range: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="€">€ - Abordable</SelectItem>
                         <SelectItem value="€€">{t("ux.bo.moderate")}</SelectItem>
@@ -281,12 +336,19 @@ export default function AgencyRestaurants() {
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.phone")}</Label>
-                    <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>{t("ux.bo.description")}</Label>
-                  <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} />
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={2}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -302,8 +364,13 @@ export default function AgencyRestaurants() {
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.intervalBetweenSlotsMin")}</Label>
-                    <Select value={formData.slot_interval_minutes} onValueChange={(v) => setFormData({ ...formData, slot_interval_minutes: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={formData.slot_interval_minutes}
+                      onValueChange={(v) => setFormData({ ...formData, slot_interval_minutes: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="15">15 min</SelectItem>
                         <SelectItem value="30">30 min</SelectItem>
@@ -323,9 +390,7 @@ export default function AgencyRestaurants() {
                     onChange={(e) => setFormData({ ...formData, average_ticket_price: e.target.value })}
                     required
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {t("ux.bo.usedCalculateCommissionOwedEach")}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t("ux.bo.usedCalculateCommissionOwedEach")}</p>
                 </div>
 
                 <div className="space-y-3 border-t pt-4">
@@ -355,7 +420,10 @@ export default function AgencyRestaurants() {
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
-                                  openingHours: { ...formData.openingHours, [day.key]: { ...hours, open: e.target.value } },
+                                  openingHours: {
+                                    ...formData.openingHours,
+                                    [day.key]: { ...hours, open: e.target.value },
+                                  },
                                 })
                               }
                             />
@@ -367,7 +435,10 @@ export default function AgencyRestaurants() {
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
-                                  openingHours: { ...formData.openingHours, [day.key]: { ...hours, close: e.target.value } },
+                                  openingHours: {
+                                    ...formData.openingHours,
+                                    [day.key]: { ...hours, close: e.target.value },
+                                  },
                                 })
                               }
                             />
@@ -390,12 +461,17 @@ export default function AgencyRestaurants() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Switch checked={formData.available} onCheckedChange={(c) => setFormData({ ...formData, available: c })} />
+                  <Switch
+                    checked={formData.available}
+                    onCheckedChange={(c) => setFormData({ ...formData, available: c })}
+                  />
                   <Label>{t("ux.bo.visibleSite")}</Label>
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    {t("ux.bo.cancel")}
+                  </Button>
                   <Button type="submit">{editing ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
@@ -405,7 +481,12 @@ export default function AgencyRestaurants() {
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder={t("ux.bo.search")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          <Input
+            placeholder={t("ux.bo.search")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
 
         <div className="border rounded-lg">
@@ -422,7 +503,11 @@ export default function AgencyRestaurants() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
+                </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
@@ -446,7 +531,12 @@ export default function AgencyRestaurants() {
                       <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(r)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(r.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(r.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>

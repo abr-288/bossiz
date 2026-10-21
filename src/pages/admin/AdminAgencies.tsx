@@ -7,28 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { PhoneNumberInput } from "@/components/PhoneNumberInput";
@@ -67,12 +48,42 @@ interface CarPartnerPlan {
 
 const NO_CAR_PLAN = "none";
 const AGENCY_FEATURES = [
-  { key: "services", get label() { return i18n.t("ux.bo.servicesTours"); } },
-  { key: "activities", get label() { return i18n.t("ux.bo.activities"); } },
-  { key: "stays", get label() { return i18n.t("ux.bo.stays"); } },
-  { key: "restaurants", get label() { return i18n.t("ux.bo.restaurantsReservations"); } },
-  { key: "artisans", get label() { return i18n.t("ux.bo.artisansProductsOrders"); } },
-  { key: "wellness", get label() { return i18n.t("ux.bo.wellnessAppointments"); } },
+  {
+    key: "services",
+    get label() {
+      return i18n.t("ux.bo.servicesTours");
+    },
+  },
+  {
+    key: "activities",
+    get label() {
+      return i18n.t("ux.bo.activities");
+    },
+  },
+  {
+    key: "stays",
+    get label() {
+      return i18n.t("ux.bo.stays");
+    },
+  },
+  {
+    key: "restaurants",
+    get label() {
+      return i18n.t("ux.bo.restaurantsReservations");
+    },
+  },
+  {
+    key: "artisans",
+    get label() {
+      return i18n.t("ux.bo.artisansProductsOrders");
+    },
+  },
+  {
+    key: "wellness",
+    get label() {
+      return i18n.t("ux.bo.wellnessAppointments");
+    },
+  },
   { key: "promotions", label: "Promotions" },
 ] as const;
 const DEFAULT_AGENCY_FEATURES = Object.fromEntries(AGENCY_FEATURES.map(({ key }) => [key, true]));
@@ -88,7 +99,16 @@ export default function AdminAgencies() {
   const { toast } = useToast();
   const location = useLocation();
   const prefillApplication = location.state?.prefillApplication as
-    | { id: string; name: string; description: string | null; contact_email: string | null; contact_phone: string | null; logo_url: string | null; requested_car_plan_id?: string | null; preferred_payout_method?: JekoPayoutMethod | null }
+    | {
+        id: string;
+        name: string;
+        description: string | null;
+        contact_email: string | null;
+        contact_phone: string | null;
+        logo_url: string | null;
+        requested_car_plan_id?: string | null;
+        preferred_payout_method?: JekoPayoutMethod | null;
+      }
     | undefined;
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
@@ -165,10 +185,7 @@ export default function AdminAgencies() {
 
   const fetchAgencies = async () => {
     try {
-      const { data, error } = await supabase
-        .from("agencies")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("agencies").select("*").order("created_at", { ascending: false });
 
       if (error) throw error;
 
@@ -185,7 +202,7 @@ export default function AdminAgencies() {
             ...agency,
             owner_name: profileData?.full_name || "N/A",
           };
-        })
+        }),
       );
 
       setAgencies(agenciesWithOwners);
@@ -256,7 +273,7 @@ export default function AdminAgencies() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const carPlanId = formData.car_plan_id === NO_CAR_PLAN ? null : formData.car_plan_id;
       const carPlanChanged = editingAgency ? editingAgency.car_plan_id !== carPlanId : Boolean(carPlanId);
@@ -285,15 +302,13 @@ export default function AdminAgencies() {
 
         if (error) throw error;
 
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .upsert(
-            {
-              user_id: editingAgency.owner_id,
-              role: "sub_agency",
-            },
-            { onConflict: "user_id,role", ignoreDuplicates: true },
-          );
+        const { error: roleError } = await supabase.from("user_roles").upsert(
+          {
+            user_id: editingAgency.owner_id,
+            role: "sub_agency",
+          },
+          { onConflict: "user_id,role", ignoreDuplicates: true },
+        );
 
         if (roleError) throw roleError;
 
@@ -329,13 +344,11 @@ export default function AdminAgencies() {
         if (agencyError) throw agencyError;
 
         if (prefillApplication?.preferred_payout_method) {
-          const { error: payoutDetailsError } = await supabase
-            .from("agency_payout_details")
-            .upsert({
-              agency_id: newAgency.id,
-              payment_method: prefillApplication.preferred_payout_method,
-              beneficiary_name: formData.name,
-            });
+          const { error: payoutDetailsError } = await supabase.from("agency_payout_details").upsert({
+            agency_id: newAgency.id,
+            payment_method: prefillApplication.preferred_payout_method,
+            beneficiary_name: formData.name,
+          });
           if (payoutDetailsError) {
             console.error("Could not save the partner's preferred payout method:", payoutDetailsError);
             toast({
@@ -347,23 +360,18 @@ export default function AdminAgencies() {
         }
 
         // Add sub_agency role to user
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .upsert(
-            {
-              user_id: formData.owner_id,
-              role: "sub_agency",
-            },
-            { onConflict: "user_id,role", ignoreDuplicates: true },
-          );
+        const { error: roleError } = await supabase.from("user_roles").upsert(
+          {
+            user_id: formData.owner_id,
+            role: "sub_agency",
+          },
+          { onConflict: "user_id,role", ignoreDuplicates: true },
+        );
 
         if (roleError) throw roleError;
 
         if (prefillApplication?.id) {
-          await supabase
-            .from("partner_applications")
-            .update({ status: "approved" })
-            .eq("id", prefillApplication.id);
+          await supabase.from("partner_applications").update({ status: "approved" }).eq("id", prefillApplication.id);
         }
 
         supabase.functions
@@ -414,11 +422,7 @@ export default function AdminAgencies() {
 
     try {
       // Remove sub_agency role from user
-      await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", ownerId)
-        .eq("role", "sub_agency");
+      await supabase.from("user_roles").delete().eq("user_id", ownerId).eq("role", "sub_agency");
 
       const { error } = await supabase.from("agencies").delete().eq("id", id);
 
@@ -441,10 +445,7 @@ export default function AdminAgencies() {
 
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
-      const { error } = await supabase
-        .from("agencies")
-        .update({ is_active: !isActive })
-        .eq("id", id);
+      const { error } = await supabase.from("agencies").update({ is_active: !isActive }).eq("id", id);
 
       if (error) throw error;
       fetchAgencies();
@@ -479,7 +480,7 @@ export default function AdminAgencies() {
   const filteredAgencies = agencies.filter(
     (agency) =>
       agency.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agency.contact_email?.toLowerCase().includes(searchTerm.toLowerCase())
+      agency.contact_email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -488,14 +489,15 @@ export default function AdminAgencies() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold">{t("ux.bo.subAgencyManagement")}</h1>
-            <p className="text-muted-foreground">
-              {t("ux.bo.managePartnerSubAgenciesTheir")}
-            </p>
+            <p className="text-muted-foreground">{t("ux.bo.managePartnerSubAgenciesTheir")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -504,9 +506,7 @@ export default function AdminAgencies() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {editingAgency ? t("ux.bo.editAgency") : t("ux.bo.createNewAgency")}
-                </DialogTitle>
+                <DialogTitle>{editingAgency ? t("ux.bo.editAgency") : t("ux.bo.createNewAgency")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -596,39 +596,39 @@ export default function AdminAgencies() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       rows={3}
                     />
-                  <div className="space-y-2">
-                    <Label>{t("ux.bo.onlineSalesSplit")}</Label>
-                    <p className="text-sm text-muted-foreground">{t("ux.bo.n10Bossiz90AgencyRate")}</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="car_plan_id">{t("ux.bo.carPlan")}</Label>
-                    <Select
-                      value={formData.car_plan_id}
-                      onValueChange={(value) => {
-                        const plan = carPlans.find((p) => p.plan_id === value);
-                        setFormData({
-                          ...formData,
-                          car_plan_id: value,
-                          commission_rate: plan ? plan.commission_rate : formData.commission_rate,
-                        });
-                      }}
-                    >
-                      <SelectTrigger id="car_plan_id">
-                        <SelectValue placeholder={t("ux.bo.noneUnlimited")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={NO_CAR_PLAN}>{t("ux.bo.noneUnlimited")}</SelectItem>
-                        {carPlans.map((plan) => (
-                          <SelectItem key={plan.plan_id} value={plan.plan_id}>
-                            {plan.name} {plan.max_vehicles ? `(${plan.max_vehicles} véh.)` : "(illimité)"}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="space-y-2">
+                      <Label>{t("ux.bo.onlineSalesSplit")}</Label>
+                      <p className="text-sm text-muted-foreground">{t("ux.bo.n10Bossiz90AgencyRate")}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="car_plan_id">{t("ux.bo.carPlan")}</Label>
+                      <Select
+                        value={formData.car_plan_id}
+                        onValueChange={(value) => {
+                          const plan = carPlans.find((p) => p.plan_id === value);
+                          setFormData({
+                            ...formData,
+                            car_plan_id: value,
+                            commission_rate: plan ? plan.commission_rate : formData.commission_rate,
+                          });
+                        }}
+                      >
+                        <SelectTrigger id="car_plan_id">
+                          <SelectValue placeholder={t("ux.bo.noneUnlimited")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={NO_CAR_PLAN}>{t("ux.bo.noneUnlimited")}</SelectItem>
+                          {carPlans.map((plan) => (
+                            <SelectItem key={plan.plan_id} value={plan.plan_id}>
+                              {plan.name} {plan.max_vehicles ? `(${plan.max_vehicles} véh.)` : "(illimité)"}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
-                  <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
                     <Switch
                       id="is_visible"
@@ -659,15 +659,20 @@ export default function AdminAgencies() {
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {AGENCY_FEATURES.map(({ key, label }) => (
-                      <div key={key} className="flex items-center justify-between gap-3 rounded-md bg-muted/40 px-3 py-2">
+                      <div
+                        key={key}
+                        className="flex items-center justify-between gap-3 rounded-md bg-muted/40 px-3 py-2"
+                      >
                         <Label htmlFor={`agency-feature-${key}`}>{label}</Label>
                         <Switch
                           id={`agency-feature-${key}`}
                           checked={formData.enabled_features[key] !== false}
-                          onCheckedChange={(checked) => setFormData({
-                            ...formData,
-                            enabled_features: { ...formData.enabled_features, [key]: checked },
-                          })}
+                          onCheckedChange={(checked) =>
+                            setFormData({
+                              ...formData,
+                              enabled_features: { ...formData.enabled_features, [key]: checked },
+                            })
+                          }
                         />
                       </div>
                     ))}
@@ -677,9 +682,7 @@ export default function AdminAgencies() {
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     {t("ux.bo.cancel")}
                   </Button>
-                  <Button type="submit">
-                    {editingAgency ? t("ux.bo.update") : t("ux.bo.createAgency")}
-                  </Button>
+                  <Button type="submit">{editingAgency ? t("ux.bo.update") : t("ux.bo.createAgency")}</Button>
                 </div>
               </form>
             </DialogContent>
@@ -747,9 +750,7 @@ export default function AdminAgencies() {
                         <div>
                           <p className="font-medium">{agency.name}</p>
                           {agency.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-1">
-                              {agency.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground line-clamp-1">{agency.description}</p>
                           )}
                         </div>
                       </div>
@@ -757,9 +758,7 @@ export default function AdminAgencies() {
                     <TableCell>
                       <div className="text-sm">
                         {agency.contact_email && <p>{agency.contact_email}</p>}
-                        {agency.contact_phone && (
-                          <p className="text-muted-foreground">{agency.contact_phone}</p>
-                        )}
+                        {agency.contact_phone && <p className="text-muted-foreground">{agency.contact_phone}</p>}
                       </div>
                     </TableCell>
                     <TableCell>

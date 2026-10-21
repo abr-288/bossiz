@@ -3,17 +3,23 @@ import { AgencyLayout } from "@/components/agency/AgencyLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Package, Activity, Home, Percent, TrendingUp, DollarSign, Clock, CheckCircle, ArrowRight, UtensilsCrossed, Hammer, Sparkles } from "lucide-react";
+import {
+  Package,
+  Activity,
+  Home,
+  Percent,
+  TrendingUp,
+  DollarSign,
+  Clock,
+  CheckCircle,
+  ArrowRight,
+  UtensilsCrossed,
+  Hammer,
+  Sparkles,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
@@ -65,7 +71,9 @@ export default function AgencyDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Get agency info
@@ -90,7 +98,16 @@ export default function AgencyDashboard() {
       );
 
       // Fetch counts and commissions in parallel
-      const [servicesRes, activitiesRes, staysRes, promotionsRes, restaurantsRes, artisansRes, wellnessRes, commissionsRes] = await Promise.all([
+      const [
+        servicesRes,
+        activitiesRes,
+        staysRes,
+        promotionsRes,
+        restaurantsRes,
+        artisansRes,
+        wellnessRes,
+        commissionsRes,
+      ] = await Promise.all([
         supabase.from("services").select("id", { count: "exact" }).eq("agency_id", agencyData.id),
         supabase.from("activities").select("id", { count: "exact" }).eq("agency_id", agencyData.id),
         supabase.from("stays").select("id", { count: "exact" }).eq("agency_id", agencyData.id),
@@ -98,7 +115,12 @@ export default function AgencyDashboard() {
         supabase.from("restaurants").select("id", { count: "exact" }).eq("agency_id", agencyData.id),
         supabase.from("artisans").select("id", { count: "exact" }).eq("agency_id", agencyData.id),
         supabase.from("wellness_services").select("id", { count: "exact" }).eq("agency_id", agencyData.id),
-        supabase.from("commissions").select("*").eq("agency_id", agencyData.id).order("created_at", { ascending: false }).limit(10),
+        supabase
+          .from("commissions")
+          .select("*")
+          .eq("agency_id", agencyData.id)
+          .order("created_at", { ascending: false })
+          .limit(10),
       ]);
 
       setStats({
@@ -116,8 +138,10 @@ export default function AgencyDashboard() {
 
       // Calculate commission stats
       const total = commissionsData.reduce((sum, c) => sum + c.commission_amount, 0);
-      const pending = commissionsData.filter(c => c.status === "pending").reduce((sum, c) => sum + c.commission_amount, 0);
-      const paid = commissionsData.filter(c => c.status === "paid").reduce((sum, c) => sum + c.commission_amount, 0);
+      const pending = commissionsData
+        .filter((c) => c.status === "pending")
+        .reduce((sum, c) => sum + c.commission_amount, 0);
+      const paid = commissionsData.filter((c) => c.status === "paid").reduce((sum, c) => sum + c.commission_amount, 0);
       setCommissionStats({ total, pending, paid });
 
       setLoading(false);
@@ -235,9 +259,7 @@ export default function AgencyDashboard() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold">{t("ux.bo.dashboard")}</h1>
-            <p className="text-muted-foreground">
-              {t("ux.bo.welcomeAgencySpace")}
-            </p>
+            <p className="text-muted-foreground">{t("ux.bo.welcomeAgencySpace")}</p>
           </div>
           {agency && (
             <Badge variant="outline" className="text-sm">
@@ -256,9 +278,7 @@ export default function AgencyDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {loading ? "..." : card.value}
-                </div>
+                <div className="text-2xl font-bold">{loading ? "..." : card.value}</div>
                 <p className="text-xs text-muted-foreground">{card.description}</p>
               </CardContent>
             </Card>
@@ -282,7 +302,9 @@ export default function AgencyDashboard() {
               <Clock className="h-4 w-4 text-warning-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-warning-foreground">{formatCurrency(commissionStats.pending)}</div>
+              <div className="text-2xl font-bold text-warning-foreground">
+                {formatCurrency(commissionStats.pending)}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -324,22 +346,28 @@ export default function AgencyDashboard() {
                       <TableCell>
                         <Badge variant="outline">{commission.commission_rate}%</Badge>
                       </TableCell>
-                      <TableCell className="font-medium">
-                        {formatCurrency(commission.commission_amount)}
-                      </TableCell>
+                      <TableCell className="font-medium">{formatCurrency(commission.commission_amount)}</TableCell>
                       <TableCell>
                         {commission.payout_status === "processing" ? (
-                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.jKoTransferProgress")}</Badge>
+                          <Badge variant="secondary">
+                            <Clock className="h-3 w-3 mr-1" /> {t("ux.bo.jKoTransferProgress")}
+                          </Badge>
                         ) : commission.payout_status === "awaiting_details" ? (
-                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.detailsComplete")}</Badge>
+                          <Badge variant="secondary">
+                            <Clock className="h-3 w-3 mr-1" /> {t("ux.bo.detailsComplete")}
+                          </Badge>
                         ) : commission.payout_status === "needs_review" || commission.payout_status === "failed" ? (
                           <Badge variant="destructive">{t("ux.bo.contactBossiz")}</Badge>
                         ) : commission.payout_status === "not_scheduled" && commission.status === "pending" ? (
                           <Badge variant="secondary">{t("ux.bo.settleOutsideJKoPayout")}</Badge>
                         ) : commission.status === "pending" ? (
-                          <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> {t("ux.bo.pending2")}</Badge>
+                          <Badge variant="secondary">
+                            <Clock className="h-3 w-3 mr-1" /> {t("ux.bo.pending2")}
+                          </Badge>
                         ) : commission.status === "paid" ? (
-                          <Badge variant="default" className="bg-success text-success-foreground"><CheckCircle className="h-3 w-3 mr-1" /> {t("ux.bo.paid2")}</Badge>
+                          <Badge variant="default" className="bg-success text-success-foreground">
+                            <CheckCircle className="h-3 w-3 mr-1" /> {t("ux.bo.paid2")}
+                          </Badge>
                         ) : (
                           <Badge variant="destructive">{t("ux.bo.cancelled2")}</Badge>
                         )}
@@ -364,7 +392,10 @@ export default function AgencyDashboard() {
               {t("ux.bo.partnerChecklist")}
             </CardTitle>
             <CardDescription>
-              Avancement : {startedItemsCount} rubrique{startedItemsCount > 1 ? "s" : ""} commencée{startedItemsCount > 1 ? "s" : ""} sur {availableOnboardingItems.length} accessible{availableOnboardingItems.length > 1 ? "s" : ""}. Ajoutez une offre puis complétez ses informations avant sa mise en ligne.
+              Avancement : {startedItemsCount} rubrique{startedItemsCount > 1 ? "s" : ""} commencée
+              {startedItemsCount > 1 ? "s" : ""} sur {availableOnboardingItems.length} accessible
+              {availableOnboardingItems.length > 1 ? "s" : ""}. Ajoutez une offre puis complétez ses informations avant
+              sa mise en ligne.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -379,7 +410,11 @@ export default function AgencyDashboard() {
                         <h3 className="font-medium">{item.title}</h3>
                       </div>
                       <Badge variant={hasStarted ? "default" : "secondary"}>
-                        {loading ? "..." : hasStarted ? `${stats[item.key]} ajoutée${stats[item.key] > 1 ? "s" : ""}` : "À démarrer"}
+                        {loading
+                          ? "..."
+                          : hasStarted
+                            ? `${stats[item.key]} ajoutée${stats[item.key] > 1 ? "s" : ""}`
+                            : "À démarrer"}
                       </Badge>
                     </div>
                     <p className="flex-1 text-sm text-muted-foreground">{item.description}</p>
@@ -393,17 +428,13 @@ export default function AgencyDashboard() {
                 );
               })}
               {availableOnboardingItems.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.bo.noSectionEnabledAgencyContact")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("ux.bo.noSectionEnabledAgencyContact")}</p>
               )}
             </div>
             <div className="flex flex-col items-start justify-between gap-3 rounded-lg bg-muted/50 p-4 sm:flex-row sm:items-center">
               <div>
                 <p className="font-medium">{t("ux.bo.getPayoutsReady")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.bo.checkPayoutMethodDetailsAgency")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("ux.bo.checkPayoutMethodDetailsAgency")}</p>
               </div>
               <Button asChild variant="outline" size="sm">
                 <Link to="/agency/settings">

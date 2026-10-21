@@ -37,10 +37,10 @@ export function HotelComparisonDialog({
       <DialogContent className="max-w-[95vw] max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-2xl">
-            Comparaison de {hotels.length} hôtel{hotels.length > 1 ? 's' : ''}
+            Comparaison de {hotels.length} hôtel{hotels.length > 1 ? "s" : ""}
           </DialogTitle>
         </DialogHeader>
-        
+
         <ScrollArea className="h-[calc(90vh-120px)]">
           <div className="p-6">
             {/* Table de comparaison */}
@@ -55,7 +55,7 @@ export function HotelComparisonDialog({
                       className="w-full h-full object-cover"
                       loading="lazy"
                       onError={(e) => {
-                        e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800";
                       }}
                     />
                     <Button
@@ -141,7 +141,8 @@ export function HotelComparisonDialog({
             {/* Message si trop d'hôtels */}
             {hotels.length > 3 && (
               <div className="mt-6 p-4 bg-muted rounded-lg text-center text-sm text-muted-foreground">
-                Affichage des 3 premiers hôtels. Faites défiler pour voir les autres ou supprimez-en pour mieux comparer.
+                Affichage des 3 premiers hôtels. Faites défiler pour voir les autres ou supprimez-en pour mieux
+                comparer.
               </div>
             )}
           </div>

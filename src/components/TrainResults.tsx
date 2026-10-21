@@ -33,7 +33,7 @@ export const TrainResults = ({ trains }: TrainResultsProps) => {
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-6">
-        {trains.length} {t('search.results')}
+        {trains.length} {t("search.results")}
       </h2>
       <div className="space-y-4">
         {trains.map((train) => (
@@ -46,12 +46,12 @@ export const TrainResults = ({ trains }: TrainResultsProps) => {
                     {train.operator} - {train.trainNumber}
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                       <MapPin className="h-4 w-4" />
-                      <span>{t('search.from')}</span>
+                      <span>{t("search.from")}</span>
                     </div>
                     <p className="font-semibold">{train.origin}</p>
                     <p className="text-lg">{train.departureTime}</p>
@@ -67,7 +67,7 @@ export const TrainResults = ({ trains }: TrainResultsProps) => {
                   <div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                       <MapPin className="h-4 w-4" />
-                      <span>{t('search.to')}</span>
+                      <span>{t("search.to")}</span>
                     </div>
                     <p className="font-semibold">{train.destination}</p>
                     <p className="text-lg">{train.arrivalTime}</p>
@@ -76,10 +76,10 @@ export const TrainResults = ({ trains }: TrainResultsProps) => {
 
                 <div className="mt-4 flex gap-4 text-sm">
                   <span className="text-muted-foreground">
-                    {t('search.class.title')}: <span className="font-medium text-foreground">{train.class}</span>
+                    {t("search.class.title")}: <span className="font-medium text-foreground">{train.class}</span>
                   </span>
                   <span className="text-muted-foreground">
-                    {train.availableSeats} {t('search.seatsAvailable')}
+                    {train.availableSeats} {t("search.seatsAvailable")}
                   </span>
                 </div>
               </div>
@@ -90,9 +90,7 @@ export const TrainResults = ({ trains }: TrainResultsProps) => {
                     <Price amount={train.price} fromCurrency={train.currency} showLoader />
                   </p>
                 </div>
-                <Button className="w-full md:w-auto">
-                  {t('search.book')}
-                </Button>
+                <Button className="w-full md:w-auto">{t("search.book")}</Button>
               </div>
             </div>
           </Card>

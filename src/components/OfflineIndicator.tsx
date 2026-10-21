@@ -10,12 +10,7 @@ interface OfflineIndicatorProps {
   onSync: () => void;
 }
 
-export const OfflineIndicator = ({ 
-  isOnline, 
-  isSyncing, 
-  storageStats,
-  onSync 
-}: OfflineIndicatorProps) => {
+export const OfflineIndicator = ({ isOnline, isSyncing, storageStats, onSync }: OfflineIndicatorProps) => {
   if (isOnline && storageStats.pendingSync === 0) {
     return null;
   }
@@ -30,40 +25,31 @@ export const OfflineIndicator = ({
             ) : (
               <WifiOff className="h-5 w-5 text-warning-foreground" />
             )}
-            
+
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium">
-                  {isOnline ? 'En ligne' : 'Mode hors ligne'}
-                </span>
+                <span className="font-medium">{isOnline ? "En ligne" : "Mode hors ligne"}</span>
                 {!isOnline && (
                   <Badge variant="outline" className="gap-1">
                     <Database className="h-3 w-3" />
-                    {storageStats.bookings} réservation{storageStats.bookings > 1 ? 's' : ''} en cache
+                    {storageStats.bookings} réservation{storageStats.bookings > 1 ? "s" : ""} en cache
                   </Badge>
                 )}
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                {isOnline 
-                  ? storageStats.pendingSync > 0 
+                {isOnline
+                  ? storageStats.pendingSync > 0
                     ? `${storageStats.pendingSync} modification(s) en attente de synchronisation`
-                    : 'Toutes les données sont synchronisées'
-                  : 'Les données sont disponibles hors ligne. Elles seront synchronisées à la reconnexion.'
-                }
+                    : "Toutes les données sont synchronisées"
+                  : "Les données sont disponibles hors ligne. Elles seront synchronisées à la reconnexion."}
               </p>
             </div>
           </div>
 
           {isOnline && storageStats.pendingSync > 0 && (
-            <Button
-              onClick={onSync}
-              disabled={isSyncing}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Synchronisation...' : 'Synchroniser'}
+            <Button onClick={onSync} disabled={isSyncing} variant="outline" size="sm" className="gap-2">
+              <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
+              {isSyncing ? "Synchronisation..." : "Synchroniser"}
             </Button>
           )}
         </div>

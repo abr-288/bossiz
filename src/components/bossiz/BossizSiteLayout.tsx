@@ -168,7 +168,9 @@ export function BossizSiteLayout({ country, activePage, tagline, children }: Bos
               <p className="text-sm text-white/50">{tagline ?? t("bossizSite.tagline")}</p>
             </div>
             <div>
-              <h4 className="text-xs uppercase tracking-widest text-white/40 mb-4">{t("bossizSite.footer.siteLabel")}</h4>
+              <h4 className="text-xs uppercase tracking-widest text-white/40 mb-4">
+                {t("bossizSite.footer.siteLabel")}
+              </h4>
               <ul className="space-y-2 text-sm">
                 {NAV_ITEMS.map((item) => (
                   <li key={item.id}>
@@ -180,7 +182,9 @@ export function BossizSiteLayout({ country, activePage, tagline, children }: Bos
               </ul>
             </div>
             <div>
-              <h4 className="text-xs uppercase tracking-widest text-white/40 mb-4">{t("bossizSite.footer.companyLabel")}</h4>
+              <h4 className="text-xs uppercase tracking-widest text-white/40 mb-4">
+                {t("bossizSite.footer.companyLabel")}
+              </h4>
               <ul className="space-y-2 text-sm">
                 <li>
                   <button onClick={() => navigate("/")} className="hover:text-white">
@@ -222,9 +226,15 @@ export function BossizSiteLayout({ country, activePage, tagline, children }: Bos
               &copy; 2026 {brandName}. {t("bossizPortal.footer.allRightsReserved")}
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-xs text-white/40">
-              <a href="/privacy" className="hover:text-white">{t("bossizPortal.footer.privacyPolicy")}</a>
-              <a href="/terms" className="hover:text-white">{t("bossizPortal.footer.termsOfUse")}</a>
-              <a href="/support" className="hover:text-white">{t("nav.support")}</a>
+              <a href="/privacy" className="hover:text-white">
+                {t("bossizPortal.footer.privacyPolicy")}
+              </a>
+              <a href="/terms" className="hover:text-white">
+                {t("bossizPortal.footer.termsOfUse")}
+              </a>
+              <a href="/support" className="hover:text-white">
+                {t("nav.support")}
+              </a>
             </div>
           </div>
         </div>

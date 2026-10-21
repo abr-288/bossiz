@@ -1,5 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, type TooltipProps } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  type TooltipProps,
+} from "recharts";
 import { useTranslation } from "react-i18next";
 
 interface GeographicDistributionChartProps {
@@ -28,12 +38,8 @@ export function GeographicDistributionChart({ data }: GeographicDistributionChar
       return (
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="font-medium">{payload[0].payload.location}</p>
-          <p className="text-sm text-primary">
-            Revenus: {payload[0].value?.toLocaleString()} EUR
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {payload[0].payload.bookings} réservations
-          </p>
+          <p className="text-sm text-primary">Revenus: {payload[0].value?.toLocaleString()} EUR</p>
+          <p className="text-sm text-muted-foreground">{payload[0].payload.bookings} réservations</p>
         </div>
       );
     }
@@ -50,20 +56,10 @@ export function GeographicDistributionChart({ data }: GeographicDistributionChar
           <BarChart data={data} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis type="number" />
-            <YAxis 
-              dataKey="location" 
-              type="category" 
-              width={120}
-              tick={{ fontSize: 12 }}
-            />
+            <YAxis dataKey="location" type="category" width={120} tick={{ fontSize: 12 }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
-            <Bar 
-              dataKey="revenue" 
-              fill="hsl(var(--primary))" 
-              name="Revenus (EUR)"
-              radius={[0, 4, 4, 0]}
-            />
+            <Bar dataKey="revenue" fill="hsl(var(--primary))" name="Revenus (EUR)" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

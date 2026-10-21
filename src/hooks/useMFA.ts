@@ -30,9 +30,9 @@ export function useMFA() {
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) throw error;
-      
+
       // Filter to only verified TOTP factors
-      const verifiedFactors = data.totp.filter(f => f.status === 'verified');
+      const verifiedFactors = data.totp.filter((f) => f.status === "verified");
       setFactors(verifiedFactors as MFAFactor[]);
     } catch (err) {
       setError(getErrorMessage(err) || "Erreur lors de la récupération des facteurs MFA");
@@ -50,18 +50,18 @@ export function useMFA() {
     setError(null);
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
-        factorType: 'totp',
+        factorType: "totp",
         friendlyName,
       });
-      
+
       if (error) throw error;
-      
+
       setEnrollmentData({
         factorId: data.id,
         qrCode: data.totp.qr_code,
         secret: data.totp.secret,
       });
-      
+
       return data;
     } catch (err) {
       setError(getErrorMessage(err) || "Erreur lors de l'inscription TOTP");
@@ -76,7 +76,7 @@ export function useMFA() {
       setError("Aucune inscription en cours");
       return false;
     }
-    
+
     setVerifying(true);
     setError(null);
     try {
@@ -84,22 +84,22 @@ export function useMFA() {
       const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
         factorId: enrollmentData.factorId,
       });
-      
+
       if (challengeError) throw challengeError;
-      
+
       // Verify the code
       const { data: verifyData, error: verifyError } = await supabase.auth.mfa.verify({
         factorId: enrollmentData.factorId,
         challengeId: challengeData.id,
         code,
       });
-      
+
       if (verifyError) throw verifyError;
-      
+
       // Clear enrollment data and refresh factors
       setEnrollmentData(null);
       await fetchFactors();
-      
+
       return true;
     } catch (err) {
       setError(getErrorMessage(err) || "Code invalide");
@@ -121,9 +121,9 @@ export function useMFA() {
       const { error } = await supabase.auth.mfa.unenroll({
         factorId,
       });
-      
+
       if (error) throw error;
-      
+
       await fetchFactors();
       return true;
     } catch (err) {

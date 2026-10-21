@@ -81,7 +81,7 @@ const AdminDestinations = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-destructive">
-                {cache.filter(c => isExpired(c.expires_at)).length}
+                {cache.filter((c) => isExpired(c.expires_at)).length}
               </div>
             </CardContent>
           </Card>
@@ -114,7 +114,9 @@ const AdminDestinations = () => {
                   cache.map((c) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-mono text-xs">{c.cache_key}</TableCell>
-                      <TableCell><Badge variant="outline">{c.source}</Badge></TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{c.source}</Badge>
+                      </TableCell>
                       <TableCell>
                         <Badge variant={isExpired(c.expires_at) ? "destructive" : "default"}>
                           {isExpired(c.expires_at) ? "Expiré" : "Actif"}

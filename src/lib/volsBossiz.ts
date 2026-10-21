@@ -36,9 +36,7 @@ export function buildVolsBossizSearchUrl(params: VolsBossizSearchParams): string
 
   const departCode = toDDMM(params.departureDate);
   const returnCode = params.returnDate ? toDDMM(params.returnDate) : "";
-  const classCode = ["business", "first"].includes((params.travelClass || "").toLowerCase())
-    ? "c"
-    : "";
+  const classCode = ["business", "first"].includes((params.travelClass || "").toLowerCase()) ? "c" : "";
   const adults = params.adults ?? 1;
   const children = params.children ?? 0;
   const infants = params.infants ?? 0;

@@ -31,7 +31,15 @@ const wave = (y0: number, amplitude: number, wavelength: number, phase: number):
   return d;
 };
 
-const rosette = (cx: number, cy: number, R: number, r: number, dist: number, turns: number, rotation: number): string => {
+const rosette = (
+  cx: number,
+  cy: number,
+  R: number,
+  r: number,
+  dist: number,
+  turns: number,
+  rotation: number,
+): string => {
   let d = "";
   const steps = 420;
   for (let i = 0; i <= steps; i++) {
@@ -150,11 +158,15 @@ export function MemberCard({
           </linearGradient>
         </defs>
         <g fill="none" stroke={`url(#foil-${uid})`} strokeWidth="0.7" opacity="0.13">
-          {GUILLOCHE_WAVES.map((d, i) => <path key={i} d={d} />)}
+          {GUILLOCHE_WAVES.map((d, i) => (
+            <path key={i} d={d} />
+          ))}
         </g>
         {withRosette && (
           <g fill="none" stroke={`url(#foil-${uid})`} strokeWidth="0.55" opacity="0.2">
-            {ROSETTES.map((d, i) => <path key={i} d={d} />)}
+            {ROSETTES.map((d, i) => (
+              <path key={i} d={d} />
+            ))}
             <circle cx={MEDALLION.x} cy={MEDALLION.y} r="196" strokeWidth="0.9" />
             <circle cx={MEDALLION.x} cy={MEDALLION.y} r="204" strokeWidth="0.5" />
           </g>
@@ -173,7 +185,8 @@ export function MemberCard({
       <div
         className="absolute inset-0 mix-blend-soft-light transition-[background-position] duration-300"
         style={{
-          backgroundImage: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0.15) 55%, transparent 70%)",
+          backgroundImage:
+            "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0.15) 55%, transparent 70%)",
           backgroundSize: "250% 100%",
           backgroundPosition: `${100 - pointer.x}% 0`,
           opacity: pointer.active ? 1 : 0.45,
@@ -219,20 +232,38 @@ export function MemberCard({
             {surface(true)}
 
             {/* Marque */}
-            <div className="absolute flex items-baseline font-display font-bold" style={{ left: u(6.5), top: u(5.6), fontSize: u(5.4), letterSpacing: "-0.01em" }}>
+            <div
+              className="absolute flex items-baseline font-display font-bold"
+              style={{ left: u(6.5), top: u(5.6), fontSize: u(5.4), letterSpacing: "-0.01em" }}
+            >
               <span>Bossiz</span>
               <span style={foilText}>+</span>
             </div>
 
             {/* Sans contact */}
-            <svg className="absolute" style={{ right: u(6.5), top: u(5.8), width: u(5), height: u(5) }} viewBox="0 0 24 24" fill="none" stroke={theme.ink} strokeWidth="1.6" strokeLinecap="round" opacity="0.8" aria-hidden>
+            <svg
+              className="absolute"
+              style={{ right: u(6.5), top: u(5.8), width: u(5), height: u(5) }}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={theme.ink}
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              opacity="0.8"
+              aria-hidden
+            >
               <path d="M8.5 8.5a5 5 0 0 1 0 7" />
               <path d="M12 6a8.5 8.5 0 0 1 0 12" />
               <path d="M15.5 3.5a12 12 0 0 1 0 17" />
             </svg>
 
             {/* Puce */}
-            <svg className="absolute" style={{ left: u(6.5), top: u(20), width: u(11.5), height: u(8.8) }} viewBox="0 0 46 35" aria-hidden>
+            <svg
+              className="absolute"
+              style={{ left: u(6.5), top: u(20), width: u(11.5), height: u(8.8) }}
+              viewBox="0 0 46 35"
+              aria-hidden
+            >
               <defs>
                 <linearGradient id={`chip-${uid}`} x1="0" y1="0" x2="1" y2="1">
                   {theme.foil.map((color, i) => (
@@ -240,7 +271,15 @@ export function MemberCard({
                   ))}
                 </linearGradient>
               </defs>
-              <rect x="0.5" y="0.5" width="45" height="34" rx="6" fill={`url(#chip-${uid})`} stroke="rgba(0,0,0,0.35)" />
+              <rect
+                x="0.5"
+                y="0.5"
+                width="45"
+                height="34"
+                rx="6"
+                fill={`url(#chip-${uid})`}
+                stroke="rgba(0,0,0,0.35)"
+              />
               <g fill="none" stroke="rgba(0,0,0,0.38)" strokeWidth="1">
                 <path d="M0.5 12h13M0.5 23h13M32.5 12h13M32.5 23h13M13.5 0.5v34M32.5 0.5v34" />
                 <rect x="13.5" y="8" width="19" height="19" rx="3" />
@@ -249,8 +288,13 @@ export function MemberCard({
 
             {/* Formule */}
             <div className="absolute" style={{ left: u(6.5), top: u(32) }}>
-              <p className="font-semibold uppercase" style={label}>{t("ux.memberCard.title")}</p>
-              <p className="font-display font-extrabold uppercase leading-none" style={{ ...foilText, fontSize: u(8.6), letterSpacing: "0.015em", marginTop: u(1) }}>
+              <p className="font-semibold uppercase" style={label}>
+                {t("ux.memberCard.title")}
+              </p>
+              <p
+                className="font-display font-extrabold uppercase leading-none"
+                style={{ ...foilText, fontSize: u(8.6), letterSpacing: "0.015em", marginTop: u(1) }}
+              >
                 {planName}
               </p>
             </div>
@@ -258,24 +302,45 @@ export function MemberCard({
             {/* Emblème de la formule */}
             <div
               className="absolute flex items-center justify-center rounded-full"
-              style={{ right: u(6.5), top: u(30), width: u(9), height: u(9), backgroundImage: foil, boxShadow: `0 ${u(0.3)} ${u(1)} rgba(0,0,0,0.45), inset 0 0 0 ${u(0.25)} rgba(255,255,255,0.35)` }}
+              style={{
+                right: u(6.5),
+                top: u(30),
+                width: u(9),
+                height: u(9),
+                backgroundImage: foil,
+                boxShadow: `0 ${u(0.3)} ${u(1)} rgba(0,0,0,0.45), inset 0 0 0 ${u(0.25)} rgba(255,255,255,0.35)`,
+              }}
             >
               <Icon style={{ width: u(4.6), height: u(4.6), color: theme.material[2] }} strokeWidth={2.2} />
             </div>
 
             {/* Titulaire et validité */}
-            <div className="absolute flex items-end justify-between" style={{ left: u(6.5), right: u(6.5), bottom: u(5.6), gap: u(4) }}>
+            <div
+              className="absolute flex items-end justify-between"
+              style={{ left: u(6.5), right: u(6.5), bottom: u(5.6), gap: u(4) }}
+            >
               <div className="min-w-0">
-                <p className="truncate font-semibold uppercase" style={{ fontSize: u(3.4), letterSpacing: "0.14em", textShadow: "0 1px 0 rgba(0,0,0,0.5)" }}>
+                <p
+                  className="truncate font-semibold uppercase"
+                  style={{ fontSize: u(3.4), letterSpacing: "0.14em", textShadow: "0 1px 0 rgba(0,0,0,0.5)" }}
+                >
                   {holderName}
                 </p>
-                <p className="font-mono" style={{ fontSize: u(2.4), letterSpacing: "0.16em", color: theme.inkMuted, marginTop: u(0.8) }}>
+                <p
+                  className="font-mono"
+                  style={{ fontSize: u(2.4), letterSpacing: "0.16em", color: theme.inkMuted, marginTop: u(0.8) }}
+                >
                   {memberNumber(memberCode)}
                 </p>
               </div>
               <div className="shrink-0 text-right">
-                <p className="font-semibold uppercase" style={{ ...label, letterSpacing: "0.22em" }}>{t("ux.memberCard.validity")}</p>
-                <p className="font-mono font-semibold" style={{ fontSize: u(3.6), letterSpacing: "0.08em", textShadow: "0 1px 0 rgba(0,0,0,0.5)" }}>
+                <p className="font-semibold uppercase" style={{ ...label, letterSpacing: "0.22em" }}>
+                  {t("ux.memberCard.validity")}
+                </p>
+                <p
+                  className="font-mono font-semibold"
+                  style={{ fontSize: u(3.6), letterSpacing: "0.08em", textShadow: "0 1px 0 rgba(0,0,0,0.5)" }}
+                >
                   {monthYear(validUntil)}
                 </p>
               </div>
@@ -285,7 +350,15 @@ export function MemberCard({
               <div className="absolute inset-0 flex items-center justify-center">
                 <span
                   className="font-display font-black uppercase"
-                  style={{ fontSize: u(6), letterSpacing: "0.2em", color: "rgba(255,255,255,0.92)", border: `${u(0.8)} solid rgba(255,255,255,0.85)`, borderRadius: u(1.6), padding: `${u(0.6)} ${u(3)}`, transform: "rotate(-12deg)" }}
+                  style={{
+                    fontSize: u(6),
+                    letterSpacing: "0.2em",
+                    color: "rgba(255,255,255,0.92)",
+                    border: `${u(0.8)} solid rgba(255,255,255,0.85)`,
+                    borderRadius: u(1.6),
+                    padding: `${u(0.6)} ${u(3)}`,
+                    transform: "rotate(-12deg)",
+                  }}
                 >
                   {t("ux.memberCard.expired")}
                 </span>
@@ -299,7 +372,14 @@ export function MemberCard({
             <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.18)" }} />
 
             {/* Bande magnétique */}
-            <div className="absolute left-0 right-0" style={{ top: u(7), height: u(11.5), background: "linear-gradient(180deg, #0c0c0d, #2a2a2d 45%, #0a0a0b)" }} />
+            <div
+              className="absolute left-0 right-0"
+              style={{
+                top: u(7),
+                height: u(11.5),
+                background: "linear-gradient(180deg, #0c0c0d, #2a2a2d 45%, #0a0a0b)",
+              }}
+            />
 
             {/* Bande de signature */}
             <div className="absolute" style={{ left: u(6.5), top: u(24), width: u(54) }}>
@@ -324,7 +404,14 @@ export function MemberCard({
 
             {/* QR code de vérification */}
             <div className="absolute flex flex-col items-center" style={{ right: u(6.5), top: u(22) }}>
-              <div style={{ background: "#fff", borderRadius: u(1.8), padding: u(1.5), boxShadow: `0 ${u(0.4)} ${u(1.4)} rgba(0,0,0,0.4)` }}>
+              <div
+                style={{
+                  background: "#fff",
+                  borderRadius: u(1.8),
+                  padding: u(1.5),
+                  boxShadow: `0 ${u(0.4)} ${u(1.4)} rgba(0,0,0,0.4)`,
+                }}
+              >
                 <QRCode value={memberVerifyUrl(memberCode)} size={Math.round(unit * 21)} level="M" fgColor="#0B0F19" />
               </div>
               <p className="font-semibold uppercase" style={{ ...label, letterSpacing: "0.18em", marginTop: u(1.4) }}>
@@ -333,8 +420,13 @@ export function MemberCard({
             </div>
 
             {/* Pied */}
-            <div className="absolute flex items-end justify-between" style={{ left: u(6.5), right: u(6.5), bottom: u(5) }}>
-              <p className="font-mono" style={{ fontSize: u(2.4), letterSpacing: "0.16em" }}>{memberNumber(memberCode)}</p>
+            <div
+              className="absolute flex items-end justify-between"
+              style={{ left: u(6.5), right: u(6.5), bottom: u(5) }}
+            >
+              <p className="font-mono" style={{ fontSize: u(2.4), letterSpacing: "0.16em" }}>
+                {memberNumber(memberCode)}
+              </p>
               <p className="flex items-baseline font-display font-bold" style={{ fontSize: u(3.2) }}>
                 <span>Bossiz</span>
                 <span style={foilText}>+</span>

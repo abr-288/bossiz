@@ -41,22 +41,25 @@ const UnifiedBookingProcess = () => {
   const serviceId = searchParams.get("serviceId") || undefined;
   const startDate = searchParams.get("startDate") || new Date().toISOString().split("T")[0];
   const endDate = searchParams.get("endDate");
-  
+
   // Récupération des paramètres spécifiques au vol
-  const flightData = serviceType === "flight" ? {
-    origin: searchParams.get("origin") || serviceLocation,
-    destination: searchParams.get("destination") || "",
-    departureDate: startDate,
-    returnDate: endDate,
-    departureTime: searchParams.get("departureTime") || "10:00",
-    arrivalTime: searchParams.get("arrivalTime") || "12:30",
-    duration: searchParams.get("duration") || "2h 30m",
-    airline: searchParams.get("airline") || "Air Côte d'Ivoire",
-    flightNumber: searchParams.get("flightNumber") || "HF420",
-    price: servicePrice,
-    stops: parseInt(searchParams.get("stops") || "0"),
-    fare: searchParams.get("fare") || "basic",
-  } : null;
+  const flightData =
+    serviceType === "flight"
+      ? {
+          origin: searchParams.get("origin") || serviceLocation,
+          destination: searchParams.get("destination") || "",
+          departureDate: startDate,
+          returnDate: endDate,
+          departureTime: searchParams.get("departureTime") || "10:00",
+          arrivalTime: searchParams.get("arrivalTime") || "12:30",
+          duration: searchParams.get("duration") || "2h 30m",
+          airline: searchParams.get("airline") || "Air Côte d'Ivoire",
+          flightNumber: searchParams.get("flightNumber") || "HF420",
+          price: servicePrice,
+          stops: parseInt(searchParams.get("stops") || "0"),
+          fare: searchParams.get("fare") || "basic",
+        }
+      : null;
 
   const guestsCount = parseInt(searchParams.get("guests") || "1");
   const adultsCount = parseInt(searchParams.get("adults") || guestsCount.toString());
@@ -69,14 +72,22 @@ const UnifiedBookingProcess = () => {
 
   const getServiceIcon = () => {
     switch (serviceType) {
-      case "flight": return "✈️";
-      case "hotel": return "🏨";
-      case "car": return "🚗";
-      case "tour": return "🗺️";
-      case "stay": return "🏡";
-      case "destination": return "🌍";
-      case "event": return "🎫";
-      default: return "📋";
+      case "flight":
+        return "✈️";
+      case "hotel":
+        return "🏨";
+      case "car":
+        return "🚗";
+      case "tour":
+        return "🗺️";
+      case "stay":
+        return "🏡";
+      case "destination":
+        return "🌍";
+      case "event":
+        return "🎫";
+      default:
+        return "📋";
     }
   };
 
@@ -129,9 +140,7 @@ const UnifiedBookingProcess = () => {
                 {flightData.airline} • Vol {flightData.flightNumber}
               </div>
               {flightData.stops > 0 && (
-                <div className="mt-2 text-xs text-warning-foreground">
-                  ⚠️ {flightData.stops} escale(s)
-                </div>
+                <div className="mt-2 text-xs text-warning-foreground">⚠️ {flightData.stops} escale(s)</div>
               )}
             </div>
           </div>
@@ -168,42 +177,45 @@ const UnifiedBookingProcess = () => {
   };
 
   const summaryCard = (
-      <Card className="overflow-hidden border shadow-sm">
-        <div className="border-b bg-muted/30 px-5 py-4">
-          <h2 className="font-semibold">{t("ux.booking.yourExperience")}</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{t("ux.booking.essentialDetails")}</p>
+    <Card className="overflow-hidden border shadow-sm">
+      <div className="border-b bg-muted/30 px-5 py-4">
+        <h2 className="font-semibold">{t("ux.booking.yourExperience")}</h2>
+        <p className="mt-1 text-xs text-muted-foreground">{t("ux.booking.essentialDetails")}</p>
+      </div>
+      <div className="space-y-5 p-5">
+        {renderServiceDetails()}
+        <Separator />
+        <div className="flex items-center justify-between text-sm">
+          <span className="flex items-center gap-2 text-muted-foreground">
+            <Users className="h-4 w-4" /> {t("ux.booking.participants")}
+          </span>
+          <span className="font-medium">
+            {t("ux.booking.adults", { count: adultsCount })}
+            {childrenCount > 0 && `, ${t("ux.booking.children", { count: childrenCount })}`}
+          </span>
         </div>
-        <div className="space-y-5 p-5">
-          {renderServiceDetails()}
-          <Separator />
-          <div className="flex items-center justify-between text-sm">
-            <span className="flex items-center gap-2 text-muted-foreground">
-              <Users className="h-4 w-4" /> {t("ux.booking.participants")}
-            </span>
-            <span className="font-medium">
-              {t("ux.booking.adults", { count: adultsCount })}
-              {childrenCount > 0 && `, ${t("ux.booking.children", { count: childrenCount })}`}
-            </span>
+        {serviceType === "flight" && flightData && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t("ux.booking.fare")}</span>
+            <span className="font-medium">{flightData.fare === "basic" ? "Basic" : "Benefits"}</span>
           </div>
-          {serviceType === "flight" && flightData && (
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("ux.booking.fare")}</span>
-              <span className="font-medium">{flightData.fare === "basic" ? "Basic" : "Benefits"}</span>
-            </div>
-          )}
-          <div className="rounded-xl bg-primary/5 p-4">
-            <p className="text-xs text-muted-foreground">{t("ux.booking.basePrice")}</p>
-            <p className="mt-1 text-2xl font-bold text-primary">
-              <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">{t("ux.booking.totalConfirmedLater")}</p>
-          </div>
-          <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <span>{t("ux.booking.reviewBeforeConfirm")}</span>
-          </div>
+        )}
+        <div className="rounded-xl bg-primary/5 p-4">
+          <p className="text-xs text-muted-foreground">{t("ux.booking.basePrice")}</p>
+          <p className="mt-1 text-2xl font-bold text-primary">
+            <Price
+              amount={parseFloat(servicePrice)}
+              fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency}
+            />
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("ux.booking.totalConfirmedLater")}</p>
         </div>
-      </Card>
+        <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <span>{t("ux.booking.reviewBeforeConfirm")}</span>
+        </div>
+      </div>
+    </Card>
   );
 
   return (
@@ -218,7 +230,10 @@ const UnifiedBookingProcess = () => {
               {t("ux.booking.stepOf", { current: currentStep, total: steps.length })} · {getStepTitle(currentStep)}
             </p>
             <p className="t-price truncate text-base text-foreground">
-              <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
+              <Price
+                amount={parseFloat(servicePrice)}
+                fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency}
+              />
             </p>
           </div>
           <Sheet>
@@ -227,7 +242,10 @@ const UnifiedBookingProcess = () => {
                 {t("ux.booking.detail")}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-3xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+            <SheetContent
+              side="bottom"
+              className="max-h-[85dvh] overflow-y-auto rounded-t-3xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+            >
               <SheetHeader className="mb-3 text-left">
                 <SheetTitle>{t("ux.booking.summary")}</SheetTitle>
               </SheetHeader>
@@ -252,7 +270,9 @@ const UnifiedBookingProcess = () => {
           <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div className="max-w-2xl">
               <Badge variant="secondary" className="mb-4 rounded-full px-3 py-1">
-                {serviceType === "tour" ? t("ux.booking.tourBadge") : `${getServiceIcon()} ${t("ux.booking.bookingBadge")}`}
+                {serviceType === "tour"
+                  ? t("ux.booking.tourBadge")
+                  : `${getServiceIcon()} ${t("ux.booking.bookingBadge")}`}
               </Badge>
               <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                 {serviceType === "tour" ? t("ux.booking.tourTitle") : t("ux.booking.title")}
@@ -268,7 +288,10 @@ const UnifiedBookingProcess = () => {
               <div>
                 <p className="text-xs text-muted-foreground">{t("ux.booking.basePrice")}</p>
                 <p className="text-xl font-bold text-primary">
-                  <Price amount={parseFloat(servicePrice)} fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency} />
+                  <Price
+                    amount={parseFloat(servicePrice)}
+                    fromCurrency={serviceType === "flight" ? "EUR" : serviceCurrency}
+                  />
                 </p>
               </div>
             </div>
@@ -277,9 +300,7 @@ const UnifiedBookingProcess = () => {
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,2fr)] lg:gap-8">
           {/* Colonne gauche - Détails du service */}
-          <aside className="hidden lg:block lg:sticky lg:top-24">
-            {summaryCard}
-          </aside>
+          <aside className="hidden lg:block lg:sticky lg:top-24">{summaryCard}</aside>
 
           {/* Colonne droite - Processus de réservation */}
           <div className="min-w-0">

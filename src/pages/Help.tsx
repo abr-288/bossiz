@@ -25,8 +25,14 @@ const Help = () => {
     const domains = lang === "zh" ? HELP_DOMAINS_ZH : HELP_DOMAINS_EN;
     const faq = lang === "zh" ? HELP_FAQ_ZH : HELP_FAQ_EN;
     return {
-      HELP_DOMAINS: HELP_DOMAINS_FR.map((d) => ({ ...d, label: domains[d.id]?.[0] ?? d.label, description: domains[d.id]?.[1] ?? d.description })),
-      HELP_FAQ: HELP_FAQ_FR.map((entry, i) => (faq[i]?.[0] === entry.domain ? { ...entry, question: faq[i][1], answer: faq[i][2] } : entry)),
+      HELP_DOMAINS: HELP_DOMAINS_FR.map((d) => ({
+        ...d,
+        label: domains[d.id]?.[0] ?? d.label,
+        description: domains[d.id]?.[1] ?? d.description,
+      })),
+      HELP_FAQ: HELP_FAQ_FR.map((entry, i) =>
+        faq[i]?.[0] === entry.domain ? { ...entry, question: faq[i][1], answer: faq[i][2] } : entry,
+      ),
     };
   }, [lang]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,9 +45,7 @@ const Help = () => {
     if (!isSearching) return [];
     const query = searchQuery.trim().toLowerCase();
     return HELP_FAQ.filter(
-      (faq) =>
-        faq.question.toLowerCase().includes(query) ||
-        faq.answer.toLowerCase().includes(query)
+      (faq) => faq.question.toLowerCase().includes(query) || faq.answer.toLowerCase().includes(query),
     );
   }, [isSearching, searchQuery, HELP_FAQ]);
 
@@ -78,7 +82,13 @@ const Help = () => {
         />
         <div className="absolute inset-0 bg-brand/65" />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+          <div
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-8 animate-fade-in">
@@ -144,7 +154,10 @@ const Help = () => {
             {isSearching ? (
               <>
                 <h2 className="text-2xl font-bold mb-6 text-center">
-                  {t("help.searchResultsCount", "{{count}} résultat(s) pour \"{{query}}\"", { count: searchResults.length, query: searchQuery })}
+                  {t("help.searchResultsCount", '{{count}} résultat(s) pour "{{query}}"', {
+                    count: searchResults.length,
+                    query: searchQuery,
+                  })}
                 </h2>
                 {searchResults.length === 0 ? (
                   <Card>
@@ -152,7 +165,10 @@ const Help = () => {
                       <HelpCircle className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                       <h3 className="text-xl font-semibold mb-2">{t("help.noResults.title", "Aucun résultat")}</h3>
                       <p className="text-muted-foreground mb-4">
-                        {t("help.noResults.description", "Essayez un autre mot-clé, ou contactez directement notre équipe.")}
+                        {t(
+                          "help.noResults.description",
+                          "Essayez un autre mot-clé, ou contactez directement notre équipe.",
+                        )}
                       </p>
                       <Button onClick={() => navigate("/contact")}>
                         <Mail className="mr-2 h-4 w-4" />
@@ -177,7 +193,9 @@ const Help = () => {
               </>
             ) : (
               <>
-                <h2 className="text-3xl font-bold mb-8 text-center">{t("help.allQuestionsTitle", "Toutes les questions par thème")}</h2>
+                <h2 className="text-3xl font-bold mb-8 text-center">
+                  {t("help.allQuestionsTitle", "Toutes les questions par thème")}
+                </h2>
                 {HELP_DOMAINS.map((domain) => {
                   const domainFaqs = HELP_FAQ.filter((faq) => faq.domain === domain.id);
                   if (domainFaqs.length === 0) return null;
@@ -185,7 +203,9 @@ const Help = () => {
                   return (
                     <div
                       key={domain.id}
-                      ref={(el) => { sectionRefs.current[domain.id] = el; }}
+                      ref={(el) => {
+                        sectionRefs.current[domain.id] = el;
+                      }}
                       className="scroll-mt-24"
                     >
                       <Card className="mb-6">
@@ -227,13 +247,23 @@ const Help = () => {
               <Mail className="mr-2 h-5 w-5" />
               {t("help.contactSupport", "Nous contacter")}
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white/10" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-transparent text-white border-white hover:bg-white/10"
+              asChild
+            >
               <a href="tel:+22527200000000">
                 <Phone className="mr-2 h-5 w-5" />
                 +225 27 20 00 00 00
               </a>
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white/10" onClick={handleChatClick}>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-transparent text-white border-white hover:bg-white/10"
+              onClick={handleChatClick}
+            >
               <MessageCircle className="mr-2 h-5 w-5" />
               {t("pages.support.contact.chat", "Chat en direct")}
             </Button>

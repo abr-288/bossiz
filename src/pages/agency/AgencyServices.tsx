@@ -6,28 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database, Json } from "@/integrations/supabase/types";
@@ -64,10 +45,30 @@ interface Service {
 }
 
 const serviceTypes = [
-  { value: "flight", get label() { return i18n.t("ux.bo.flight"); } },
-  { value: "hotel", get label() { return i18n.t("ux.bo.hotel"); } },
-  { value: "car", get label() { return i18n.t("ux.bo.car"); } },
-  { value: "tour", get label() { return i18n.t("ux.bo.guidedTour"); } },
+  {
+    value: "flight",
+    get label() {
+      return i18n.t("ux.bo.flight");
+    },
+  },
+  {
+    value: "hotel",
+    get label() {
+      return i18n.t("ux.bo.hotel");
+    },
+  },
+  {
+    value: "car",
+    get label() {
+      return i18n.t("ux.bo.car");
+    },
+  },
+  {
+    value: "tour",
+    get label() {
+      return i18n.t("ux.bo.guidedTour");
+    },
+  },
 ];
 
 const carCategories = ["Mini", "Économique", "Compacte", "Berline", "SUV", "Luxe", "Monospace"];
@@ -90,7 +91,14 @@ const emptyCarSpecs = {
 
 const emptyCarPhotos = { front: "", back: "", left: "", right: "", interior1: "", interior2: "" };
 
-const tourCategories = ["Culture & Patrimoine", "Nature & Randonnée", "Aventure", "Plage & Détente", "Gastronomie", "Ville & Découverte"];
+const tourCategories = [
+  "Culture & Patrimoine",
+  "Nature & Randonnée",
+  "Aventure",
+  "Plage & Détente",
+  "Gastronomie",
+  "Ville & Découverte",
+];
 const tourDifficulties = ["Facile", "Modéré", "Difficile"];
 
 const emptyTourSpecs = {
@@ -149,14 +157,12 @@ export default function AgencyServices() {
   }, []);
 
   const fetchAgencyAndServices = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: agency } = await supabase
-      .from("agencies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .single();
+    const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
 
     if (!agency) return;
     setAgencyId(agency.id);
@@ -205,7 +211,11 @@ export default function AgencyServices() {
 
     const isCarType = formData.type === "car";
     if (isCarType) {
-      if (carPlanPaymentsEnabled && !carPlan && (!editingService || editingService.type !== "car" || !editingService.available && formData.available)) {
+      if (
+        carPlanPaymentsEnabled &&
+        !carPlan &&
+        (!editingService || editingService.type !== "car" || (!editingService.available && formData.available))
+      ) {
         toast({
           title: t("ux.bo.paidPlanRequired"),
           description: t("ux.bo.subscribePaidCarPlanWait"),
@@ -256,32 +266,32 @@ export default function AgencyServices() {
             highlights: formData.hotelSpecs.highlights.map((h) => h.trim()).filter(Boolean),
           }
         : isCar
-        ? {
-            brand: formData.carSpecs.brand,
-            model: formData.carSpecs.model,
-            category: formData.carSpecs.category,
-            seats: parseInt(formData.carSpecs.seats) || 5,
-            doors: parseInt(formData.carSpecs.doors) || 4,
-            transmission: formData.carSpecs.transmission,
-            fuel: formData.carSpecs.fuel,
-            luggage: parseInt(formData.carSpecs.luggage) || 3,
-            year: parseInt(formData.carSpecs.year) || new Date().getFullYear(),
-            unlimitedMileage: formData.carSpecs.unlimitedMileage,
-            freeCancellation: formData.carSpecs.freeCancellation,
-          }
-        : isTour
-        ? {
-            duration: formData.tourSpecs.duration,
-            groupSizeMax: parseInt(formData.tourSpecs.groupSizeMax) || 10,
-            meetingPoint: formData.tourSpecs.meetingPoint,
-            included: formData.tourSpecs.included,
-            excluded: formData.tourSpecs.excluded,
-            languages: formData.tourSpecs.languages,
-            difficulty: formData.tourSpecs.difficulty,
-            category: formData.tourSpecs.category,
-            availableDates: formData.tourSpecs.availableDates,
-          }
-        : null;
+          ? {
+              brand: formData.carSpecs.brand,
+              model: formData.carSpecs.model,
+              category: formData.carSpecs.category,
+              seats: parseInt(formData.carSpecs.seats) || 5,
+              doors: parseInt(formData.carSpecs.doors) || 4,
+              transmission: formData.carSpecs.transmission,
+              fuel: formData.carSpecs.fuel,
+              luggage: parseInt(formData.carSpecs.luggage) || 3,
+              year: parseInt(formData.carSpecs.year) || new Date().getFullYear(),
+              unlimitedMileage: formData.carSpecs.unlimitedMileage,
+              freeCancellation: formData.carSpecs.freeCancellation,
+            }
+          : isTour
+            ? {
+                duration: formData.tourSpecs.duration,
+                groupSizeMax: parseInt(formData.tourSpecs.groupSizeMax) || 10,
+                meetingPoint: formData.tourSpecs.meetingPoint,
+                included: formData.tourSpecs.included,
+                excluded: formData.tourSpecs.excluded,
+                languages: formData.tourSpecs.languages,
+                difficulty: formData.tourSpecs.difficulty,
+                category: formData.tourSpecs.category,
+                availableDates: formData.tourSpecs.availableDates,
+              }
+            : null;
 
       const serviceData = {
         name: formData.name,
@@ -295,20 +305,23 @@ export default function AgencyServices() {
         // Hôtel : prix « à partir de » tenu par la base depuis les tarifs
         // des chambres (trigger sync_hotel_starting_price).
         price_per_unit: isHotel
-          ? (editingService?.type === "hotel" ? editingService.price_per_unit : 0)
+          ? editingService?.type === "hotel"
+            ? editingService.price_per_unit
+            : 0
           : parseFloat(formData.price_per_unit),
         currency: "XOF",
         available: formData.available,
         image_url: isCar
-          ? (carPhotos[0] || null)
+          ? carPhotos[0] || null
           : isHotel
-          ? (formData.hotelImages[0] || null)
-          : (formData.image_url || null),
-        images: isCar && carPhotos.length > 0
-          ? carPhotos
-          : isHotel && formData.hotelImages.length > 0
-          ? formData.hotelImages
-          : null,
+            ? formData.hotelImages[0] || null
+            : formData.image_url || null,
+        images:
+          isCar && carPhotos.length > 0
+            ? carPhotos
+            : isHotel && formData.hotelImages.length > 0
+              ? formData.hotelImages
+              : null,
         amenities: isHotel ? formData.hotelAmenities : null,
         specifications,
         agency_id: agencyId,
@@ -316,10 +329,7 @@ export default function AgencyServices() {
 
       let createdHotel: { id: string; name: string } | null = null;
       if (editingService) {
-        const { error } = await supabase
-          .from("services")
-          .update(serviceData)
-          .eq("id", editingService.id);
+        const { error } = await supabase.from("services").update(serviceData).eq("id", editingService.id);
 
         if (error) throw error;
         toast({ title: t("ux.bo.success"), description: t("ux.bo.serviceUpdated") });
@@ -356,10 +366,10 @@ export default function AgencyServices() {
     setEditingService(service);
     const specs: Record<string, Json | undefined> =
       service.specifications && typeof service.specifications === "object" && !Array.isArray(service.specifications)
-        ? service.specifications as Record<string, Json | undefined>
+        ? (service.specifications as Record<string, Json | undefined>)
         : {};
     const stringSpec = (key: string, fallback: string) =>
-      typeof specs[key] === "string" ? specs[key] as string : fallback;
+      typeof specs[key] === "string" ? (specs[key] as string) : fallback;
     const numberSpec = (key: string, fallback: number) => {
       const value = specs[key];
       return typeof value === "number" || typeof value === "string" ? String(value) : String(fallback);
@@ -377,48 +387,50 @@ export default function AgencyServices() {
       currency: service.currency,
       available: service.available,
       image_url: service.image_url || "",
-      carSpecs: service.type === "car"
-        ? {
-            brand: stringSpec("brand", ""),
-            model: stringSpec("model", ""),
-            category: stringSpec("category", "Berline"),
-            seats: numberSpec("seats", 5),
-            doors: numberSpec("doors", 4),
-            transmission: stringSpec("transmission", "Automatique"),
-            fuel: stringSpec("fuel", "Essence"),
-            luggage: numberSpec("luggage", 3),
-            year: numberSpec("year", new Date().getFullYear()),
-            unlimitedMileage: specs.unlimitedMileage === true,
-            freeCancellation: specs.freeCancellation === true,
-          }
-        : emptyCarSpecs,
-      carPhotos: service.type === "car"
-        ? {
-            front: images[0] || "",
-            back: images[1] || "",
-            left: images[2] || "",
-            right: images[3] || "",
-            interior1: images[4] || "",
-            interior2: images[5] || "",
-          }
-        : emptyCarPhotos,
-      tourSpecs: service.type === "tour"
-        ? {
-            duration: stringSpec("duration", ""),
-            groupSizeMax: numberSpec("groupSizeMax", 10),
-            meetingPoint: stringSpec("meetingPoint", ""),
-            included: stringSpec("included", ""),
-            excluded: stringSpec("excluded", ""),
-            languages: stringSpec("languages", "Français"),
-            difficulty: stringSpec("difficulty", "Facile"),
-            category: stringSpec("category", "Culture & Patrimoine"),
-            availableDates: service.available_dates || [],
-          }
-        : emptyTourSpecs,
+      carSpecs:
+        service.type === "car"
+          ? {
+              brand: stringSpec("brand", ""),
+              model: stringSpec("model", ""),
+              category: stringSpec("category", "Berline"),
+              seats: numberSpec("seats", 5),
+              doors: numberSpec("doors", 4),
+              transmission: stringSpec("transmission", "Automatique"),
+              fuel: stringSpec("fuel", "Essence"),
+              luggage: numberSpec("luggage", 3),
+              year: numberSpec("year", new Date().getFullYear()),
+              unlimitedMileage: specs.unlimitedMileage === true,
+              freeCancellation: specs.freeCancellation === true,
+            }
+          : emptyCarSpecs,
+      carPhotos:
+        service.type === "car"
+          ? {
+              front: images[0] || "",
+              back: images[1] || "",
+              left: images[2] || "",
+              right: images[3] || "",
+              interior1: images[4] || "",
+              interior2: images[5] || "",
+            }
+          : emptyCarPhotos,
+      tourSpecs:
+        service.type === "tour"
+          ? {
+              duration: stringSpec("duration", ""),
+              groupSizeMax: numberSpec("groupSizeMax", 10),
+              meetingPoint: stringSpec("meetingPoint", ""),
+              included: stringSpec("included", ""),
+              excluded: stringSpec("excluded", ""),
+              languages: stringSpec("languages", "Français"),
+              difficulty: stringSpec("difficulty", "Facile"),
+              category: stringSpec("category", "Culture & Patrimoine"),
+              availableDates: service.available_dates || [],
+            }
+          : emptyTourSpecs,
       hotelSpecs: service.type === "hotel" ? parseHotelSpecs(service.specifications) : emptyHotelSpecs,
-      hotelImages: service.type === "hotel"
-        ? (images.length > 0 ? images : service.image_url ? [service.image_url] : [])
-        : [],
+      hotelImages:
+        service.type === "hotel" ? (images.length > 0 ? images : service.image_url ? [service.image_url] : []) : [],
       hotelAmenities: service.type === "hotel" ? parseStringList(service.amenities) : [],
     });
     setIsDialogOpen(true);
@@ -459,9 +471,8 @@ export default function AgencyServices() {
     });
   };
 
-  const filteredServices = services.filter((s) =>
-    (!typeFilter || s.type === typeFilter) &&
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredServices = services.filter(
+    (s) => (!typeFilter || s.type === typeFilter) && s.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -470,11 +481,16 @@ export default function AgencyServices() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold">{typeFilter === "tour" ? t("ux.bo.myTours") : "Mes Services"}</h1>
-            <p className="text-muted-foreground">{typeFilter === "tour" ? t("ux.bo.manageTours") : t("ux.bo.manageTravelServices")}</p>
+            <p className="text-muted-foreground">
+              {typeFilter === "tour" ? t("ux.bo.manageTours") : t("ux.bo.manageTravelServices")}
+            </p>
             {carPlanPaymentsEnabled && !carPlan && (
               <p className="mt-2 text-sm text-warning-foreground">
-                Aucun forfait voiture payant actif. Les nouvelles annonces de véhicules sont bloquées jusqu'à confirmation du paiement.{" "}
-                <a href="/partenaires/voitures" className="font-medium underline">{t("ux.bo.seePlans")}</a>
+                Aucun forfait voiture payant actif. Les nouvelles annonces de véhicules sont bloquées jusqu'à
+                confirmation du paiement.{" "}
+                <a href="/partenaires/voitures" className="font-medium underline">
+                  {t("ux.bo.seePlans")}
+                </a>
               </p>
             )}
             {carPlanPaymentsEnabled && carPlan && (
@@ -486,18 +502,22 @@ export default function AgencyServices() {
               </Badge>
             )}
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) resetForm();
-          }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newService")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newService")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
-                  {editingService ? t("ux.bo.editService") : t("ux.bo.newService2")}
-                </DialogTitle>
+                <DialogTitle>{editingService ? t("ux.bo.editService") : t("ux.bo.newService2")}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -511,27 +531,34 @@ export default function AgencyServices() {
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.type2")}</Label>
-                    <Select
-                      value={formData.type}
-                      onValueChange={(v) => setFormData({ ...formData, type: v })}
-                    >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         {serviceTypes.map((t) => (
-                          <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                          <SelectItem key={t.value} value={t.value}>
+                            {t.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <LocationPicker
-                  value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }}
+                  value={{
+                    location: formData.location,
+                    maps_url: formData.maps_url,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  }}
                   onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
                   required
                 />
                 {formData.type === "hotel" ? (
                   <p className="text-sm text-muted-foreground">
-                    Les prix se définissent par type de chambre dans « Chambres & tarifs », après l'enregistrement de l'hôtel.
+                    Les prix se définissent par type de chambre dans « Chambres & tarifs », après l'enregistrement de
+                    l'hôtel.
                   </p>
                 ) : (
                   <div className="grid grid-cols-2 gap-4">
@@ -544,7 +571,9 @@ export default function AgencyServices() {
                         required
                       />
                     </div>
-                    <div className="flex items-end pb-2 text-sm text-muted-foreground">{t("ux.bo.priceShownChargedXofFcfa")}</div>
+                    <div className="flex items-end pb-2 text-sm text-muted-foreground">
+                      {t("ux.bo.priceShownChargedXofFcfa")}
+                    </div>
                   </div>
                 )}
                 <div className="space-y-2">
@@ -553,7 +582,11 @@ export default function AgencyServices() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={formData.type === "hotel" ? 6 : 2}
-                    placeholder={formData.type === "hotel" ? "Présentez l'établissement : situation, ambiance, services, à proximité..." : undefined}
+                    placeholder={
+                      formData.type === "hotel"
+                        ? "Présentez l'établissement : situation, ambiance, services, à proximité..."
+                        : undefined
+                    }
                   />
                 </div>
                 {formData.type === "hotel" ? (
@@ -574,7 +607,9 @@ export default function AgencyServices() {
                         <Input
                           placeholder={t("ux.bo.eGToyota")}
                           value={formData.carSpecs.brand}
-                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, brand: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, brand: e.target.value } })
+                          }
                           required
                         />
                       </div>
@@ -583,7 +618,9 @@ export default function AgencyServices() {
                         <Input
                           placeholder={t("ux.bo.eGCorolla")}
                           value={formData.carSpecs.model}
-                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, model: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, model: e.target.value } })
+                          }
                           required
                         />
                       </div>
@@ -593,12 +630,18 @@ export default function AgencyServices() {
                         <Label>{t("ux.bo.category2")}</Label>
                         <Select
                           value={formData.carSpecs.category}
-                          onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, category: v } })}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, category: v } })
+                          }
                         >
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {carCategories.map((c) => (
-                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                              <SelectItem key={c} value={c}>
+                                {c}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -610,7 +653,9 @@ export default function AgencyServices() {
                           min="1990"
                           max={new Date().getFullYear() + 1}
                           value={formData.carSpecs.year}
-                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, year: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, year: e.target.value } })
+                          }
                         />
                       </div>
                     </div>
@@ -619,12 +664,18 @@ export default function AgencyServices() {
                         <Label>{t("ux.bo.transmission")}</Label>
                         <Select
                           value={formData.carSpecs.transmission}
-                          onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, transmission: v } })}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, transmission: v } })
+                          }
                         >
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {carTransmissions.map((t) => (
-                              <SelectItem key={t} value={t}>{t}</SelectItem>
+                              <SelectItem key={t} value={t}>
+                                {t}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -633,12 +684,18 @@ export default function AgencyServices() {
                         <Label>{t("ux.bo.fuel")}</Label>
                         <Select
                           value={formData.carSpecs.fuel}
-                          onValueChange={(v) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, fuel: v } })}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, fuel: v } })
+                          }
                         >
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {carFuels.map((f) => (
-                              <SelectItem key={f} value={f}>{f}</SelectItem>
+                              <SelectItem key={f} value={f}>
+                                {f}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -651,7 +708,9 @@ export default function AgencyServices() {
                           type="number"
                           min="1"
                           value={formData.carSpecs.seats}
-                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, seats: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, seats: e.target.value } })
+                          }
                           required
                         />
                       </div>
@@ -661,7 +720,9 @@ export default function AgencyServices() {
                           type="number"
                           min="2"
                           value={formData.carSpecs.doors}
-                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, doors: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, doors: e.target.value } })
+                          }
                         />
                       </div>
                       <div className="space-y-2">
@@ -670,7 +731,9 @@ export default function AgencyServices() {
                           type="number"
                           min="0"
                           value={formData.carSpecs.luggage}
-                          onChange={(e) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, luggage: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, luggage: e.target.value } })
+                          }
                         />
                       </div>
                     </div>
@@ -678,14 +741,18 @@ export default function AgencyServices() {
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={formData.carSpecs.unlimitedMileage}
-                          onCheckedChange={(c) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, unlimitedMileage: c } })}
+                          onCheckedChange={(c) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, unlimitedMileage: c } })
+                          }
                         />
                         <Label>{t("ux.bo.unlimitedMileage")}</Label>
                       </div>
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={formData.carSpecs.freeCancellation}
-                          onCheckedChange={(c) => setFormData({ ...formData, carSpecs: { ...formData.carSpecs, freeCancellation: c } })}
+                          onCheckedChange={(c) =>
+                            setFormData({ ...formData, carSpecs: { ...formData.carSpecs, freeCancellation: c } })
+                          }
                         />
                         <Label>{t("ux.bo.freeCancellation")}</Label>
                       </div>
@@ -698,25 +765,33 @@ export default function AgencyServices() {
                           label={t("ux.bo.front")}
                           folder="agency-cars"
                           value={formData.carPhotos.front}
-                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, front: url } })}
+                          onChange={(url) =>
+                            setFormData({ ...formData, carPhotos: { ...formData.carPhotos, front: url } })
+                          }
                         />
                         <ImageUpload
                           label={t("ux.bo.rear")}
                           folder="agency-cars"
                           value={formData.carPhotos.back}
-                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, back: url } })}
+                          onChange={(url) =>
+                            setFormData({ ...formData, carPhotos: { ...formData.carPhotos, back: url } })
+                          }
                         />
                         <ImageUpload
                           label={t("ux.bo.leftSide")}
                           folder="agency-cars"
                           value={formData.carPhotos.left}
-                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, left: url } })}
+                          onChange={(url) =>
+                            setFormData({ ...formData, carPhotos: { ...formData.carPhotos, left: url } })
+                          }
                         />
                         <ImageUpload
                           label={t("ux.bo.rightSide")}
                           folder="agency-cars"
                           value={formData.carPhotos.right}
-                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, right: url } })}
+                          onChange={(url) =>
+                            setFormData({ ...formData, carPhotos: { ...formData.carPhotos, right: url } })
+                          }
                         />
                       </div>
                     </div>
@@ -728,13 +803,17 @@ export default function AgencyServices() {
                           label={t("ux.bo.interior1")}
                           folder="agency-cars"
                           value={formData.carPhotos.interior1}
-                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior1: url } })}
+                          onChange={(url) =>
+                            setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior1: url } })
+                          }
                         />
                         <ImageUpload
                           label={t("ux.bo.interior2")}
                           folder="agency-cars"
                           value={formData.carPhotos.interior2}
-                          onChange={(url) => setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior2: url } })}
+                          onChange={(url) =>
+                            setFormData({ ...formData, carPhotos: { ...formData.carPhotos, interior2: url } })
+                          }
                         />
                       </div>
                     </div>
@@ -748,7 +827,9 @@ export default function AgencyServices() {
                         <Input
                           placeholder={t("ux.bo.eG1Day3")}
                           value={formData.tourSpecs.duration}
-                          onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, duration: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, duration: e.target.value } })
+                          }
                           required
                         />
                       </div>
@@ -758,7 +839,12 @@ export default function AgencyServices() {
                           type="number"
                           min="1"
                           value={formData.tourSpecs.groupSizeMax}
-                          onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, groupSizeMax: e.target.value } })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              tourSpecs: { ...formData.tourSpecs, groupSizeMax: e.target.value },
+                            })
+                          }
                           required
                         />
                       </div>
@@ -768,12 +854,18 @@ export default function AgencyServices() {
                         <Label>{t("ux.bo.category2")}</Label>
                         <Select
                           value={formData.tourSpecs.category}
-                          onValueChange={(v) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, category: v } })}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, category: v } })
+                          }
                         >
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {tourCategories.map((c) => (
-                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                              <SelectItem key={c} value={c}>
+                                {c}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -782,24 +874,41 @@ export default function AgencyServices() {
                         <Label>{t("ux.bo.difficulty")}</Label>
                         <Select
                           value={formData.tourSpecs.difficulty}
-                          onValueChange={(v) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, difficulty: v } })}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, difficulty: v } })
+                          }
                         >
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {tourDifficulties.map((d) => (
-                              <SelectItem key={d} value={d}>{d}</SelectItem>
+                              <SelectItem key={d} value={d}>
+                                {d}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
-                    <AvailableDatesInput dates={formData.tourSpecs.availableDates} onChange={(availableDates) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, availableDates } })} label={t("ux.bo.tourDepartureDates")} />
+                    <AvailableDatesInput
+                      dates={formData.tourSpecs.availableDates}
+                      onChange={(availableDates) =>
+                        setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, availableDates } })
+                      }
+                      label={t("ux.bo.tourDepartureDates")}
+                    />
                     <div className="space-y-2">
                       <Label>{t("ux.bo.meetingPoint")}</Label>
                       <Input
                         placeholder={t("ux.bo.eGFrontHotelIvoire")}
                         value={formData.tourSpecs.meetingPoint}
-                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, meetingPoint: e.target.value } })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tourSpecs: { ...formData.tourSpecs, meetingPoint: e.target.value },
+                          })
+                        }
                         required
                       />
                     </div>
@@ -808,7 +917,9 @@ export default function AgencyServices() {
                       <Input
                         placeholder={t("ux.bo.eGFrenchEnglish")}
                         value={formData.tourSpecs.languages}
-                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, languages: e.target.value } })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, languages: e.target.value } })
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -816,7 +927,9 @@ export default function AgencyServices() {
                       <Textarea
                         placeholder={t("ux.bo.eGTransportGuideLunch")}
                         value={formData.tourSpecs.included}
-                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, included: e.target.value } })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, included: e.target.value } })
+                        }
                         rows={2}
                       />
                     </div>
@@ -825,7 +938,9 @@ export default function AgencyServices() {
                       <Textarea
                         placeholder={t("ux.bo.eGDrinksTips")}
                         value={formData.tourSpecs.excluded}
-                        onChange={(e) => setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, excluded: e.target.value } })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tourSpecs: { ...formData.tourSpecs, excluded: e.target.value } })
+                        }
                         rows={2}
                       />
                     </div>
@@ -840,7 +955,12 @@ export default function AgencyServices() {
                     </div>
                   </div>
                 ) : (
-                  <ImageUpload label={t("ux.bo.servicePhoto")} folder="agency-services" value={formData.image_url} onChange={(image_url) => setFormData({ ...formData, image_url })} />
+                  <ImageUpload
+                    label={t("ux.bo.servicePhoto")}
+                    folder="agency-services"
+                    value={formData.image_url}
+                    onChange={(image_url) => setFormData({ ...formData, image_url })}
+                  />
                 )}
                 <div className="flex items-center gap-2">
                   <Switch
@@ -885,7 +1005,9 @@ export default function AgencyServices() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
                 </TableRow>
               ) : filteredServices.length === 0 ? (
                 <TableRow>
@@ -905,11 +1027,15 @@ export default function AgencyServices() {
                     </TableCell>
                     <TableCell>{service.location}</TableCell>
                     <TableCell>
-                      {service.type === "hotel"
-                        ? service.price_per_unit > 0
-                          ? `À partir de ${formatFcfa(service.price_per_unit)}`
-                          : <span className="text-sm text-muted-foreground">Aucun tarif</span>
-                        : `${service.price_per_unit} ${service.currency}`}
+                      {service.type === "hotel" ? (
+                        service.price_per_unit > 0 ? (
+                          `À partir de ${formatFcfa(service.price_per_unit)}`
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Aucun tarif</span>
+                        )
+                      ) : (
+                        `${service.price_per_unit} ${service.currency}`
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant={service.available ? "default" : "secondary"}>
@@ -918,15 +1044,30 @@ export default function AgencyServices() {
                     </TableCell>
                     <TableCell className="text-right">
                       {service.type === "hotel" && (
-                        <Button variant="outline" size="sm" className="mr-1" onClick={() => setRoomsHotel({ id: service.id, name: service.name })}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mr-1"
+                          onClick={() => setRoomsHotel({ id: service.id, name: service.name })}
+                        >
                           <BedDouble className="h-4 w-4 mr-1" />
                           Chambres & tarifs
                         </Button>
                       )}
-                      <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(service)}>
+                      <Button
+                        aria-label={t("ux.bo.edit")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(service)}
+                      >
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(service.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(service.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>
@@ -942,7 +1083,9 @@ export default function AgencyServices() {
         serviceId={roomsHotel?.id ?? null}
         hotelName={roomsHotel?.name ?? ""}
         open={!!roomsHotel}
-        onOpenChange={(open) => { if (!open) setRoomsHotel(null); }}
+        onOpenChange={(open) => {
+          if (!open) setRoomsHotel(null);
+        }}
         onChanged={fetchAgencyAndServices}
       />
     </AgencyLayout>

@@ -17,11 +17,34 @@ import { toast } from "sonner";
 // filter the real search results already returned by the destinations API -
 // this does not add or invent any destination data of its own.
 const AFRICAN_COUNTRIES = [
-  'sénégal', 'senegal', 'côte d\'ivoire', 'cote d\'ivoire', 'ivory coast',
-  'maroc', 'morocco', 'égypte', 'egypt', 'tanzanie', 'tanzania',
-  'afrique du sud', 'south africa', 'kenya', 'nigeria', 'ghana',
-  'tunisie', 'tunisia', 'algérie', 'algeria', 'cameroun', 'cameroon',
-  'ethiopie', 'ethiopia', 'rwanda', 'namibie', 'namibia', 'zanzibar',
+  "sénégal",
+  "senegal",
+  "côte d'ivoire",
+  "cote d'ivoire",
+  "ivory coast",
+  "maroc",
+  "morocco",
+  "égypte",
+  "egypt",
+  "tanzanie",
+  "tanzania",
+  "afrique du sud",
+  "south africa",
+  "kenya",
+  "nigeria",
+  "ghana",
+  "tunisie",
+  "tunisia",
+  "algérie",
+  "algeria",
+  "cameroun",
+  "cameroon",
+  "ethiopie",
+  "ethiopia",
+  "rwanda",
+  "namibie",
+  "namibia",
+  "zanzibar",
 ];
 
 const Destinations = () => {
@@ -36,7 +59,7 @@ const Destinations = () => {
 
   const destinations = activeResults.data || [];
   const africanDestinations = destinations.filter((dest) =>
-    AFRICAN_COUNTRIES.some((c) => dest.country?.toLowerCase().includes(c))
+    AFRICAN_COUNTRIES.some((c) => dest.country?.toLowerCase().includes(c)),
   );
 
   const handleNewsletterSubmit = async () => {
@@ -65,7 +88,10 @@ const Destinations = () => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+        ></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
@@ -76,7 +102,7 @@ const Destinations = () => {
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
@@ -140,7 +166,10 @@ const Destinations = () => {
             {t("destinations.newsletter", "Recevez nos meilleures offres")}
           </h2>
           <p className="mb-6 opacity-90 max-w-xl mx-auto">
-            {t("destinations.newsletterSubtitle", "Inscrivez-vous pour recevoir des offres exclusives et des inspirations voyage")}
+            {t(
+              "destinations.newsletterSubtitle",
+              "Inscrivez-vous pour recevoir des offres exclusives et des inspirations voyage",
+            )}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <Input

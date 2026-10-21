@@ -35,10 +35,7 @@ export const useIntegrationCredentials = () => {
   const fetchIntegrations = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("integration_credentials")
-        .select("*")
-        .order("category");
+      const { data, error } = await supabase.from("integration_credentials").select("*").order("category");
 
       if (error) {
         // La table n'existe pas encore tant que la migration n'a pas été
@@ -67,67 +64,73 @@ export const useIntegrationCredentials = () => {
     }
   }, []);
 
-  const updateIntegration = useCallback(async (id: string, updates: Partial<IntegrationCredential>) => {
-    try {
-      const { error } = await supabase
-        .from("integration_credentials")
-        .update(updates)
-        .eq("id", id);
+  const updateIntegration = useCallback(
+    async (id: string, updates: Partial<IntegrationCredential>) => {
+      try {
+        const { error } = await supabase.from("integration_credentials").update(updates).eq("id", id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setIntegrations((prev) => prev.map((i) => (i.id === id ? { ...i, ...updates } : i)));
-      toast({ title: "Succès", description: "Identifiants mis à jour" });
-    } catch (error) {
-      console.error("Error updating integration credentials:", error);
-      toast({
-        title: "Erreur",
-        description: getErrorMessage(error) || "Impossible de mettre à jour",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
+        setIntegrations((prev) => prev.map((i) => (i.id === id ? { ...i, ...updates } : i)));
+        toast({ title: "Succès", description: "Identifiants mis à jour" });
+      } catch (error) {
+        console.error("Error updating integration credentials:", error);
+        toast({
+          title: "Erreur",
+          description: getErrorMessage(error) || "Impossible de mettre à jour",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
 
   // Active un prestataire et désactive tous les autres de la même catégorie
   // (ex: un seul prestataire de paiement actif à la fois). Nécessaire pour
   // que /admin/integrations reflète réellement le prestataire que les Edge
   // Functions utiliseront (getActivePaymentProvider ne regarde que le
   // premier "is_active=true" trouvé).
-  const activateExclusive = useCallback(async (id: string, category: string, updates: Partial<IntegrationCredential> = {}) => {
-    try {
-      const siblings = integrations.filter((i) => i.category === category && i.id !== id);
+  const activateExclusive = useCallback(
+    async (id: string, category: string, updates: Partial<IntegrationCredential> = {}) => {
+      try {
+        const siblings = integrations.filter((i) => i.category === category && i.id !== id);
 
-      if (siblings.length > 0) {
-        const { error: deactivateError } = await supabase
+        if (siblings.length > 0) {
+          const { error: deactivateError } = await supabase
+            .from("integration_credentials")
+            .update({ is_active: false })
+            .in(
+              "id",
+              siblings.map((i) => i.id),
+            );
+          if (deactivateError) throw deactivateError;
+        }
+
+        const { error } = await supabase
           .from("integration_credentials")
-          .update({ is_active: false })
-          .in("id", siblings.map((i) => i.id));
-        if (deactivateError) throw deactivateError;
+          .update({ ...updates, is_active: true })
+          .eq("id", id);
+        if (error) throw error;
+
+        setIntegrations((prev) =>
+          prev.map((i) => {
+            if (i.id === id) return { ...i, ...updates, is_active: true };
+            if (i.category === category) return { ...i, is_active: false };
+            return i;
+          }),
+        );
+        toast({ title: "Succès", description: "Prestataire activé" });
+      } catch (error) {
+        console.error("Error activating integration exclusively:", error);
+        toast({
+          title: "Erreur",
+          description: getErrorMessage(error) || "Impossible d'activer ce prestataire",
+          variant: "destructive",
+        });
       }
-
-      const { error } = await supabase
-        .from("integration_credentials")
-        .update({ ...updates, is_active: true })
-        .eq("id", id);
-      if (error) throw error;
-
-      setIntegrations((prev) =>
-        prev.map((i) => {
-          if (i.id === id) return { ...i, ...updates, is_active: true };
-          if (i.category === category) return { ...i, is_active: false };
-          return i;
-        })
-      );
-      toast({ title: "Succès", description: "Prestataire activé" });
-    } catch (error) {
-      console.error("Error activating integration exclusively:", error);
-      toast({
-        title: "Erreur",
-        description: getErrorMessage(error) || "Impossible d'activer ce prestataire",
-        variant: "destructive",
-      });
-    }
-  }, [integrations, toast]);
+    },
+    [integrations, toast],
+  );
 
   useEffect(() => {
     fetchIntegrations();

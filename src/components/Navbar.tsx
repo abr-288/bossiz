@@ -33,13 +33,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import DarkModeToggle from "./DarkModeToggle";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { cn } from "@/lib/utils";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // État du menu mobile
@@ -58,8 +52,16 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   // Lien interne (SPA) ou externe (nouvel onglet) selon la cible
-  const ServiceLink = ({ to, className, onClick, children }: {
-    to: string; className?: string; onClick?: () => void; children: React.ReactNode;
+  const ServiceLink = ({
+    to,
+    className,
+    onClick,
+    children,
+  }: {
+    to: string;
+    className?: string;
+    onClick?: () => void;
+    children: React.ReactNode;
   }) => {
     if (to.startsWith("http")) {
       return (
@@ -100,8 +102,8 @@ const Navbar = () => {
   // Effet pour détecter le scroll et ajouter l'ombre
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Fermer le menu mobile lors de la navigation
@@ -114,7 +116,9 @@ const Navbar = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
       setIsLoggedIn(!!session);
     });
     return () => subscription.unsubscribe();
@@ -129,10 +133,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={cn(
-      "fixed top-0 left-0 right-0 z-header transition-all duration-slow ease-standard",
-      isScrolled ? "shadow-md" : "shadow-sm"
-    )}>
+    <nav
+      className={cn(
+        "fixed top-0 left-0 right-0 z-header transition-all duration-slow ease-standard",
+        isScrolled ? "shadow-md" : "shadow-sm",
+      )}
+    >
       {/* Main Bar - Upjunoo style: clean white with centered search */}
       <div className="bg-background border-b border-border">
         <div className="site-container">
@@ -157,9 +163,7 @@ const Navbar = () => {
               ) : (
                 <Logo variant="light" showWordmark={false} className="h-9 w-auto hidden dark:block" />
               )}
-              <span className="font-bold text-lg text-foreground hidden sm:inline">
-                {config.branding.siteName}
-              </span>
+              <span className="font-bold text-lg text-foreground hidden sm:inline">{config.branding.siteName}</span>
             </Link>
 
             {/* Central Search Bar - Upjunoo style */}
@@ -168,17 +172,21 @@ const Navbar = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder={t('hero.searchPlaceholder', 'Recherchez vols, hôtels, destinations...')}
+                  placeholder={t("hero.searchPlaceholder", "Recherchez vols, hôtels, destinations...")}
                   className="w-full h-9 pl-9 pr-20 rounded-full bg-muted/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all"
-                  onFocus={() => { window.location.href = 'https://vols.bossiz.com/'; }}
+                  onFocus={() => {
+                    window.location.href = "https://vols.bossiz.com/";
+                  }}
                   readOnly
                 />
                 <Button
                   size="sm"
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-7 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 text-xs px-3 font-medium"
-                  onClick={() => { window.location.href = 'https://vols.bossiz.com/'; }}
+                  onClick={() => {
+                    window.location.href = "https://vols.bossiz.com/";
+                  }}
                 >
-                  {t('common.search', 'Rechercher')}
+                  {t("common.search", "Rechercher")}
                 </Button>
               </div>
             </div>
@@ -187,7 +195,12 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center gap-1">
               {/* Support */}
               <Link to="/support">
-                <Button variant="ghost" size="sm" aria-label={t("nav.support")} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={t("nav.support")}
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg"
+                >
                   <HelpCircle className="w-4 h-4" />
                 </Button>
               </Link>
@@ -201,7 +214,9 @@ const Navbar = () => {
                     className="gap-1.5 rounded-full text-sm font-medium"
                   >
                     {isBusinessMode ? <ArrowLeftRight className="w-4 h-4" /> : <Briefcase className="w-4 h-4" />}
-                    <span className="hidden xl:inline">{isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}</span>
+                    <span className="hidden xl:inline">
+                      {isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}
+                    </span>
                   </Button>
                 </Link>
               )}
@@ -277,7 +292,10 @@ const Navbar = () => {
               <DarkModeToggle variant="compact" className="text-muted-foreground" />
               <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <SheetTrigger asChild>
-                  <button className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors" aria-label={t("ux.nav.menu")}>
+                  <button
+                    className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+                    aria-label={t("ux.nav.menu")}
+                  >
                     <Menu className="w-5 h-5" />
                   </button>
                 </SheetTrigger>
@@ -292,17 +310,26 @@ const Navbar = () => {
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                           {t("nav.myAccount")}
                         </p>
-                        <Link to="/account" onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+                        <Link
+                          to="/account"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                        >
                           <span className="font-medium">{t("nav.profile")}</span>
                         </Link>
-                        <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                        >
                           <span className="font-medium">{t("nav.dashboard")}</span>
                         </Link>
                         {isAdmin && (
-                          <Link to="/admin" onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+                          <Link
+                            to="/admin"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                          >
                             <span className="font-medium text-primary">{t("nav.admin")}</span>
                           </Link>
                         )}
@@ -312,7 +339,9 @@ const Navbar = () => {
                             onClick={() => setIsMenuOpen(false)}
                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
                           >
-                            <span className="font-medium text-secondary">{isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}</span>
+                            <span className="font-medium text-secondary">
+                              {isBusinessMode ? t("ux.nav.personalMode") : t("ux.nav.businessMode")}
+                            </span>
                           </Link>
                         )}
                       </div>
@@ -337,7 +366,7 @@ const Navbar = () => {
                             "flex items-center gap-3 p-3 rounded-lg transition-colors",
                             isActive(to)
                               ? "bg-secondary/10 text-secondary font-medium"
-                              : "hover:bg-muted text-foreground"
+                              : "hover:bg-muted text-foreground",
                           )}
                         >
                           <span>{label}</span>
@@ -345,8 +374,11 @@ const Navbar = () => {
                       ))}
                     </div>
 
-                    <Link to="/support" onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+                    <Link
+                      to="/support"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                    >
                       <span className="font-medium">{t("nav.support")}</span>
                     </Link>
 
@@ -384,7 +416,7 @@ const Navbar = () => {
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-base ease-standard",
                   isActive(to)
                     ? "bg-secondary/15 text-secondary border border-secondary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
                 )}
               >
                 {label}
@@ -398,7 +430,7 @@ const Navbar = () => {
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-base ease-standard",
                     moreServiceLinks.some(({ to }) => isActive(to))
                       ? "bg-secondary/15 text-secondary border border-secondary/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
                   )}
                 >
                   {t("nav.others")}
@@ -409,7 +441,7 @@ const Navbar = () => {
                 {moreServiceLinks.map(({ to, label }) => (
                   <DropdownMenuItem key={to} asChild>
                     <ServiceLink to={to} className="flex items-center gap-2 cursor-pointer">
-                            {label}
+                      {label}
                     </ServiceLink>
                   </DropdownMenuItem>
                 ))}

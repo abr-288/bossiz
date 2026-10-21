@@ -38,13 +38,36 @@ export function ImageGalleryField({ label, hint, folder, value, onChange, max }:
                 </span>
               )}
               <div className="absolute inset-x-0 bottom-0 flex justify-between bg-background/80 p-0.5">
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" aria-label="Déplacer à gauche" disabled={index === 0} onClick={() => move(index, -1)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Déplacer à gauche"
+                  disabled={index === 0}
+                  onClick={() => move(index, -1)}
+                >
                   <ArrowLeft className="h-3 w-3" />
                 </Button>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" aria-label="Retirer la photo" onClick={() => onChange(value.filter((_, i) => i !== index))}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Retirer la photo"
+                  onClick={() => onChange(value.filter((_, i) => i !== index))}
+                >
                   <X className="h-3 w-3 text-destructive" />
                 </Button>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" aria-label="Déplacer à droite" disabled={index === value.length - 1} onClick={() => move(index, 1)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Déplacer à droite"
+                  disabled={index === value.length - 1}
+                  onClick={() => move(index, 1)}
+                >
                   <ArrowRight className="h-3 w-3" />
                 </Button>
               </div>

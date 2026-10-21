@@ -24,7 +24,7 @@ type AdminBooking = Database["public"]["Tables"]["bookings"]["Row"] & {
 };
 type AdminPassenger = Database["public"]["Tables"]["passengers"]["Row"];
 type AdminPayment = Database["public"]["Tables"]["payments"]["Row"];
-const errorMessage = (error: unknown, fallback: string) => error instanceof Error ? error.message : fallback;
+const errorMessage = (error: unknown, fallback: string) => (error instanceof Error ? error.message : fallback);
 
 const bookingStatusBadge = (status: string) => <BookingStatusBadge status={status} />;
 const paymentStatusBadge = (status: string) => <PaymentStatusBadge status={status} />;
@@ -79,7 +79,7 @@ const AdminBookings = () => {
         (b) =>
           b.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           b.customer_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          b.external_ref?.toLowerCase().includes(searchTerm.toLowerCase())
+          b.external_ref?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -124,11 +124,7 @@ const AdminBookings = () => {
 
   const refreshAfterAction = async (bookingId: string) => {
     await fetchBookings();
-    const { data } = await supabase
-      .from("bookings")
-      .select("*, services(name, type)")
-      .eq("id", bookingId)
-      .single();
+    const { data } = await supabase.from("bookings").select("*, services(name, type)").eq("id", bookingId).single();
     if (data) {
       setSelectedBooking(data as AdminBooking);
       setPendingStatus(data.status);
@@ -230,9 +226,7 @@ const AdminBookings = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{t("ux.bo.bookingManagement")}</h1>
-            <p className="text-muted-foreground">
-              {filteredBookings.length} réservation(s) trouvée(s)
-            </p>
+            <p className="text-muted-foreground">{filteredBookings.length} réservation(s) trouvée(s)</p>
           </div>
           <ExportButtons data={filteredBookings} filename="reservations" />
         </div>
@@ -303,19 +297,19 @@ const AdminBookings = () => {
               {filteredBookings.map((booking) => {
                 const m = margin(booking);
                 return (
-                  <TableRow key={booking.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openDetail(booking)}>
+                  <TableRow
+                    key={booking.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => openDetail(booking)}
+                  >
                     <TableCell>
                       <div>
                         <p className="font-medium">{booking.customer_name}</p>
                         <p className="text-sm text-muted-foreground">{booking.customer_email}</p>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {booking.services?.name || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(booking.start_date).toLocaleDateString("fr-FR")}
-                    </TableCell>
+                    <TableCell>{booking.services?.name || "N/A"}</TableCell>
+                    <TableCell>{new Date(booking.start_date).toLocaleDateString("fr-FR")}</TableCell>
                     <TableCell className="font-medium">
                       <Price amount={Number(booking.total_price)} fromCurrency={booking.currency} />
                     </TableCell>
@@ -324,11 +318,17 @@ const AdminBookings = () => {
                     </TableCell>
                     <TableCell>{bookingStatusBadge(booking.status)}</TableCell>
                     <TableCell>{paymentStatusBadge(booking.payment_status)}</TableCell>
-                    <TableCell>
-                      {booking.external_ref || "-"}
-                    </TableCell>
+                    <TableCell>{booking.external_ref || "-"}</TableCell>
                     <TableCell className="text-right">
-                      <Button aria-label={t("ux.bo.viewDetails")} variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); openDetail(booking); }}>
+                      <Button
+                        aria-label={t("ux.bo.viewDetails")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDetail(booking);
+                        }}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -368,14 +368,18 @@ const AdminBookings = () => {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t("ux.bo.amountCharged")}</p>
-                    <p className="font-medium"><Price amount={Number(selectedBooking.total_price)} fromCurrency={selectedBooking.currency} /></p>
+                    <p className="font-medium">
+                      <Price amount={Number(selectedBooking.total_price)} fromCurrency={selectedBooking.currency} />
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t("ux.bo.margin")}</p>
                     <p className="font-medium text-success">
-                      {margin(selectedBooking) !== null
-                        ? <Price amount={margin(selectedBooking)!} fromCurrency={selectedBooking.currency} />
-                        : t("ux.bo.supplierCostUnknown")}
+                      {margin(selectedBooking) !== null ? (
+                        <Price amount={margin(selectedBooking)!} fromCurrency={selectedBooking.currency} />
+                      ) : (
+                        t("ux.bo.supplierCostUnknown")
+                      )}
                     </p>
                   </div>
                   <div>
@@ -384,7 +388,9 @@ const AdminBookings = () => {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t("ux.bo.created")}</p>
-                    <p className="font-medium">{format(new Date(selectedBooking.created_at), "dd MMM yyyy HH:mm", { locale: fr })}</p>
+                    <p className="font-medium">
+                      {format(new Date(selectedBooking.created_at), "dd MMM yyyy HH:mm", { locale: fr })}
+                    </p>
                   </div>
                 </div>
 
@@ -435,7 +441,9 @@ const AdminBookings = () => {
                     <div className="space-y-2">
                       {detailPassengers.map((p) => (
                         <div key={p.id} className="text-sm bg-muted/50 rounded-lg p-3">
-                          <p className="font-medium">{p.first_name} {p.last_name}</p>
+                          <p className="font-medium">
+                            {p.first_name} {p.last_name}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             {p.document_type || "Document"} {p.document_number ? `· ${p.document_number}` : ""}
                           </p>
@@ -454,7 +462,10 @@ const AdminBookings = () => {
 
                   {selectedBooking.payment_status === "partially_paid" && (
                     <div className="rounded-md border p-3 space-y-2">
-                      <p className="text-sm">{t("ux.bo.remainingBalance")} <Price amount={selectedBooking.balance_due || 0} fromCurrency={selectedBooking.currency} /></p>
+                      <p className="text-sm">
+                        {t("ux.bo.remainingBalance")}{" "}
+                        <Price amount={selectedBooking.balance_due || 0} fromCurrency={selectedBooking.currency} />
+                      </p>
                       <Button className="w-full" disabled={actionLoading !== null} onClick={handleSettleOnSite}>
                         {actionLoading === "settle" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                         {t("ux.bo.confirmSitePayment")}
@@ -484,17 +495,23 @@ const AdminBookings = () => {
                     </Button>
                   </div>
 
-                  {selectedBooking.services?.type === "flight" && selectedBooking.status !== "confirmed" && selectedBooking.payment_status === "paid" && (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={actionLoading !== null}
-                      onClick={handleRelaunchPnr}
-                    >
-                      {actionLoading === "pnr" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
-                      {t("ux.bo.retryTicketIssuancePnr")}
-                    </Button>
-                  )}
+                  {selectedBooking.services?.type === "flight" &&
+                    selectedBooking.status !== "confirmed" &&
+                    selectedBooking.payment_status === "paid" && (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        disabled={actionLoading !== null}
+                        onClick={handleRelaunchPnr}
+                      >
+                        {actionLoading === "pnr" ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                        )}
+                        {t("ux.bo.retryTicketIssuancePnr")}
+                      </Button>
+                    )}
 
                   {selectedBooking.payment_status === "paid" && (
                     <Button
@@ -503,7 +520,11 @@ const AdminBookings = () => {
                       disabled={actionLoading !== null}
                       onClick={handleRefund}
                     >
-                      {actionLoading === "refund" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Undo2 className="h-4 w-4 mr-2" />}
+                      {actionLoading === "refund" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Undo2 className="h-4 w-4 mr-2" />
+                      )}
                       {t("ux.bo.refundCancel")}
                     </Button>
                   )}

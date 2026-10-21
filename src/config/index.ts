@@ -1,2 +1,2 @@
 // Export des configurations
-export * from './appConfig';
+export * from "./appConfig";

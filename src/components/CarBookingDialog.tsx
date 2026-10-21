@@ -55,19 +55,29 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     setLicenseFrontPath("");
     setLicenseBackPath("");
     setApplicantPhotoPath("");
-    supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle()
+    supabase
+      .from("site_config")
+      .select("config_value")
+      .eq("config_key", "booking_payment_policy")
+      .maybeSingle()
       .then(({ data }) => {
-        const policy = data?.config_value as { depositPercent?: number; depositEnabled?: boolean; enabledServiceTypes?: string[] } | null;
+        const policy = data?.config_value as {
+          depositPercent?: number;
+          depositEnabled?: boolean;
+          enabledServiceTypes?: string[];
+        } | null;
         setDepositPercent(Math.min(99, Math.max(1, Number(policy?.depositPercent) || 30)));
         const available = policy?.depositEnabled !== false && (policy?.enabledServiceTypes || []).includes("car");
         setDepositAvailable(available);
         if (!available) setPaymentPlan("full");
       });
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         onOpenChange(false);
-        toast.error(t('booking.validation.mustBeLoggedIn'));
+        toast.error(t("booking.validation.mustBeLoggedIn"));
         navigate("/auth");
       }
     })();
@@ -101,7 +111,9 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
         notes: notes || null,
       });
     } catch (error) {
-      toast.error((error instanceof ZodError ? error.errors[0]?.message : undefined) || t('booking.validation.checkInfo'));
+      toast.error(
+        (error instanceof ZodError ? error.errors[0]?.message : undefined) || t("booking.validation.checkInfo"),
+      );
       return;
     }
 
@@ -110,16 +122,20 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error(t('booking.validation.mustBeLoggedIn'));
+      toast.error(t("booking.validation.mustBeLoggedIn"));
       navigate("/auth");
       return;
     }
 
     if (!car.offerSignature || !car.offerExpiresAt) {
-      toast.error(t('booking.validation.offerExpired', "Cette offre n'est plus valide, veuillez relancer une recherche."));
+      toast.error(
+        t("booking.validation.offerExpired", "Cette offre n'est plus valide, veuillez relancer une recherche."),
+      );
       return;
     }
 
@@ -129,7 +145,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
     const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 
     if (days < 1) {
-      toast.error(t('booking.validation.dropoffAfterPickup'));
+      toast.error(t("booking.validation.dropoffAfterPickup"));
       return;
     }
 
@@ -140,7 +156,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
       service_id: car.source === "partner" ? car.id : undefined,
       service_type: "car",
       service_name: car.name,
-      service_description: `${car.category} - ${car.transmission || 'Automatique'} - ${car.seats || 5} places`,
+      service_description: `${car.category} - ${car.transmission || "Automatique"} - ${car.seats || 5} places`,
       location: pickupLocation,
       start_date: pickupDate,
       end_date: dropoffDate,
@@ -180,7 +196,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
         <SheetHeader>
           <SheetTitle>Réserver {car.name}</SheetTitle>
           <SheetDescription>
-            {car.category} - {car.transmission || 'Automatique'} - {car.seats || 5} places
+            {car.category} - {car.transmission || "Automatique"} - {car.seats || 5} places
           </SheetDescription>
         </SheetHeader>
 
@@ -189,13 +205,23 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
             {depositAvailable && (
               <div className="space-y-2 rounded-lg border p-4">
                 <h3 className="font-semibold">{t("ux.carDialog.choosePayment")}</h3>
-                <button type="button" onClick={() => setPaymentPlan("full")} className={`w-full rounded-md border p-3 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : ""}`}>
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan("full")}
+                  className={`w-full rounded-md border p-3 text-left ${paymentPlan === "full" ? "border-primary bg-primary/5" : ""}`}
+                >
                   {t("ux.carDialog.payFullOnline")}
                 </button>
-                <button type="button" onClick={() => setPaymentPlan("deposit")} className={`w-full rounded-md border p-3 text-left ${paymentPlan === "deposit" ? "border-primary bg-primary/5" : ""}`}>
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan("deposit")}
+                  className={`w-full rounded-md border p-3 text-left ${paymentPlan === "deposit" ? "border-primary bg-primary/5" : ""}`}
+                >
                   Verser {depositPercent} % d’acompte en ligne, puis régler le solde sur place
                 </button>
-                {paymentPlan === "deposit" && <p className="text-xs text-muted-foreground">{t("ux.carDialog.depositNote")}</p>}
+                {paymentPlan === "deposit" && (
+                  <p className="text-xs text-muted-foreground">{t("ux.carDialog.depositNote")}</p>
+                )}
               </div>
             )}
             {/* Informations de prise en charge */}
@@ -204,16 +230,11 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
               <UnifiedFormField
                 label={t("ux.carDialog.pickupPlace")}
                 name="pickupLocation"
-                placeholder={t('booking.dialog.car.locationPlaceholder')}
+                placeholder={t("booking.dialog.car.locationPlaceholder")}
                 required
               />
               <div className="grid grid-cols-2 gap-4">
-                <UnifiedFormField
-                  label={t("ux.carDialog.pickupDate")}
-                  name="pickupDate"
-                  type="date"
-                  required
-                />
+                <UnifiedFormField label={t("ux.carDialog.pickupDate")} name="pickupDate" type="date" required />
                 <UnifiedFormField
                   label={t("ux.carDialog.pickupTime")}
                   name="pickupTime"
@@ -230,16 +251,11 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
               <UnifiedFormField
                 label={t("ux.carDialog.returnPlace")}
                 name="dropoffLocation"
-                placeholder={t('booking.dialog.car.locationPlaceholder')}
+                placeholder={t("booking.dialog.car.locationPlaceholder")}
                 required
               />
               <div className="grid grid-cols-2 gap-4">
-                <UnifiedFormField
-                  label={t("ux.carDialog.returnDate")}
-                  name="dropoffDate"
-                  type="date"
-                  required
-                />
+                <UnifiedFormField label={t("ux.carDialog.returnDate")} name="dropoffDate" type="date" required />
                 <UnifiedFormField
                   label={t("ux.carDialog.returnTime")}
                   name="dropoffTime"
@@ -253,7 +269,7 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
             {/* Driver Info */}
             <div className="space-y-4 pt-4 border-t">
               <h3 className="font-semibold text-lg">{t("ux.carDialog.driverSection")}</h3>
-              
+
               <UnifiedFormField
                 label={t("ux.carDialog.fullName")}
                 name="customerName"
@@ -310,12 +326,12 @@ export const CarBookingDialog = ({ open, onOpenChange, car }: CarBookingDialogPr
                 label={t("ux.carDialog.extraInfo")}
                 name="notes"
                 type="textarea"
-                placeholder={t('booking.dialog.car.specialRequestsPlaceholder')}
+                placeholder={t("booking.dialog.car.specialRequestsPlaceholder")}
               />
             </div>
 
             <UnifiedSubmitButton variant="booking" loading={loading} fullWidth>
-              {t('booking.summary.confirm')}
+              {t("booking.summary.confirm")}
             </UnifiedSubmitButton>
           </div>
         </UnifiedForm>

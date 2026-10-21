@@ -744,7 +744,10 @@
         "payment": { "title": "Payment & Billing", "description": "Payment methods, invoices and transactions" },
         "refunds": { "title": "Refunds & Cancellations", "description": "Request a refund or cancel a trip" },
         "baggage": { "title": "Baggage", "description": "Allowance, extra baggage and prohibited items" },
-        "children": { "title": "Travelling with children", "description": "Fares, conditions and minor travel support" },
+        "children": {
+          "title": "Travelling with children",
+          "description": "Fares, conditions and minor travel support"
+        },
         "documents": { "title": "Travel documents", "description": "Passport, visa and required ID" },
         "delays": { "title": "Flight delays & cancellations", "description": "What to do if your flight is disrupted" }
       },
@@ -908,7 +911,11 @@
         "phone": { "title": "Phone", "description": "Support available 24/7" },
         "whatsapp": { "title": "WhatsApp", "description": "Fast response, seven days a week" },
         "email": { "title": "Email", "description": "Response within 24h" },
-        "chat": { "title": "Live Chat", "description": "Immediate response, assistant available around the clock", "cta": "Start a conversation" }
+        "chat": {
+          "title": "Live Chat",
+          "description": "Immediate response, assistant available around the clock",
+          "cta": "Start a conversation"
+        }
       }
     },
     "stays": {
@@ -1442,65 +1449,33 @@
     "seasons": {
       "spring": {
         "name": "Spring",
-        "months": [
-          "March",
-          "April",
-          "May"
-        ],
+        "months": ["March", "April", "May"],
         "description": "Mild climate and blooming nature",
-        "advantages": [
-          "Pleasant temperatures",
-          "Fewer tourists",
-          "Good prices"
-        ],
+        "advantages": ["Pleasant temperatures", "Fewer tourists", "Good prices"],
         "temperature": "15-25°C",
         "rainfall": "Moderate"
       },
       "summer": {
         "name": "Summer",
-        "months": [
-          "June",
-          "July",
-          "August"
-        ],
+        "months": ["June", "July", "August"],
         "description": "High season with lots of activities",
-        "advantages": [
-          "Many events",
-          "Active nightlife",
-          "All services open"
-        ],
+        "advantages": ["Many events", "Active nightlife", "All services open"],
         "temperature": "25-35°C",
         "rainfall": "Low"
       },
       "autumn": {
         "name": "Autumn",
-        "months": [
-          "September",
-          "October",
-          "November"
-        ],
+        "months": ["September", "October", "November"],
         "description": "Peaceful and authentic atmosphere",
-        "advantages": [
-          "Mild temperatures",
-          "Beautiful colors",
-          "Reduced rates"
-        ],
+        "advantages": ["Mild temperatures", "Beautiful colors", "Reduced rates"],
         "temperature": "15-25°C",
         "rainfall": "Moderate to high"
       },
       "winter": {
         "name": "Winter",
-        "months": [
-          "December",
-          "January",
-          "February"
-        ],
+        "months": ["December", "January", "February"],
         "description": "Calm and cultural discovery",
-        "advantages": [
-          "Few tourists",
-          "Very attractive prices",
-          "Local authenticity"
-        ],
+        "advantages": ["Few tourists", "Very attractive prices", "Local authenticity"],
         "temperature": "5-15°C",
         "rainfall": "High"
       }
@@ -1801,162 +1776,82 @@
       "voyage": {
         "title": "Travel & Stays",
         "description": "Complete organization of your trips: flights, accommodation and tailor-made itineraries.",
-        "features": [
-          "Flight & hotel bookings",
-          "Personalized itineraries",
-          "VIP airport welcome"
-        ]
+        "features": ["Flight & hotel bookings", "Personalized itineraries", "VIP airport welcome"]
       },
       "immobilier": {
         "title": "Real Estate",
         "description": "Search, rental management and monitoring of your real estate properties with complete peace of mind.",
-        "features": [
-          "Property search",
-          "Rental management",
-          "Administrative follow-up"
-        ]
+        "features": ["Property search", "Rental management", "Administrative follow-up"]
       },
       "transport": {
         "title": "Private Transport",
         "description": "Private chauffeurs, prestige vehicles and transfers available at all hours.",
-        "features": [
-          "Private chauffeur",
-          "Prestige vehicles",
-          "24/7 transfers"
-        ]
+        "features": ["Private chauffeur", "Prestige vehicles", "24/7 transfers"]
       },
       "evenementiel": {
         "title": "Events",
         "description": "Design and organization of exceptional private or professional events.",
-        "features": [
-          "Private events",
-          "Seminars & receptions",
-          "Full coordination"
-        ]
+        "features": ["Private events", "Seminars & receptions", "Full coordination"]
       }
     },
     "servicesSN": {
       "voyage": {
-        "features": [
-          "Flights & hotels in Senegal",
-          "Gorée & Saint-Louis excursions",
-          "VIP welcome in Dakar"
-        ]
+        "features": ["Flights & hotels in Senegal", "Gorée & Saint-Louis excursions", "VIP welcome in Dakar"]
       },
       "immobilier": {
-        "features": [
-          "Property search in Dakar",
-          "Rental management",
-          "Administrative follow-up"
-        ]
+        "features": ["Property search in Dakar", "Rental management", "Administrative follow-up"]
       },
       "transport": {
-        "features": [
-          "Private chauffeur",
-          "Prestige vehicles",
-          "Dakar Rally transfers"
-        ]
+        "features": ["Private chauffeur", "Prestige vehicles", "Dakar Rally transfers"]
       },
       "evenementiel": {
-        "features": [
-          "Private events",
-          "Saly excursions",
-          "Full coordination"
-        ]
+        "features": ["Private events", "Saly excursions", "Full coordination"]
       }
     },
     "additionalServices": {
       "personnel": {
         "title": "Personal Assistant",
-        "items": [
-          "Schedule management",
-          "Errands & procedures",
-          "Dedicated assistance"
-        ]
+        "items": ["Schedule management", "Errands & procedures", "Dedicated assistance"]
       },
       "quotidien": {
         "title": "Daily Assistance",
-        "items": [
-          "Housekeeping & maintenance",
-          "Bill management",
-          "Supplier coordination"
-        ]
+        "items": ["Housekeeping & maintenance", "Bill management", "Supplier coordination"]
       },
       "bien-etre": {
         "title": "Wellness",
-        "items": [
-          "Spa & massages",
-          "Personal trainer",
-          "Health appointments"
-        ]
+        "items": ["Spa & massages", "Personal trainer", "Health appointments"]
       },
       "loisirs": {
         "title": "Leisure",
-        "items": [
-          "Cultural bookings",
-          "Tailor-made activities",
-          "VIP access"
-        ]
+        "items": ["Cultural bookings", "Tailor-made activities", "VIP access"]
       },
       "gastronomie": {
         "title": "Gastronomy",
-        "items": [
-          "Private chef",
-          "Restaurant reservations",
-          "Tailored wine cellar"
-        ]
+        "items": ["Private chef", "Restaurant reservations", "Tailored wine cellar"]
       },
       "shopping": {
         "title": "Shopping",
-        "items": [
-          "Personal shopper",
-          "Express delivery",
-          "Access to private boutiques"
-        ]
+        "items": ["Personal shopper", "Express delivery", "Access to private boutiques"]
       }
     },
     "additionalServicesSN": {
       "personnel": {
-        "items": [
-          "Schedule management",
-          "Errands & procedures",
-          "Dedicated assistance in Dakar"
-        ]
+        "items": ["Schedule management", "Errands & procedures", "Dedicated assistance in Dakar"]
       },
       "quotidien": {
-        "items": [
-          "Housekeeping & maintenance",
-          "Bill management",
-          "Supplier coordination"
-        ]
+        "items": ["Housekeeping & maintenance", "Bill management", "Supplier coordination"]
       },
       "bien-etre": {
-        "items": [
-          "Spa & massages",
-          "Personal trainer",
-          "Health appointments"
-        ]
+        "items": ["Spa & massages", "Personal trainer", "Health appointments"]
       },
       "loisirs": {
-        "items": [
-          "Gorée & Saint-Louis excursions",
-          "Tailor-made activities",
-          "VIP access"
-        ]
+        "items": ["Gorée & Saint-Louis excursions", "Tailor-made activities", "VIP access"]
       },
       "gastronomie": {
-        "items": [
-          "Private chef",
-          "Restaurant reservations",
-          "Local gastronomy discovery"
-        ]
+        "items": ["Private chef", "Restaurant reservations", "Local gastronomy discovery"]
       },
       "shopping": {
-        "items": [
-          "Personal shopper",
-          "Express delivery",
-          "Access to local markets & boutiques"
-        ]
+        "items": ["Personal shopper", "Express delivery", "Access to local markets & boutiques"]
       }
     },
     "plans": {

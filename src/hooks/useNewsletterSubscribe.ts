@@ -10,17 +10,17 @@ export const useNewsletterSubscribe = () => {
     setError(null);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('newsletter-subscribe', {
-        body: { email }
+      const { data, error: functionError } = await supabase.functions.invoke("newsletter-subscribe", {
+        body: { email },
       });
 
       if (functionError) throw functionError;
-      
+
       return data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
       setError(errorMessage);
-      console.error('Newsletter subscription error:', err);
+      console.error("Newsletter subscription error:", err);
       return null;
     } finally {
       setLoading(false);

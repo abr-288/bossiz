@@ -73,7 +73,9 @@ const VerifyMember = () => {
               ) : (
                 <XCircle className="h-14 w-14 mx-auto text-destructive" />
               )}
-              <p className={result!.is_valid ? "text-2xl font-bold text-success" : "text-2xl font-bold text-destructive"}>
+              <p
+                className={result!.is_valid ? "text-2xl font-bold text-success" : "text-2xl font-bold text-destructive"}
+              >
                 {result!.is_valid ? t("ux.memberCard.valid") : t("ux.memberCard.invalid")}
               </p>
               <dl className="mx-auto max-w-xs space-y-2 text-sm text-left">

@@ -14,21 +14,11 @@ export function ExportButtons({ data, filename }: ExportButtonsProps) {
 
   return (
     <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => exportToCSV(data, filename)}
-        className="gap-2"
-      >
+      <Button variant="outline" size="sm" onClick={() => exportToCSV(data, filename)} className="gap-2">
         <Download className="h-4 w-4" />
         {t("ux.bo.exportCsv2")}
       </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => exportToPDF(data, filename)}
-        className="gap-2"
-      >
+      <Button variant="outline" size="sm" onClick={() => exportToPDF(data, filename)} className="gap-2">
         <FileText className="h-4 w-4" />
         {t("ux.bo.exportPdf")}
       </Button>

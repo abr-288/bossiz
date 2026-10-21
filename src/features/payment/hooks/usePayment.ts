@@ -20,7 +20,7 @@ export const usePayment = () => {
   const processPayment = async (
     bookingId: string, // ID de la réservation
     booking: { total_price: number }, // Données de la réservation
-    paymentData: PaymentInput // Données de paiement
+    paymentData: PaymentInput, // Données de paiement
   ) => {
     setValidationErrors({});
     setGeneralError(null);
@@ -31,11 +31,11 @@ export const usePayment = () => {
     if (validation.success === false) {
       setValidationErrors(validation.errors);
       toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
+        title: t("validation.errorTitle"),
+        description: t("validation.errorDescription"),
         variant: "destructive",
       });
-      
+
       // Focus sur le premier champ en erreur
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.focus();
@@ -54,10 +54,10 @@ export const usePayment = () => {
     const timeoutId = setTimeout(() => {
       processingRef.current = false;
       setProcessing(false);
-      setGeneralError(t('payment.errors.timeoutDescription'));
+      setGeneralError(t("payment.errors.timeoutDescription"));
       toast({
-        title: t('payment.errors.timeoutTitle'),
-        description: t('payment.errors.timeoutDescription'),
+        title: t("payment.errors.timeoutTitle"),
+        description: t("payment.errors.timeoutDescription"),
         variant: "destructive",
       });
     }, 30000);
@@ -121,12 +121,12 @@ export const usePayment = () => {
     } catch (error) {
       clearTimeout(timeoutId);
       console.error("Payment error:", error);
-      
+
       const userMessage = getUserFriendlyErrorMessage(error);
       setGeneralError(userMessage);
-      
+
       toast({
-        title: t('payment.errors.paymentErrorTitle'),
+        title: t("payment.errors.paymentErrorTitle"),
         description: userMessage,
         variant: "destructive",
       });

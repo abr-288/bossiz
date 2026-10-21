@@ -2,7 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Hotel, Car, Plane, Train, Compass, ChevronDown } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import heroSlide1 from "@/assets/hero-slide-1.webp";
 import heroSlide2 from "@/assets/hero-slide-2.webp";
@@ -52,7 +57,7 @@ const HeroSection = () => {
 
   const heroSlides = useMemo(() => {
     if (config.hero.slides && config.hero.slides.length > 0) {
-      return config.hero.slides.map(slide => slide.image);
+      return config.hero.slides.map((slide) => slide.image);
     }
     return DEFAULT_SLIDES;
   }, [config.hero.slides]);
@@ -78,12 +83,7 @@ const HeroSection = () => {
             style={{ transition: "opacity 1.2s ease, transform 6s ease-out" }}
             aria-hidden={index !== currentSlide}
           >
-            <img
-              src={slide}
-              alt=""
-              className="w-full h-full object-cover"
-              loading={index === 0 ? "eager" : "lazy"}
-            />
+            <img src={slide} alt="" className="w-full h-full object-cover" loading={index === 0 ? "eager" : "lazy"} />
           </div>
         ))}
         {/* Golden Hour overlay: navy gradient + signature gold glow + horizon
@@ -98,13 +98,16 @@ const HeroSection = () => {
           style={{ top: "60%", background: "linear-gradient(90deg, transparent, hsl(var(--gold) / 0.7), transparent)" }}
         />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand/85 via-brand/15 to-transparent" />
-        
+
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="font-display text-3xl sm:text-4xl md:text-6xl font-extrabold text-white mb-3 md:mb-5 drop-shadow-2xl tracking-tight text-balance animate-slide-up-fade">
-            {(isFrench && config.hero.title) || t('hero.title')}
+            {(isFrench && config.hero.title) || t("hero.title")}
           </h1>
-          <p className="text-base md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg font-medium leading-relaxed animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
-            {(isFrench && config.hero.subtitle) || t('hero.subtitle')}
+          <p
+            className="text-base md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg font-medium leading-relaxed animate-slide-up-fade"
+            style={{ animationDelay: "0.2s" }}
+          >
+            {(isFrench && config.hero.subtitle) || t("hero.subtitle")}
           </p>
         </div>
 
@@ -157,7 +160,9 @@ const HeroSection = () => {
                     )}
                     aria-label={t("hero.moreSearches", "Autres recherches")}
                   >
-                    <span className="whitespace-nowrap">{activeMoreTab ? t(activeMoreTab.labelKey) : t("hero.more", "Plus")}</span>
+                    <span className="whitespace-nowrap">
+                      {activeMoreTab ? t(activeMoreTab.labelKey) : t("hero.more", "Plus")}
+                    </span>
                     <ChevronDown className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </DropdownMenuTrigger>

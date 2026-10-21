@@ -4,7 +4,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle, ArrowRight, CalendarDays, CheckCircle2, CreditCard, Loader2, MapPin, ShieldCheck, Users } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  CreditCard,
+  Loader2,
+  MapPin,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -51,9 +61,10 @@ export default function Payment() {
     (points: number, discountXof: number) => setSmiles({ points, discountXof }),
     [],
   );
-  const amountToPay = booking?.payment_plan === "deposit" && Number(booking.balance_due) > 0
-    ? Number(booking.amount_due_now)
-    : Number(booking?.total_price || 0);
+  const amountToPay =
+    booking?.payment_plan === "deposit" && Number(booking.balance_due) > 0
+      ? Number(booking.amount_due_now)
+      : Number(booking?.total_price || 0);
 
   useEffect(() => {
     if (bookingId) {
@@ -65,7 +76,9 @@ export default function Payment() {
 
   const loadBooking = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: t("ux.payment.notAuthenticated"),
@@ -219,7 +232,7 @@ export default function Payment() {
       // Gestion détaillée des erreurs de l'edge function
       if (error) {
         console.error("Erreur edge function:", error);
-        
+
         // Extraire le message d'erreur
         throw new Error(await getEdgeFunctionErrorMessage(error, t("ux.payment.processingError")));
       }
@@ -249,21 +262,20 @@ export default function Payment() {
       setTimeout(() => {
         window.location.href = data.payment_url;
       }, 500);
-      
     } catch (error: unknown) {
       clearTimeout(timeoutId);
-      
+
       console.error("Erreur de paiement:", error);
-      
+
       // Déterminer le message d'erreur approprié
       let userMessage = t("ux.payment.unexpected");
-      
+
       if (error instanceof Error) {
         userMessage = error.message;
-      } else if (typeof error === 'string') {
+      } else if (typeof error === "string") {
         userMessage = error;
       }
-      
+
       // Messages spécifiques pour certaines erreurs
       if (userMessage.includes("401") || userMessage.includes("Non autorisé") || userMessage.includes("Unauthorized")) {
         userMessage = t("ux.payment.sessionExpired");
@@ -274,9 +286,9 @@ export default function Payment() {
       } else if (userMessage.includes("502") || userMessage.includes("503")) {
         userMessage = t("ux.payment.unavailable");
       }
-      
+
       setGeneralError(userMessage);
-      
+
       toast({
         title: t("ux.payment.error"),
         description: userMessage,
@@ -299,7 +311,14 @@ export default function Payment() {
   }
 
   return (
-    <ErrorBoundary fallback={<ErrorFallback title={t('payment.errors.paymentErrorTitle')} description={t('payment.errors.loadPageDescription')} />}>
+    <ErrorBoundary
+      fallback={
+        <ErrorFallback
+          title={t("payment.errors.paymentErrorTitle")}
+          description={t("payment.errors.loadPageDescription")}
+        />
+      }
+    >
       <div className="min-h-screen flex flex-col pt-16">
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
@@ -311,12 +330,8 @@ export default function Payment() {
               <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">
                 {t("ux.payment.eyebrow")}
               </p>
-              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-                {t("ux.payment.title")}
-              </h1>
-              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-                {t("ux.payment.intro")}
-              </p>
+              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("ux.payment.title")}</h1>
+              <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{t("ux.payment.intro")}</p>
             </div>
 
             {generalError && (
@@ -331,13 +346,9 @@ export default function Payment() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">{t("ux.payment.yourTrip")}</p>
-                    <h2 className="mt-1 text-2xl font-bold">
-                      {booking.services?.name || t("ux.payment.defaultName")}
-                    </h2>
+                    <h2 className="mt-1 text-2xl font-bold">{booking.services?.name || t("ux.payment.defaultName")}</h2>
                     {booking.services?.type && (
-                      <p className="mt-1 text-sm capitalize text-muted-foreground">
-                        {booking.services.type}
-                      </p>
+                      <p className="mt-1 text-sm capitalize text-muted-foreground">{booking.services.type}</p>
                     )}
                   </div>
                   <div className="rounded-full border bg-background/80 px-3 py-1 text-xs font-medium">
@@ -361,21 +372,23 @@ export default function Payment() {
                       </p>
                     </div>
                   </div>
-                  {booking.end_date && booking.end_date !== booking.start_date && booking.services?.type !== "flight" && (
-                    <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
-                      <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                      <div>
-                        <p className="text-xs text-muted-foreground">{t("ux.payment.endDate")}</p>
-                        <p className="mt-1 font-medium">
-                          {new Date(booking.end_date).toLocaleDateString(i18n.language, {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </p>
+                  {booking.end_date &&
+                    booking.end_date !== booking.start_date &&
+                    booking.services?.type !== "flight" && (
+                      <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
+                        <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">{t("ux.payment.endDate")}</p>
+                          <p className="mt-1 font-medium">
+                            {new Date(booking.end_date).toLocaleDateString(i18n.language, {
+                              day: "2-digit",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                   {booking.services?.location && (
                     <div className="flex gap-3 rounded-xl bg-muted/50 p-4">
                       <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
@@ -417,11 +430,15 @@ export default function Payment() {
                     <div className="mt-4 space-y-1 border-t pt-3 text-sm">
                       <div className="flex justify-between text-success">
                         <span>{t("ux.smiles.discountLine", { points: smiles.points })}</span>
-                        <span className="font-medium">−<Price amount={smiles.discountXof} fromCurrency="XOF" /></span>
+                        <span className="font-medium">
+                          −<Price amount={smiles.discountXof} fromCurrency="XOF" />
+                        </span>
                       </div>
                       <div className="flex justify-between text-base font-semibold">
                         <span>{t("ux.smiles.toPay")}</span>
-                        <span><Price amount={amountToPay - smiles.discountXof} fromCurrency="XOF" /></span>
+                        <span>
+                          <Price amount={amountToPay - smiles.discountXof} fromCurrency="XOF" />
+                        </span>
                       </div>
                     </div>
                   )}
@@ -441,16 +458,16 @@ export default function Payment() {
 
                 {booking.notes && (
                   <div className="rounded-xl border p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("ux.payment.note")}</p>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      {t("ux.payment.note")}
+                    </p>
                     <p className="mt-2 text-sm">{booking.notes}</p>
                   </div>
                 )}
 
                 <div className="flex gap-3 rounded-xl border border-success/30 bg-success/5 p-4">
                   <ShieldCheck className="h-5 w-5 shrink-0 text-success" />
-                  <p className="text-sm text-muted-foreground">
-                    {t("ux.payment.secureNote")}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{t("ux.payment.secureNote")}</p>
                 </div>
 
                 <Button onClick={handlePayment} disabled={processing} className="h-12 w-full text-base" size="lg">
@@ -466,15 +483,13 @@ export default function Payment() {
                     </>
                   )}
                 </Button>
-                <p className="text-center text-xs text-muted-foreground">
-                  {t("ux.payment.leaveNote")}
-                </p>
+                <p className="text-center text-xs text-muted-foreground">{t("ux.payment.leaveNote")}</p>
               </div>
             </Card>
           </div>
         </main>
-      <Footer />
-    </div>
-  </ErrorBoundary>
+        <Footer />
+      </div>
+    </ErrorBoundary>
   );
 }

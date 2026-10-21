@@ -54,10 +54,14 @@ export const UnifiedAutocomplete = ({
 
   const getIcon = (): LucideIcon => {
     switch (type) {
-      case "airport": return Plane;
-      case "city": return MapPin;
-      case "hotel": return Building2;
-      case "location": return MapPin;
+      case "airport":
+        return Plane;
+      case "city":
+        return MapPin;
+      case "hotel":
+        return Building2;
+      case "location":
+        return MapPin;
     }
   };
 
@@ -88,21 +92,30 @@ export const UnifiedAutocomplete = ({
       }
 
       const { data, error } = await supabase.functions.invoke(endpoint, {
-        body: { query }
+        body: { query },
       });
 
       if (error) throw error;
 
       // Suggestion brute des fonctions *-autocomplete (champs selon le type de recherche).
-      type RawSuggestion = { iata?: string; id?: string; code?: string; name?: string; city?: string; country?: string };
-      const formattedSuggestions: AutocompleteSuggestion[] = ((data?.suggestions || []) as RawSuggestion[]).map((s) => ({
-        id: s.iata || s.id || s.code || `${s.name}-${Math.random()}`,
-        name: s.name || s.city || "",
-        code: s.iata || s.code,
-        country: s.country,
-        city: s.city,
-        type
-      }));
+      type RawSuggestion = {
+        iata?: string;
+        id?: string;
+        code?: string;
+        name?: string;
+        city?: string;
+        country?: string;
+      };
+      const formattedSuggestions: AutocompleteSuggestion[] = ((data?.suggestions || []) as RawSuggestion[]).map(
+        (s) => ({
+          id: s.iata || s.id || s.code || `${s.name}-${Math.random()}`,
+          name: s.name || s.city || "",
+          code: s.iata || s.code,
+          country: s.country,
+          city: s.city,
+          type,
+        }),
+      );
 
       setSuggestions(formattedSuggestions);
     } catch (err) {
@@ -132,9 +145,7 @@ export const UnifiedAutocomplete = ({
   };
 
   const handleSelect = (suggestion: AutocompleteSuggestion) => {
-    const displayValue = suggestion.code 
-      ? `${suggestion.name} (${suggestion.code})`
-      : suggestion.name;
+    const displayValue = suggestion.code ? `${suggestion.name} (${suggestion.code})` : suggestion.name;
     onChange(displayValue, suggestion);
     setIsOpen(false);
     setSuggestions([]);
@@ -150,10 +161,10 @@ export const UnifiedAutocomplete = ({
     >
       {label && (
         <div className="flex items-center gap-2">
-          <Label 
+          <Label
             className={cn(
               "text-sm font-semibold text-foreground flex items-center gap-2",
-              required && "after:content-['*'] after:text-destructive after:ml-0.5"
+              required && "after:content-['*'] after:text-destructive after:ml-0.5",
             )}
           >
             <Icon className="w-4 h-4 text-primary" />
@@ -177,7 +188,7 @@ export const UnifiedAutocomplete = ({
             "transition-all duration-base ease-standard",
             "placeholder:text-muted-foreground/60",
             "font-medium",
-            error && "border-destructive focus:border-destructive"
+            error && "border-destructive focus:border-destructive",
           )}
         />
         {loading && (
@@ -208,7 +219,7 @@ export const UnifiedAutocomplete = ({
                   className={cn(
                     "w-full px-4 py-3 text-left hover:bg-primary/5 transition-colors",
                     "border-b border-border/30 last:border-0",
-                    "group cursor-pointer"
+                    "group cursor-pointer",
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -216,13 +227,11 @@ export const UnifiedAutocomplete = ({
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-foreground truncate">
                         {suggestion.name}
-                        {suggestion.code && (
-                          <span className="ml-2 text-primary font-bold">({suggestion.code})</span>
-                        )}
+                        {suggestion.code && <span className="ml-2 text-primary font-bold">({suggestion.code})</span>}
                       </p>
                       {(suggestion.city || suggestion.country) && (
                         <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                          {[suggestion.city, suggestion.country].filter(Boolean).join(', ')}
+                          {[suggestion.city, suggestion.country].filter(Boolean).join(", ")}
                         </p>
                       )}
                     </div>
@@ -235,7 +244,8 @@ export const UnifiedAutocomplete = ({
       </AnimatePresence>
 
       {error && (
-        <motion.p role="alert"
+        <motion.p
+          role="alert"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           className="text-sm text-destructive font-medium flex items-center gap-1"

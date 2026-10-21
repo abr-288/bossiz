@@ -21,7 +21,10 @@ export function BookingStepper({ steps, currentStep, className }: BookingStepper
   const current = steps.find((s) => s.number === currentStep);
 
   return (
-    <nav aria-label={t("ux.stepper.label")} className={cn("rounded-2xl border border-border bg-card p-4 shadow-sm md:p-6", className)}>
+    <nav
+      aria-label={t("ux.stepper.label")}
+      className={cn("rounded-2xl border border-border bg-card p-4 shadow-sm md:p-6", className)}
+    >
       {/* Mobile */}
       <div className="sm:hidden">
         <p className="mb-2 text-sm font-semibold text-foreground">
@@ -49,7 +52,11 @@ export function BookingStepper({ steps, currentStep, className }: BookingStepper
           const done = step.number < currentStep;
           const active = step.number === currentStep;
           return (
-            <li key={step.number} className="flex flex-1 items-center last:flex-none" aria-current={active ? "step" : undefined}>
+            <li
+              key={step.number}
+              className="flex flex-1 items-center last:flex-none"
+              aria-current={active ? "step" : undefined}
+            >
               <div className="flex flex-col items-center">
                 <span
                   className={cn(
@@ -61,12 +68,20 @@ export function BookingStepper({ steps, currentStep, className }: BookingStepper
                 >
                   {done ? <Check className="h-4 w-4" aria-hidden="true" /> : step.number}
                 </span>
-                <span className={cn("mt-2 text-center text-sm font-medium", active ? "text-foreground" : "text-muted-foreground")}>
+                <span
+                  className={cn(
+                    "mt-2 text-center text-sm font-medium",
+                    active ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
                   {step.title}
                 </span>
               </div>
               {index < steps.length - 1 && (
-                <span aria-hidden="true" className={cn("mx-3 h-0.5 flex-1 rounded-full", done ? "bg-success" : "bg-border")} />
+                <span
+                  aria-hidden="true"
+                  className={cn("mx-3 h-0.5 flex-1 rounded-full", done ? "bg-success" : "bg-border")}
+                />
               )}
             </li>
           );

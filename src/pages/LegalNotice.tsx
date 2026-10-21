@@ -74,11 +74,15 @@ const LegalNotice = () => {
       <PageHero
         image={heroImage}
         title={<>Mentions Légales</>}
-        subtitle={<>Informations légales relatives à l'éditeur et à l'hébergement du site {siteName}, conformément à la réglementation ivoirienne applicable aux sites marchands.</>}
+        subtitle={
+          <>
+            Informations légales relatives à l'éditeur et à l'hébergement du site {siteName}, conformément à la
+            réglementation ivoirienne applicable aux sites marchands.
+          </>
+        }
       />
       <main className="py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4">
-
           <div className="space-y-8">
             {sections.map((section, index) => {
               return (

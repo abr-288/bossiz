@@ -50,7 +50,9 @@ const nationalities: Nationality[] = [
 
 const NationalityFlag = ({ code, name }: Nationality) =>
   code === "OTHER" ? (
-    <span aria-hidden="true" className="text-base leading-none">🌍</span>
+    <span aria-hidden="true" className="text-base leading-none">
+      🌍
+    </span>
   ) : (
     <img
       src={`https://flagcdn.com/${code.toLowerCase()}.svg`}
@@ -85,15 +87,13 @@ export const NationalitySelect = ({ id, value, onValueChange }: NationalitySelec
     }
   };
   const selectedNationality = nationalities.find(
-    (nationality) =>
-      nationality.code === value ||
-      nationality.name.toLocaleLowerCase() === value.toLocaleLowerCase()
+    (nationality) => nationality.code === value || nationality.name.toLocaleLowerCase() === value.toLocaleLowerCase(),
   );
 
   return (
     <Select value={selectedNationality?.code ?? value} onValueChange={onValueChange}>
       <SelectTrigger id={id} className="h-12 border-2">
-        <SelectValue placeholder={t('nationalitySelect.placeholder')}>
+        <SelectValue placeholder={t("nationalitySelect.placeholder")}>
           {selectedNationality && (
             <span className="flex items-center gap-2">
               <NationalityFlag {...selectedNationality} />

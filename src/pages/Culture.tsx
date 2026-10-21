@@ -6,7 +6,14 @@ import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { CultureEntryCard, CultureEntryVisual } from "@/components/culture/CultureEntryCard";
-import { CULTURE_CATEGORIES, cultureCategory, cultureEntryPath, useCultureEntries, useCulturePage, type CultureCategory } from "@/lib/culture";
+import {
+  CULTURE_CATEGORIES,
+  cultureCategory,
+  cultureEntryPath,
+  useCultureEntries,
+  useCulturePage,
+  type CultureCategory,
+} from "@/lib/culture";
 import bannerFallback from "@/assets/hero-slide-1.webp";
 import { Compass, MapPin } from "lucide-react";
 
@@ -36,7 +43,9 @@ export default function Culture() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/80 via-brand/60 to-background" />
         <div className="relative z-10 container mx-auto px-4 py-12 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">{settings?.title || "Culture"}</h1>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+            {settings?.title || "Culture"}
+          </h1>
           {settings?.subtitle && (
             <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto drop-shadow-md">{settings.subtitle}</p>
           )}
@@ -69,18 +78,28 @@ export default function Culture() {
                       }`}
                     >
                       <div className="absolute inset-0">
-                        <CultureEntryVisual entry={entry} className="transition-transform duration-500 group-hover:scale-105" />
+                        <CultureEntryVisual
+                          entry={entry}
+                          className="transition-transform duration-500 group-hover:scale-105"
+                        />
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                       <div className="absolute inset-x-0 bottom-0 p-5 text-white space-y-1.5">
                         <span className="text-xs font-semibold uppercase tracking-wide text-white/80">
                           {cultureCategory(entry.category).label}
                         </span>
-                        <h3 className={`font-bold leading-tight ${index === 0 ? "text-2xl md:text-3xl" : "text-xl"}`}>{entry.title}</h3>
+                        <h3 className={`font-bold leading-tight ${index === 0 ? "text-2xl md:text-3xl" : "text-xl"}`}>
+                          {entry.title}
+                        </h3>
                         {entry.location && (
-                          <p className="flex items-center gap-1.5 text-sm text-white/85"><MapPin className="h-4 w-4" />{entry.location}</p>
+                          <p className="flex items-center gap-1.5 text-sm text-white/85">
+                            <MapPin className="h-4 w-4" />
+                            {entry.location}
+                          </p>
                         )}
-                        {index === 0 && <p className="hidden md:block text-sm text-white/90 max-w-xl">{entry.summary}</p>}
+                        {index === 0 && (
+                          <p className="hidden md:block text-sm text-white/90 max-w-xl">{entry.summary}</p>
+                        )}
                       </div>
                     </Link>
                   ))}
@@ -91,7 +110,11 @@ export default function Culture() {
             <section className="space-y-6">
               <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                 <h2 className="text-2xl md:text-3xl font-bold">Explorer</h2>
-                <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0" role="tablist" aria-label="Catégories">
+                <div
+                  className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0"
+                  role="tablist"
+                  aria-label="Catégories"
+                >
                   <Button
                     size="sm"
                     variant={category === "all" ? "default" : "outline"}
@@ -137,9 +160,15 @@ export default function Culture() {
             Visites guidées, activités et événements : réservez votre découverte avec nos partenaires.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button asChild><Link to="/tours">Visites guidées</Link></Button>
-            <Button asChild variant="outline"><Link to="/activities">Activités</Link></Button>
-            <Button asChild variant="outline"><Link to="/events">Événements</Link></Button>
+            <Button asChild>
+              <Link to="/tours">Visites guidées</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/activities">Activités</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/events">Événements</Link>
+            </Button>
           </div>
         </section>
       </main>

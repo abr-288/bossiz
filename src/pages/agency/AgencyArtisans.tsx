@@ -5,15 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -53,7 +47,16 @@ interface Artisan {
   created_at: string;
 }
 
-const CRAFT_TYPES = ["Sculpture sur bois", "Bijoux & Accessoires", "Textile & Tissage", "Poterie & Céramique", "Maroquinerie", "Peinture & Art", "Vannerie", "Autre"];
+const CRAFT_TYPES = [
+  "Sculpture sur bois",
+  "Bijoux & Accessoires",
+  "Textile & Tissage",
+  "Poterie & Céramique",
+  "Maroquinerie",
+  "Peinture & Art",
+  "Vannerie",
+  "Autre",
+];
 
 interface ArtisanOrder {
   id: string;
@@ -108,7 +111,9 @@ export default function AgencyArtisans() {
   }, []);
 
   const fetchAgencyAndArtisans = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data: agency } = await supabase.from("agencies").select("id").eq("owner_id", user.id).single();
@@ -140,7 +145,10 @@ export default function AgencyArtisans() {
     const { data, error } = await supabase
       .from("artisan_orders")
       .select("*")
-      .in("artisan_id", agencyArtisans.map((a) => a.id))
+      .in(
+        "artisan_id",
+        agencyArtisans.map((a) => a.id),
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -148,7 +156,7 @@ export default function AgencyArtisans() {
     } else {
       const artisanNameById = new Map(agencyArtisans.map((a) => [a.id, a.name]));
       setOrders(
-        ((data || []) as ArtisanOrder[]).map((o) => ({ ...o, artisan_name: artisanNameById.get(o.artisan_id) }))
+        ((data || []) as ArtisanOrder[]).map((o) => ({ ...o, artisan_name: artisanNameById.get(o.artisan_id) })),
       );
     }
     setOrdersLoading(false);
@@ -160,7 +168,10 @@ export default function AgencyArtisans() {
       toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: t("ux.bo.success"), description: status === "confirmed" ? t("ux.bo.orderConfirmed") : t("ux.bo.orderDeclined") });
+    toast({
+      title: t("ux.bo.success"),
+      description: status === "confirmed" ? t("ux.bo.orderConfirmed") : t("ux.bo.orderDeclined"),
+    });
     fetchAgencyAndArtisans();
   };
 
@@ -267,9 +278,18 @@ export default function AgencyArtisans() {
             <h1 className="text-2xl font-bold">{t("ux.bo.myArtisans")}</h1>
             <p className="text-muted-foreground">{t("ux.bo.showcaseLocalArtisansTheirCreations")}</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />{t("ux.bo.newArtisan")}</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("ux.bo.newArtisan")}
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -279,37 +299,74 @@ export default function AgencyArtisans() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.name2")}</Label>
-                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.craft")}</Label>
-                    <Select value={formData.craft_type} onValueChange={(v) => setFormData({ ...formData, craft_type: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={formData.craft_type}
+                      onValueChange={(v) => setFormData({ ...formData, craft_type: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
-                        {CRAFT_TYPES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        {CRAFT_TYPES.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <LocationPicker value={{ location: formData.location, maps_url: formData.maps_url, latitude: formData.latitude, longitude: formData.longitude }} onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })} required showLocation={false} />
+                <LocationPicker
+                  value={{
+                    location: formData.location,
+                    maps_url: formData.maps_url,
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  }}
+                  onChange={(location: PartnerLocation) => setFormData({ ...formData, ...location })}
+                  required
+                  showLocation={false}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.cityDistrict")}</Label>
-                    <Input value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ux.bo.address")}</Label>
-                    <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+                    <Input
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>{t("ux.bo.phone")}</Label>
-                    <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>WhatsApp</Label>
-                    <Input value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="+225 XX XX XX XX XX" />
+                    <Input
+                      value={formData.whatsapp}
+                      onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                      placeholder="+225 XX XX XX XX XX"
+                    />
                     <p className="text-xs text-muted-foreground">{t("ux.bo.includeCountryCode225Otherwise")}</p>
                   </div>
                 </div>
@@ -362,14 +419,24 @@ export default function AgencyArtisans() {
                         <div className="space-y-1">
                           <Label className="text-xs">{t("ux.bo.price")}</Label>
                           <div className="flex gap-2">
-                            <Input type="number" value={product.price} onChange={(e) => updateProduct(index, "price", e.target.value)} />
-                            <span className="flex items-center rounded-md border px-3 text-sm text-muted-foreground">XOF</span>
+                            <Input
+                              type="number"
+                              value={product.price}
+                              onChange={(e) => updateProduct(index, "price", e.target.value)}
+                            />
+                            <span className="flex items-center rounded-md border px-3 text-sm text-muted-foreground">
+                              XOF
+                            </span>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-1">
                         <Label className="text-xs">{t("ux.bo.description")}</Label>
-                        <Textarea rows={2} value={product.description} onChange={(e) => updateProduct(index, "description", e.target.value)} />
+                        <Textarea
+                          rows={2}
+                          value={product.description}
+                          onChange={(e) => updateProduct(index, "description", e.target.value)}
+                        />
                       </div>
                       <ImageUpload
                         label={t("ux.bo.photoCreation")}
@@ -382,12 +449,17 @@ export default function AgencyArtisans() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Switch checked={formData.available} onCheckedChange={(c) => setFormData({ ...formData, available: c })} />
+                  <Switch
+                    checked={formData.available}
+                    onCheckedChange={(c) => setFormData({ ...formData, available: c })}
+                  />
                   <Label>{t("ux.bo.visibleSite")}</Label>
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>{t("ux.bo.cancel")}</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    {t("ux.bo.cancel")}
+                  </Button>
                   <Button type="submit">{editing ? t("ux.bo.update") : "Créer"}</Button>
                 </div>
               </form>
@@ -397,7 +469,12 @@ export default function AgencyArtisans() {
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder={t("ux.bo.search")} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          <Input
+            placeholder={t("ux.bo.search")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
 
         <div className="border rounded-lg">
@@ -414,7 +491,11 @@ export default function AgencyArtisans() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    {t("ux.bo.loading")}
+                  </TableCell>
+                </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
@@ -438,7 +519,12 @@ export default function AgencyArtisans() {
                       <Button aria-label={t("ux.bo.edit")} variant="ghost" size="icon" onClick={() => handleEdit(a)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button aria-label={t("ux.bo.delete")} variant="ghost" size="icon" onClick={() => handleDelete(a.id)}>
+                      <Button
+                        aria-label={t("ux.bo.delete")}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(a.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>
@@ -451,9 +537,7 @@ export default function AgencyArtisans() {
 
         <div>
           <h2 className="text-xl font-bold mb-1">{t("ux.bo.orderRequests")}</h2>
-          <p className="text-muted-foreground mb-4">
-            {t("ux.bo.confirmRequestAcceptCommissionThen")}
-          </p>
+          <p className="text-muted-foreground mb-4">{t("ux.bo.confirmRequestAcceptCommissionThen")}</p>
           <div className="border rounded-lg">
             <Table>
               <TableHeader>
@@ -469,7 +553,11 @@ export default function AgencyArtisans() {
               </TableHeader>
               <TableBody>
                 {ordersLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8">{t("ux.bo.loading")}</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      {t("ux.bo.loading")}
+                    </TableCell>
+                  </TableRow>
                 ) : orders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
@@ -481,19 +569,35 @@ export default function AgencyArtisans() {
                   orders.map((o) => (
                     <TableRow key={o.id}>
                       <TableCell className="font-medium">{o.artisan_name}</TableCell>
-                      <TableCell>{o.product_name} × {o.quantity}</TableCell>
+                      <TableCell>
+                        {o.product_name} × {o.quantity}
+                      </TableCell>
                       <TableCell>
                         <div className="text-sm">
                           <p>{o.customer_name}</p>
                           <p className="text-muted-foreground">{o.customer_phone}</p>
                         </div>
                       </TableCell>
-                      <TableCell>{o.total_amount.toLocaleString()} {o.currency}</TableCell>
+                      <TableCell>
+                        {o.total_amount.toLocaleString()} {o.currency}
+                      </TableCell>
                       <TableCell>
                         <Badge
-                          variant={o.status === "confirmed" ? "default" : o.status === "cancelled" ? "destructive" : "secondary"}
+                          variant={
+                            o.status === "confirmed"
+                              ? "default"
+                              : o.status === "cancelled"
+                                ? "destructive"
+                                : "secondary"
+                          }
                         >
-                          {o.status === "pending" ? t("ux.bo.pending2") : o.status === "confirmed" ? "Confirmée" : o.status === "cancelled" ? "Refusée" : o.status}
+                          {o.status === "pending"
+                            ? t("ux.bo.pending2")
+                            : o.status === "confirmed"
+                              ? "Confirmée"
+                              : o.status === "cancelled"
+                                ? "Refusée"
+                                : o.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">

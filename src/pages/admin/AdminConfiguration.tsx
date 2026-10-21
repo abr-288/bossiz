@@ -9,7 +9,19 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Plus, Trash2, Globe, Mail, Palette, Settings, FileText, CreditCard, Paintbrush } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  Plus,
+  Trash2,
+  Globe,
+  Mail,
+  Palette,
+  Settings,
+  FileText,
+  CreditCard,
+  Paintbrush,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeConfig } from "@/components/admin/ThemeConfig";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -73,10 +85,7 @@ export default function AdminConfiguration() {
 
   const fetchConfigs = async () => {
     try {
-      const { data, error } = await supabase
-        .from("site_config")
-        .select("*")
-        .order("category");
+      const { data, error } = await supabase.from("site_config").select("*").order("category");
 
       if (error) throw error;
       setConfigs(data || []);
@@ -95,16 +104,11 @@ export default function AdminConfiguration() {
   const updateConfig = async (id: string, configKey: string, value: Json) => {
     setSaving(id);
     try {
-      const { error } = await supabase
-        .from("site_config")
-        .update({ config_value: value })
-        .eq("id", id);
+      const { error } = await supabase.from("site_config").update({ config_value: value }).eq("id", id);
 
       if (error) throw error;
 
-      setConfigs((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, config_value: value } : c))
-      );
+      setConfigs((prev) => prev.map((c) => (c.id === id ? { ...c, config_value: value } : c)));
 
       toast({
         title: t("ux.bo.success"),
@@ -143,9 +147,7 @@ export default function AdminConfiguration() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">{t("ux.bo.siteConfiguration")}</h1>
-          <p className="text-muted-foreground">
-            {t("ux.bo.manageAllSiteSettingsFrom")}
-          </p>
+          <p className="text-muted-foreground">{t("ux.bo.manageAllSiteSettingsFrom")}</p>
         </div>
 
         <Tabs defaultValue="theme" className="space-y-4">
@@ -321,20 +323,14 @@ function BrandingConfig({ config, onSave, saving }: SectionProps) {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label>{t("ux.bo.siteName")}</Label>
-            <Input
-              value={value.siteName || ""}
-              onChange={(e) => setValue({ ...value, siteName: e.target.value })}
-            />
+            <Input value={value.siteName || ""} onChange={(e) => setValue({ ...value, siteName: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>{t("ux.bo.slogan")}</Label>
-            <Input
-              value={value.tagline || ""}
-              onChange={(e) => setValue({ ...value, tagline: e.target.value })}
-            />
+            <Input value={value.tagline || ""} onChange={(e) => setValue({ ...value, tagline: e.target.value })} />
           </div>
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-2">
           <ImageUpload
             value={value.logoLight || ""}
@@ -349,14 +345,14 @@ function BrandingConfig({ config, onSave, saving }: SectionProps) {
             label={t("ux.bo.darkLogoLightTheme")}
           />
         </div>
-        
+
         <ImageUpload
           value={value.favicon || ""}
           onChange={(url) => setValue({ ...value, favicon: url })}
           folder="logos"
           label={t("ux.bo.favicon")}
         />
-        
+
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {t("ux.bo.save")}
@@ -392,24 +388,15 @@ function ContactConfig({ config, onSave, saving }: SectionProps) {
           </div>
           <div className="space-y-2">
             <Label>{t("ux.bo.phone")}</Label>
-            <Input
-              value={value.phone || ""}
-              onChange={(e) => setValue({ ...value, phone: e.target.value })}
-            />
+            <Input value={value.phone || ""} onChange={(e) => setValue({ ...value, phone: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>WhatsApp</Label>
-            <Input
-              value={value.whatsapp || ""}
-              onChange={(e) => setValue({ ...value, whatsapp: e.target.value })}
-            />
+            <Input value={value.whatsapp || ""} onChange={(e) => setValue({ ...value, whatsapp: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>{t("ux.bo.address")}</Label>
-            <Input
-              value={value.address || ""}
-              onChange={(e) => setValue({ ...value, address: e.target.value })}
-            />
+            <Input value={value.address || ""} onChange={(e) => setValue({ ...value, address: e.target.value })} />
           </div>
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
@@ -495,24 +482,15 @@ function HeroConfig({ config, onSave, saving }: SectionProps) {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label>{t("ux.bo.mainTitle")}</Label>
-            <Input
-              value={value.title || ""}
-              onChange={(e) => setValue({ ...value, title: e.target.value })}
-            />
+            <Input value={value.title || ""} onChange={(e) => setValue({ ...value, title: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>{t("ux.bo.subtitle")}</Label>
-            <Input
-              value={value.subtitle || ""}
-              onChange={(e) => setValue({ ...value, subtitle: e.target.value })}
-            />
+            <Input value={value.subtitle || ""} onChange={(e) => setValue({ ...value, subtitle: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>{t("ux.bo.ctaButtonText")}</Label>
-            <Input
-              value={value.ctaText || ""}
-              onChange={(e) => setValue({ ...value, ctaText: e.target.value })}
-            />
+            <Input value={value.ctaText || ""} onChange={(e) => setValue({ ...value, ctaText: e.target.value })} />
           </div>
         </div>
 
@@ -523,7 +501,7 @@ function HeroConfig({ config, onSave, saving }: SectionProps) {
               <Plus className="mr-2 h-4 w-4" /> Ajouter un slide
             </Button>
           </div>
-          
+
           <div className="space-y-4">
             {value.slides?.map((slide, index) => (
               <div key={index} className="p-4 border rounded-lg space-y-3 bg-muted/30">
@@ -540,14 +518,14 @@ function HeroConfig({ config, onSave, saving }: SectionProps) {
                     {t("ux.bo.delete")}
                   </Button>
                 </div>
-                
+
                 <ImageUpload
                   value={slide.image || ""}
                   onChange={(url) => updateSlide(index, "image", url)}
                   folder="hero"
                   label={t("ux.bo.slideImage")}
                 />
-                
+
                 <div className="space-y-2">
                   <Label>{t("ux.bo.slideTitleOptional")}</Label>
                   <Input
@@ -558,7 +536,7 @@ function HeroConfig({ config, onSave, saving }: SectionProps) {
                 </div>
               </div>
             ))}
-            
+
             {(!value.slides || value.slides.length === 0) && (
               <p className="text-sm text-muted-foreground text-center py-4">
                 {t("ux.bo.noSlideConfiguredDefaultImages")}
@@ -613,10 +591,7 @@ function FeaturesConfig({ config, onSave, saving }: SectionProps) {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label>{t("ux.bo.sectionTitle")}</Label>
-          <Input
-            value={value.title || ""}
-            onChange={(e) => setValue({ ...value, title: e.target.value })}
-          />
+          <Input value={value.title || ""} onChange={(e) => setValue({ ...value, title: e.target.value })} />
         </div>
 
         <div className="space-y-2">
@@ -701,10 +676,7 @@ function SEOConfig({ config, onSave, saving }: SectionProps) {
         </div>
         <div className="space-y-2">
           <Label>{i18n.t("ux.bo.keywordsCommaSeparated")}</Label>
-          <Input
-            value={value.keywords || ""}
-            onChange={(e) => setValue({ ...value, keywords: e.target.value })}
-          />
+          <Input value={value.keywords || ""} onChange={(e) => setValue({ ...value, keywords: e.target.value })} />
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
@@ -774,9 +746,7 @@ function LocaleConfig({ config, onSave, saving }: SectionProps) {
                 })
               }
             />
-            <p className="text-xs text-muted-foreground">
-              {t("ux.bo.controlsLanguagesOfferedSiteS")}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("ux.bo.controlsLanguagesOfferedSiteS")}</p>
           </div>
         </div>
         <Button onClick={() => onSave(value)} disabled={saving}>
@@ -851,21 +821,48 @@ function BookingConfig({ config, onSave, saving }: SectionProps) {
 }
 
 const DEPOSIT_SERVICE_TYPES = [
-  { value: "car", get label() { return i18n.t("ux.bo.carRental"); } },
-  { value: "tour", get label() { return i18n.t("ux.bo.tours"); } },
-  { value: "event", get label() { return i18n.t("ux.bo.events"); } },
-  { value: "stay", get label() { return i18n.t("ux.bo.stays"); } },
-  { value: "activity", get label() { return i18n.t("ux.bo.activities"); } },
+  {
+    value: "car",
+    get label() {
+      return i18n.t("ux.bo.carRental");
+    },
+  },
+  {
+    value: "tour",
+    get label() {
+      return i18n.t("ux.bo.tours");
+    },
+  },
+  {
+    value: "event",
+    get label() {
+      return i18n.t("ux.bo.events");
+    },
+  },
+  {
+    value: "stay",
+    get label() {
+      return i18n.t("ux.bo.stays");
+    },
+  },
+  {
+    value: "activity",
+    get label() {
+      return i18n.t("ux.bo.activities");
+    },
+  },
 ];
 
 function PaymentPolicyConfig({ config, onSave, saving }: SectionProps) {
   const { t } = useTranslation();
-  const [value, setValue] = useState<PaymentPolicyValue>(sectionValue<PaymentPolicyValue>(config, {
-    depositEnabled: true,
-    depositPercent: 30,
-    enabledServiceTypes: DEPOSIT_SERVICE_TYPES.map((item) => item.value),
-    reviewPromptEnabled: true,
-  }));
+  const [value, setValue] = useState<PaymentPolicyValue>(
+    sectionValue<PaymentPolicyValue>(config, {
+      depositEnabled: true,
+      depositPercent: 30,
+      enabledServiceTypes: DEPOSIT_SERVICE_TYPES.map((item) => item.value),
+      reviewPromptEnabled: true,
+    }),
+  );
 
   useEffect(() => {
     if (config) setValue(sectionValue<PaymentPolicyValue>(config, {}));
@@ -893,18 +890,31 @@ function PaymentPolicyConfig({ config, onSave, saving }: SectionProps) {
             <Label>{t("ux.bo.allowDepositPayments")}</Label>
             <p className="text-sm text-muted-foreground">{t("ux.bo.customerCanChooseDepositFull")}</p>
           </div>
-          <Switch checked={value.depositEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, depositEnabled: checked })} />
+          <Switch
+            checked={value.depositEnabled !== false}
+            onCheckedChange={(checked) => setValue({ ...value, depositEnabled: checked })}
+          />
         </div>
         <div className="max-w-xs space-y-2">
           <Label>{t("ux.bo.depositPercentage")}</Label>
-          <Input type="number" min="1" max="99" value={value.depositPercent ?? 30} onChange={(e) => setValue({ ...value, depositPercent: Number(e.target.value) })} />
+          <Input
+            type="number"
+            min="1"
+            max="99"
+            value={value.depositPercent ?? 30}
+            onChange={(e) => setValue({ ...value, depositPercent: Number(e.target.value) })}
+          />
         </div>
         <div className="space-y-3">
           <Label>{t("ux.bo.eligibleServices")}</Label>
           {DEPOSIT_SERVICE_TYPES.map((item) => (
             <div key={item.value} className="flex items-center justify-between">
               <Label htmlFor={`deposit-${item.value}`}>{item.label}</Label>
-              <Switch id={`deposit-${item.value}`} checked={enabledTypes.includes(item.value)} onCheckedChange={(checked) => toggleType(item.value, checked)} />
+              <Switch
+                id={`deposit-${item.value}`}
+                checked={enabledTypes.includes(item.value)}
+                onCheckedChange={(checked) => toggleType(item.value, checked)}
+              />
             </div>
           ))}
         </div>
@@ -913,9 +923,20 @@ function PaymentPolicyConfig({ config, onSave, saving }: SectionProps) {
             <Label>{t("ux.bo.offerRatingAfterPayment")}</Label>
             <p className="text-sm text-muted-foreground">{t("ux.bo.onlyCustomersWhoHavePaid")}</p>
           </div>
-          <Switch checked={value.reviewPromptEnabled !== false} onCheckedChange={(checked) => setValue({ ...value, reviewPromptEnabled: checked })} />
+          <Switch
+            checked={value.reviewPromptEnabled !== false}
+            onCheckedChange={(checked) => setValue({ ...value, reviewPromptEnabled: checked })}
+          />
         </div>
-        <Button onClick={() => onSave(value)} disabled={saving || !Number.isFinite(Number(value.depositPercent)) || (value.depositPercent ?? 0) < 1 || (value.depositPercent ?? 0) > 99}>
+        <Button
+          onClick={() => onSave(value)}
+          disabled={
+            saving ||
+            !Number.isFinite(Number(value.depositPercent)) ||
+            (value.depositPercent ?? 0) < 1 ||
+            (value.depositPercent ?? 0) > 99
+          }
+        >
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {t("ux.bo.save")}
         </Button>
@@ -991,10 +1012,7 @@ function FooterConfig({ config, onSave, saving }: SectionProps) {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label>{t("ux.bo.copyright")}</Label>
-          <Input
-            value={value.copyright || ""}
-            onChange={(e) => setValue({ ...value, copyright: e.target.value })}
-          />
+          <Input value={value.copyright || ""} onChange={(e) => setValue({ ...value, copyright: e.target.value })} />
         </div>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">

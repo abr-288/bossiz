@@ -169,8 +169,14 @@ const OffersCarousel = () => {
             return (
               <li key={`promo-${promo.id}`} className={SLIDE_CLASS}>
                 <div className="relative h-40">
-                  <LazyImage src={promo.image_url || "/placeholder.svg"} alt="" className="h-full w-full object-cover" />
-                  <Badge className="absolute right-3 top-3 border-0 bg-gold text-gold-foreground text-sm">-{promo.discount}%</Badge>
+                  <LazyImage
+                    src={promo.image_url || "/placeholder.svg"}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                  <Badge className="absolute right-3 top-3 border-0 bg-gold text-gold-foreground text-sm">
+                    -{promo.discount}%
+                  </Badge>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="line-clamp-2 text-lg font-bold text-foreground">{promo.name}</h3>

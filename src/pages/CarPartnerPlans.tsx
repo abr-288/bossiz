@@ -43,19 +43,20 @@ const CarPartnerPlans = () => {
 
   useEffect(() => {
     const loadPlans = async () => {
-      const [{ data, error }, { data: { user } }] = await Promise.all([
-        supabase
-          .from("car_partner_plans")
-          .select("*")
-          .eq("is_active", true)
-          .order("sort_order", { ascending: true }),
+      const [
+        { data, error },
+        {
+          data: { user },
+        },
+      ] = await Promise.all([
+        supabase.from("car_partner_plans").select("*").eq("is_active", true).order("sort_order", { ascending: true }),
         supabase.auth.getUser(),
       ]);
 
       if (!error && data) {
-        setPlans((data as CarPartnerPlan[]).filter(
-          (plan) => Number(plan.monthly_price) > 0 && Number(plan.yearly_price) > 0,
-        ));
+        setPlans(
+          (data as CarPartnerPlan[]).filter((plan) => Number(plan.monthly_price) > 0 && Number(plan.yearly_price) > 0),
+        );
       }
       if (user) {
         const { data: agency } = await supabase
@@ -79,7 +80,9 @@ const CarPartnerPlans = () => {
 
     setProcessingPlanId(plan.plan_id);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error(t("ux.carPlans.signIn"));
 
       const { data: subscription, error: subscriptionError } = await supabase
@@ -121,9 +124,7 @@ const CarPartnerPlans = () => {
 
       window.location.assign(data.payment_url);
     } catch (error) {
-      toast.error(error instanceof Error
-        ? error.message
-        : t("ux.carPlans.initErrorNoPlan"));
+      toast.error(error instanceof Error ? error.message : t("ux.carPlans.initErrorNoPlan"));
     } finally {
       setProcessingPlanId(null);
     }
@@ -145,14 +146,8 @@ const CarPartnerPlans = () => {
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
             {t(carPlanPaymentsEnabled ? "ux.carPlans.title" : "ux.carPlans.freeTitle")}
           </h1>
-          <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">
-            {t("ux.carPlans.intro")}
-          </p>
-          {carPlanPaymentsEnabled && (
-            <p className="text-sm text-white/85 mt-3">
-              {t("ux.carPlans.requiredNote")}
-            </p>
-          )}
+          <p className="text-lg text-white/95 drop-shadow-md max-w-2xl mx-auto">{t("ux.carPlans.intro")}</p>
+          {carPlanPaymentsEnabled && <p className="text-sm text-white/85 mt-3">{t("ux.carPlans.requiredNote")}</p>}
         </div>
       </div>
 
@@ -182,103 +177,109 @@ const CarPartnerPlans = () => {
             </CardContent>
           </Card>
         ) : (
-        <>
-        {/* Billing toggle */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <span className={cn("text-sm font-medium", !yearly ? "text-foreground" : "text-muted-foreground")}>Mensuel</span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={yearly}
-            onClick={() => setYearly((v) => !v)}
-            className="relative h-7 w-12 rounded-full bg-muted transition-colors data-[on=true]:bg-primary"
-            data-on={yearly}
-          >
-            <span
-              className={cn(
-                "absolute top-1 left-1 h-5 w-5 rounded-full bg-background shadow transition-transform",
-                yearly && "translate-x-5"
-              )}
-            />
-          </button>
-          <span className={cn("text-sm font-medium", yearly ? "text-foreground" : "text-muted-foreground")}>
-            {t("ux.carPlans.yearly")}
-          </span>
-        </div>
-
-        {loading ? (
-          <CardGridSkeleton count={3} imageClassName="h-24" />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
-            {localizedPlans.map((plan) => {
-              const featured = plan.plan_id === "pro";
-              const price = yearly ? plan.yearly_price : plan.monthly_price;
-              return (
-                <Card
-                  key={plan.plan_id}
+          <>
+            {/* Billing toggle */}
+            <div className="flex items-center justify-center gap-3 mb-10">
+              <span className={cn("text-sm font-medium", !yearly ? "text-foreground" : "text-muted-foreground")}>
+                Mensuel
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={yearly}
+                onClick={() => setYearly((v) => !v)}
+                className="relative h-7 w-12 rounded-full bg-muted transition-colors data-[on=true]:bg-primary"
+                data-on={yearly}
+              >
+                <span
                   className={cn(
-                    "flex flex-col relative overflow-hidden",
-                    featured && "border-primary shadow-lg md:-translate-y-2"
+                    "absolute top-1 left-1 h-5 w-5 rounded-full bg-background shadow transition-transform",
+                    yearly && "translate-x-5",
                   )}
-                >
-                  {featured && (
-                    <div className="absolute top-0 inset-x-0 bg-primary text-primary-foreground text-center text-xs font-semibold py-1.5">
-                      {t("ux.carPlans.popular")}
-                    </div>
-                  )}
-                  <CardHeader className={cn("pb-2", featured && "pt-9")}>
-                    <h2 className="text-xl font-bold">{plan.name}</h2>
-                    {plan.tagline && <p className="text-sm text-muted-foreground">{plan.tagline}</p>}
-                  </CardHeader>
-                  <CardContent className="flex flex-col flex-1">
-                    <div className="mb-5">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">
-                          <Price amount={price} fromCurrency={plan.currency} />
-                        </span>
-                        <span className="text-sm text-muted-foreground">/ {yearly ? "an" : "mois"}</span>
-                      </div>
-                    </div>
+                />
+              </button>
+              <span className={cn("text-sm font-medium", yearly ? "text-foreground" : "text-muted-foreground")}>
+                {t("ux.carPlans.yearly")}
+              </span>
+            </div>
 
-                    <div className="flex items-center justify-between text-sm mb-4 px-3 py-2 rounded-lg bg-muted/50">
-                      <span className="text-muted-foreground">{t("ux.carPlans.payoutShare")}</span>
-                      <span className="font-semibold text-primary">90%</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm mb-5 px-3 py-2 rounded-lg bg-muted/50">
-                      <span className="text-muted-foreground">{t("ux.carPlans.vehicles")}</span>
-                      <span className="font-semibold">{plan.max_vehicles ? t("ux.misc.upTo", { count: plan.max_vehicles }) : t("ux.misc.unlimited")}</span>
-                    </div>
-
-                    <ul className="space-y-2.5 mb-6 flex-1">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-2 text-sm">
-                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Button
-                      type="button"
-                      size="lg"
-                      variant={featured ? "default" : "outline"}
-                      className="w-full"
-                      disabled={processingPlanId !== null}
-                      onClick={() => void selectPlan(plan)}
+            {loading ? (
+              <CardGridSkeleton count={3} imageClassName="h-24" />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+                {localizedPlans.map((plan) => {
+                  const featured = plan.plan_id === "pro";
+                  const price = yearly ? plan.yearly_price : plan.monthly_price;
+                  return (
+                    <Card
+                      key={plan.plan_id}
+                      className={cn(
+                        "flex flex-col relative overflow-hidden",
+                        featured && "border-primary shadow-lg md:-translate-y-2",
+                      )}
                     >
-                      {processingPlanId === plan.plan_id
-                        ? t("ux.carPlans.preparing")
-                        : agencyId
-                          ? `Souscrire à ${plan.name}`
-                          : t("ux.misc.requestPlan", { name: plan.name })}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-        </>
+                      {featured && (
+                        <div className="absolute top-0 inset-x-0 bg-primary text-primary-foreground text-center text-xs font-semibold py-1.5">
+                          {t("ux.carPlans.popular")}
+                        </div>
+                      )}
+                      <CardHeader className={cn("pb-2", featured && "pt-9")}>
+                        <h2 className="text-xl font-bold">{plan.name}</h2>
+                        {plan.tagline && <p className="text-sm text-muted-foreground">{plan.tagline}</p>}
+                      </CardHeader>
+                      <CardContent className="flex flex-col flex-1">
+                        <div className="mb-5">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-bold">
+                              <Price amount={price} fromCurrency={plan.currency} />
+                            </span>
+                            <span className="text-sm text-muted-foreground">/ {yearly ? "an" : "mois"}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-sm mb-4 px-3 py-2 rounded-lg bg-muted/50">
+                          <span className="text-muted-foreground">{t("ux.carPlans.payoutShare")}</span>
+                          <span className="font-semibold text-primary">90%</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm mb-5 px-3 py-2 rounded-lg bg-muted/50">
+                          <span className="text-muted-foreground">{t("ux.carPlans.vehicles")}</span>
+                          <span className="font-semibold">
+                            {plan.max_vehicles
+                              ? t("ux.misc.upTo", { count: plan.max_vehicles })
+                              : t("ux.misc.unlimited")}
+                          </span>
+                        </div>
+
+                        <ul className="space-y-2.5 mb-6 flex-1">
+                          {plan.features.map((feature) => (
+                            <li key={feature} className="flex items-start gap-2 text-sm">
+                              <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <Button
+                          type="button"
+                          size="lg"
+                          variant={featured ? "default" : "outline"}
+                          className="w-full"
+                          disabled={processingPlanId !== null}
+                          onClick={() => void selectPlan(plan)}
+                        >
+                          {processingPlanId === plan.plan_id
+                            ? t("ux.carPlans.preparing")
+                            : agencyId
+                              ? `Souscrire à ${plan.name}`
+                              : t("ux.misc.requestPlan", { name: plan.name })}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
 
         <p className="text-center text-sm text-muted-foreground mt-10">

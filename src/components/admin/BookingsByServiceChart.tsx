@@ -38,7 +38,8 @@ export function BookingsByServiceChart({ data }: BookingsByServiceChartProps) {
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="font-medium">{payload[0].name}</p>
           <p className="text-sm text-muted-foreground">
-            {payload[0].value} réservations ({((Number(payload[0].value) / data.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%)
+            {payload[0].value} réservations (
+            {((Number(payload[0].value) / data.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%)
           </p>
         </div>
       );

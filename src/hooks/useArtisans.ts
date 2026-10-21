@@ -21,17 +21,17 @@ export const useArtisans = () => {
     try {
       setLoading(true);
       const { data, error: fetchError } = await supabase
-        .from('artisans')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .from("artisans")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setArtisans((data || []).map(toArtisan));
       setError(null);
     } catch (err) {
-      console.error('Error fetching artisans:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      console.error("Error fetching artisans:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }

@@ -31,10 +31,11 @@ const AdminUsers = () => {
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = users.filter(user => 
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.phone?.includes(searchTerm)
+      const filtered = users.filter(
+        (user) =>
+          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.phone?.includes(searchTerm),
       );
       setFilteredUsers(filtered);
     } else {
@@ -45,50 +46,49 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
+
       // Récupérer les profils depuis la table profiles
       const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('Erreur lors de la récupération des profils:', error);
-        toast.error('Erreur lors de la récupération des utilisateurs');
+        console.error("Erreur lors de la récupération des profils:", error);
+        toast.error("Erreur lors de la récupération des utilisateurs");
         return;
       }
 
       setUsers(profiles || []);
       setFilteredUsers(profiles || []);
-      
-      console.log('Utilisateurs trouvés:', profiles?.length || 0);
-      console.log('Détails:', profiles);
-      
+
+      console.log("Utilisateurs trouvés:", profiles?.length || 0);
+      console.log("Détails:", profiles);
     } catch (error) {
-      console.error('Erreur:', error);
-      toast.error('Une erreur est survenue');
+      console.error("Erreur:", error);
+      toast.error("Une erreur est survenue");
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getRoleBadge = (role: string | null) => {
     switch (role) {
-      case 'admin':
+      case "admin":
         return <Badge className="bg-destructive">Admin</Badge>;
-      case 'agent':
+      case "agent":
         return <Badge className="bg-info">Agent</Badge>;
-      case 'user':
+      case "user":
         return <Badge className="bg-success text-success-foreground">Utilisateur</Badge>;
       default:
         return <Badge variant="outline">Non défini</Badge>;
@@ -102,13 +102,11 @@ const AdminUsers = () => {
           <Users className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-3xl font-bold">Gestion des Utilisateurs</h1>
-            <p className="text-muted-foreground">
-              {filteredUsers.length} utilisateur(s) trouvé(s)
-            </p>
+            <p className="text-muted-foreground">{filteredUsers.length} utilisateur(s) trouvé(s)</p>
           </div>
         </div>
         <Button onClick={fetchUsers} disabled={loading}>
-          {loading ? 'Chargement...' : 'Actualiser'}
+          {loading ? "Chargement..." : "Actualiser"}
         </Button>
       </div>
 
@@ -118,9 +116,7 @@ const AdminUsers = () => {
             <Search className="h-5 w-5" />
             Recherche
           </CardTitle>
-          <CardDescription>
-            Rechercher par email, nom ou téléphone
-          </CardDescription>
+          <CardDescription>Rechercher par email, nom ou téléphone</CardDescription>
         </CardHeader>
         <CardContent>
           <Input
@@ -138,9 +134,7 @@ const AdminUsers = () => {
             <Shield className="h-5 w-5" />
             Liste des Utilisateurs
           </CardTitle>
-          <CardDescription>
-            Tous les utilisateurs inscrits sur la plateforme
-          </CardDescription>
+          <CardDescription>Tous les utilisateurs inscrits sur la plateforme</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -152,7 +146,7 @@ const AdminUsers = () => {
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
-                {searchTerm ? 'Aucun utilisateur trouvé pour cette recherche' : 'Aucun utilisateur trouvé'}
+                {searchTerm ? "Aucun utilisateur trouvé pour cette recherche" : "Aucun utilisateur trouvé"}
               </p>
             </div>
           ) : (
@@ -172,9 +166,7 @@ const AdminUsers = () => {
                 <TableBody>
                   {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
-                      <TableCell className="font-mono text-xs">
-                        {user.id.substring(0, 8)}...
-                      </TableCell>
+                      <TableCell className="font-mono text-xs">{user.id.substring(0, 8)}...</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Mail className="h-4 w-4 text-muted-foreground" />
@@ -182,18 +174,12 @@ const AdminUsers = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {user.full_name || (
-                          <span className="text-muted-foreground italic">Non renseigné</span>
-                        )}
+                        {user.full_name || <span className="text-muted-foreground italic">Non renseigné</span>}
                       </TableCell>
                       <TableCell>
-                        {user.phone || (
-                          <span className="text-muted-foreground italic">Non renseigné</span>
-                        )}
+                        {user.phone || <span className="text-muted-foreground italic">Non renseigné</span>}
                       </TableCell>
-                      <TableCell>
-                        {getRoleBadge(user.role)}
-                      </TableCell>
+                      <TableCell>{getRoleBadge(user.role)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -222,9 +208,15 @@ const AdminUsers = () => {
         </CardHeader>
         <CardContent>
           <div className="text-sm text-warning-foreground">
-            <p><strong>Total d'utilisateurs:</strong> {users.length}</p>
-            <p><strong>Utilisateurs filtrés:</strong> {filteredUsers.length}</p>
-            <p><strong>Terme de recherche:</strong> "{searchTerm}"</p>
+            <p>
+              <strong>Total d'utilisateurs:</strong> {users.length}
+            </p>
+            <p>
+              <strong>Utilisateurs filtrés:</strong> {filteredUsers.length}
+            </p>
+            <p>
+              <strong>Terme de recherche:</strong> "{searchTerm}"
+            </p>
             <details className="mt-2">
               <summary className="cursor-pointer font-semibold">Voir les données brutes</summary>
               <pre className="mt-2 p-2 bg-warning rounded text-xs overflow-x-auto">

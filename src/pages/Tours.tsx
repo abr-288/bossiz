@@ -20,14 +20,21 @@ import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "react-router-dom";
 
-const TOUR_CATEGORIES = ["Culture & Patrimoine", "Nature & Randonnée", "Aventure", "Plage & Détente", "Gastronomie", "Ville & Découverte"];
+const TOUR_CATEGORIES = [
+  "Culture & Patrimoine",
+  "Nature & Randonnée",
+  "Aventure",
+  "Plage & Détente",
+  "Gastronomie",
+  "Ville & Découverte",
+];
 // Libellés affichés (la valeur française reste la clé de filtre en base)
 const TOUR_CATEGORY_KEYS: Record<string, string> = {
   "Culture & Patrimoine": "catCulture",
   "Nature & Randonnée": "catNature",
-  "Aventure": "catAdventure",
+  Aventure: "catAdventure",
   "Plage & Détente": "catBeach",
-  "Gastronomie": "catFood",
+  Gastronomie: "catFood",
   "Ville & Découverte": "catCity",
 };
 
@@ -62,21 +69,21 @@ const Tours = () => {
   }, [maxPrice]);
 
   const filteredTours = useMemo(() => {
-    let result = tours.filter(tour => tour.price >= priceRange[0] && tour.price <= priceRange[1]);
+    let result = tours.filter((tour) => tour.price >= priceRange[0] && tour.price <= priceRange[1]);
 
     if (destinationFilter) {
       const search = destinationFilter.toLowerCase();
-      result = result.filter(tour =>
-        tour.location.toLowerCase().includes(search) || tour.name.toLowerCase().includes(search)
+      result = result.filter(
+        (tour) => tour.location.toLowerCase().includes(search) || tour.name.toLowerCase().includes(search),
       );
     }
 
     if (categoryFilter !== "all") {
-      result = result.filter(tour => tour.category === categoryFilter);
+      result = result.filter((tour) => tour.category === categoryFilter);
     }
 
     if (durationFilter !== "all") {
-      result = result.filter(tour => {
+      result = result.filter((tour) => {
         const days = parseDurationDays(tour.duration);
         if (days === null) return true;
         if (durationFilter === "1day") return days <= 1;
@@ -87,20 +94,24 @@ const Tours = () => {
     }
 
     switch (sortBy) {
-      case "price-asc": result = [...result].sort((a, b) => a.price - b.price); break;
-      case "price-desc": result = [...result].sort((a, b) => b.price - a.price); break;
-      case "rating": result = [...result].sort((a, b) => b.rating - a.rating); break;
-      default: result = [...result].sort((a, b) => b.reviews - a.reviews);
+      case "price-asc":
+        result = [...result].sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        result = [...result].sort((a, b) => b.price - a.price);
+        break;
+      case "rating":
+        result = [...result].sort((a, b) => b.rating - a.rating);
+        break;
+      default:
+        result = [...result].sort((a, b) => b.reviews - a.reviews);
     }
 
     return result;
   }, [tours, priceRange, destinationFilter, categoryFilter, durationFilter, sortBy]);
 
   const totalPages = Math.ceil(filteredTours.length / itemsPerPage);
-  const paginatedTours = filteredTours.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginatedTours = filteredTours.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
@@ -108,31 +119,26 @@ const Tours = () => {
 
       {/* Hero Section with Search Form */}
       <div className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
-        <LazyImage
-          src={bannerTours}
-          alt="Circuits & Tours"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <LazyImage src={bannerTours} alt="Circuits & Tours" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/55 to-background"></div>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 90% at 15% 0%, hsl(var(--gold) / 0.22), transparent 55%)" }}
+        ></div>
         <div className="relative z-10 container mx-auto px-4 py-12">
           <div className="text-center mb-8 animate-fade-in">
-
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-              Circuits & Tours
-            </h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">Circuits & Tours</h1>
             <p className="text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl mx-auto text-center">
               {t("ux.tours.subtitle")}
             </p>
           </div>
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <TourSearchForm />
           </div>
         </div>
       </div>
 
       <main className="flex-1 container mx-auto px-4 py-8">
-
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filtres */}
           <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
@@ -166,7 +172,8 @@ const Tours = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Prix: <Price amount={priceRange[0]} fromCurrency="XOF" /> - <Price amount={priceRange[1]} fromCurrency="XOF" />
+                    Prix: <Price amount={priceRange[0]} fromCurrency="XOF" /> -{" "}
+                    <Price amount={priceRange[1]} fromCurrency="XOF" />
                   </label>
                   <Slider
                     min={0}
@@ -231,29 +238,26 @@ const Tours = () => {
             {loading ? (
               <CardGridSkeleton />
             ) : error ? (
-              <Card className="p-12 text-center text-muted-foreground">
-                {t("ux.tours.loadError")}
-              </Card>
+              <Card className="p-12 text-center text-muted-foreground">{t("ux.tours.loadError")}</Card>
             ) : filteredTours.length === 0 ? (
               <Card>
-            <EmptyState
-              icon={Map}
-              title={t("ux.tours.emptyTitle")}
-              description={t("ux.tours.emptyDesc")}
-              action={<Button variant="outline" asChild><Link to="/devenir-partenaire">{t("ux.tours.joinGuide")}</Link></Button>}
-            />
-          </Card>
+                <EmptyState
+                  icon={Map}
+                  title={t("ux.tours.emptyTitle")}
+                  description={t("ux.tours.emptyDesc")}
+                  action={
+                    <Button variant="outline" asChild>
+                      <Link to="/devenir-partenaire">{t("ux.tours.joinGuide")}</Link>
+                    </Button>
+                  }
+                />
+              </Card>
             ) : (
               <>
                 <div className="grid md:grid-cols-2 gap-6">
                   {paginatedTours.map((tour) => (
                     <Card key={tour.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <img
-                        src={tour.image}
-                        alt={tour.name}
-                        className="w-full h-48 object-cover"
-                        loading="lazy"
-                      />
+                      <img src={tour.image} alt={tour.name} className="w-full h-48 object-cover" loading="lazy" />
                       <CardContent className="p-6">
                         <h3 className="text-xl font-semibold mb-2">{tour.name}</h3>
 
@@ -262,7 +266,15 @@ const Tours = () => {
                           <span className="text-sm">{tour.location}</span>
                         </div>
                         {(tour.mapsUrl || (tour.latitude != null && tour.longitude != null)) && (
-                          <a className="mb-3 inline-flex items-center gap-1 text-sm text-primary underline" href={tour.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${tour.latitude},${tour.longitude}`} target="_blank" rel="noreferrer">
+                          <a
+                            className="mb-3 inline-flex items-center gap-1 text-sm text-primary underline"
+                            href={
+                              tour.mapsUrl ||
+                              `https://www.google.com/maps/search/?api=1&query=${tour.latitude},${tour.longitude}`
+                            }
+                            target="_blank"
+                            rel="noreferrer"
+                          >
                             Voir le lieu sur la carte <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         )}
@@ -270,8 +282,14 @@ const Tours = () => {
                           <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
                             <CalendarDays className="h-4 w-4 text-primary" />
                             <span className="text-muted-foreground">{t("ux.tours.departures")}</span>
-                            {tour.availableDates.slice(0, 3).map((date: string) => <span key={date} className="rounded-full bg-muted px-2 py-1">{new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}</span>)}
-                            {tour.availableDates.length > 3 && <span className="text-muted-foreground">+{tour.availableDates.length - 3}</span>}
+                            {tour.availableDates.slice(0, 3).map((date: string) => (
+                              <span key={date} className="rounded-full bg-muted px-2 py-1">
+                                {new Date(`${date}T12:00:00`).toLocaleDateString(currentLocaleTag())}
+                              </span>
+                            ))}
+                            {tour.availableDates.length > 3 && (
+                              <span className="text-muted-foreground">+{tour.availableDates.length - 3}</span>
+                            )}
                           </div>
                         )}
 
@@ -281,9 +299,7 @@ const Tours = () => {
                               <Star
                                 key={i}
                                 className={`w-4 h-4 ${
-                                  i < Math.floor(tour.rating)
-                                    ? "fill-accent text-accent"
-                                    : "text-gray-300"
+                                  i < Math.floor(tour.rating) ? "fill-accent text-accent" : "text-gray-300"
                                 }`}
                               />
                             ))}
@@ -313,18 +329,20 @@ const Tours = () => {
                               <Price amount={tour.price} fromCurrency={tour.currency} />
                             </p>
                           </div>
-                          <Button onClick={() => {
-                            setSelectedTour({
-                              id: tour.id,
-                              name: tour.name,
-                              price_per_unit: tour.price,
-                              currency: tour.currency,
-                              type: "tour",
-                              location: tour.location,
-                              availableDates: tour.availableDates,
-                            });
-                            setDialogOpen(true);
-                          }}>
+                          <Button
+                            onClick={() => {
+                              setSelectedTour({
+                                id: tour.id,
+                                name: tour.name,
+                                price_per_unit: tour.price,
+                                currency: tour.currency,
+                                type: "tour",
+                                location: tour.location,
+                                availableDates: tour.availableDates,
+                              });
+                              setDialogOpen(true);
+                            }}
+                          >
                             {t("ux.tours.book")}
                           </Button>
                         </div>
@@ -346,13 +364,7 @@ const Tours = () => {
         </div>
       </main>
 
-      {selectedTour && (
-        <BookingDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          service={selectedTour}
-        />
-      )}
+      {selectedTour && <BookingDialog open={dialogOpen} onOpenChange={setDialogOpen} service={selectedTour} />}
 
       <Footer />
     </div>

@@ -31,11 +31,16 @@ export const UnifiedSubmitButton = ({
 }: UnifiedSubmitButtonProps) => {
   const getDefaultIcon = (): LucideIcon => {
     switch (variant) {
-      case "search": return Search;
-      case "booking": return ArrowRight;
-      case "payment": return CreditCard;
-      case "auth": return Lock;
-      default: return Send;
+      case "search":
+        return Search;
+      case "booking":
+        return ArrowRight;
+      case "payment":
+        return CreditCard;
+      case "auth":
+        return Lock;
+      default:
+        return Send;
     }
   };
 
@@ -60,12 +65,7 @@ export const UnifiedSubmitButton = ({
         type={onClick ? "button" : "submit"}
         disabled={disabled || loading}
         onClick={onClick}
-        className={cn(
-          "font-semibold",
-          fullWidth && "w-full",
-          variantStyles[variant],
-          className
-        )}
+        className={cn("font-semibold", fullWidth && "w-full", variantStyles[variant], className)}
       >
         {loading ? (
           <>

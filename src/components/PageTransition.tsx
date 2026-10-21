@@ -33,18 +33,20 @@ const pageTransition: Transition = {
  */
 export const PageTransition = ({ children }: PageTransitionProps) => {
   const prefersReducedMotion = useReducedMotion();
-  
+
   const optimizedTransition: Transition = {
     type: "tween",
     ease: [0.4, 0, 0.2, 1],
     duration: prefersReducedMotion ? 0 : 0.15,
   };
-  
-  const optimizedVariants: Variants = prefersReducedMotion ? {
-    initial: { opacity: 1 },
-    animate: { opacity: 1 },
-    exit: { opacity: 1 },
-  } : pageVariants;
+
+  const optimizedVariants: Variants = prefersReducedMotion
+    ? {
+        initial: { opacity: 1 },
+        animate: { opacity: 1 },
+        exit: { opacity: 1 },
+      }
+    : pageVariants;
 
   return (
     <motion.div

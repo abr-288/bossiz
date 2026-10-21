@@ -19,17 +19,17 @@ const toCarService = (service: Tables<"services">) => {
   return {
     id: service.id,
     name: service.name,
-    category: specs.category || 'Standard',
+    category: specs.category || "Standard",
     price: Number(service.price_per_unit),
     rating: Number(service.rating) || 0,
     reviews: service.total_reviews || 0,
-    image: service.image_url || service.images?.[0] || '/placeholder.svg',
+    image: service.image_url || service.images?.[0] || "/placeholder.svg",
     seats: specs.seats || 5,
-    transmission: specs.transmission || 'Automatique',
-    fuel: specs.fuel || 'Essence',
+    transmission: specs.transmission || "Automatique",
+    fuel: specs.fuel || "Essence",
     luggage: specs.luggage || 3,
     location: service.location,
-    description: service.description
+    description: service.description,
   };
 };
 
@@ -50,11 +50,11 @@ export const useCarServices = () => {
     try {
       setLoading(true);
       const { data, error: fetchError } = await supabase
-        .from('services')
-        .select('*')
-        .eq('type', 'car')
-        .eq('available', true)
-        .order('created_at', { ascending: false });
+        .from("services")
+        .select("*")
+        .eq("type", "car")
+        .eq("available", true)
+        .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
 
@@ -63,8 +63,8 @@ export const useCarServices = () => {
 
       setCars(transformedCars);
     } catch (err) {
-      console.error('Error fetching car services:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      console.error("Error fetching car services:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }

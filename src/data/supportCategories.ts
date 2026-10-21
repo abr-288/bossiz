@@ -1,6 +1,4 @@
-import {
-  CalendarCheck, CreditCard, RotateCcw, Baby, FileText, PlaneTakeoff, Luggage, LucideIcon,
-} from "lucide-react";
+import { CalendarCheck, CreditCard, RotateCcw, Baby, FileText, PlaneTakeoff, Luggage, LucideIcon } from "lucide-react";
 
 export interface SupportCategoryDef {
   id: string;

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   saveBookingsOffline,
   getOfflineBookings,
@@ -8,9 +8,9 @@ import {
   clearSyncQueue,
   removeSyncQueueItem,
   getStorageStats,
-  type BookingData
-} from '@/lib/offlineStorage';
-import { useToast } from '@/hooks/use-toast';
+  type BookingData,
+} from "@/lib/offlineStorage";
+import { useToast } from "@/hooks/use-toast";
 
 export const useOfflineBookings = (userId: string | undefined) => {
   const [bookings, setBookings] = useState<BookingData[]>([]);
@@ -36,16 +36,16 @@ export const useOfflineBookings = (userId: string | undefined) => {
       toast({
         title: "Mode hors ligne",
         description: "Vous pouvez toujours consulter vos réservations",
-        variant: "destructive"
+        variant: "destructive",
       });
     };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -69,10 +69,10 @@ export const useOfflineBookings = (userId: string | undefined) => {
       if (isOnline) {
         // Try to fetch from Supabase
         const { data, error } = await supabase
-          .from('bookings')
-          .select('*, services(name, type, location)')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false });
+          .from("bookings")
+          .select("*, services(name, type, location)")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false });
 
         if (error) throw error;
 
@@ -89,14 +89,14 @@ export const useOfflineBookings = (userId: string | undefined) => {
         await updateStats();
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
-      
+      console.error("Error fetching bookings:", error);
+
       // Fallback to offline data
       try {
         const offlineData = await getOfflineBookings(userId);
         setBookings(offlineData);
         await updateStats();
-        
+
         if (offlineData.length > 0) {
           toast({
             title: "Données hors ligne",
@@ -104,11 +104,11 @@ export const useOfflineBookings = (userId: string | undefined) => {
           });
         }
       } catch (offlineError) {
-        console.error('Error fetching offline bookings:', offlineError);
+        console.error("Error fetching offline bookings:", offlineError);
         toast({
           title: "Erreur",
           description: "Impossible de charger les réservations",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } finally {
@@ -124,7 +124,7 @@ export const useOfflineBookings = (userId: string | undefined) => {
 
     try {
       const queue = await getSyncQueue();
-      
+
       if (queue.length === 0) {
         await fetchBookings();
         return;
@@ -133,22 +133,28 @@ export const useOfflineBookings = (userId: string | undefined) => {
       for (const item of queue) {
         try {
           // Only handle bookings table for now
-          if (item.table === 'bookings') {
-            if (item.action === 'create') {
-              await supabase.from('bookings').insert(item.data);
-            } else if (item.action === 'update') {
-              await supabase.from('bookings').update(item.data).eq('id', item.data.id ?? '');
-            } else if (item.action === 'delete') {
-              await supabase.from('bookings').delete().eq('id', item.data.id ?? '');
+          if (item.table === "bookings") {
+            if (item.action === "create") {
+              await supabase.from("bookings").insert(item.data);
+            } else if (item.action === "update") {
+              await supabase
+                .from("bookings")
+                .update(item.data)
+                .eq("id", item.data.id ?? "");
+            } else if (item.action === "delete") {
+              await supabase
+                .from("bookings")
+                .delete()
+                .eq("id", item.data.id ?? "");
             }
           }
-          
+
           // Remove from queue after successful sync
           if (item.id !== undefined) {
             await removeSyncQueueItem(item.id);
           }
         } catch (error) {
-          console.error('Error syncing item:', error);
+          console.error("Error syncing item:", error);
         }
       }
 
@@ -161,11 +167,11 @@ export const useOfflineBookings = (userId: string | undefined) => {
         description: `${queue.length} modification(s) synchronisée(s)`,
       });
     } catch (error) {
-      console.error('Error syncing changes:', error);
+      console.error("Error syncing changes:", error);
       toast({
         title: "Erreur de synchronisation",
         description: "Certaines modifications n'ont pas pu être synchronisées",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSyncing(false);
@@ -182,18 +188,18 @@ export const useOfflineBookings = (userId: string | undefined) => {
     if (!userId || !isOnline) return;
 
     const channel = supabase
-      .channel('bookings-changes')
+      .channel("bookings-changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'bookings',
-          filter: `user_id=eq.${userId}`
+          event: "*",
+          schema: "public",
+          table: "bookings",
+          filter: `user_id=eq.${userId}`,
         },
         () => {
           fetchBookings();
-        }
+        },
       )
       .subscribe();
 
@@ -209,6 +215,6 @@ export const useOfflineBookings = (userId: string | undefined) => {
     isSyncing,
     storageStats,
     refetch: fetchBookings,
-    syncPendingChanges
+    syncPendingChanges,
   };
 };

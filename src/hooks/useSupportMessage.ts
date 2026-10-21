@@ -17,8 +17,8 @@ export const useSupportMessage = () => {
   const sendMessage = async (data: SupportMessageData) => {
     setLoading(true);
     try {
-      const { error } = await supabase.functions.invoke('send-support-email', {
-        body: data
+      const { error } = await supabase.functions.invoke("send-support-email", {
+        body: data,
       });
 
       if (error) throw error;
@@ -27,10 +27,10 @@ export const useSupportMessage = () => {
         title: "Message envoyé",
         description: "Nous vous répondrons dans les plus brefs délais.",
       });
-      
+
       return true;
     } catch (error) {
-      console.error('Error sending support message:', error);
+      console.error("Error sending support message:", error);
       toast({
         title: "Erreur",
         description: "Impossible d'envoyer le message. Veuillez réessayer.",

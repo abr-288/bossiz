@@ -16,7 +16,11 @@ describe("getPasswordStrength - edge cases", () => {
     { input: "ABCDEFGH", expected: 2, label: "8 uppercase chars" },
     { input: "12345678", expected: 2, label: "8 digits" },
     { input: "Mot2Passe!", expected: 5, label: "typical strong password" },
-    { input: "Àéîöü123!", expected: 3, label: "accented chars with numbers and special (accented chars don't match [A-Z]/[a-z])" },
+    {
+      input: "Àéîöü123!",
+      expected: 3,
+      label: "accented chars with numbers and special (accented chars don't match [A-Z]/[a-z])",
+    },
   ];
 
   testCases.forEach(({ input, expected, label }) => {

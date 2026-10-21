@@ -56,10 +56,7 @@ export function PaidSubscriptionsTable({ refreshKey }: { refreshKey: number }) {
 
       const userIds = [...new Set(subscriptions.map((s) => s.user_id))];
       if (userIds.length > 0) {
-        const { data: profileRows } = await supabase
-          .from("profiles")
-          .select("id, full_name, phone")
-          .in("id", userIds);
+        const { data: profileRows } = await supabase.from("profiles").select("id, full_name, phone").in("id", userIds);
         setProfiles(Object.fromEntries((profileRows || []).map((p) => [p.id, p])));
       }
       setIsLoading(false);
@@ -77,7 +74,9 @@ export function PaidSubscriptionsTable({ refreshKey }: { refreshKey: number }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("ux.bo.paidSubsTitle")} ({rows.length})</CardTitle>
+        <CardTitle>
+          {t("ux.bo.paidSubsTitle")} ({rows.length})
+        </CardTitle>
         <CardDescription>{t("ux.bo.paidSubsDesc")}</CardDescription>
       </CardHeader>
       <CardContent>

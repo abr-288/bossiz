@@ -78,9 +78,7 @@ export const cultureEntryPath = (entry: Pick<CultureEntry, "slug">) => (entry.sl
 // Contenu d'article : paragraphes séparés par une ligne vide, intertitres
 // « ## », listes « - ».
 export type ArticleBlock =
-  | { kind: "heading"; text: string }
-  | { kind: "list"; items: string[] }
-  | { kind: "paragraph"; text: string };
+  { kind: "heading"; text: string } | { kind: "list"; items: string[] } | { kind: "paragraph"; text: string };
 
 export function parseArticle(content: string | null): ArticleBlock[] {
   if (!content) return [];

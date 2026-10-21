@@ -23,17 +23,17 @@ export const useAITravelAdvisor = () => {
     setError(null);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('ai-travel-advisor', {
-        body: params
+      const { data, error: functionError } = await supabase.functions.invoke("ai-travel-advisor", {
+        body: params,
       });
 
       if (functionError) throw functionError;
-      
+
       return data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
       setError(errorMessage);
-      console.error('AI Travel Advisor error:', err);
+      console.error("AI Travel Advisor error:", err);
       return null;
     } finally {
       setLoading(false);

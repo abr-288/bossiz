@@ -1,5 +1,19 @@
 import { motion } from "framer-motion";
-import { Briefcase, Plus, Minus, Check, Shield, Utensils, Wifi, Car, Bed, Star, Users, Camera, Crown } from "lucide-react";
+import {
+  Briefcase,
+  Plus,
+  Minus,
+  Check,
+  Shield,
+  Utensils,
+  Wifi,
+  Car,
+  Bed,
+  Star,
+  Users,
+  Camera,
+  Crown,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,13 +73,13 @@ export const OptionsStep = ({
           subtitle: t("ux.booking.baggageSubtitle", { count: guestsCount }),
           currency: "EUR",
           options: [
-            { 
-              id: "checked-additional", 
+            {
+              id: "checked-additional",
               name: t("ux.booking.extraBag", { kg: allowance.checked.weightKg }),
               description: t("ux.booking.extraBagDesc"),
-              price: additionalBagPrice, 
-              included: false, 
-              icon: <Briefcase className="h-5 w-5" /> 
+              price: additionalBagPrice,
+              included: false,
+              icon: <Briefcase className="h-5 w-5" />,
             },
           ],
         };
@@ -77,10 +91,38 @@ export const OptionsStep = ({
           subtitle: t("ux.booking.hotelSubtitle"),
           currency: "XOF",
           options: [
-            { id: "breakfast", name: t("ux.booking.breakfast"), description: t("ux.booking.breakfastDesc"), price: 8000, included: false, icon: <Utensils className="h-5 w-5" /> },
-            { id: "wifi-premium", name: t("ux.booking.wifi"), description: t("ux.booking.wifiDesc"), price: 3000, included: false, icon: <Wifi className="h-5 w-5" /> },
-            { id: "late-checkout", name: t("ux.booking.lateCheckout"), description: t("ux.booking.lateCheckoutDesc"), price: 15000, included: false, icon: <Bed className="h-5 w-5" /> },
-            { id: "room-upgrade", name: t("ux.booking.upgrade"), description: t("ux.booking.upgradeDesc"), price: 25000, included: false, icon: <Star className="h-5 w-5" /> },
+            {
+              id: "breakfast",
+              name: t("ux.booking.breakfast"),
+              description: t("ux.booking.breakfastDesc"),
+              price: 8000,
+              included: false,
+              icon: <Utensils className="h-5 w-5" />,
+            },
+            {
+              id: "wifi-premium",
+              name: t("ux.booking.wifi"),
+              description: t("ux.booking.wifiDesc"),
+              price: 3000,
+              included: false,
+              icon: <Wifi className="h-5 w-5" />,
+            },
+            {
+              id: "late-checkout",
+              name: t("ux.booking.lateCheckout"),
+              description: t("ux.booking.lateCheckoutDesc"),
+              price: 15000,
+              included: false,
+              icon: <Bed className="h-5 w-5" />,
+            },
+            {
+              id: "room-upgrade",
+              name: t("ux.booking.upgrade"),
+              description: t("ux.booking.upgradeDesc"),
+              price: 25000,
+              included: false,
+              icon: <Star className="h-5 w-5" />,
+            },
           ],
         };
       case "car":
@@ -89,11 +131,46 @@ export const OptionsStep = ({
           subtitle: t("ux.booking.carSubtitle"),
           currency: "XOF",
           options: [
-            { id: "basic-insurance", name: t("ux.booking.basicInsurance"), description: t("ux.booking.basicInsuranceDesc"), price: 0, included: true, icon: <Shield className="h-5 w-5" /> },
-            { id: "full-insurance", name: t("ux.booking.fullInsurance"), description: t("ux.booking.fullInsuranceDesc"), price: 15000, included: false, icon: <Shield className="h-5 w-5" /> },
-            { id: "gps", name: t("ux.booking.gps"), description: t("ux.booking.gpsDesc"), price: 5000, included: false, icon: <Car className="h-5 w-5" /> },
-            { id: "child-seat", name: t("ux.booking.childSeat"), description: t("ux.booking.childSeatDesc"), price: 8000, included: false, icon: <Car className="h-5 w-5" /> },
-            { id: "extra-driver", name: t("ux.booking.extraDriver"), description: t("ux.booking.extraDriverDesc"), price: 10000, included: false, icon: <Car className="h-5 w-5" /> },
+            {
+              id: "basic-insurance",
+              name: t("ux.booking.basicInsurance"),
+              description: t("ux.booking.basicInsuranceDesc"),
+              price: 0,
+              included: true,
+              icon: <Shield className="h-5 w-5" />,
+            },
+            {
+              id: "full-insurance",
+              name: t("ux.booking.fullInsurance"),
+              description: t("ux.booking.fullInsuranceDesc"),
+              price: 15000,
+              included: false,
+              icon: <Shield className="h-5 w-5" />,
+            },
+            {
+              id: "gps",
+              name: t("ux.booking.gps"),
+              description: t("ux.booking.gpsDesc"),
+              price: 5000,
+              included: false,
+              icon: <Car className="h-5 w-5" />,
+            },
+            {
+              id: "child-seat",
+              name: t("ux.booking.childSeat"),
+              description: t("ux.booking.childSeatDesc"),
+              price: 8000,
+              included: false,
+              icon: <Car className="h-5 w-5" />,
+            },
+            {
+              id: "extra-driver",
+              name: t("ux.booking.extraDriver"),
+              description: t("ux.booking.extraDriverDesc"),
+              price: 10000,
+              included: false,
+              icon: <Car className="h-5 w-5" />,
+            },
           ],
         };
       case "tour":
@@ -104,10 +181,38 @@ export const OptionsStep = ({
           subtitle: t("ux.booking.tourSubtitle"),
           currency: "XOF",
           options: [
-            { id: "guide-private", name: t("ux.booking.guide"), description: t("ux.booking.guideDesc"), price: 25000, included: false, icon: <Users className="h-5 w-5" /> },
-            { id: "meals", name: t("ux.booking.meals"), description: t("ux.booking.mealsDesc"), price: 15000, included: false, icon: <Utensils className="h-5 w-5" /> },
-            { id: "photo-pack", name: t("ux.booking.photo"), description: t("ux.booking.photoDesc"), price: 20000, included: false, icon: <Camera className="h-5 w-5" /> },
-            { id: "transport-vip", name: t("ux.booking.vip"), description: t("ux.booking.vipDesc"), price: 35000, included: false, icon: <Car className="h-5 w-5" /> },
+            {
+              id: "guide-private",
+              name: t("ux.booking.guide"),
+              description: t("ux.booking.guideDesc"),
+              price: 25000,
+              included: false,
+              icon: <Users className="h-5 w-5" />,
+            },
+            {
+              id: "meals",
+              name: t("ux.booking.meals"),
+              description: t("ux.booking.mealsDesc"),
+              price: 15000,
+              included: false,
+              icon: <Utensils className="h-5 w-5" />,
+            },
+            {
+              id: "photo-pack",
+              name: t("ux.booking.photo"),
+              description: t("ux.booking.photoDesc"),
+              price: 20000,
+              included: false,
+              icon: <Camera className="h-5 w-5" />,
+            },
+            {
+              id: "transport-vip",
+              name: t("ux.booking.vip"),
+              description: t("ux.booking.vipDesc"),
+              price: 35000,
+              included: false,
+              icon: <Car className="h-5 w-5" />,
+            },
           ],
         };
       default:
@@ -116,8 +221,22 @@ export const OptionsStep = ({
           subtitle: t("ux.booking.otherSubtitle"),
           currency: "XOF",
           options: [
-            { id: "premium", name: t("ux.booking.premium"), description: t("ux.booking.premiumDesc"), price: 15000, included: false, icon: <Crown className="h-5 w-5" /> },
-            { id: "support", name: t("ux.booking.support"), description: t("ux.booking.supportDesc"), price: 10000, included: false, icon: <Shield className="h-5 w-5" /> },
+            {
+              id: "premium",
+              name: t("ux.booking.premium"),
+              description: t("ux.booking.premiumDesc"),
+              price: 15000,
+              included: false,
+              icon: <Crown className="h-5 w-5" />,
+            },
+            {
+              id: "support",
+              name: t("ux.booking.support"),
+              description: t("ux.booking.supportDesc"),
+              price: 10000,
+              included: false,
+              icon: <Shield className="h-5 w-5" />,
+            },
           ],
         };
     }
@@ -141,20 +260,20 @@ export const OptionsStep = ({
 
   const getNextButtonText = () => {
     switch (serviceType) {
-      case "flight": return t("ux.booking.continueSeats");
+      case "flight":
+        return t("ux.booking.continueSeats");
       case "hotel":
-      case "stay": return t("ux.booking.continuePreferences");
-      case "car": return t("ux.booking.continueDetails");
-      default: return t("ux.booking.continue");
+      case "stay":
+        return t("ux.booking.continuePreferences");
+      case "car":
+        return t("ux.booking.continueDetails");
+      default:
+        return t("ux.booking.continue");
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
         <h2 className="text-2xl font-bold text-primary mb-2">{title}</h2>
         <p className="text-muted-foreground">{subtitle}</p>
@@ -162,11 +281,7 @@ export const OptionsStep = ({
 
       {/* Show baggage allowance info for flights */}
       {serviceType === "flight" && airline && (
-        <BaggageInfo 
-          airline={airline}
-          fareType={fareType}
-          cabinClass={cabinClass}
-        />
+        <BaggageInfo airline={airline} fareType={fareType} cabinClass={cabinClass} />
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -174,9 +289,7 @@ export const OptionsStep = ({
           <Card
             key={option.id}
             className={`p-6 transition-all ${
-              option.included
-                ? "border-2 border-primary bg-primary/5"
-                : "border border-border hover:border-primary/50"
+              option.included ? "border-2 border-primary bg-primary/5" : "border border-border hover:border-primary/50"
             }`}
           >
             <div className="flex justify-between items-start mb-4">
@@ -199,7 +312,11 @@ export const OptionsStep = ({
 
             <div className="flex items-center justify-between mt-4">
               <div className="text-2xl font-bold text-primary">
-                {option.price === 0 ? t("ux.booking.free") : <Price amount={option.price} fromCurrency={currency} showLoader />}
+                {option.price === 0 ? (
+                  t("ux.booking.free")
+                ) : (
+                  <Price amount={option.price} fromCurrency={currency} showLoader />
+                )}
               </div>
               {!option.included && (
                 <div className="flex items-center gap-2">
@@ -213,9 +330,7 @@ export const OptionsStep = ({
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-8 text-center font-semibold">
-                    {selectedOptions[option.id] || 0}
-                  </span>
+                  <span className="w-8 text-center font-semibold">{selectedOptions[option.id] || 0}</span>
                   <Button
                     aria-label={t("ux.booking.add", { name: option.name })}
                     type="button"

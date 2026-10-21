@@ -32,7 +32,11 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Fichier trop volumineux", description: "La taille maximale est de 5 Mo", variant: "destructive" });
+      toast({
+        title: "Fichier trop volumineux",
+        description: "La taille maximale est de 5 Mo",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -44,7 +48,9 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
     setUploading(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Vous devez être connecté pour envoyer un document");
       }
@@ -53,14 +59,11 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
       formData.append("file", file);
       formData.append("docType", docType);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-driver-document`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${session.access_token}` },
-          body: formData,
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-driver-document`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: formData,
+      });
 
       const result = await response.json();
 
@@ -74,7 +77,11 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
       toast({ title: "Document envoyé", description: "Votre photo a bien été enregistrée" });
     } catch (error) {
       console.error("Driver document upload error:", error);
-      toast({ title: "Erreur d'upload", description: getErrorMessage(error) || "Impossible d'envoyer le document", variant: "destructive" });
+      toast({
+        title: "Erreur d'upload",
+        description: getErrorMessage(error) || "Impossible d'envoyer le document",
+        variant: "destructive",
+      });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -93,7 +100,12 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
         <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
           {previewUrl ? (
             <>
-              <img src={previewUrl} alt={label} className="w-full h-full object-cover" onError={() => setPreviewUrl(null)} />
+              <img
+                src={previewUrl}
+                alt={label}
+                className="w-full h-full object-cover"
+                onError={() => setPreviewUrl(null)}
+              />
               <button
                 type="button"
                 aria-label={t("ux.common.removeImage")}
@@ -110,8 +122,20 @@ export function DriverDocumentUpload({ label, docType, path, onChange }: DriverD
 
         <div className="flex-1 space-y-1.5">
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
-          <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-            {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : path ? <Check className="w-4 h-4 mr-2 text-success" /> : <Upload className="w-4 h-4 mr-2" />}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : path ? (
+              <Check className="w-4 h-4 mr-2 text-success" />
+            ) : (
+              <Upload className="w-4 h-4 mr-2" />
+            )}
             {uploading ? "Envoi..." : path ? "Remplacer" : "Choisir une photo"}
           </Button>
           <p className="text-xs text-muted-foreground">JPG/PNG, 5 Mo max. Visible uniquement par vous et Bossiz+.</p>

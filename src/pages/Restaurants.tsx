@@ -27,14 +27,15 @@ const Restaurants = () => {
     let result = restaurants;
     if (locationFilter) {
       const search = locationFilter.toLowerCase();
-      result = result.filter(r =>
-        r.location.toLowerCase().includes(search) ||
-        r.name.toLowerCase().includes(search) ||
-        (r.cuisine_type || "").toLowerCase().includes(search)
+      result = result.filter(
+        (r) =>
+          r.location.toLowerCase().includes(search) ||
+          r.name.toLowerCase().includes(search) ||
+          (r.cuisine_type || "").toLowerCase().includes(search),
       );
     }
     if (priceFilter !== "all") {
-      result = result.filter(r => r.price_range === priceFilter);
+      result = result.filter((r) => r.price_range === priceFilter);
     }
     return result;
   }, [restaurants, locationFilter, priceFilter]);
@@ -51,12 +52,8 @@ const Restaurants = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t("ux.restaurants.title")}
-          </h1>
-          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            {t("ux.restaurants.subtitle")}
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.restaurants.title")}</h1>
+          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">{t("ux.restaurants.subtitle")}</p>
         </div>
       </div>
 
@@ -86,16 +83,18 @@ const Restaurants = () => {
         {loading ? (
           <CardGridSkeleton />
         ) : error ? (
-          <Card className="p-12 text-center text-muted-foreground">
-            {t("ux.restaurants.loadError")}
-          </Card>
+          <Card className="p-12 text-center text-muted-foreground">{t("ux.restaurants.loadError")}</Card>
         ) : filteredRestaurants.length === 0 ? (
           <Card>
             <EmptyState
               icon={UtensilsCrossed}
               title={t("ux.restaurants.emptyTitle")}
               description={t("ux.restaurants.emptyDesc")}
-              action={<Button variant="outline" asChild><Link to="/devenir-partenaire">{t("ux.restaurants.join")}</Link></Button>}
+              action={
+                <Button variant="outline" asChild>
+                  <Link to="/devenir-partenaire">{t("ux.restaurants.join")}</Link>
+                </Button>
+              }
             />
           </Card>
         ) : (
@@ -138,7 +137,10 @@ const Restaurants = () => {
 
                   <div className="mt-auto pt-3 flex items-center justify-between gap-3">
                     {restaurant.phone && (
-                      <a href={`tel:${restaurant.phone}`} className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary">
+                      <a
+                        href={`tel:${restaurant.phone}`}
+                        className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary"
+                      >
                         <Phone className="w-3.5 h-3.5" />
                         {restaurant.phone}
                       </a>
@@ -161,11 +163,7 @@ const Restaurants = () => {
       </main>
 
       {selectedRestaurant && (
-        <RestaurantReservationDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          restaurant={selectedRestaurant}
-        />
+        <RestaurantReservationDialog open={dialogOpen} onOpenChange={setDialogOpen} restaurant={selectedRestaurant} />
       )}
 
       <Footer />

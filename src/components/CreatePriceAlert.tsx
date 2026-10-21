@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bell } from 'lucide-react';
-import { usePriceAlerts } from '@/hooks/usePriceAlerts';
-import { useCurrency } from '@/contexts/CurrencyContext';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Bell } from "lucide-react";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 
 interface CreatePriceAlertProps {
   initialData?: {
-    serviceType: 'flight' | 'hotel' | 'car';
+    serviceType: "flight" | "hotel" | "car";
     origin?: string;
     destination?: string;
     departureDate?: string;
@@ -25,23 +25,23 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
   const { t } = useTranslation();
   const { createAlert, isLoading } = usePriceAlerts();
   const { selectedCurrency } = useCurrency();
-  
+
   const [formData, setFormData] = useState({
-    serviceType: initialData?.serviceType || 'flight',
-    origin: initialData?.origin || '',
-    destination: initialData?.destination || '',
-    departureDate: initialData?.departureDate || '',
-    returnDate: initialData?.returnDate || '',
-    targetPrice: '',
-    alertThreshold: '10',
+    serviceType: initialData?.serviceType || "flight",
+    origin: initialData?.origin || "",
+    destination: initialData?.destination || "",
+    departureDate: initialData?.departureDate || "",
+    returnDate: initialData?.returnDate || "",
+    targetPrice: "",
+    alertThreshold: "10",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       await createAlert({
-        service_type: formData.serviceType as 'flight' | 'hotel' | 'car',
+        service_type: formData.serviceType as "flight" | "hotel" | "car",
         origin: formData.origin || undefined,
         destination: formData.destination,
         departure_date: formData.departureDate || undefined,
@@ -52,21 +52,21 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
         alert_threshold: parseFloat(formData.alertThreshold),
         is_active: true,
       });
-      
+
       if (onSuccess) onSuccess();
-      
+
       // Reset form
       setFormData({
-        serviceType: 'flight',
-        origin: '',
-        destination: '',
-        departureDate: '',
-        returnDate: '',
-        targetPrice: '',
-        alertThreshold: '10',
+        serviceType: "flight",
+        origin: "",
+        destination: "",
+        departureDate: "",
+        returnDate: "",
+        targetPrice: "",
+        alertThreshold: "10",
       });
     } catch (error) {
-      console.error('Error creating alert:', error);
+      console.error("Error creating alert:", error);
     }
   };
 
@@ -77,9 +77,7 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
           <Bell className="h-5 w-5 text-primary" />
           {t("ux.priceAlert.title")}
         </CardTitle>
-        <CardDescription>
-          {t("ux.priceAlert.subtitle")}
-        </CardDescription>
+        <CardDescription>{t("ux.priceAlert.subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -88,7 +86,9 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
               <Label htmlFor="serviceType">{t("ux.priceAlert.serviceType")}</Label>
               <Select
                 value={formData.serviceType}
-                onValueChange={(value) => setFormData({ ...formData, serviceType: value as 'flight' | 'hotel' | 'car' })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, serviceType: value as "flight" | "hotel" | "car" })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -101,7 +101,7 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
               </Select>
             </div>
 
-            {formData.serviceType === 'flight' && (
+            {formData.serviceType === "flight" && (
               <div className="space-y-2">
                 <Label htmlFor="origin">Origine</Label>
                 <Input
@@ -168,14 +168,12 @@ export const CreatePriceAlert = ({ initialData, onSuccess }: CreatePriceAlertPro
                 onChange={(e) => setFormData({ ...formData, alertThreshold: e.target.value })}
                 placeholder="10"
               />
-              <p className="text-xs text-muted-foreground">
-                {t("ux.priceAlert.thresholdDesc")}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("ux.priceAlert.thresholdDesc")}</p>
             </div>
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? t("ux.priceAlert.creating") : 'Créer l\'alerte'}
+            {isLoading ? t("ux.priceAlert.creating") : "Créer l'alerte"}
           </Button>
         </form>
       </CardContent>

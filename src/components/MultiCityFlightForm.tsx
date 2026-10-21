@@ -19,7 +19,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
   const { t } = useTranslation();
   const [legs, setLegs] = useState<FlightLeg[]>([
     { id: "1", from: "", to: "", date: undefined },
-    { id: "2", from: "", to: "", date: undefined }
+    { id: "2", from: "", to: "", date: undefined },
   ]);
 
   const addLeg = () => {
@@ -30,12 +30,12 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
 
   const removeLeg = (id: string) => {
     if (legs.length > 2) {
-      setLegs(legs.filter(leg => leg.id !== id));
+      setLegs(legs.filter((leg) => leg.id !== id));
     }
   };
 
   const updateLeg = <K extends keyof FlightLeg>(id: string, field: K, value: FlightLeg[K]) => {
-    setLegs(legs.map(leg => leg.id === id ? { ...leg, [field]: value } : leg));
+    setLegs(legs.map((leg) => (leg.id === id ? { ...leg, [field]: value } : leg)));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,12 +58,12 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
                     label="Départ"
                     value={leg.from}
                     onChange={(value) => updateLeg(leg.id, "from", value)}
-                    placeholder={t('search.departureCityPlaceholder')}
+                    placeholder={t("search.departureCityPlaceholder")}
                     type="airport"
                   />
                 </div>
               </div>
-              
+
               <UnifiedAutocomplete
                 label="Arrivée"
                 value={leg.to}
@@ -71,7 +71,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
                 placeholder="Destination"
                 type="airport"
               />
-              
+
               <UnifiedDatePicker
                 label="Date"
                 value={leg.date}
@@ -79,7 +79,7 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
                 minDate={new Date()}
               />
             </div>
-            
+
             {legs.length > 2 && (
               <Button
                 aria-label="Supprimer ce trajet"
@@ -93,22 +93,15 @@ export const MultiCityFlightForm = ({ onSearch }: MultiCityFlightFormProps) => {
             )}
           </div>
         ))}
-        
+
         {legs.length < 5 && (
-          <Button
-            variant="outline"
-            onClick={addLeg}
-            className="w-full"
-            type="button"
-          >
+          <Button variant="outline" onClick={addLeg} className="w-full" type="button">
             <Plus className="mr-2 h-4 w-4" />
-            {t('multiCityFlightForm.addFlight')}
+            {t("multiCityFlightForm.addFlight")}
           </Button>
         )}
-        
-        <UnifiedSubmitButton fullWidth>
-          Rechercher des vols multi-destinations
-        </UnifiedSubmitButton>
+
+        <UnifiedSubmitButton fullWidth>Rechercher des vols multi-destinations</UnifiedSubmitButton>
       </div>
     </UnifiedForm>
   );

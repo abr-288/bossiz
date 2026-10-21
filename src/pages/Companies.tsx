@@ -56,7 +56,9 @@ const Companies = () => {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error(t("ux.companies.signInToCreate"));
       navigate("/auth");
@@ -83,7 +85,9 @@ const Companies = () => {
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error(t("ux.companies.signInToJoin"));
       navigate("/auth");
@@ -123,12 +127,8 @@ const Companies = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand/75 via-brand/60 to-brand/80" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
-            {t("ux.companies.title")}
-          </h1>
-          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">
-            {t("ux.companies.subtitle")}
-          </p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">{t("ux.companies.title")}</h1>
+          <p className="text-lg md:text-xl text-white/95 max-w-2xl mx-auto">{t("ux.companies.subtitle")}</p>
         </div>
       </div>
 
@@ -163,11 +163,20 @@ const Companies = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Description</Label>
-                  <Textarea value={companyDescription} onChange={(e) => setCompanyDescription(e.target.value)} rows={2} />
+                  <Textarea
+                    value={companyDescription}
+                    onChange={(e) => setCompanyDescription(e.target.value)}
+                    rows={2}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("ux.companies.billingEmail")}</Label>
-                  <Input type="email" value={billingEmail} onChange={(e) => setBillingEmail(e.target.value)} placeholder="comptabilite@entreprise.com" />
+                  <Input
+                    type="email"
+                    value={billingEmail}
+                    onChange={(e) => setBillingEmail(e.target.value)}
+                    placeholder="comptabilite@entreprise.com"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("ux.companies.billingPhone")}</Label>

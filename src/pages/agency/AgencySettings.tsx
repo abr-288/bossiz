@@ -5,13 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { PhoneNumberInput } from "@/components/PhoneNumberInput";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,12 +17,42 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 
 const bankFields = [
-  { key: "bankName", get label() { return i18n.t("ux.bo.bankName"); } },
-  { key: "bankCode", get label() { return i18n.t("ux.bo.bankCode"); } },
-  { key: "swiftCode", get label() { return i18n.t("ux.bo.swiftBicCode"); } },
-  { key: "agencyCode", get label() { return i18n.t("ux.bo.branchCode"); } },
-  { key: "accountNumber", get label() { return i18n.t("ux.bo.accountNumber"); } },
-  { key: "key", get label() { return i18n.t("ux.bo.ribKey"); } },
+  {
+    key: "bankName",
+    get label() {
+      return i18n.t("ux.bo.bankName");
+    },
+  },
+  {
+    key: "bankCode",
+    get label() {
+      return i18n.t("ux.bo.bankCode");
+    },
+  },
+  {
+    key: "swiftCode",
+    get label() {
+      return i18n.t("ux.bo.swiftBicCode");
+    },
+  },
+  {
+    key: "agencyCode",
+    get label() {
+      return i18n.t("ux.bo.branchCode");
+    },
+  },
+  {
+    key: "accountNumber",
+    get label() {
+      return i18n.t("ux.bo.accountNumber");
+    },
+  },
+  {
+    key: "key",
+    get label() {
+      return i18n.t("ux.bo.ribKey");
+    },
+  },
 ] as const;
 
 type BankField = (typeof bankFields)[number]["key"];
@@ -83,14 +107,12 @@ export default function AgencySettings() {
   }, []);
 
   const fetchAgency = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from("agencies")
-      .select("*")
-      .eq("owner_id", user.id)
-      .single();
+    const { data, error } = await supabase.from("agencies").select("*").eq("owner_id", user.id).single();
 
     if (error) {
       console.error("Error fetching agency:", error);
@@ -104,23 +126,17 @@ export default function AgencySettings() {
         contact_phone: data.contact_phone || "",
       });
 
-      const [
-        { data: payoutData, error: payoutError },
-        { data: brandingData, error: brandingError },
-      ] = await Promise.all([
-        supabase
-          .from("agency_payout_details")
-          .select("*")
-          .eq("agency_id", data.id)
-          .maybeSingle(),
-        supabase
-          .from("agency_branding_subscriptions")
-          .select("id, status, ends_at")
-          .eq("agency_id", data.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-      ]);
+      const [{ data: payoutData, error: payoutError }, { data: brandingData, error: brandingError }] =
+        await Promise.all([
+          supabase.from("agency_payout_details").select("*").eq("agency_id", data.id).maybeSingle(),
+          supabase
+            .from("agency_branding_subscriptions")
+            .select("id, status, ends_at")
+            .eq("agency_id", data.id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+        ]);
       if (payoutError) {
         console.error("Error loading agency payout details:", payoutError);
       } else if (payoutData) {
@@ -173,16 +189,14 @@ export default function AgencySettings() {
       if (error) throw error;
 
       if (payoutMethod) {
-        const { error: payoutSaveError } = await supabase
-          .from("agency_payout_details")
-          .upsert({
-            agency_id: agency.id,
-            payment_method: payoutMethod,
-            beneficiary_name: beneficiaryName.trim(),
-            mobile_money_number: payoutMethod === "bank" ? null : normalizedNumber,
-            bank_details: payoutMethod === "bank" ? bankDetails : null,
-            updated_at: new Date().toISOString(),
-          });
+        const { error: payoutSaveError } = await supabase.from("agency_payout_details").upsert({
+          agency_id: agency.id,
+          payment_method: payoutMethod,
+          beneficiary_name: beneficiaryName.trim(),
+          mobile_money_number: payoutMethod === "bank" ? null : normalizedNumber,
+          bank_details: payoutMethod === "bank" ? bankDetails : null,
+          updated_at: new Date().toISOString(),
+        });
         if (payoutSaveError) throw payoutSaveError;
       }
 
@@ -219,7 +233,9 @@ export default function AgencySettings() {
     if (!agency) return;
     setStartingBrandingPayment(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error(t("ux.bo.logAgencySAccountContinue"));
 
       let subscriptionId =
@@ -258,7 +274,9 @@ export default function AgencySettings() {
       });
 
       if (error) {
-        throw new Error(await getEdgeFunctionErrorMessage(error, "Le paiement du branding n'a pas pu être initialisé."));
+        throw new Error(
+          await getEdgeFunctionErrorMessage(error, "Le paiement du branding n'a pas pu être initialisé."),
+        );
       }
       if (!data?.success || typeof data.payment_url !== "string") {
         throw new Error(data?.error || t("ux.bo.noPaymentLinkWasCreated"));
@@ -301,9 +319,7 @@ export default function AgencySettings() {
       <div className="space-y-6 max-w-2xl">
         <div>
           <h1 className="text-2xl font-bold">{t("ux.bo.agencySettings2")}</h1>
-          <p className="text-muted-foreground">
-            {t("ux.bo.manageAgencySInformation")}
-          </p>
+          <p className="text-muted-foreground">{t("ux.bo.manageAgencySInformation")}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -313,9 +329,7 @@ export default function AgencySettings() {
                 <Building2 className="h-5 w-5" />
                 {t("ux.bo.generalInformation")}
               </CardTitle>
-              <CardDescription>
-                {t("ux.bo.informationCanShownCustomersIf")}
-              </CardDescription>
+              <CardDescription>{t("ux.bo.informationCanShownCustomersIf")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -395,9 +409,7 @@ export default function AgencySettings() {
                   </p>
                 </div>
               ) : brandingSubscription?.status === "processing" ? (
-                <p className="text-sm text-muted-foreground">
-                  {t("ux.bo.paymentBeingConfirmedBrandingWill")}
-                </p>
+                <p className="text-sm text-muted-foreground">{t("ux.bo.paymentBeingConfirmedBrandingWill")}</p>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   {brandingHasExpired
@@ -408,10 +420,7 @@ export default function AgencySettings() {
               <Button
                 type="button"
                 onClick={startBrandingPayment}
-                disabled={
-                  startingBrandingPayment ||
-                  brandingIsActive
-                }
+                disabled={startingBrandingPayment || brandingIsActive}
               >
                 {startingBrandingPayment ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -434,16 +443,15 @@ export default function AgencySettings() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="payout-method">{t("ux.bo.jKoPaymentMethod")}</Label>
-                <Select
-                  value={payoutMethod}
-                  onValueChange={(value) => setPayoutMethod(value as JekoPayoutMethod)}
-                >
+                <Select value={payoutMethod} onValueChange={(value) => setPayoutMethod(value as JekoPayoutMethod)}>
                   <SelectTrigger id="payout-method">
                     <SelectValue placeholder={t("ux.bo.choosePayoutMethod")} />
                   </SelectTrigger>
                   <SelectContent>
                     {JEKO_PAYOUT_METHODS.map((method) => (
-                      <SelectItem key={method.value} value={method.value}>{method.label}</SelectItem>
+                      <SelectItem key={method.value} value={method.value}>
+                        {method.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

@@ -30,15 +30,11 @@ export const HotelRoomDetailsDialog = ({ open, onOpenChange, hotel, onBookNow }:
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{hotel.name}</DialogTitle>
-          <DialogDescription>
-            Détails de l’établissement et aperçu des chambres disponibles.
-          </DialogDescription>
+          <DialogDescription>Détails de l’établissement et aperçu des chambres disponibles.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5">
-          {hotel.image && (
-            <img src={hotel.image} alt={hotel.name} className="h-48 w-full rounded-lg object-cover" />
-          )}
+          {hotel.image && <img src={hotel.image} alt={hotel.name} className="h-48 w-full rounded-lg object-cover" />}
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
@@ -62,7 +58,8 @@ export const HotelRoomDetailsDialog = ({ open, onOpenChange, hotel, onBookNow }:
               <span className="font-semibold">Chambre standard</span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Chambre confortable avec lit double, salle de bain privée, Wi‑Fi gratuit et accès aux équipements de l’hôtel.
+              Chambre confortable avec lit double, salle de bain privée, Wi‑Fi gratuit et accès aux équipements de
+              l’hôtel.
             </p>
             <div className="mt-3 flex items-baseline justify-between">
               <div>

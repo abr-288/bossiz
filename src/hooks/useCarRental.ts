@@ -18,21 +18,21 @@ export const useCarRental = () => {
     setError(null);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('car-rental', {
-        body: params
+      const { data, error: functionError } = await supabase.functions.invoke("car-rental", {
+        body: params,
       });
 
       if (functionError) {
-        console.error('Car rental API error:', functionError);
-        setError('Service de recherche temporairement indisponible');
+        console.error("Car rental API error:", functionError);
+        setError("Service de recherche temporairement indisponible");
         return { success: false, error: functionError.message };
       }
-      
+
       return data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
       setError(errorMessage);
-      console.error('Car rental search error:', err);
+      console.error("Car rental search error:", err);
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);

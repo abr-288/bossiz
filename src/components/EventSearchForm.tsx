@@ -43,10 +43,10 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
     };
 
     const validation = safeValidate(eventSearchSchema, formData);
-    
+
     if (!validation.success) {
       const filteredErrors: Record<string, string> = {};
-      Object.keys(validation.errors).forEach(key => {
+      Object.keys(validation.errors).forEach((key) => {
         if (touched[key]) {
           filteredErrors[key] = validation.errors[key];
         }
@@ -54,7 +54,7 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
       setErrors(filteredErrors);
     } else {
       const clearedErrors = { ...errors };
-      Object.keys(touched).forEach(key => {
+      Object.keys(touched).forEach((key) => {
         delete clearedErrors[key];
       });
       setErrors(clearedErrors);
@@ -62,7 +62,7 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
   }, [location, date, endDate, category, guests, touched]);
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -91,11 +91,11 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
     if (!validation.success) {
       setErrors(validation.errors);
       toast({
-        title: t('validation.errorTitle'),
-        description: t('validation.errorDescription'),
+        title: t("validation.errorTitle"),
+        description: t("validation.errorDescription"),
         variant: "destructive",
       });
-      
+
       const firstErrorField = Object.keys(validation.errors)[0];
       document.getElementById(firstErrorField)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -132,9 +132,7 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
           {hasErrors && (
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {t("ux.eventSearch.fixErrors")}
-              </AlertDescription>
+              <AlertDescription>{t("ux.eventSearch.fixErrors")}</AlertDescription>
             </Alert>
           )}
 
@@ -153,9 +151,7 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
                 className={errors.location && touched.location ? "border-destructive" : ""}
               />
               {errors.location && touched.location && (
-                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                  {errors.location}
-                </p>
+                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.location}</p>
               )}
             </div>
 
@@ -170,16 +166,16 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
                 minDate={new Date()}
               />
               {errors.startDate && touched.startDate && (
-                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">
-                  {errors.startDate}
-                </p>
+                <p className="text-xs text-destructive mt-1 animate-in slide-in-from-top-1">{errors.startDate}</p>
               )}
             </div>
 
             <div className="min-w-0 space-y-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="category">{t("search.category")}</label>
-              <Select 
-                value={category} 
+              <label className="text-sm font-medium text-foreground" htmlFor="category">
+                {t("search.category")}
+              </label>
+              <Select
+                value={category}
                 onValueChange={(value) => {
                   setCategory(value as typeof category);
                   handleBlur("category");
@@ -204,8 +200,8 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
 
             <div className="min-w-0 space-y-2">
               <label className="text-sm font-medium text-foreground">Participants *</label>
-              <Select 
-                value={guests.toString()} 
+              <Select
+                value={guests.toString()}
                 onValueChange={(value) => {
                   setGuests(parseInt(value));
                   handleBlur("guests");
@@ -228,9 +224,9 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
             </div>
           </div>
 
-          <UnifiedSubmitButton 
-            loading={loading} 
-            fullWidth 
+          <UnifiedSubmitButton
+            loading={loading}
+            fullWidth
             className={cn("mt-6", hasErrors && "opacity-50 cursor-not-allowed")}
             disabled={hasErrors || loading}
           >

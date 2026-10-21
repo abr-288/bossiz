@@ -10,7 +10,9 @@ export const useBookingPDF = () => {
   const generatePDF = async (bookingId: string) => {
     setIsGenerating(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Not authenticated");
       }
@@ -61,7 +63,9 @@ export const useBookingPDF = () => {
   const downloadPDF = async (bookingId: string) => {
     setIsGenerating(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Not authenticated");
       }

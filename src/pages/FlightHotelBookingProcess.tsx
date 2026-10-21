@@ -14,17 +14,8 @@ import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import {
-  Plane, Hotel, MapPin, Calendar, Clock, Users, Star,
-  Check, ArrowLeft, CreditCard, LogIn
-} from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Plane, Hotel, MapPin, Calendar, Clock, Users, Star, Check, ArrowLeft, CreditCard, LogIn } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { BookingStepper } from "@/components/booking-steps/BookingStepper";
 
@@ -74,17 +65,15 @@ const FlightHotelBookingProcess = () => {
   const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile");
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
+
   // Récupérer les données du package depuis les params URL
-  const flightData: FlightDetails | null = searchParams.get("flight") 
+  const flightData: FlightDetails | null = searchParams.get("flight")
     ? JSON.parse(decodeURIComponent(searchParams.get("flight")!))
     : null;
   const hotelData: HotelDetails | null = searchParams.get("hotel")
     ? JSON.parse(decodeURIComponent(searchParams.get("hotel")!))
     : null;
-  const searchData = searchParams.get("search")
-    ? JSON.parse(decodeURIComponent(searchParams.get("search")!))
-    : null;
+  const searchData = searchParams.get("search") ? JSON.parse(decodeURIComponent(searchParams.get("search")!)) : null;
 
   const adults = searchData?.adults || 1;
   const children = searchData?.children || 0;
@@ -101,7 +90,9 @@ const FlightHotelBookingProcess = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     setIsAuthenticated(!!user);
   };
 
@@ -136,8 +127,10 @@ const FlightHotelBookingProcess = () => {
   };
 
   const handlePayment = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       setShowLoginDialog(true);
       return;
@@ -151,7 +144,7 @@ const FlightHotelBookingProcess = () => {
     try {
       const bookingId = await createBooking({
         service_type: "flight_hotel",
-        service_name: `Vol + Hôtel: ${searchData?.origin || ''} → ${searchData?.destination || ''}`,
+        service_name: `Vol + Hôtel: ${searchData?.origin || ""} → ${searchData?.destination || ""}`,
         service_description: `${flightData.airline} + ${hotelData.name}`,
         location: searchData?.destination || hotelData.address,
         start_date: flightData.departure,
@@ -159,7 +152,7 @@ const FlightHotelBookingProcess = () => {
         guests: totalPassengers,
         total_price: calculateTotal(),
         currency: "EUR",
-        customer_name: `${passengers[0]?.firstName || ''} ${passengers[0]?.lastName || ''}`,
+        customer_name: `${passengers[0]?.firstName || ""} ${passengers[0]?.lastName || ""}`,
         customer_email: user.email || "",
         customer_phone: "+225 00 00 00 00",
         passengers: passengers.map((p) => ({
@@ -199,13 +192,16 @@ const FlightHotelBookingProcess = () => {
   };
 
   const handleLoginRedirect = () => {
-    sessionStorage.setItem('pendingPackageBooking', JSON.stringify({
-      flight: flightData,
-      hotel: hotelData,
-      search: searchData,
-      passengers,
-    }));
-    navigate('/auth');
+    sessionStorage.setItem(
+      "pendingPackageBooking",
+      JSON.stringify({
+        flight: flightData,
+        hotel: hotelData,
+        search: searchData,
+        passengers,
+      }),
+    );
+    navigate("/auth");
   };
 
   if (!flightData || !hotelData) {
@@ -215,19 +211,15 @@ const FlightHotelBookingProcess = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
       <Navbar />
-      
+
       <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
         {/* En-tête */}
         <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/flight-hotel")}
-            className="mb-4"
-          >
+          <Button variant="ghost" onClick={() => navigate("/flight-hotel")} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('pages.flightHotelBookingProcess.backToSearch')}
+            {t("pages.flightHotelBookingProcess.backToSearch")}
           </Button>
-          
+
           <h1 className="text-2xl md:text-3xl font-bold">{t("ux.fhBooking.title")}</h1>
           <p className="text-muted-foreground">
             {searchData?.origin} → {searchData?.destination}
@@ -258,23 +250,20 @@ const FlightHotelBookingProcess = () => {
 
             {/* Étape 2 & 3: Récapitulatif et Paiement */}
             {currentStep >= 2 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 {/* Détails du vol */}
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Plane className="h-5 w-5 text-primary" />
-                    {t('booking.summary.flightDetails')}
+                    {t("booking.summary.flightDetails")}
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{flightData.airline}</p>
                         <p className="text-sm text-muted-foreground">
-                          {flightData.stops === 0 ? "Vol direct" : `${flightData.stops} escale(s)`} • {flightData.duration}
+                          {flightData.stops === 0 ? "Vol direct" : `${flightData.stops} escale(s)`} •{" "}
+                          {flightData.duration}
                         </p>
                       </div>
                       <Badge variant="secondary">{searchData?.travelClass || "ECONOMY"}</Badge>
@@ -290,7 +279,9 @@ const FlightHotelBookingProcess = () => {
                       </div>
                     </div>
                     <div className="flex justify-between pt-3 border-t">
-                      <span className="text-muted-foreground">Prix vol ({totalPassengers} passager{totalPassengers > 1 ? "s" : ""})</span>
+                      <span className="text-muted-foreground">
+                        Prix vol ({totalPassengers} passager{totalPassengers > 1 ? "s" : ""})
+                      </span>
                       <span className="font-semibold">
                         <Price amount={flightData.price * totalPassengers} fromCurrency="EUR" />
                       </span>
@@ -302,14 +293,10 @@ const FlightHotelBookingProcess = () => {
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Hotel className="h-5 w-5 text-primary" />
-                    {t('booking.summary.hotelDetails')}
+                    {t("booking.summary.hotelDetails")}
                   </h3>
                   <div className="flex gap-4">
-                    <img 
-                      src={hotelData.image} 
-                      alt={hotelData.name}
-                      className="w-32 h-24 object-cover rounded-lg"
-                    />
+                    <img src={hotelData.image} alt={hotelData.name} className="w-32 h-24 object-cover rounded-lg" />
                     <div className="flex-1">
                       <h4 className="font-medium">{hotelData.name}</h4>
                       <div className="flex items-center gap-1 mt-1">
@@ -325,7 +312,9 @@ const FlightHotelBookingProcess = () => {
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {hotelData.amenities?.slice(0, 4).map((amenity, idx) => (
-                      <Badge key={idx} variant="outline">{amenity}</Badge>
+                      <Badge key={idx} variant="outline">
+                        {amenity}
+                      </Badge>
                     ))}
                   </div>
                   <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
@@ -362,12 +351,11 @@ const FlightHotelBookingProcess = () => {
                             {passenger.firstName} {passenger.lastName}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {passenger.documentType === "passport" ? "Passeport" : t("ux.fhBooking.idCard")}: {passenger.documentNumber}
+                            {passenger.documentType === "passport" ? "Passeport" : t("ux.fhBooking.idCard")}:{" "}
+                            {passenger.documentNumber}
                           </p>
                         </div>
-                        <Badge variant="secondary">
-                          {index < adults ? "Adulte" : "Enfant"}
-                        </Badge>
+                        <Badge variant="secondary">{index < adults ? "Adulte" : "Enfant"}</Badge>
                       </div>
                     ))}
                   </div>
@@ -380,7 +368,7 @@ const FlightHotelBookingProcess = () => {
                       {t("ux.fhBooking.back")}
                     </Button>
                     <Button onClick={() => setCurrentStep(3)} className="flex-1">
-                      {t('booking.summary.continueToPayment')}
+                      {t("booking.summary.continueToPayment")}
                     </Button>
                   </div>
                 )}
@@ -439,7 +427,7 @@ const FlightHotelBookingProcess = () => {
                         onClick={handlePayment}
                         className="flex-1"
                       >
-                        {t('booking.summary.proceedToPayment')}
+                        {t("booking.summary.proceedToPayment")}
                       </UnifiedSubmitButton>
                     </div>
                   </Card>
@@ -452,7 +440,7 @@ const FlightHotelBookingProcess = () => {
           <div className="lg:col-span-1">
             <Card className="p-6 sticky top-24">
               <h3 className="text-lg font-semibold mb-4">{t("ux.fhBooking.packageSummary")}</h3>
-              
+
               {/* Vol */}
               <div className="mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
@@ -474,7 +462,7 @@ const FlightHotelBookingProcess = () => {
               <div className="mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
                   <Hotel className="h-4 w-4 text-primary" />
-                  {t('confirmation.serviceTypes.hotel')}
+                  {t("confirmation.serviceTypes.hotel")}
                 </div>
                 <p className="text-sm">{hotelData.name}</p>
                 <p className="text-xs text-muted-foreground">
@@ -494,7 +482,7 @@ const FlightHotelBookingProcess = () => {
                   <Price amount={calculateTotal()} fromCurrency="EUR" showLoader />
                 </span>
               </div>
-              
+
               <p className="text-xs text-muted-foreground mt-2">
                 Prix total pour {totalPassengers} passager{totalPassengers > 1 ? "s" : ""}
               </p>
@@ -509,16 +497,12 @@ const FlightHotelBookingProcess = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <LogIn className="h-5 w-5 text-primary" />
-              {t('booking.loginDialog.title')}
+              {t("booking.loginDialog.title")}
             </DialogTitle>
-            <DialogDescription>
-              {t('booking.loginDialog.description')}
-            </DialogDescription>
+            <DialogDescription>{t("booking.loginDialog.description")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
-            <p className="text-sm text-muted-foreground">
-              {t('booking.loginDialog.benefitsIntro')}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("booking.loginDialog.benefitsIntro")}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
               <li className="flex items-center gap-2">
                 <span className="text-primary">✓</span> Suivre vos réservations

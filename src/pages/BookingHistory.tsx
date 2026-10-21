@@ -6,7 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, CreditCard, Download, Plane, Hotel, Car, Map as MapIcon, Star, type LucideIcon } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  CreditCard,
+  Download,
+  Plane,
+  Hotel,
+  Car,
+  Map as MapIcon,
+  Star,
+  type LucideIcon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, zhCN } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
@@ -44,8 +56,9 @@ interface Booking {
 // Mirrors RLS: payment (full or deposit) is verified server-side and the
 // booking is confirmed before the rating form is offered.
 const isReviewEligible = (booking: Booking) => {
-  return ["paid", "partially_paid"].includes(booking.payment_status)
-    && ["confirmed", "completed"].includes(booking.status);
+  return (
+    ["paid", "partially_paid"].includes(booking.payment_status) && ["confirmed", "completed"].includes(booking.status)
+  );
 };
 
 const BookingHistory = () => {
@@ -60,27 +73,35 @@ const BookingHistory = () => {
 
   const getLocale = () => {
     switch (i18n.language) {
-      case 'en': return enUS;
-      case 'zh': return zhCN;
-      default: return fr;
+      case "en":
+        return enUS;
+      case "zh":
+        return zhCN;
+      default:
+        return fr;
     }
   };
 
   useEffect(() => {
     checkAuth();
     fetchBookings();
-    supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle()
+    supabase
+      .from("site_config")
+      .select("config_value")
+      .eq("config_key", "booking_payment_policy")
+      .maybeSingle()
       .then(({ data }) => {
         const rawPolicy = data?.config_value;
-        const policy = rawPolicy && typeof rawPolicy === "object"
-          ? rawPolicy as { reviewPromptEnabled?: boolean }
-          : undefined;
+        const policy =
+          rawPolicy && typeof rawPolicy === "object" ? (rawPolicy as { reviewPromptEnabled?: boolean }) : undefined;
         setReviewPromptEnabled(policy?.reviewPromptEnabled !== false);
       });
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       navigate("/auth");
     }
@@ -88,36 +109,40 @@ const BookingHistory = () => {
 
   const fetchBookings = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
         .from("bookings")
-        .select(`
+        .select(
+          `
           *,
           services (
             name,
             type,
             location
           )
-        `)
+        `,
+        )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setBookings(data || []);
 
-      const eligibleIds = (data || []).filter(isReviewEligible).map(b => b.id);
+      const eligibleIds = (data || []).filter(isReviewEligible).map((b) => b.id);
       if (eligibleIds.length > 0) {
         const { data: existingReviews } = await supabase
           .from("reviews")
           .select("booking_id")
           .in("booking_id", eligibleIds);
-        setReviewedBookingIds(new Set((existingReviews || []).map(r => r.booking_id).filter(Boolean)));
+        setReviewedBookingIds(new Set((existingReviews || []).map((r) => r.booking_id).filter(Boolean)));
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
-      toast.error(t('bookingHistory.loadingError'));
+      toast.error(t("bookingHistory.loadingError"));
     } finally {
       setLoading(false);
     }
@@ -128,7 +153,7 @@ const BookingHistory = () => {
       hotel: Hotel,
       flight: Plane,
       car: Car,
-      tour: MapIcon
+      tour: MapIcon,
     };
     const Icon = icons[type] || MapIcon;
     return <Icon className="w-5 h-5" />;
@@ -136,13 +161,13 @@ const BookingHistory = () => {
 
   const filterBookings = (filter: string) => {
     if (filter === "all") return bookings;
-    return bookings.filter(b => b.services.type === filter);
+    return bookings.filter((b) => b.services.type === filter);
   };
 
   const handleDownloadTicket = async (bookingId: string) => {
     try {
-      toast.info(t('bookingHistory.ticketGenerating'));
-      
+      toast.info(t("bookingHistory.ticketGenerating"));
+
       const { data, error } = await supabase.functions.invoke("generate-ticket", {
         body: { bookingId },
       });
@@ -150,7 +175,7 @@ const BookingHistory = () => {
       if (error) throw error;
 
       if (data.success) {
-        const printWindow = window.open('', '_blank');
+        const printWindow = window.open("", "_blank");
         if (printWindow) {
           printWindow.document.write(data.ticket.html);
           printWindow.document.close();
@@ -158,18 +183,20 @@ const BookingHistory = () => {
             printWindow.print();
           }, 250);
         }
-        toast.success(t('bookingHistory.ticketSuccess'));
+        toast.success(t("bookingHistory.ticketSuccess"));
       }
     } catch (error) {
       console.error("Error downloading ticket:", error);
-      toast.error(t('bookingHistory.ticketError'));
+      toast.error(t("bookingHistory.ticketError"));
     }
   };
 
   if (loading) {
     return (
       <UserDashboardLayout>
-        <div className="flex-1 p-4 md:p-6"><CardGridSkeleton count={4} gridClassName="grid-cols-1" imageClassName="h-20" /></div>
+        <div className="flex-1 p-4 md:p-6">
+          <CardGridSkeleton count={4} gridClassName="grid-cols-1" imageClassName="h-20" />
+        </div>
       </UserDashboardLayout>
     );
   }
@@ -178,19 +205,45 @@ const BookingHistory = () => {
     <UserDashboardLayout>
       <div className="space-y-6">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">{t('bookingHistory.title')}</h1>
-          <p className="text-muted-foreground text-lg">
-            {t('bookingHistory.subtitle')}
-          </p>
+          <h1 className="text-4xl font-bold mb-4">{t("bookingHistory.title")}</h1>
+          <p className="text-muted-foreground text-lg">{t("bookingHistory.subtitle")}</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList aria-label={t("ux.history.filterLabel")} className="mb-6 grid h-auto w-full grid-cols-3 justify-stretch gap-1 sm:inline-flex sm:h-10 sm:w-auto sm:grid-cols-none sm:justify-center sm:gap-0">
-            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="all">{t('bookingHistory.tabs.all')} ({bookings.length})</TabsTrigger>
-            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="flight">{t('bookingHistory.tabs.flights')} ({filterBookings("flight").length})</TabsTrigger>
-            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="hotel">{t('bookingHistory.tabs.hotels')} ({filterBookings("hotel").length})</TabsTrigger>
-            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="car">{t('bookingHistory.tabs.cars')} ({filterBookings("car").length})</TabsTrigger>
-            <TabsTrigger className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm" value="tour">{t('bookingHistory.tabs.tours')} ({filterBookings("tour").length})</TabsTrigger>
+          <TabsList
+            aria-label={t("ux.history.filterLabel")}
+            className="mb-6 grid h-auto w-full grid-cols-3 justify-stretch gap-1 sm:inline-flex sm:h-10 sm:w-auto sm:grid-cols-none sm:justify-center sm:gap-0"
+          >
+            <TabsTrigger
+              className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm"
+              value="all"
+            >
+              {t("bookingHistory.tabs.all")} ({bookings.length})
+            </TabsTrigger>
+            <TabsTrigger
+              className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm"
+              value="flight"
+            >
+              {t("bookingHistory.tabs.flights")} ({filterBookings("flight").length})
+            </TabsTrigger>
+            <TabsTrigger
+              className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm"
+              value="hotel"
+            >
+              {t("bookingHistory.tabs.hotels")} ({filterBookings("hotel").length})
+            </TabsTrigger>
+            <TabsTrigger
+              className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm"
+              value="car"
+            >
+              {t("bookingHistory.tabs.cars")} ({filterBookings("car").length})
+            </TabsTrigger>
+            <TabsTrigger
+              className="whitespace-normal px-2 text-xs sm:whitespace-nowrap sm:px-3 sm:py-1.5 sm:text-sm"
+              value="tour"
+            >
+              {t("bookingHistory.tabs.tours")} ({filterBookings("tour").length})
+            </TabsTrigger>
           </TabsList>
 
           {["all", "flight", "hotel", "car", "tour"].map((tab) => (
@@ -198,10 +251,8 @@ const BookingHistory = () => {
               {filterBookings(tab).length === 0 ? (
                 <Card>
                   <CardContent className="p-12 text-center">
-                    <p className="text-muted-foreground mb-4">{t('bookingHistory.noBookings')}</p>
-                    <Button onClick={() => navigate("/")}>
-                      {t('bookingHistory.discoverOffers')}
-                    </Button>
+                    <p className="text-muted-foreground mb-4">{t("bookingHistory.noBookings")}</p>
+                    <Button onClick={() => navigate("/")}>{t("bookingHistory.discoverOffers")}</Button>
                   </CardContent>
                 </Card>
               ) : (
@@ -227,7 +278,7 @@ const BookingHistory = () => {
                         </div>
                       </div>
                     </CardHeader>
-                    
+
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                         <div className="flex items-center gap-3">
@@ -235,7 +286,7 @@ const BookingHistory = () => {
                             <Calendar className="w-5 h-5 text-primary" />
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">{t('bookingHistory.startDate')}</p>
+                            <p className="text-xs text-muted-foreground">{t("bookingHistory.startDate")}</p>
                             <p className="font-semibold">
                               {format(new Date(booking.start_date), "dd MMM yyyy", { locale: getLocale() })}
                             </p>
@@ -248,7 +299,7 @@ const BookingHistory = () => {
                               <Calendar className="w-5 h-5 text-primary" />
                             </div>
                             <div>
-                              <p className="text-xs text-muted-foreground">{t('bookingHistory.endDate')}</p>
+                              <p className="text-xs text-muted-foreground">{t("bookingHistory.endDate")}</p>
                               <p className="font-semibold">
                                 {format(new Date(booking.end_date), "dd MMM yyyy", { locale: getLocale() })}
                               </p>
@@ -261,8 +312,10 @@ const BookingHistory = () => {
                             <Users className="w-5 h-5 text-primary" />
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">{t('bookingHistory.travelers')}</p>
-                            <p className="font-semibold">{booking.guests} {t('bookingHistory.person')}</p>
+                            <p className="text-xs text-muted-foreground">{t("bookingHistory.travelers")}</p>
+                            <p className="font-semibold">
+                              {booking.guests} {t("bookingHistory.person")}
+                            </p>
                           </div>
                         </div>
 
@@ -271,54 +324,59 @@ const BookingHistory = () => {
                             <CreditCard className="w-5 h-5 text-primary" />
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">{t('bookingHistory.totalAmount')}</p>
-                          <p className="font-semibold text-primary">
-                            <Price amount={booking.total_price} fromCurrency={booking.currency} />
-                          </p>
-                          {booking.payment_status === "partially_paid" && (
-                            <p className="text-xs text-muted-foreground">
-                              <Price amount={booking.amount_due_now || 0} fromCurrency={booking.currency} /> payé · <Price amount={booking.balance_due || 0} fromCurrency={booking.currency} /> sur place
+                            <p className="text-xs text-muted-foreground">{t("bookingHistory.totalAmount")}</p>
+                            <p className="font-semibold text-primary">
+                              <Price amount={booking.total_price} fromCurrency={booking.currency} />
                             </p>
-                          )}
+                            {booking.payment_status === "partially_paid" && (
+                              <p className="text-xs text-muted-foreground">
+                                <Price amount={booking.amount_due_now || 0} fromCurrency={booking.currency} /> payé ·{" "}
+                                <Price amount={booking.balance_due || 0} fromCurrency={booking.currency} /> sur place
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
 
                       {booking.notes && (
                         <div className="bg-muted/50 rounded-lg p-4 mb-4">
-                          <p className="text-sm font-semibold mb-1">{t('bookingHistory.notes')} :</p>
+                          <p className="text-sm font-semibold mb-1">{t("bookingHistory.notes")} :</p>
                           <p className="text-sm text-muted-foreground">{booking.notes}</p>
                         </div>
                       )}
 
                       <div className="flex flex-wrap gap-3">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="gap-2"
                           onClick={() => handleDownloadTicket(booking.id)}
-                          disabled={booking.payment_status !== 'paid'}
+                          disabled={booking.payment_status !== "paid"}
                         >
                           <Download className="w-4 h-4" />
-                          {t('bookingHistory.downloadTicket')}
+                          {t("bookingHistory.downloadTicket")}
                         </Button>
                         {booking.status === "confirmed" && booking.payment_status === "paid" && (
                           <Button
                             variant="outline"
                             onClick={() => {
-                              toast.info(t('bookingHistory.modifyNotAvailable'));
-                              navigate('/support');
+                              toast.info(t("bookingHistory.modifyNotAvailable"));
+                              navigate("/support");
                             }}
                           >
-                            {t('bookingHistory.modifyBooking')}
+                            {t("bookingHistory.modifyBooking")}
                           </Button>
                         )}
                         {booking.status === "pending" && booking.payment_status === "pending" && (
-                          <Button className="gradient-primary shadow-primary" onClick={() => navigate(`/payment?bookingId=${booking.id}`)}>
-                            {t('bookingHistory.finalizePayment')}
+                          <Button
+                            className="gradient-primary shadow-primary"
+                            onClick={() => navigate(`/payment?bookingId=${booking.id}`)}
+                          >
+                            {t("bookingHistory.finalizePayment")}
                           </Button>
                         )}
-                        {reviewPromptEnabled && isReviewEligible(booking) && (
-                          reviewedBookingIds.has(booking.id) ? (
+                        {reviewPromptEnabled &&
+                          isReviewEligible(booking) &&
+                          (reviewedBookingIds.has(booking.id) ? (
                             <Button variant="ghost" disabled className="gap-2 text-muted-foreground">
                               <Star className="w-4 h-4 fill-gold text-gold" />
                               Avis envoyé
@@ -328,13 +386,13 @@ const BookingHistory = () => {
                               <Star className="w-4 h-4" />
                               Laisser un avis
                             </Button>
-                          )
-                        )}
+                          ))}
                       </div>
 
                       <div className="mt-4 pt-4 border-t border-border">
                         <p className="text-xs text-muted-foreground">
-                          {t('bookingHistory.bookingMadeOn')} {format(new Date(booking.created_at), "dd MMMM yyyy HH:mm", { locale: getLocale() })}
+                          {t("bookingHistory.bookingMadeOn")}{" "}
+                          {format(new Date(booking.created_at), "dd MMMM yyyy HH:mm", { locale: getLocale() })}
                         </p>
                       </div>
                     </CardContent>
@@ -349,12 +407,14 @@ const BookingHistory = () => {
       {reviewBooking && (
         <WriteReviewDialog
           open={!!reviewBooking}
-          onOpenChange={(open) => { if (!open) setReviewBooking(null); }}
+          onOpenChange={(open) => {
+            if (!open) setReviewBooking(null);
+          }}
           bookingId={reviewBooking.id}
           serviceId={reviewBooking.service_id}
           serviceName={reviewBooking.services.name}
           onSubmitted={() => {
-            setReviewedBookingIds(prev => new Set(prev).add(reviewBooking.id));
+            setReviewedBookingIds((prev) => new Set(prev).add(reviewBooking.id));
             setReviewBooking(null);
           }}
         />

@@ -14,7 +14,9 @@ import i18n from "@/i18n/config";
 // Preset themes
 const PRESET_THEMES = {
   emerald: {
-    get name() { return i18n.t("ux.bo.emeraldDefault"); },
+    get name() {
+      return i18n.t("ux.bo.emeraldDefault");
+    },
     primaryColor: "160 84% 39%",
     secondaryColor: "160 60% 45%",
     accentColor: "38 92% 50%",
@@ -23,7 +25,9 @@ const PRESET_THEMES = {
     mutedColor: "160 20% 96%",
   },
   ocean: {
-    get name() { return i18n.t("ux.bo.ocean"); },
+    get name() {
+      return i18n.t("ux.bo.ocean");
+    },
     primaryColor: "221 83% 53%",
     secondaryColor: "217 91% 60%",
     accentColor: "199 89% 48%",
@@ -32,7 +36,9 @@ const PRESET_THEMES = {
     mutedColor: "210 40% 96%",
   },
   sunset: {
-    get name() { return i18n.t("ux.bo.sunset"); },
+    get name() {
+      return i18n.t("ux.bo.sunset");
+    },
     primaryColor: "25 95% 53%",
     secondaryColor: "15 90% 55%",
     accentColor: "45 93% 47%",
@@ -41,7 +47,9 @@ const PRESET_THEMES = {
     mutedColor: "30 20% 96%",
   },
   forest: {
-    get name() { return i18n.t("ux.bo.forest"); },
+    get name() {
+      return i18n.t("ux.bo.forest");
+    },
     primaryColor: "142 76% 36%",
     secondaryColor: "142 69% 58%",
     accentColor: "84 81% 44%",
@@ -73,22 +81,40 @@ const PRESET_THEMES = {
 const hslToHex = (hsl: string): string => {
   const parts = hsl.split(" ").map((v) => parseFloat(v));
   if (parts.length !== 3) return "#000000";
-  
+
   const [h, s, l] = [parts[0], parts[1] / 100, parts[2] / 100];
-  
+
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
   const m = l - c / 2;
-  
-  let r = 0, g = 0, b = 0;
-  if (h < 60) { r = c; g = x; }
-  else if (h < 120) { r = x; g = c; }
-  else if (h < 180) { g = c; b = x; }
-  else if (h < 240) { g = x; b = c; }
-  else if (h < 300) { r = x; b = c; }
-  else { r = c; b = x; }
-  
-  const toHex = (n: number) => Math.round((n + m) * 255).toString(16).padStart(2, "0");
+
+  let r = 0,
+    g = 0,
+    b = 0;
+  if (h < 60) {
+    r = c;
+    g = x;
+  } else if (h < 120) {
+    r = x;
+    g = c;
+  } else if (h < 180) {
+    g = c;
+    b = x;
+  } else if (h < 240) {
+    g = x;
+    b = c;
+  } else if (h < 300) {
+    r = x;
+    b = c;
+  } else {
+    r = c;
+    b = x;
+  }
+
+  const toHex = (n: number) =>
+    Math.round((n + m) * 255)
+      .toString(16)
+      .padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
@@ -97,22 +123,29 @@ const hexToHsl = (hex: string): string => {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;
-  
+
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  let h = 0, s = 0;
+  let h = 0,
+    s = 0;
   const l = (max + min) / 2;
-  
+
   if (max !== min) {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
     switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        break;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+        break;
+      case b:
+        h = ((r - g) / d + 4) / 6;
+        break;
     }
   }
-  
+
   return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
 };
 
@@ -331,17 +364,19 @@ export function ThemeConfig() {
                     const hsl = hexToHsl(e.target.value);
                     setLocalTheme((prev) => ({
                       ...prev,
-                      darkMode: { ...prev.darkMode, backgroundColor: hsl }
+                      darkMode: { ...prev.darkMode, backgroundColor: hsl },
                     }));
                   }}
                   className="w-16 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   value={localTheme.darkMode?.backgroundColor || ""}
-                  onChange={(e) => setLocalTheme((prev) => ({
-                    ...prev,
-                    darkMode: { ...prev.darkMode, backgroundColor: e.target.value }
-                  }))}
+                  onChange={(e) =>
+                    setLocalTheme((prev) => ({
+                      ...prev,
+                      darkMode: { ...prev.darkMode, backgroundColor: e.target.value },
+                    }))
+                  }
                   className="flex-1"
                 />
               </div>
@@ -357,17 +392,19 @@ export function ThemeConfig() {
                     const hsl = hexToHsl(e.target.value);
                     setLocalTheme((prev) => ({
                       ...prev,
-                      darkMode: { ...prev.darkMode, foregroundColor: hsl }
+                      darkMode: { ...prev.darkMode, foregroundColor: hsl },
                     }));
                   }}
                   className="w-16 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   value={localTheme.darkMode?.foregroundColor || ""}
-                  onChange={(e) => setLocalTheme((prev) => ({
-                    ...prev,
-                    darkMode: { ...prev.darkMode, foregroundColor: e.target.value }
-                  }))}
+                  onChange={(e) =>
+                    setLocalTheme((prev) => ({
+                      ...prev,
+                      darkMode: { ...prev.darkMode, foregroundColor: e.target.value },
+                    }))
+                  }
                   className="flex-1"
                 />
               </div>
@@ -383,17 +420,19 @@ export function ThemeConfig() {
                     const hsl = hexToHsl(e.target.value);
                     setLocalTheme((prev) => ({
                       ...prev,
-                      darkMode: { ...prev.darkMode, mutedColor: hsl }
+                      darkMode: { ...prev.darkMode, mutedColor: hsl },
                     }));
                   }}
                   className="w-16 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   value={localTheme.darkMode?.mutedColor || ""}
-                  onChange={(e) => setLocalTheme((prev) => ({
-                    ...prev,
-                    darkMode: { ...prev.darkMode, mutedColor: e.target.value }
-                  }))}
+                  onChange={(e) =>
+                    setLocalTheme((prev) => ({
+                      ...prev,
+                      darkMode: { ...prev.darkMode, mutedColor: e.target.value },
+                    }))
+                  }
                   className="flex-1"
                 />
               </div>
@@ -468,9 +507,7 @@ export function ThemeConfig() {
             <div className="flex items-center gap-4">
               <Slider
                 value={[radiusValue]}
-                onValueChange={([value]) =>
-                  setLocalTheme((prev) => ({ ...prev, borderRadius: `${value}rem` }))
-                }
+                onValueChange={([value]) => setLocalTheme((prev) => ({ ...prev, borderRadius: `${value}rem` }))}
                 min={0}
                 max={2}
                 step={0.125}
@@ -479,14 +516,8 @@ export function ThemeConfig() {
               <span className="w-16 text-sm text-muted-foreground">{localTheme.borderRadius}</span>
             </div>
             <div className="flex gap-4">
-              <div
-                className="w-24 h-16 bg-primary"
-                style={{ borderRadius: localTheme.borderRadius }}
-              />
-              <div
-                className="w-24 h-16 border-2 border-primary"
-                style={{ borderRadius: localTheme.borderRadius }}
-              />
+              <div className="w-24 h-16 bg-primary" style={{ borderRadius: localTheme.borderRadius }} />
+              <div className="w-24 h-16 border-2 border-primary" style={{ borderRadius: localTheme.borderRadius }} />
               <Button style={{ borderRadius: localTheme.borderRadius }}>{t("ux.bo.button")}</Button>
             </div>
           </div>
@@ -517,10 +548,7 @@ export function ThemeConfig() {
             >
               {t("ux.bo.pageTitle")}
             </h2>
-            <p
-              className="mb-4"
-              style={{ fontFamily: localTheme.fontBody }}
-            >
+            <p className="mb-4" style={{ fontFamily: localTheme.fontBody }}>
               {t("ux.bo.sampleTextPreviewLookCustom")}
             </p>
             <div className="flex gap-2">
@@ -564,11 +592,7 @@ export function ThemeConfig() {
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {t("ux.bo.saveTheme")}
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => setLocalTheme(theme)}
-          size="lg"
-        >
+        <Button variant="outline" onClick={() => setLocalTheme(theme)} size="lg">
           <RotateCcw className="mr-2 h-4 w-4" />
           {t("ux.bo.cancel")}
         </Button>

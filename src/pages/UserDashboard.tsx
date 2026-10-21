@@ -34,37 +34,35 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
         return;
       }
-      
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .maybeSingle();
-      
+
+      const { data: profileData } = await supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+
       setUserProfile({
         id: user.id,
-        full_name: profileData?.full_name || t('dashboardPage.welcome'),
+        full_name: profileData?.full_name || t("dashboardPage.welcome"),
         email: user.email || "",
       });
-      
+
       loadNotifications();
     };
 
     checkAuth();
   }, [navigate, t]);
 
-  const { 
-    bookings, 
-    loading: bookingsLoading, 
-    isOnline, 
-    isSyncing, 
+  const {
+    bookings,
+    loading: bookingsLoading,
+    isOnline,
+    isSyncing,
     storageStats,
-    syncPendingChanges 
+    syncPendingChanges,
   } = useOfflineBookings(userProfile?.id);
 
   useEffect(() => {
@@ -74,12 +72,13 @@ const UserDashboard = () => {
     const completed = bookings?.filter((b) => b.status === "completed").length || 0;
     const flightCount = bookings?.filter((b) => b.services?.type === "flight").length || 0;
     const hotelCount = bookings?.filter((b) => b.services?.type === "hotel").length || 0;
-    const totalSpent = bookings?.reduce((sum, booking) => {
-      if (booking.payment_status === "paid") {
-        return sum + Number(booking.total_price);
-      }
-      return sum;
-    }, 0) || 0;
+    const totalSpent =
+      bookings?.reduce((sum, booking) => {
+        if (booking.payment_status === "paid") {
+          return sum + Number(booking.total_price);
+        }
+        return sum;
+      }, 0) || 0;
 
     setStats({ total, pending, confirmed, completed, totalSpent, flightCount, hotelCount });
   }, [bookings]);
@@ -89,10 +88,12 @@ const UserDashboard = () => {
     if (saved) {
       // Notifications sauvegardées en JSON : la date y est une chaîne.
       const parsed: (Omit<Notification, "timestamp"> & { timestamp: string })[] = JSON.parse(saved);
-      setNotifications(parsed.map((n) => ({
-        ...n,
-        timestamp: new Date(n.timestamp)
-      })));
+      setNotifications(
+        parsed.map((n) => ({
+          ...n,
+          timestamp: new Date(n.timestamp),
+        })),
+      );
     }
   };
 
@@ -103,7 +104,7 @@ const UserDashboard = () => {
       timestamp: new Date(),
       read: false,
     };
-    
+
     const updatedNotifications = [newNotification, ...notifications];
     setNotifications(updatedNotifications);
     localStorage.setItem("dashboard_notifications", JSON.stringify(updatedNotifications));
@@ -123,7 +124,7 @@ const UserDashboard = () => {
   const handleConfirmBooking = async (id: string) => {
     try {
       const booking = bookings.find((b) => b.id === id);
-      if (!booking) throw new Error(t('dashboardPage.errors.notFound'));
+      if (!booking) throw new Error(t("dashboardPage.errors.notFound"));
 
       const { error } = await supabase
         .from("bookings")
@@ -134,36 +135,36 @@ const UserDashboard = () => {
 
       if (booking.payment_status === "pending") {
         toast({
-          title: t('dashboardPage.notifications.confirmSuccess'),
-          description: t('dashboardPage.notifications.redirectPayment'),
+          title: t("dashboardPage.notifications.confirmSuccess"),
+          description: t("dashboardPage.notifications.redirectPayment"),
         });
         addNotification({
           type: "info",
-          title: t('dashboardPage.notifications.confirmSuccess'),
-          message: t('dashboardPage.notifications.redirectPayment'),
+          title: t("dashboardPage.notifications.confirmSuccess"),
+          message: t("dashboardPage.notifications.redirectPayment"),
         });
         setTimeout(() => navigate(`/payment?bookingId=${id}`), 1000);
         return;
       }
 
-      toast({ title: t('common.success'), description: t('dashboardPage.notifications.emailSent') });
+      toast({ title: t("common.success"), description: t("dashboardPage.notifications.emailSent") });
       addNotification({
         type: "success",
-        title: t('common.success'),
-        message: t('dashboardPage.notifications.emailSent'),
+        title: t("common.success"),
+        message: t("dashboardPage.notifications.emailSent"),
       });
     } catch (error) {
-      toast({ title: t('common.error'), description: getErrorMessage(error), variant: "destructive" });
+      toast({ title: t("common.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
   const handleCancelBooking = async (id: string) => {
     try {
       const booking = bookings.find((b) => b.id === id);
-      if (!booking) throw new Error(t('dashboardPage.errors.notFound'));
+      if (!booking) throw new Error(t("dashboardPage.errors.notFound"));
       // Hôtel partenaire : annulation depuis sa page, selon les conditions du
       // tarif (cancel-hotel-booking), jamais le remboursement intégral générique.
-      if ((booking as { booking_details?: { kind?: string } | null }).booking_details?.kind === 'partner_hotel') {
+      if ((booking as { booking_details?: { kind?: string } | null }).booking_details?.kind === "partner_hotel") {
         navigate(`/confirmation?bookingId=${id}`);
         return;
       }
@@ -171,48 +172,48 @@ const UserDashboard = () => {
       // Delegates to the refund-payment edge function, which actually calls
       // CinetPay to refund the charge (not just flipping a status flag) when
       // the booking was paid.
-      const { data, error } = await supabase.functions.invoke('refund-payment', {
+      const { data, error } = await supabase.functions.invoke("refund-payment", {
         body: { booking_id: id },
       });
 
       if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || t('dashboardPage.errors.notFound'));
+      if (!data?.success) throw new Error(data?.error || t("dashboardPage.errors.notFound"));
 
       toast({
-        title: t('dashboardPage.notifications.cancelSuccess'),
+        title: t("dashboardPage.notifications.cancelSuccess"),
         description: data.refunded
-          ? t('dashboardPage.notifications.cancelledRefund')
-          : t('dashboardPage.notifications.cancelled'),
+          ? t("dashboardPage.notifications.cancelledRefund")
+          : t("dashboardPage.notifications.cancelled"),
       });
       addNotification({
         type: "info",
-        title: t('dashboardPage.notifications.cancelSuccess'),
+        title: t("dashboardPage.notifications.cancelSuccess"),
         message: data.refunded
-          ? t('dashboardPage.notifications.cancelledRefund')
-          : t('dashboardPage.notifications.cancelled'),
+          ? t("dashboardPage.notifications.cancelledRefund")
+          : t("dashboardPage.notifications.cancelled"),
       });
     } catch (error) {
-      toast({ title: t('common.error'), description: getErrorMessage(error), variant: "destructive" });
+      toast({ title: t("common.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
   const handleEditBooking = () => {
     toast({
-      title: t('dashboardPage.notifications.comingSoon'),
-      description: t('dashboardPage.notifications.editSoon'),
+      title: t("dashboardPage.notifications.comingSoon"),
+      description: t("dashboardPage.notifications.editSoon"),
     });
-    navigate('/support');
+    navigate("/support");
   };
 
   const handleDeleteBooking = async (id: string) => {
     try {
       const booking = bookings.find((b) => b.id === id);
-      if (!booking) throw new Error(t('dashboardPage.errors.notFound'));
+      if (!booking) throw new Error(t("dashboardPage.errors.notFound"));
 
       if ((booking.status === "confirmed" || booking.status === "completed") && booking.payment_status === "paid") {
         toast({
-          title: t('dashboardPage.notifications.cannotDelete'),
-          description: t('dashboardPage.notifications.cannotDeleteDesc'),
+          title: t("dashboardPage.notifications.cannotDelete"),
+          description: t("dashboardPage.notifications.cannotDeleteDesc"),
           variant: "destructive",
         });
         return;
@@ -221,14 +222,17 @@ const UserDashboard = () => {
       const { error } = await supabase.from("bookings").delete().eq("id", id);
       if (error) throw error;
 
-      toast({ title: t('dashboardPage.notifications.deleteSuccess'), description: t('dashboardPage.notifications.deleted') });
+      toast({
+        title: t("dashboardPage.notifications.deleteSuccess"),
+        description: t("dashboardPage.notifications.deleted"),
+      });
       addNotification({
         type: "warning",
-        title: t('dashboardPage.notifications.deleteSuccess'),
-        message: t('dashboardPage.notifications.deleted'),
+        title: t("dashboardPage.notifications.deleteSuccess"),
+        message: t("dashboardPage.notifications.deleted"),
       });
     } catch (error) {
-      toast({ title: t('common.error'), description: getErrorMessage(error), variant: "destructive" });
+      toast({ title: t("common.error"), description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -266,7 +270,7 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        <OfflineIndicator 
+        <OfflineIndicator
           isOnline={isOnline}
           isSyncing={isSyncing}
           storageStats={storageStats}
@@ -277,109 +281,111 @@ const UserDashboard = () => {
 
         {/* Gestion des réservations (annulation, paiement, calendrier) :
             masquée tant qu'il n'y en a aucune (la vue d'ensemble invite déjà à réserver) */}
-        {bookings.length > 0 && (<>
-        <h2 className="pt-2 text-lg font-semibold">{t("ux.dash.manageBookings")}</h2>
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="mb-4 flex-wrap h-auto gap-1">
-            <TabsTrigger value="all" className="text-xs md:text-sm">
-              {t('dashboardPage.tabs.all')} ({stats.total})
-            </TabsTrigger>
-            <TabsTrigger value="pending" className="text-xs md:text-sm">
-              {t('dashboardPage.tabs.pending')} ({stats.pending})
-            </TabsTrigger>
-            <TabsTrigger value="confirmed" className="text-xs md:text-sm">
-              {t('dashboardPage.tabs.confirmed')} ({stats.confirmed})
-            </TabsTrigger>
-            <TabsTrigger value="completed" className="text-xs md:text-sm">
-              {t('dashboardPage.tabs.completed')} ({stats.completed})
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="text-xs md:text-sm">
-              📅 {t('dashboardPage.tabs.calendar')}
-            </TabsTrigger>
-          </TabsList>
+        {bookings.length > 0 && (
+          <>
+            <h2 className="pt-2 text-lg font-semibold">{t("ux.dash.manageBookings")}</h2>
+            <Tabs defaultValue="all" className="w-full">
+              <TabsList className="mb-4 flex-wrap h-auto gap-1">
+                <TabsTrigger value="all" className="text-xs md:text-sm">
+                  {t("dashboardPage.tabs.all")} ({stats.total})
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="text-xs md:text-sm">
+                  {t("dashboardPage.tabs.pending")} ({stats.pending})
+                </TabsTrigger>
+                <TabsTrigger value="confirmed" className="text-xs md:text-sm">
+                  {t("dashboardPage.tabs.confirmed")} ({stats.confirmed})
+                </TabsTrigger>
+                <TabsTrigger value="completed" className="text-xs md:text-sm">
+                  {t("dashboardPage.tabs.completed")} ({stats.completed})
+                </TabsTrigger>
+                <TabsTrigger value="calendar" className="text-xs md:text-sm">
+                  📅 {t("dashboardPage.tabs.calendar")}
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="all" className="space-y-4">
-            {bookings.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">{t('dashboardPage.noBookings')}</h3>
-                  <p className="text-muted-foreground mb-6">{t('dashboardPage.startPlanning')}</p>
-                  <Button onClick={() => navigate("/")}>{t('dashboardPage.explore')}</Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {bookings.map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onConfirm={() => handleConfirmBooking(booking.id)}
-                    onCancel={() => handleCancelBooking(booking.id)}
-                    onEdit={handleEditBooking}
-                    onDelete={() => handleDeleteBooking(booking.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
+              <TabsContent value="all" className="space-y-4">
+                {bookings.length === 0 ? (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">{t("dashboardPage.noBookings")}</h3>
+                      <p className="text-muted-foreground mb-6">{t("dashboardPage.startPlanning")}</p>
+                      <Button onClick={() => navigate("/")}>{t("dashboardPage.explore")}</Button>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    {bookings.map((booking) => (
+                      <BookingCard
+                        key={booking.id}
+                        booking={booking}
+                        onConfirm={() => handleConfirmBooking(booking.id)}
+                        onCancel={() => handleCancelBooking(booking.id)}
+                        onEdit={handleEditBooking}
+                        onDelete={() => handleDeleteBooking(booking.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
 
-          <TabsContent value="pending" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {bookings
-                .filter((booking) => booking.status === "pending")
-                .map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onConfirm={() => handleConfirmBooking(booking.id)}
-                    onCancel={() => handleCancelBooking(booking.id)}
-                    onEdit={handleEditBooking}
-                    onDelete={() => handleDeleteBooking(booking.id)}
-                  />
-                ))}
-            </div>
-          </TabsContent>
+              <TabsContent value="pending" className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {bookings
+                    .filter((booking) => booking.status === "pending")
+                    .map((booking) => (
+                      <BookingCard
+                        key={booking.id}
+                        booking={booking}
+                        onConfirm={() => handleConfirmBooking(booking.id)}
+                        onCancel={() => handleCancelBooking(booking.id)}
+                        onEdit={handleEditBooking}
+                        onDelete={() => handleDeleteBooking(booking.id)}
+                      />
+                    ))}
+                </div>
+              </TabsContent>
 
-          <TabsContent value="confirmed" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {bookings
-                .filter((booking) => booking.status === "confirmed")
-                .map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onConfirm={() => handleConfirmBooking(booking.id)}
-                    onCancel={() => handleCancelBooking(booking.id)}
-                    onEdit={handleEditBooking}
-                    onDelete={() => handleDeleteBooking(booking.id)}
-                  />
-                ))}
-            </div>
-          </TabsContent>
+              <TabsContent value="confirmed" className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {bookings
+                    .filter((booking) => booking.status === "confirmed")
+                    .map((booking) => (
+                      <BookingCard
+                        key={booking.id}
+                        booking={booking}
+                        onConfirm={() => handleConfirmBooking(booking.id)}
+                        onCancel={() => handleCancelBooking(booking.id)}
+                        onEdit={handleEditBooking}
+                        onDelete={() => handleDeleteBooking(booking.id)}
+                      />
+                    ))}
+                </div>
+              </TabsContent>
 
-          <TabsContent value="completed" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {bookings
-                .filter((booking) => booking.status === "completed")
-                .map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onConfirm={() => handleConfirmBooking(booking.id)}
-                    onCancel={() => handleCancelBooking(booking.id)}
-                    onEdit={handleEditBooking}
-                    onDelete={() => handleDeleteBooking(booking.id)}
-                  />
-                ))}
-            </div>
-          </TabsContent>
+              <TabsContent value="completed" className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {bookings
+                    .filter((booking) => booking.status === "completed")
+                    .map((booking) => (
+                      <BookingCard
+                        key={booking.id}
+                        booking={booking}
+                        onConfirm={() => handleConfirmBooking(booking.id)}
+                        onCancel={() => handleCancelBooking(booking.id)}
+                        onEdit={handleEditBooking}
+                        onDelete={() => handleDeleteBooking(booking.id)}
+                      />
+                    ))}
+                </div>
+              </TabsContent>
 
-          <TabsContent value="calendar">
-            <BookingCalendar bookings={bookings} />
-          </TabsContent>
-        </Tabs>
-        </>)}
+              <TabsContent value="calendar">
+                <BookingCalendar bookings={bookings} />
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
       </div>
     </UserDashboardLayout>
   );

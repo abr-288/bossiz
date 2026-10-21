@@ -18,13 +18,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="month"
-              stroke="#888888"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
+            <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
             <YAxis
               stroke="#888888"
               fontSize={12}
@@ -36,11 +30,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
               formatter={(value: number) => [`${value.toLocaleString()} FCFA`, "Revenus"]}
               contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
             />
-            <Bar
-              dataKey="revenue"
-              fill="hsl(var(--primary))"
-              radius={[8, 8, 0, 0]}
-            />
+            <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

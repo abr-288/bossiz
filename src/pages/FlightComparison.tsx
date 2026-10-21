@@ -3,7 +3,21 @@ import { useSearchParams } from "react-router-dom";
 import { format, addDays, eachDayOfInterval } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { FlightSearchForm } from "@/components/FlightSearchForm";
@@ -80,36 +94,35 @@ const FlightComparison = () => {
     if (!from || !to || !date) return;
 
     const runSearch = async () => {
-
-    setHasSearched(true);
-    const result = await searchFlights({
-      origin: from,
-      destination: to,
-      departureDate: date,
-      returnDate,
-      adults,
-      children,
-      travelClass,
-    });
-
-    if (result?.success && Array.isArray(result.data)) {
-      const mapped: FlightData[] = result.data.map((offer) => {
-        const firstItinerary = offer.itineraries?.[0];
-        const airlineCode = offer.validatingAirlineCodes?.[0] || "XX";
-        const airline = getAirlineName(airlineCode);
-        const price = typeof offer.price === "object" ? parseFloat(offer.price.total ?? "") : offer.price || 0;
-        const duration = firstItinerary?.duration || "N/A";
-        const stops = (firstItinerary?.segments?.length || 1) - 1;
-
-        return { airline, airlineCode, price, duration, stops, date };
+      setHasSearched(true);
+      const result = await searchFlights({
+        origin: from,
+        destination: to,
+        departureDate: date,
+        returnDate,
+        adults,
+        children,
+        travelClass,
       });
-      setFlights(mapped);
-      
-      // Store in map by date
-      const newMap = new Map(flightsByDate);
-      newMap.set(date, mapped);
-      setFlightsByDate(newMap);
-    }
+
+      if (result?.success && Array.isArray(result.data)) {
+        const mapped: FlightData[] = result.data.map((offer) => {
+          const firstItinerary = offer.itineraries?.[0];
+          const airlineCode = offer.validatingAirlineCodes?.[0] || "XX";
+          const airline = getAirlineName(airlineCode);
+          const price = typeof offer.price === "object" ? parseFloat(offer.price.total ?? "") : offer.price || 0;
+          const duration = firstItinerary?.duration || "N/A";
+          const stops = (firstItinerary?.segments?.length || 1) - 1;
+
+          return { airline, airlineCode, price, duration, stops, date };
+        });
+        setFlights(mapped);
+
+        // Store in map by date
+        const newMap = new Map(flightsByDate);
+        newMap.set(date, mapped);
+        setFlightsByDate(newMap);
+      }
     };
 
     runSearch();
@@ -133,7 +146,7 @@ const FlightComparison = () => {
 
     for (const date of dates) {
       const dateStr = format(date, "yyyy-MM-dd");
-      
+
       const result = await searchFlights({
         origin: from,
         destination: to,
@@ -160,7 +173,7 @@ const FlightComparison = () => {
     }
 
     setFlightsByDate(newFlightsByDate);
-    
+
     // Flatten all flights for stats
     const allFlights: FlightData[] = [];
     newFlightsByDate.forEach((flights) => allFlights.push(...flights));
@@ -171,28 +184,33 @@ const FlightComparison = () => {
 
   // Aggregate data by airline
   const airlineStats = useMemo(() => {
-    const grouped = flights.reduce((acc, flight) => {
-      if (!acc[flight.airline]) {
-        acc[flight.airline] = {
-          airline: flight.airline,
-          prices: [],
-          avgPrice: 0,
-          minPrice: Infinity,
-          maxPrice: 0,
-          count: 0,
-        };
-      }
-      acc[flight.airline].prices.push(flight.price);
-      acc[flight.airline].count += 1;
-      acc[flight.airline].minPrice = Math.min(acc[flight.airline].minPrice, flight.price);
-      acc[flight.airline].maxPrice = Math.max(acc[flight.airline].maxPrice, flight.price);
-      return acc;
-    }, {} as Record<string, AirlineStat>);
+    const grouped = flights.reduce(
+      (acc, flight) => {
+        if (!acc[flight.airline]) {
+          acc[flight.airline] = {
+            airline: flight.airline,
+            prices: [],
+            avgPrice: 0,
+            minPrice: Infinity,
+            maxPrice: 0,
+            count: 0,
+          };
+        }
+        acc[flight.airline].prices.push(flight.price);
+        acc[flight.airline].count += 1;
+        acc[flight.airline].minPrice = Math.min(acc[flight.airline].minPrice, flight.price);
+        acc[flight.airline].maxPrice = Math.max(acc[flight.airline].maxPrice, flight.price);
+        return acc;
+      },
+      {} as Record<string, AirlineStat>,
+    );
 
-    return Object.values(grouped).map((stat) => ({
-      ...stat,
-      avgPrice: Math.round(stat.prices.reduce((a: number, b: number) => a + b, 0) / stat.prices.length),
-    })).sort((a, b) => a.avgPrice - b.avgPrice);
+    return Object.values(grouped)
+      .map((stat) => ({
+        ...stat,
+        avgPrice: Math.round(stat.prices.reduce((a: number, b: number) => a + b, 0) / stat.prices.length),
+      }))
+      .sort((a, b) => a.avgPrice - b.avgPrice);
   }, [flights]);
 
   // Price evolution by date
@@ -207,11 +225,14 @@ const FlightComparison = () => {
       const dataPoint: PriceByDate = { date: format(new Date(date), "dd MMM", { locale: currentDateFnsLocale() }) };
 
       // Group by airline and get average price
-      const airlineGroups = dayFlights.reduce((acc, flight) => {
-        if (!acc[flight.airline]) acc[flight.airline] = [];
-        acc[flight.airline].push(flight.price);
-        return acc;
-      }, {} as Record<string, number[]>);
+      const airlineGroups = dayFlights.reduce(
+        (acc, flight) => {
+          if (!acc[flight.airline]) acc[flight.airline] = [];
+          acc[flight.airline].push(flight.price);
+          return acc;
+        },
+        {} as Record<string, number[]>,
+      );
 
       Object.entries(airlineGroups).forEach(([airline, prices]) => {
         dataPoint[airline] = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
@@ -224,7 +245,7 @@ const FlightComparison = () => {
   }, [flightsByDate]);
 
   const topAirlines = useMemo(() => {
-    return airlineStats.slice(0, 5).map(stat => stat.airline);
+    return airlineStats.slice(0, 5).map((stat) => stat.airline);
   }, [airlineStats]);
 
   const cheapestAirline = airlineStats[0];
@@ -237,7 +258,7 @@ const FlightComparison = () => {
   return (
     <div className="min-h-screen flex flex-col pt-16">
       <Navbar />
-      
+
       <PageHero image={bannerFlights} title={t("ux.compare.title")} subtitle={t("ux.compare.subtitle")}>
         <div className="mx-auto max-w-5xl text-left">
           <FlightSearchForm />
@@ -251,9 +272,7 @@ const FlightComparison = () => {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>{t("ux.compare.multiDate")}</CardTitle>
-              <CardDescription>
-                {t("ux.compare.multiDateDesc")}
-              </CardDescription>
+              <CardDescription>{t("ux.compare.multiDateDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
@@ -264,7 +283,7 @@ const FlightComparison = () => {
                         variant="outline"
                         className={cn(
                           "w-full justify-start text-left font-normal",
-                          !dateRange && "text-muted-foreground"
+                          !dateRange && "text-muted-foreground",
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -296,7 +315,7 @@ const FlightComparison = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <Button 
+                <Button
                   onClick={analyzeDateRange}
                   disabled={!dateRange?.from || !dateRange?.to || isAnalyzing}
                   className="whitespace-nowrap"
@@ -332,11 +351,7 @@ const FlightComparison = () => {
           {!loading && !error && hasSearched && flights.length === 0 && (
             <Card>
               <CardContent className="p-0">
-                <EmptyState
-                  icon={Plane}
-                  title={t("ux.compare.emptyTitle")}
-                  description={t("ux.compare.emptyDesc")}
-                />
+                <EmptyState icon={Plane} title={t("ux.compare.emptyTitle")} description={t("ux.compare.emptyDesc")} />
               </CardContent>
             </Card>
           )}
@@ -351,10 +366,10 @@ const FlightComparison = () => {
                     <Plane className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold"><Price amount={avgMarketPrice} fromCurrency="EUR" /></div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Sur {flights.length} vols analysés
-                    </p>
+                    <div className="text-2xl font-bold">
+                      <Price amount={avgMarketPrice} fromCurrency="EUR" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Sur {flights.length} vols analysés</p>
                   </CardContent>
                 </Card>
 
@@ -408,26 +423,41 @@ const FlightComparison = () => {
                       <ResponsiveContainer width="100%" height={400}>
                         <BarChart data={airlineStats}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                          <XAxis 
-                            dataKey="airline" 
-                            angle={-45} 
-                            textAnchor="end" 
+                          <XAxis
+                            dataKey="airline"
+                            angle={-45}
+                            textAnchor="end"
                             height={100}
                             stroke="hsl(var(--foreground))"
                           />
                           <YAxis stroke="hsl(var(--foreground))" />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: "hsl(var(--card))", 
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--card))",
                               border: "1px solid hsl(var(--border))",
-                              borderRadius: "8px"
+                              borderRadius: "8px",
                             }}
                             formatter={(value) => `${value.toLocaleString()} EUR`}
                           />
                           <Legend />
-                          <Bar dataKey="avgPrice" name={t("ux.compare.avg")} fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-                          <Bar dataKey="minPrice" name={t("ux.compare.min")} fill="hsl(var(--secondary))" radius={[8, 8, 0, 0]} />
-                          <Bar dataKey="maxPrice" name={t("ux.compare.max")} fill="hsl(var(--accent))" radius={[8, 8, 0, 0]} />
+                          <Bar
+                            dataKey="avgPrice"
+                            name={t("ux.compare.avg")}
+                            fill="hsl(var(--primary))"
+                            radius={[8, 8, 0, 0]}
+                          />
+                          <Bar
+                            dataKey="minPrice"
+                            name={t("ux.compare.min")}
+                            fill="hsl(var(--secondary))"
+                            radius={[8, 8, 0, 0]}
+                          />
+                          <Bar
+                            dataKey="maxPrice"
+                            name={t("ux.compare.max")}
+                            fill="hsl(var(--accent))"
+                            radius={[8, 8, 0, 0]}
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     </CardContent>
@@ -447,16 +477,13 @@ const FlightComparison = () => {
                         <ResponsiveContainer width="100%" height={400}>
                           <LineChart data={priceEvolution}>
                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                            <XAxis 
-                              dataKey="date" 
-                              stroke="hsl(var(--foreground))"
-                            />
+                            <XAxis dataKey="date" stroke="hsl(var(--foreground))" />
                             <YAxis stroke="hsl(var(--foreground))" />
-                            <Tooltip 
-                              contentStyle={{ 
-                                backgroundColor: "hsl(var(--card))", 
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "hsl(var(--card))",
                                 border: "1px solid hsl(var(--border))",
-                                borderRadius: "8px"
+                                borderRadius: "8px",
                               }}
                               formatter={(value) => `${value.toLocaleString()} EUR`}
                             />
@@ -481,9 +508,7 @@ const FlightComparison = () => {
                       <CardContent className="pt-6 text-center">
                         <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                         <p className="text-lg font-medium mb-2">{t("ux.compare.noMulti")}</p>
-                        <p className="text-muted-foreground">
-                          {t("ux.compare.noMultiDesc")}
-                        </p>
+                        <p className="text-muted-foreground">{t("ux.compare.noMultiDesc")}</p>
                       </CardContent>
                     </Card>
                   )}
@@ -499,36 +524,36 @@ const FlightComparison = () => {
                       <ResponsiveContainer width="100%" height={400}>
                         <LineChart data={airlineStats}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                          <XAxis 
-                            dataKey="airline" 
-                            angle={-45} 
-                            textAnchor="end" 
+                          <XAxis
+                            dataKey="airline"
+                            angle={-45}
+                            textAnchor="end"
                             height={100}
                             stroke="hsl(var(--foreground))"
                           />
                           <YAxis stroke="hsl(var(--foreground))" />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: "hsl(var(--card))", 
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--card))",
                               border: "1px solid hsl(var(--border))",
-                              borderRadius: "8px"
+                              borderRadius: "8px",
                             }}
                             formatter={(value) => `${value.toLocaleString()} EUR`}
                           />
                           <Legend />
-                          <Line 
-                            type="monotone" 
-                            dataKey="avgPrice" 
-                            name={t("ux.compare.avg")} 
-                            stroke="hsl(var(--primary))" 
+                          <Line
+                            type="monotone"
+                            dataKey="avgPrice"
+                            name={t("ux.compare.avg")}
+                            stroke="hsl(var(--primary))"
                             strokeWidth={3}
                             dot={{ fill: "hsl(var(--primary))", r: 6 }}
                           />
-                          <Line 
-                            type="monotone" 
-                            dataKey="minPrice" 
-                            name={t("ux.compare.min")} 
-                            stroke="hsl(var(--secondary))" 
+                          <Line
+                            type="monotone"
+                            dataKey="minPrice"
+                            name={t("ux.compare.min")}
+                            stroke="hsl(var(--secondary))"
                             strokeWidth={2}
                             strokeDasharray="5 5"
                           />
@@ -560,11 +585,11 @@ const FlightComparison = () => {
                               <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                             ))}
                           </Pie>
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: "hsl(var(--card))", 
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--card))",
                               border: "1px solid hsl(var(--border))",
-                              borderRadius: "8px"
+                              borderRadius: "8px",
                             }}
                           />
                         </PieChart>
@@ -600,9 +625,7 @@ const FlightComparison = () => {
                             <td className="text-right py-3 px-4 text-success font-semibold">
                               {stat.minPrice.toLocaleString()} EUR
                             </td>
-                            <td className="text-right py-3 px-4">
-                              {stat.avgPrice.toLocaleString()} EUR
-                            </td>
+                            <td className="text-right py-3 px-4">{stat.avgPrice.toLocaleString()} EUR</td>
                             <td className="text-right py-3 px-4 text-destructive">
                               {stat.maxPrice.toLocaleString()} EUR
                             </td>
@@ -642,9 +665,7 @@ const FlightComparison = () => {
               <CardContent className="pt-6 text-center">
                 <Plane className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-xl font-semibold mb-2">{t("ux.compare.startTitle")}</h3>
-                <p className="text-muted-foreground">
-                  {t("ux.compare.startDesc")}
-                </p>
+                <p className="text-muted-foreground">{t("ux.compare.startDesc")}</p>
               </CardContent>
             </Card>
           )}

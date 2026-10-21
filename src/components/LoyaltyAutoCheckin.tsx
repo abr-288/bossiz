@@ -69,7 +69,9 @@ export default function LoyaltyAutoCheckin() {
         storage.set(key, today);
         const result = data as { awarded: boolean; points?: number; bonus?: number; streak: number } | null;
         if (result?.awarded) {
-          toast.success(t("ux.smiles.checkinToast", { points: (result.points ?? 0) + (result.bonus ?? 0), streak: result.streak }));
+          toast.success(
+            t("ux.smiles.checkinToast", { points: (result.points ?? 0) + (result.bonus ?? 0), streak: result.streak }),
+          );
         }
       } finally {
         running = false;
@@ -79,7 +81,9 @@ export default function LoyaltyAutoCheckin() {
     void supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) void run(session.user.id);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) void run(session.user.id);
     });
     return () => subscription.unsubscribe();
