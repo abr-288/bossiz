@@ -133,6 +133,7 @@ const AdminEmailTemplates = () => {
     { value: "password_reset", label: "Réinitialisation mot de passe" },
     { value: "partner_account_ready", label: "Compte partenaire prêt" },
     { value: "partner_application_received", label: "Candidature reçue (candidat)" },
+    { value: "partner_application_received_auto", label: "Demande reçue, validation automatique (candidat)" },
     { value: "partner_application_admin_alert", label: "Nouvelle candidature (interne)" },
     { value: "partner_approved", label: "Candidature approuvée" },
     { value: "partner_application_rejected", label: "Candidature rejetée" },

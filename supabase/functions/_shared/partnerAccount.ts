@@ -18,6 +18,30 @@ export interface PartnerAccountResult {
   setupLink?: string;
 }
 
+// Lien vers /reset-password avec le jeton haché (vérifié à la validation du
+// mot de passe) : le lien Supabase /verify était consommé par les robots qui
+// analysent les liens des e-mails. undefined si la génération échoue.
+async function createSetupLink(adminClient: SupabaseClient, email: string): Promise<string | undefined> {
+  const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: { redirectTo: `${SITE_URL}/reset-password` },
+  });
+  const hashedToken = linkData?.properties?.hashed_token;
+  if (linkError || !hashedToken) {
+    console.error("generateLink error:", linkError?.message);
+    return undefined;
+  }
+  return `${SITE_URL}/reset-password?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`;
+}
+
+export interface FindOrCreateOptions {
+  // false : aucun e-mail « compte prêt » ; le lien pour choisir le mot de passe
+  // est renvoyé (setupLink) pour être intégré à l'e-mail de confirmation
+  // (validation automatique : un seul e-mail après la validation).
+  sendSetupEmail?: boolean;
+}
+
 // Compte existant (même email) : réutilisé sans rien envoyer. Sinon le compte
 // est créé et le candidat reçoit un lien pour choisir son mot de passe
 // (aucun mot de passe n'est généré ni envoyé). Renvoie null si la création
@@ -26,17 +50,21 @@ export async function findOrCreatePartnerAccount(
   adminClient: SupabaseClient,
   email: string,
   fullName: string,
+  { sendSetupEmail = true }: FindOrCreateOptions = {},
 ): Promise<PartnerAccountResult | null> {
   // Les emails ne vivent que dans auth.users, pas dans profiles.
-  let existingId: string | null = null;
-  for (let page = 1; page <= 25 && !existingId; page++) {
+  let existing: { id: string; last_sign_in_at?: string | null } | null = null;
+  for (let page = 1; page <= 25 && !existing; page++) {
     const { data, error } = await adminClient.auth.admin.listUsers({ page, perPage: 200 });
     if (error) break;
-    existingId = data.users.find((u: { email?: string }) => u.email?.toLowerCase() === email)?.id ?? null;
+    existing = data.users.find((u: { email?: string }) => u.email?.toLowerCase() === email) ?? null;
     if (data.users.length < 200) break;
   }
-  if (existingId) {
-    return { userId: existingId, created: false, emailSent: false };
+  if (existing) {
+    // Compte jamais utilisé (créé par une tentative précédente, par exemple) :
+    // l'e-mail de confirmation doit permettre de choisir le mot de passe.
+    const setupLink = !sendSetupEmail && !existing.last_sign_in_at ? await createSetupLink(adminClient, email) : undefined;
+    return { userId: existing.id, created: false, emailSent: false, ...(setupLink ? { setupLink } : {}) };
   }
 
   // Le trigger handle_new_user crée la ligne profiles à partir de full_name.
@@ -50,21 +78,12 @@ export async function findOrCreatePartnerAccount(
     return null;
   }
 
-  const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
-    type: "recovery",
-    email,
-    options: { redirectTo: `${SITE_URL}/reset-password` },
-  });
-  // Lien vers /reset-password avec le jeton haché (vérifié à la validation
-  // du mot de passe) : le lien Supabase /verify était consommé par les
-  // robots qui analysent les liens des e-mails.
-  const hashedToken = linkData?.properties?.hashed_token;
-  const actionLink = hashedToken
-    ? `${SITE_URL}/reset-password?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`
-    : undefined;
-  if (linkError || !actionLink) {
-    console.error("generateLink error:", linkError?.message);
+  const actionLink = await createSetupLink(adminClient, email);
+  if (!actionLink) {
     return { userId: created.user.id, created: true, emailSent: false };
+  }
+  if (!sendSetupEmail) {
+    return { userId: created.user.id, created: true, emailSent: false, setupLink: actionLink };
   }
 
   const vars = {
@@ -92,10 +111,13 @@ export async function findOrCreatePartnerAccount(
 
 // Relit l'agence par id, retrouve l'email de connexion du propriétaire
 // (agencies.contact_email est un contact commercial, pas forcément l'email
-// du compte) et envoie l'email de bienvenue. null : agence introuvable.
+// du compte) et envoie l'email de bienvenue. Avec setupLink (nouveau compte,
+// validation automatique), le bouton mène au choix du mot de passe.
+// null : agence introuvable.
 export async function sendPartnerApprovedEmail(
   adminClient: SupabaseClient,
   agencyId: string,
+  { setupLink }: { setupLink?: string } = {},
 ): Promise<{ emailSent: boolean } | null> {
   const { data: agency, error: fetchError } = await adminClient
     .from("agencies")
@@ -119,7 +141,7 @@ export async function sendPartnerApprovedEmail(
   const vars = {
     ownerGreeting: ownerName ? ` ${ownerName}` : "",
     agencyName: agency.name,
-    loginLink: `${SITE_URL}/auth`,
+    loginLink: setupLink ?? `${SITE_URL}/auth`,
     year: String(new Date().getFullYear()),
   };
   const rendered = await renderEmailTemplate(adminClient, "partner_approved", vars);
@@ -128,7 +150,7 @@ export async function sendPartnerApprovedEmail(
     from: FROM,
     to: [ownerEmail],
     subject: rendered?.subject ?? "Votre candidature est approuvée - Bienvenue chez Bossiz+",
-    html: rendered?.html ?? approvedHtml(agency.name, ownerName),
+    html: rendered?.html ?? approvedHtml(agency.name, ownerName, setupLink),
   });
 
   if (!result.ok && result.error !== "RESEND_API_KEY not configured") {
@@ -163,7 +185,7 @@ function accountReadyHtml(name: string, link: string) {
   `;
 }
 
-function approvedHtml(agencyName: string, ownerName: string) {
+function approvedHtml(agencyName: string, ownerName: string, setupLink?: string) {
   return `
     <!DOCTYPE html>
     <html>
@@ -176,8 +198,9 @@ function approvedHtml(agencyName: string, ownerName: string) {
           <p>Bonjour${ownerName ? ` ${escapeHtml(ownerName)}` : ""},</p>
           <p>Votre candidature partenaire a été étudiée et approuvée : <strong>${escapeHtml(agencyName)}</strong> est maintenant un partenaire actif de Bossiz+.</p>
           <p>Vous pouvez dès à présent accéder à votre espace agence pour gérer vos offres, tarifs et réservations.</p>
+          ${setupLink ? `<p>Votre compte Bossiz+ a été créé avec cette adresse e-mail : le bouton ci-dessous vous permet de choisir votre mot de passe.</p>` : ""}
           <p style="text-align:center; margin: 28px 0;">
-            <a href="${SITE_URL}/auth" style="background:#0b3d5c; color:#fff; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:bold;">Accéder à mon espace agence</a>
+            <a href="${escapeHtml(setupLink ?? `${SITE_URL}/auth`)}" style="background:#0b3d5c; color:#fff; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:bold;">${setupLink ? "Choisir mon mot de passe" : "Accéder à mon espace agence"}</a>
           </p>
           <p style="margin-top: 24px;">Bienvenue,<br/>L'équipe Bossiz+</p>
         </div>

@@ -65,14 +65,36 @@ serve(async (req) => {
 
     const year = String(new Date().getFullYear());
 
-    const applicantVars = { applicationName: application.name, year };
-    const applicantRendered = await renderEmailTemplate(supabase, "partner_application_received", applicantVars);
+    // Validation automatique (même réglage que auto-approve-partner-applications) :
+    // l'e-mail d'information annonce la création du compte d'ici quelques
+    // minutes et l'e-mail de confirmation qui suivra, au lieu d'une étude manuelle.
+    const { data: setting } = await supabase
+      .from("site_config")
+      .select("config_value")
+      .eq("config_key", "partner_applications")
+      .maybeSingle();
+    const autoConfig = (setting?.config_value ?? {}) as { autoApprove?: boolean; delayMinutes?: number; enabledSince?: string };
+    const enabledSince = autoConfig.enabledSince ? new Date(autoConfig.enabledSince).getTime() : NaN;
+    const autoApproved = autoConfig.autoApprove === true && new Date(application.created_at).getTime() >= enabledSince;
+    const delayMinutes = Number.isFinite(autoConfig.delayMinutes) ? Math.max(Number(autoConfig.delayMinutes), 1) : 3;
+    const delayText = delayMinutes <= 1 ? "une minute" : `${delayMinutes} minutes`;
+
+    const applicantVars = { applicationName: application.name, delayText, year };
+    const applicantRendered = await renderEmailTemplate(
+      supabase,
+      autoApproved ? "partner_application_received_auto" : "partner_application_received",
+      applicantVars,
+    );
 
     const applicantResult = await sendEmail(supabase, {
       from: "Bossiz+ Partenaires <partenaires@bossiz.com>",
       to: [application.contact_email],
-      subject: applicantRendered?.subject ?? "Candidature partenaire reçue - Bossiz+",
-      html: applicantRendered?.html ?? applicantEmailHtml(application.name),
+      subject:
+        applicantRendered?.subject ??
+        (autoApproved ? "Votre compte partenaire Bossiz+ est en cours de création" : "Candidature partenaire reçue - Bossiz+"),
+      html:
+        applicantRendered?.html ??
+        (autoApproved ? applicantAutoEmailHtml(application.name, delayText) : applicantEmailHtml(application.name)),
     });
 
     const adminVars = {
@@ -139,6 +161,28 @@ function applicantEmailHtml(name: string) {
           <p>Nous avons bien reçu la candidature partenaire de <strong>${escapeHtml(name)}</strong> sur Bossiz+.</p>
           <p>Notre équipe étudie chaque dossier manuellement. Vous serez recontacté par email à cette même adresse une fois l'étude terminée, avec la décision et les prochaines étapes si votre candidature est retenue.</p>
           <p style="margin-top: 24px;">Merci pour votre intérêt,<br/>L'équipe Bossiz+</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function applicantAutoEmailHtml(name: string, delayText: string) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin:0; padding:0;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: #0b3d5c; color: white; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h1 style="margin:0; font-size: 20px;">Demande bien reçue</h1>
+        </div>
+        <div style="padding: 24px; background: #f9fafb; border-radius: 0 0 8px 8px;">
+          <p>Bonjour,</p>
+          <p>Nous avons bien reçu la demande de compte partenaire de <strong>${escapeHtml(name)}</strong> sur Bossiz+.</p>
+          <p>La validation est automatique : votre espace partenaire sera prêt d'ici ${escapeHtml(delayText)} environ.</p>
+          <p>Vous recevrez alors un second e-mail de confirmation à cette adresse, avec le lien pour accéder à votre espace (et choisir votre mot de passe si vous n'avez pas encore de compte Bossiz+).</p>
+          <p style="margin-top: 24px;">Merci pour votre confiance,<br/>L'équipe Bossiz+</p>
         </div>
       </div>
     </body>

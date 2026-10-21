@@ -122,7 +122,11 @@ serve(async (req) => {
 // Renvoie un message d'erreur lisible par l'admin, ou null si tout est fait.
 async function approve(supabase: SupabaseClient, application: PartnerApplication): Promise<string | null> {
   const email = application.contact_email.trim().toLowerCase();
-  const account = await findOrCreatePartnerAccount(supabase, email, application.name.trim().slice(0, 120));
+  // Pas d'e-mail « compte prêt » séparé : le lien pour choisir le mot de passe
+  // part dans l'e-mail de confirmation, envoyé une fois la validation terminée.
+  const account = await findOrCreatePartnerAccount(supabase, email, application.name.trim().slice(0, 120), {
+    sendSetupEmail: false,
+  });
   if (!account) return "Impossible de créer le compte du partenaire";
 
   // Une seule agence par compte : un doublon reste à trancher par un admin.
@@ -189,6 +193,6 @@ async function approve(supabase: SupabaseClient, application: PartnerApplication
     .update({ status: "approved", auto_approved_at: new Date().toISOString(), auto_approval_error: null })
     .eq("id", application.id);
 
-  await sendPartnerApprovedEmail(supabase, agency.id);
+  await sendPartnerApprovedEmail(supabase, agency.id, { setupLink: account.setupLink });
   return null;
 }
