@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { JEKO_PAYOUT_METHOD_LABELS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { useToast } from "@/hooks/use-toast";
 import { PARTNER_AUTO_APPROVAL_QUERY_KEY, usePartnerAutoApproval } from "@/hooks/usePartnerAutoApproval";
@@ -20,20 +21,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { getErrorMessage } from "@/lib/errorMessage";
 
-interface PartnerApplication {
-  id: string;
-  name: string;
-  description: string | null;
-  contact_email: string;
-  contact_phone: string | null;
-  logo_url: string | null;
-  status: string;
-  created_at: string;
-  requested_car_plan_id: string | null;
-  preferred_payout_method: JekoPayoutMethod | null;
-  auto_approved_at: string | null;
-  auto_approval_error: string | null;
-}
+type PartnerApplication = Tables<"partner_applications">;
 
 const carPlanLabels: Record<string, string> = {
   get decouverte() {
@@ -284,7 +272,8 @@ export default function AdminPartnerApplications() {
                     </TableCell>
                     <TableCell>
                       {application.preferred_payout_method
-                        ? JEKO_PAYOUT_METHOD_LABELS[application.preferred_payout_method]
+                        ? (JEKO_PAYOUT_METHOD_LABELS[application.preferred_payout_method as JekoPayoutMethod] ??
+                          application.preferred_payout_method)
                         : "—"}
                     </TableCell>
                     <TableCell>{statusBadge(application)}</TableCell>

@@ -94,7 +94,7 @@ export default function AdminSubscriptions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [planFilter, setPlanFilter] = useState<string>("all");
-  const [selectedRequest, setSelectedRequest] = useState<SubscriptionRequest | null>(null);
+  const [, setSelectedRequest] = useState<SubscriptionRequest | null>(null);
   const [notes, setNotes] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);

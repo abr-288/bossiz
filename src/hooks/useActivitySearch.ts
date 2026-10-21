@@ -1,29 +1,10 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalizedRows } from "@/lib/translatableContent";
 
-export interface Activity {
-  id: string;
-  name: string;
-  description: string | null;
-  location: string;
-  image_url: string | null;
-  duration: string;
-  category: string;
-  rating: number;
-  reviews: number;
-  price_per_unit: number;
-  currency: string;
-  highlights: string[];
-  included: string[];
-  available: boolean;
-  featured: boolean;
-  available_dates: string[];
-  latitude: number | null;
-  longitude: number | null;
-  maps_url: string | null;
-}
+export type Activity = Tables<"activities">;
 
 export const useActivitySearch = () => {
   const [activities, setActivities] = useState<Activity[]>([]);

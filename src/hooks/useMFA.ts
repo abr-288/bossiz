@@ -88,7 +88,7 @@ export function useMFA() {
       if (challengeError) throw challengeError;
 
       // Verify the code
-      const { data: verifyData, error: verifyError } = await supabase.auth.mfa.verify({
+      const { error: verifyError } = await supabase.auth.mfa.verify({
         factorId: enrollmentData.factorId,
         challengeId: challengeData.id,
         code,

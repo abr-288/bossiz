@@ -118,7 +118,7 @@ const HeroSection = () => {
               key={index}
               type="button"
               onClick={() => setCurrentSlide(index)}
-              className="group flex h-6 items-center px-1"
+              className="group flex h-6 min-w-6 items-center justify-center px-1"
               aria-label={`Image ${index + 1}`}
               aria-current={index === currentSlide}
             >
@@ -136,19 +136,23 @@ const HeroSection = () => {
       <div className="container relative z-20 -mt-28 sm:-mt-32 md:-mt-40 pb-8 px-4">
         <div className="max-w-4xl mx-auto bg-card text-card-foreground rounded-2xl sm:rounded-3xl shadow-xl border border-border overflow-hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full h-auto p-0 bg-muted/50 flex justify-start overflow-x-auto rounded-none gap-0 scroll-snap-x border-b border-border">
-              {SEARCH_TABS.map(({ value, labelKey, icons }, index) => (
-                <TabsTrigger
-                  key={value}
-                  value={value}
-                  className={cn(TAB_TRIGGER_CLASS, index >= MOBILE_VISIBLE_TABS && "hidden sm:inline-flex")}
-                >
-                  {icons.map((Icon, i) => (
-                    <Icon key={i} className={icons.length > 1 ? "w-3.5 h-3.5" : "w-4 h-4"} aria-hidden="true" />
-                  ))}
-                  <span className="whitespace-nowrap">{t(labelKey)}</span>
-                </TabsTrigger>
-              ))}
+            {/* Le menu « Plus » reste hors du tablist (qui ne doit contenir que des onglets) ;
+                sur mobile il garde le même quart de largeur qu'avant. */}
+            <div className="flex bg-muted/50 border-b border-border">
+              <TabsList className="flex-[3] sm:flex-1 min-w-0 h-auto p-0 bg-transparent flex justify-start overflow-x-auto rounded-none gap-0 scroll-snap-x">
+                {SEARCH_TABS.map(({ value, labelKey, icons }, index) => (
+                  <TabsTrigger
+                    key={value}
+                    value={value}
+                    className={cn(TAB_TRIGGER_CLASS, index >= MOBILE_VISIBLE_TABS && "hidden sm:inline-flex")}
+                  >
+                    {icons.map((Icon, i) => (
+                      <Icon key={i} className={icons.length > 1 ? "w-3.5 h-3.5" : "w-4 h-4"} aria-hidden="true" />
+                    ))}
+                    <span className="whitespace-nowrap">{t(labelKey)}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -177,7 +181,7 @@ const HeroSection = () => {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-            </TabsList>
+            </div>
 
             <TabsContent value="flight" className="p-3 md:p-5">
               <FlightSearchForm />

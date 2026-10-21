@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Star, Heart, TrendingUp, Thermometer, Calendar, Users, ChevronRight } from "lucide-react";
+import { MapPin, Star, Heart, TrendingUp, Thermometer, Calendar, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,10 +35,6 @@ export const DestinationCard = ({ destination, index = 0, variant = "default" }:
 
   const handleViewDetails = () => {
     navigate(`/destinations/${destination.id}`, { state: { destination } });
-  };
-
-  const handleBook = () => {
-    navigate(`/destinations/${destination.id}`, { state: { destination, autoBook: true } });
   };
 
   const categoryColor = categoryColors[destination.category] || "bg-primary/90";

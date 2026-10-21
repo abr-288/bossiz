@@ -20,7 +20,7 @@ export const EventSearchForm = ({ onResults }: EventSearchFormProps) => {
   const { t } = useTranslation();
   const [location, setLocation] = useState("");
   const [date, setDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
+  const [endDate] = useState<Date>();
   const [category, setCategory] = useState<"all" | "concert" | "sport" | "theater" | "festival" | "conference">("all");
   const [guests, setGuests] = useState(1);
   const { searchEvents, loading } = useEventSearch();

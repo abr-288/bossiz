@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import {
   Palette,
   Eye,
   Save,
   RefreshCw,
-  Upload,
   Facebook,
   Twitter,
   Instagram,
@@ -389,7 +386,7 @@ export default function FooterCustomization() {
               <Switch
                 id="is_active"
                 checked={settings.is_active}
-                onCheckedChange={(checked) => handleColorChange("is_active", checked)}
+                onCheckedChange={(checked) => setSettings((prev) => ({ ...prev, is_active: checked }))}
               />
               <Label htmlFor="is_active">{t("ux.bo.footerActive")}</Label>
             </div>

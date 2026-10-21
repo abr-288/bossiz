@@ -1,21 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Smartphone,
-  Download,
-  CheckCircle2,
-  AlertCircle,
-  Shield,
-  Zap,
-  Star,
-  ArrowLeft,
-  ExternalLink,
-  Apple,
-} from "lucide-react";
+import { Download, CheckCircle2, AlertCircle, Shield, Zap, Star, ArrowLeft, ExternalLink, Apple } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { whatsAppLink } from "@/lib/contactNumbers";
@@ -26,11 +15,10 @@ const InstalliOS = () => {
   // WhatsApp de Admin > Configuration > Contact ; sans vrai numéro, page Contact.
   const supportWhatsApp = whatsAppLink(useSiteConfigContext().config.contact.whatsapp);
   const navigate = useNavigate();
-  const location = useLocation();
-  const [isiOS, setIsiOS] = useState(false);
-  const [isSafari, setIsSafari] = useState(false);
+  const [, setIsiOS] = useState(false);
+  const [, setIsSafari] = useState(false);
   const [installStatus, setInstallStatus] = useState<"checking" | "compatible" | "incompatible">("checking");
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     // Détection du navigateur et de l'appareil

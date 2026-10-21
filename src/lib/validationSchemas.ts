@@ -6,22 +6,14 @@ import { z } from "zod";
  */
 
 // Helpers de validation personnalisés
-const futureDate = z
-  .string()
-  .refine((date) => new Date(date) >= new Date(new Date().setHours(0, 0, 0, 0)), {
-    message: "La date doit être dans le futur",
-  });
+const futureDate = z.string().refine((date) => new Date(date) >= new Date(new Date().setHours(0, 0, 0, 0)), {
+  message: "La date doit être dans le futur",
+});
 
 const phoneNumber = z
   .string()
   .min(8, "Le numéro doit contenir au moins 8 chiffres")
   .regex(/^[\d\s\-+()]{8,}$/, "Format de numéro invalide");
-
-const iataCode = z
-  .string()
-  .min(3, "Code IATA invalide")
-  .max(3, "Code IATA invalide")
-  .regex(/^[A-Z]{3}$/, "Le code IATA doit contenir 3 lettres majuscules");
 
 // Schéma de recherche de vols
 export const flightSearchSchema = z

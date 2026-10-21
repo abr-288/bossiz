@@ -405,7 +405,7 @@ export default function AgencySettings() {
                 <div>
                   <p className="font-medium text-success">{t("ux.bo.brandingActive")}</p>
                   <p className="text-sm text-muted-foreground">
-                    Expire le {new Date(brandingSubscription.ends_at).toLocaleDateString("fr-FR")}.
+                    Expire le {new Date(brandingSubscription.ends_at ?? "").toLocaleDateString("fr-FR")}.
                   </p>
                 </div>
               ) : brandingSubscription?.status === "processing" ? (

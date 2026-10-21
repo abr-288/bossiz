@@ -33,7 +33,7 @@ export const useInvoiceEmail = () => {
       const invoiceNumber = `INV-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
       const invoiceDate = new Date().toISOString();
 
-      const { data, error } = await supabase.functions.invoke("send-invoice-email", {
+      const { error } = await supabase.functions.invoke("send-invoice-email", {
         body: {
           ...invoiceData,
           invoiceNumber,

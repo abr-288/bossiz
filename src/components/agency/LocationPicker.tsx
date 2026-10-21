@@ -19,7 +19,7 @@ interface LocationPickerProps {
 }
 
 function getCoordinates(source: string): [number, number] | null {
-  let decoded = source.replaceAll("+", " ");
+  let decoded = source.replace(/\+/g, " ");
   try {
     decoded = decodeURIComponent(decoded);
   } catch {

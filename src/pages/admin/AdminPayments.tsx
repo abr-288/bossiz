@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Price } from "@/components/ui/price";
 import { PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 import { toast } from "sonner";
-import { CreditCard, TrendingUp, Clock, AlertTriangle } from "lucide-react";
+import { TrendingUp, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";

@@ -1,0 +1,20 @@
+{
+  "ignores": [
+    "@capacitor/android",
+    "@capacitor/ios",
+    "@swc/core",
+    "autoprefixer",
+    "postcss",
+    "supabase",
+    "virtual:pwa-register"
+  ],
+  "ignore-patterns": [
+    "dist",
+    "dev-dist",
+    "android",
+    "ios",
+    "supabase/functions",
+    "test-results",
+    "playwright-report"
+  ]
+}

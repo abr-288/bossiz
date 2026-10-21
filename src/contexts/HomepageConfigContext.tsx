@@ -1,12 +1,17 @@
-import React, { useContext, ReactNode } from "react";
-import { useHomepageConfig, HomepageConfig, HomepageFeature, HomepageSection } from "@/hooks/useHomepageConfig";
+import { useContext, ReactNode } from "react";
+import {
+  useHomepageConfig,
+  HomepageConfig,
+  HomepageFeatureUpdate,
+  HomepageSectionUpdate,
+} from "@/hooks/useHomepageConfig";
 import { singletonContext } from "@/lib/singletonContext";
 
 interface HomepageConfigContextType {
   config: HomepageConfig;
   loading: boolean;
-  updateFeature: (featureId: string, updates: Partial<HomepageFeature>) => Promise<void>;
-  updateSection: (sectionId: string, updates: Partial<HomepageSection>) => Promise<void>;
+  updateFeature: (featureId: string, updates: HomepageFeatureUpdate) => Promise<void>;
+  updateSection: (sectionId: string, updates: HomepageSectionUpdate) => Promise<void>;
   refetch: () => Promise<void>;
 }
 

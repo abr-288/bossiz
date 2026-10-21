@@ -13,29 +13,14 @@ import { LocationPicker, type PartnerLocation } from "@/components/agency/Locati
 import { AvailableDatesInput } from "@/components/agency/AvailableDatesInput";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Activity, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { getErrorMessage } from "@/lib/errorMessage";
 
-interface ActivityItem {
-  id: string;
-  name: string;
-  category: string;
-  description: string | null;
-  location: string;
-  maps_url: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  available_dates: string[];
-  duration: string;
-  price_per_unit: number;
-  currency: string;
-  available: boolean;
-  image_url: string | null;
-  created_at: string;
-}
+type ActivityItem = Tables<"activities">;
 
 const categories = [
   {
@@ -190,7 +175,7 @@ export default function AgencyActivities() {
       duration: activity.duration,
       price_per_unit: activity.price_per_unit.toString(),
       currency: activity.currency,
-      available: activity.available,
+      available: activity.available ?? false,
       image_url: activity.image_url || "",
     });
     setIsDialogOpen(true);

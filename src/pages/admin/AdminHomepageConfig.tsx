@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +13,8 @@ import {
   Settings,
   Eye,
   EyeOff,
-  Save,
   Plus,
   X,
-  MoveUp,
-  MoveDown,
   Shield,
   Award,
   Headphones,
@@ -28,7 +25,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { useHomepageConfigContext } from "@/contexts/HomepageConfigContext";
-import type { HomepageFeature, HomepageSection } from "@/hooks/useHomepageConfig";
+import type { HomepageFeatureUpdate, HomepageSectionUpdate } from "@/hooks/useHomepageConfig";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
@@ -37,22 +34,21 @@ const AdminHomepageConfig = () => {
   const { toast } = useToast();
   const { config, loading, updateFeature, updateSection, refetch } = useHomepageConfigContext();
   const [activeTab, setActiveTab] = useState("sections");
-  const [editingFeature, setEditingFeature] = useState<string | null>(null);
 
-  const handleFeatureUpdate = async <K extends keyof HomepageFeature>(
+  const handleFeatureUpdate = async <K extends keyof HomepageFeatureUpdate>(
     featureId: string,
     field: K,
-    value: HomepageFeature[K],
+    value: HomepageFeatureUpdate[K],
   ) => {
-    await updateFeature(featureId, { [field]: value } as Partial<HomepageFeature>);
+    await updateFeature(featureId, { [field]: value } as HomepageFeatureUpdate);
   };
 
-  const handleSectionUpdate = async <K extends keyof HomepageSection>(
+  const handleSectionUpdate = async <K extends keyof HomepageSectionUpdate>(
     sectionId: string,
     field: K,
-    value: HomepageSection[K],
+    value: HomepageSectionUpdate[K],
   ) => {
-    await updateSection(sectionId, { [field]: value } as Partial<HomepageSection>);
+    await updateSection(sectionId, { [field]: value } as HomepageSectionUpdate);
   };
 
   const moveFeature = async (featureId: string, direction: "up" | "down") => {
@@ -73,9 +69,7 @@ const AdminHomepageConfig = () => {
   };
 
   const moveSection = async (sectionId: string, direction: "up" | "down") => {
-    const sections = Object.entries(config.sections)
-      .map(([key, section]) => ({ id: key, ...section }))
-      .sort((a, b) => a.order - b.order);
+    const sections = Object.values(config.sections).sort((a, b) => a.order - b.order);
 
     const currentIndex = sections.findIndex((s) => s.id === sectionId);
     if (currentIndex === -1) return;
@@ -89,18 +83,11 @@ const AdminHomepageConfig = () => {
 
     // Mettre à jour toutes les sections avec leurs nouveaux ordres
     for (let i = 0; i < newSections.length; i++) {
-      await updateSection(newSections[i].id, { order_num: i });
+      await updateSection(newSections[i].id, { order: i });
     }
   };
 
   const addNewFeature = async () => {
-    const newFeature = {
-      title: t("ux.bo.newFeature"),
-      description: t("ux.bo.descriptionNewFeature"),
-      icon: "Star",
-      color: "from-blue-500 to-blue-600",
-    };
-
     // Ajouter via l'API (simulation)
     toast({
       title: t("ux.bo.featureAdded"),
@@ -108,7 +95,7 @@ const AdminHomepageConfig = () => {
     });
   };
 
-  const deleteFeature = async (featureId: string) => {
+  const deleteFeature = async (_featureId: string) => {
     // Supprimer via l'API (simulation)
     toast({
       title: t("ux.bo.featureDeleted"),

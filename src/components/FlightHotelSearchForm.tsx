@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plane, Hotel, ArrowRightLeft } from "lucide-react";
+import { ArrowRightLeft } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {

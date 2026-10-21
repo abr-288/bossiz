@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,21 +17,7 @@ import {
   Testimonial,
   ValueProposition,
 } from "@/hooks/useContentManagement";
-import {
-  Settings,
-  Type,
-  Palette,
-  Layout,
-  MessageSquare,
-  Star,
-  Plus,
-  Edit2,
-  Trash2,
-  Save,
-  X,
-  MoveUp,
-  MoveDown,
-} from "lucide-react";
+import { Star, Edit2, Save, X } from "lucide-react";
 import { getErrorMessage } from "@/lib/errorMessage";
 
 const AdminContentManager = () => {
@@ -39,7 +25,6 @@ const AdminContentManager = () => {
   const { toast } = useToast();
   const {
     loading,
-    error,
     pageSections,
     customizablePlans,
     testimonials,
@@ -50,7 +35,6 @@ const AdminContentManager = () => {
     updateTestimonial,
     updateValueProposition,
     updateGlobalSetting,
-    getGlobalSetting,
   } = useContentManagement();
 
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -215,8 +199,8 @@ const AdminContentManager = () => {
                       </CardTitle>
                       <div className="flex items-center gap-2">
                         <Switch
-                          checked={section.is_visible}
-                          onCheckedChange={(checked) => handleSectionUpdate(section.id, { is_visible: checked })}
+                          checked={section.is_visible ?? false}
+                          onCheckedChange={(checked) => updatePageSection(section.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -261,7 +245,7 @@ const AdminContentManager = () => {
                         <div>
                           <Label htmlFor={`text-color-${section.id}`}>Couleur du texte</Label>
                           <Select
-                            value={sectionForm.text_color ?? section.text_color}
+                            value={sectionForm.text_color ?? section.text_color ?? undefined}
                             onValueChange={(value) => setSectionForm({ ...sectionForm, text_color: value })}
                           >
                             <SelectTrigger>
@@ -325,8 +309,8 @@ const AdminContentManager = () => {
                       </CardTitle>
                       <div className="flex items-center gap-2">
                         <Switch
-                          checked={plan.is_visible}
-                          onCheckedChange={(checked) => handlePlanUpdate(plan.id, { is_visible: checked })}
+                          checked={plan.is_visible ?? false}
+                          onCheckedChange={(checked) => updateCustomizablePlan(plan.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -360,7 +344,7 @@ const AdminContentManager = () => {
                         <div>
                           <Label htmlFor={`plan-color-${plan.id}`}>Couleur du thème</Label>
                           <Select
-                            value={planForm.color_scheme ?? plan.color_scheme}
+                            value={planForm.color_scheme ?? plan.color_scheme ?? undefined}
                             onValueChange={(value) => setPlanForm({ ...planForm, color_scheme: value })}
                           >
                             <SelectTrigger>
@@ -380,7 +364,7 @@ const AdminContentManager = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Switch
-                            checked={planForm.is_popular ?? plan.is_popular}
+                            checked={planForm.is_popular ?? plan.is_popular ?? false}
                             onCheckedChange={(checked) => setPlanForm({ ...planForm, is_popular: checked })}
                           />
                           <Label>Plan populaire</Label>
@@ -398,7 +382,7 @@ const AdminContentManager = () => {
                       <div>
                         <Label>Caractéristiques (une par ligne)</Label>
                         <Textarea
-                          value={planForm.features?.join("\n") ?? plan.features.join("\n")}
+                          value={planForm.features?.join("\n") ?? (plan.features ?? []).join("\n")}
                           onChange={(e) =>
                             setPlanForm({
                               ...planForm,
@@ -448,10 +432,8 @@ const AdminContentManager = () => {
                       </CardTitle>
                       <div className="flex items-center gap-2">
                         <Switch
-                          checked={testimonial.is_visible}
-                          onCheckedChange={(checked) =>
-                            handleTestimonialUpdate(testimonial.id, { is_visible: checked })
-                          }
+                          checked={testimonial.is_visible ?? false}
+                          onCheckedChange={(checked) => updateTestimonial(testimonial.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -555,8 +537,8 @@ const AdminContentManager = () => {
                       <CardTitle className="text-lg font-bold text-black">{value.title}</CardTitle>
                       <div className="flex items-center gap-2">
                         <Switch
-                          checked={value.is_visible}
-                          onCheckedChange={(checked) => handleValueUpdate(value.id, { is_visible: checked })}
+                          checked={value.is_visible ?? false}
+                          onCheckedChange={(checked) => updateValueProposition(value.id, { is_visible: checked })}
                         />
                         <Button
                           variant="outline"
@@ -592,7 +574,7 @@ const AdminContentManager = () => {
                         <div>
                           <Label htmlFor={`value-color-${value.id}`}>Couleur</Label>
                           <Select
-                            value={valueForm.color_scheme ?? value.color_scheme}
+                            value={valueForm.color_scheme ?? value.color_scheme ?? undefined}
                             onValueChange={(value) => setValueForm({ ...valueForm, color_scheme: value })}
                           >
                             <SelectTrigger>
@@ -670,21 +652,21 @@ const AdminContentManager = () => {
                         <div className="flex items-center gap-2">
                           <Input
                             type="color"
-                            value={setting.setting_value}
+                            value={setting.setting_value ?? ""}
                             onChange={(e) => handleGlobalSettingUpdate(setting.setting_key, e.target.value)}
                             className="w-20 h-10"
                           />
                           <Input
-                            value={setting.setting_value}
+                            value={setting.setting_value ?? ""}
                             onChange={(e) => handleGlobalSettingUpdate(setting.setting_key, e.target.value)}
                             placeholder="#000000"
                           />
                         </div>
                       ) : (
                         <Input
-                          value={setting.setting_value}
+                          value={setting.setting_value ?? ""}
                           onChange={(e) => handleGlobalSettingUpdate(setting.setting_key, e.target.value)}
-                          placeholder={setting.description}
+                          placeholder={setting.description ?? undefined}
                         />
                       )}
                       <Badge variant="outline">{setting.setting_type}</Badge>

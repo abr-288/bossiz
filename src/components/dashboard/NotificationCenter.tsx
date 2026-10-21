@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Bell, X, CheckCircle, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

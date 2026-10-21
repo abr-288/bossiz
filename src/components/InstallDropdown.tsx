@@ -17,19 +17,6 @@ const InstallDropdown: React.FC<InstallDropdownProps> = ({ className, size = "de
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Détecter le type d'appareil
-  const detectDevice = () => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isIOS = /iphone|ipad|ipod/.test(userAgent);
-    const isAndroid = /android/.test(userAgent);
-
-    if (isIOS) return "ios";
-    if (isAndroid) return "android";
-    return "unknown";
-  };
-
-  const deviceType = detectDevice();
-
   const handleInstall = (platform: "android" | "ios") => {
     if (platform === "android") {
       window.open("/install/android", "_blank");

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Armchair, X, Bed, Car, MapPin, Clock, User, Heart } from "lucide-react";
+import { Armchair, X, Bed, MapPin, Clock, User, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

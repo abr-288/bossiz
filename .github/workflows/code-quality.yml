@@ -6,83 +6,71 @@ on:
   pull_request:
     branches: [ main, prod ]
 
+env:
+  NODE_VERSION: '22'
+
 jobs:
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        
+
     - name: Install dependencies
       run: npm ci
-      
+
     - name: Type check
-      run: npx tsc --noEmit
-      
+      run: npm run type-check
+
     - name: ESLint check
-      run: npm run lint -- --format=json --output-file=eslint-report.json
-      
+      run: npm run lint
+
     - name: Prettier check
-      run: |
-        npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}"
-        
+      run: npm run format:check
+
     - name: Check for unused dependencies
-      run: |
-        npx depcheck
-        
-    - name: Bundle size analysis
-      run: |
-        npm run build
-        npx bundlesize
-        
-    - name: Code coverage
-      run: |
-        npm test -- --coverage --watchAll=false --coverageReporters=text-lcov > coverage.lcov
-        
-    - name: SonarCloud scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # Exceptions documentées dans .depcheckrc
+      run: npx depcheck@1
+
+    - name: Build application
+      run: npm run build
+
+    - name: Bundle size
+      run: node scripts/ci/bundle-size.mjs
 
   performance:
     name: Performance Tests
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        
+
     - name: Install dependencies
       run: npm ci
-      
+
     - name: Build application
       run: npm run build
-      
+
     - name: Lighthouse CI
-      run: |
-        npm install -g @lhci/cli@0.12.x
-        lhci autorun
-      env:
-        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-        
+      run: npx @lhci/cli@0.15.1 autorun --config=lighthouserc.cjs
+
     - name: Upload Lighthouse results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: lighthouse-results

@@ -56,3 +56,6 @@ deploy-vps/backups/
 
 # Documents (factures, guides) : usage local, pas besoin de versionner
 /documentation/
+
+# Rapports Lighthouse CI locaux
+.lighthouseci/

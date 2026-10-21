@@ -3,7 +3,6 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import PageTransition from "./PageTransition";
 import Logo from "./Logo";
 
@@ -56,7 +55,6 @@ const AdminServices = lazy(() => import("@/pages/admin/AdminServices"));
 const AdminActivities = lazy(() => import("@/pages/admin/AdminActivities"));
 const AdminStays = lazy(() => import("@/pages/admin/AdminStays"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
-const AdminUsersList = lazy(() => import("@/pages/AdminUsers"));
 const AdminSubscriptions = lazy(() => import("@/pages/admin/AdminSubscriptions"));
 const AdminSubscriptionPlans = lazy(() => import("@/pages/admin/AdminSubscriptionPlans"));
 const AdminSmiles = lazy(() => import("@/pages/admin/AdminSmiles"));
@@ -561,14 +559,6 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <AdminUsers />
-              </PageTransition>
-            }
-          />
-          <Route
-            path="/admin/users-list"
-            element={
-              <PageTransition>
-                <AdminUsersList />
               </PageTransition>
             }
           />

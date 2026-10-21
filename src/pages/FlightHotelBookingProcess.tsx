@@ -64,7 +64,7 @@ const FlightHotelBookingProcess = () => {
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"mobile" | "card">("mobile");
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [, setIsAuthenticated] = useState(false);
 
   // Récupérer les données du package depuis les params URL
   const flightData: FlightDetails | null = searchParams.get("flight")

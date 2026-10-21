@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
 import { ArrowLeft, Plane } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,7 +14,7 @@ import { SummaryStep } from "@/components/booking-steps/SummaryStep";
 import { Price } from "@/components/ui/price";
 import { validateAndCorrectFlightTimes, formatFlightDate } from "@/utils/flightUtils";
 import { BaggageInfo } from "@/components/booking-steps/BaggageInfo";
-import { getCityName, getAirportName } from "@/utils/airportNames";
+import { getAirportName } from "@/utils/airportNames";
 import { useTranslation } from "react-i18next";
 import { BookingStepper } from "@/components/booking-steps/BookingStepper";
 
@@ -294,6 +293,7 @@ const FlightBookingProcess = () => {
             {currentStep === 4 && (
               <SummaryStep
                 flightData={flightData}
+                serviceCurrency="EUR"
                 serviceType="flight"
                 serviceName={`${flightData.airline} ${flightData.flightNumber}`}
                 servicePrice={parseFloat(flightData.price)}

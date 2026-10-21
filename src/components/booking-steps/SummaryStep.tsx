@@ -6,7 +6,6 @@ import {
   Armchair,
   CreditCard,
   Calendar,
-  Clock,
   MapPin,
   LogIn,
   AlertTriangle,
@@ -17,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { UnifiedSubmitButton } from "@/components/forms/UnifiedSubmitButton";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Price } from "@/components/ui/price";
@@ -93,7 +92,7 @@ export const SummaryStep = ({
   const [depositPercent, setDepositPercent] = useState(30);
   const [depositAvailable, setDepositAvailable] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [, setIsAuthenticated] = useState(false);
   const [remainingTime, setRemainingTime] = useState<number>(0);
   const [isPrebookingDone, setIsPrebookingDone] = useState(false);
   const [myCompanies, setMyCompanies] = useState<{ id: string; name: string }[]>([]);

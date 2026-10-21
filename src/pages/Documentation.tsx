@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -9,180 +9,36 @@ import { Progress } from "@/components/ui/progress";
 import {
   Book,
   Users,
-  Shield,
-  Lock,
   Settings,
   CreditCard,
   Home,
-  Phone,
-  Mail,
   Calendar,
-  FileText,
   BarChart3,
-  Database,
-  Key,
-  UserCheck,
-  Building2,
   Plane,
   Star,
   CheckCircle,
-  AlertCircle,
-  Info,
-  ArrowRight,
-  Menu,
   Search,
-  Filter,
-  Download,
-  Upload,
-  Edit,
-  Trash2,
-  Plus,
-  RefreshCw,
   Eye,
-  EyeOff,
-  LogIn,
-  LogOut,
-  UserPlus,
-  UserMinus,
-  MessageSquare,
   HelpCircle,
-  ChevronRight,
-  ChevronDown,
   Globe,
-  MapPin,
   Clock,
   TrendingUp,
   Award,
-  Gift,
   Zap,
-  Heart,
   Play,
   Pause,
   SkipForward,
   SkipBack,
-  Volume2,
-  Maximize,
-  Minimize,
-  Monitor,
   Smartphone,
-  Tablet,
-  Code,
-  Terminal,
-  Package,
-  Layers,
-  GitBranch,
   Rocket,
   Target,
-  Compass,
-  Navigation,
-  Map,
-  Bookmark,
-  Share2,
-  Copy,
   ExternalLink,
   Video,
-  Mic,
-  Camera,
-  Image,
-  Film,
-  Music,
-  Headphones,
   Wifi,
   Battery,
-  Signal,
-  Cloud,
-  CloudRain,
-  Sun,
-  Moon,
-  ZapOff,
-  Activity,
-  Brain,
-  Cpu,
-  HardDrive,
-  Server,
-  Router,
-  ShieldCheck,
-  LockOpen,
-  KeyRound,
   Fingerprint,
   User,
-  Users2,
-  UserCircle,
-  UserX,
-  MailCheck,
-  MailOpen,
-  MailWarning,
-  PhoneCall,
-  PhoneIncoming,
-  PhoneOutgoing,
-  PhoneMissed,
-  CalendarCheck,
-  CalendarPlus,
-  CalendarMinus,
-  CalendarX,
-  Timer,
-  TimerReset,
-  AlarmClock,
-  AlarmClockCheck,
-  AlarmClockOff,
   Bell,
-  BellRing,
-  BellOff,
-  BellDot,
-  BellMinus,
-  BellPlus,
-  Volume,
-  VolumeX,
-  VolumeOff,
-  Radio,
-  RadioReceiver,
-  Tv,
-  Tv2,
-  Laptop,
-  Laptop2,
-  SmartphoneNfc,
-  TabletSmartphone,
-  Watch,
-  Speaker,
-  MicOff,
-  VideoOff,
-  CameraOff,
-  ImagePlus,
-  ImageMinus,
-  Music2,
-  Music3,
-  Music4,
-  PlayCircle,
-  PauseCircle,
-  Repeat,
-  Repeat1,
-  Repeat2,
-  Shuffle,
-  FastForward,
-  Rewind,
-  Square,
-  SquarePlus,
-  SquareMinus,
-  SquareX,
-  SquareCheck,
-  SquareDot,
-  SquareDashed,
-  SquareEqual,
-  SquarePower,
-  SquareScissors,
-  SquareTerminal,
-  SquareUser,
-  SquareUserRound,
-  SquareVariable,
-  Triangle,
-  TriangleDashed,
-  TriangleSquare,
-  Diamond,
-  DiamondDashed,
-  DiamondSquare,
-  Hexagon,
-  Octagon,
-  Pentagon,
 } from "lucide-react";
 import heroImage from "@/assets/destination-safari.webp";
 import { useTranslation } from "react-i18next";
@@ -191,17 +47,12 @@ const Documentation = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
-  const [expandedSections, setExpandedSections] = useState<string[]>([]);
-  const [demoMode, setDemoMode] = useState(false);
+  const [, setDemoMode] = useState(false);
   const [currentDemoStep, setCurrentDemoStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [demoProgress, setDemoProgress] = useState(0);
-
-  const toggleSection = (section: string) => {
-    setExpandedSections((prev) => (prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]));
-  };
 
   const startDemo = (feature: string) => {
     setSelectedFeature(feature);
@@ -209,14 +60,6 @@ const Documentation = () => {
     setCurrentDemoStep(0);
     setDemoProgress(0);
     setIsPlaying(true);
-  };
-
-  const stopDemo = () => {
-    setDemoMode(false);
-    setCurrentDemoStep(0);
-    setDemoProgress(0);
-    setIsPlaying(false);
-    setSelectedFeature(null);
   };
 
   const nextDemoStep = () => {

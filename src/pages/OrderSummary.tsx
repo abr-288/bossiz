@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -177,7 +177,7 @@ ${item.description}
 
 ${p("price")}: ${autoConvertAndFormat(item.price, item.currency)}
 ${item.trialDays > 0 ? `${p("trialDays")}: ${p("days", { count: item.trialDays })}` : ""}
-${item.discount > 0 ? `${p("discount")}: ${item.discount}%` : ""}
+${(item.discount ?? 0) > 0 ? `${p("discount")}: ${item.discount}%` : ""}
 
 ${p("features").toUpperCase()}:
 ${item.features.map((feature) => `• ${feature}`).join("\n")}
@@ -362,7 +362,7 @@ ${p("thanks")}
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-6">
-                {orderData.items.map((item, index) => (
+                {orderData.items.map((item) => (
                   <div key={item.id} className="border rounded-lg p-6 bg-muted">
                     <div className="flex justify-between items-start mb-4">
                       <div>
@@ -400,7 +400,7 @@ ${p("thanks")}
                       </div>
                     </div>
 
-                    {item.discount > 0 && (
+                    {(item.discount ?? 0) > 0 && (
                       <div className="mt-4 p-3 bg-warning border border-warning-foreground/20 rounded-lg">
                         <p className="text-warning-foreground font-medium">
                           {t("ux.order.yearlyDiscount", { percent: item.discount })}

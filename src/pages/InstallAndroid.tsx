@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,10 +28,9 @@ const InstallAndroid = () => {
   // WhatsApp de Admin > Configuration > Contact ; sans vrai numéro, page Contact.
   const supportWhatsApp = whatsAppLink(useSiteConfigContext().config.contact.whatsapp);
   const navigate = useNavigate();
-  const location = useLocation();
   const { isInstallable, isInstalled, install } = usePWA();
-  const [isAndroid, setIsAndroid] = useState(false);
-  const [isChrome, setIsChrome] = useState(false);
+  const [, setIsAndroid] = useState(false);
+  const [, setIsChrome] = useState(false);
   const [installStatus, setInstallStatus] = useState<"checking" | "compatible" | "incompatible">("checking");
 
   useEffect(() => {

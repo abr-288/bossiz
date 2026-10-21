@@ -68,7 +68,7 @@ interface BookingCardProps {
 export const BookingCard = ({ booking, onConfirm, onCancel, onEdit, onDelete }: BookingCardProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const { generatePDF, downloadPDF, isGenerating } = useBookingPDF();
+  const { generatePDF, isGenerating } = useBookingPDF();
 
   const canConfirm = booking.status === "pending";
   const canCancel = booking.status !== "cancelled" && booking.status !== "completed";

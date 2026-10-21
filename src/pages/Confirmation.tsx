@@ -15,7 +15,6 @@ import {
   Clock,
   Loader2,
   Home,
-  Download,
   Share2,
   Mail,
   Plane,
@@ -585,7 +584,6 @@ const Confirmation = () => {
               />
             </div>
           )}
-
           {/* Important Info */}
           <Card className="border-warning-foreground/20 bg-warning">
             <CardContent className="py-4">

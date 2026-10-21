@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, Plane, Hotel, Car, Calendar } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
 import { useNavigate } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Price } from "@/components/ui/price";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 

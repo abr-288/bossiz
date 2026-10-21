@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   saveBookingsOffline,
   getOfflineBookings,
-  addToSyncQueue,
   getSyncQueue,
   clearSyncQueue,
   removeSyncQueueItem,

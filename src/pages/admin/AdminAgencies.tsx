@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { PhoneNumberInput } from "@/components/PhoneNumberInput";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import type { JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Building2, Search, Eye, EyeOff } from "lucide-react";
@@ -22,22 +23,8 @@ import { fr } from "date-fns/locale";
 import i18n from "@/i18n/config";
 import { getErrorMessage } from "@/lib/errorMessage";
 
-interface Agency {
-  id: string;
-  name: string;
-  description: string | null;
-  logo_url: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  owner_id: string;
-  is_visible: boolean;
-  is_active: boolean;
-  commission_rate: number | null;
-  car_plan_id: string | null;
-  enabled_features: Record<string, boolean> | null;
-  created_at: string;
-  owner_name?: string;
-}
+// Agence avec le nom de son propriétaire (profiles.full_name).
+type Agency = Tables<"agencies"> & { owner_name: string };
 
 interface CarPartnerPlan {
   plan_id: string;
@@ -408,11 +395,14 @@ export default function AdminAgencies() {
       contact_email: agency.contact_email || "",
       contact_phone: agency.contact_phone || "",
       owner_id: agency.owner_id,
-      is_visible: agency.is_visible,
-      is_active: agency.is_active,
+      is_visible: agency.is_visible ?? false,
+      is_active: agency.is_active ?? false,
       commission_rate: agency.commission_rate ?? 10,
       car_plan_id: agency.car_plan_id || NO_CAR_PLAN,
-      enabled_features: { ...DEFAULT_AGENCY_FEATURES, ...(agency.enabled_features || {}) },
+      enabled_features: {
+        ...DEFAULT_AGENCY_FEATURES,
+        ...((agency.enabled_features as Record<string, boolean> | null) || {}),
+      },
     });
     setIsDialogOpen(true);
   };
@@ -793,7 +783,7 @@ export default function AdminAgencies() {
                       <Badge
                         variant={agency.is_active ? "default" : "secondary"}
                         className="cursor-pointer"
-                        onClick={() => toggleActive(agency.id, agency.is_active)}
+                        onClick={() => toggleActive(agency.id, agency.is_active ?? false)}
                       >
                         {agency.is_active ? "Active" : "Inactive"}
                       </Badge>

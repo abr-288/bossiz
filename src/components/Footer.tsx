@@ -255,7 +255,7 @@ const Footer = () => {
             <button
               type="button"
               onClick={handleAppInstall}
-              className="text-secondary hover:text-secondary/80 transition-smooth font-semibold"
+              className="text-white hover:text-secondary transition-smooth font-semibold"
             >
               📱 {t("common.install")}
             </button>

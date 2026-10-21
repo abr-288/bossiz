@@ -25,7 +25,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useCompany } from "@/hooks/useCompany";
-import { usePWA } from "@/hooks/usePWA";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import Logo from "./Logo";
@@ -39,9 +38,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // État du menu mobile
   const [isLoggedIn, setIsLoggedIn] = useState(false); // État de connexion utilisateur
   const [isScrolled, setIsScrolled] = useState(false); // État du scroll pour l'effet d'ombre
-  const { isAdmin, loading: roleLoading } = useUserRole(); // Rôle de l'utilisateur
+  const { isAdmin } = useUserRole(); // Rôle de l'utilisateur
   const { company } = useCompany(); // Compte entreprise (pour le commutateur de profil)
-  const { isInstallable, isInstalled, install } = usePWA(); // État PWA
   const { config } = useSiteConfigContext(); // Configuration du site
   const navigate = useNavigate();
   const location = useLocation();

@@ -132,7 +132,7 @@ export const PageBanner = ({
 
             <TabsContent value="flight-hotel" className="p-3 sm:p-6">
               <FlightHotelSearchForm
-                onSearch={(params) => {
+                onSearch={() => {
                   // Navigation gérée par le formulaire
                 }}
               />

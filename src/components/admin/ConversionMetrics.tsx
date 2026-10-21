@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, CheckCircle, XCircle, Clock } from "lucide-react";
+import { TrendingUp, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface ConversionMetricsProps {

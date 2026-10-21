@@ -59,7 +59,7 @@ export const useDashboardPreferences = () => {
           id: pref.id,
           layoutName: pref.layout_name,
           widgetsConfig: (pref.widgets_config as unknown as WidgetConfig[]) || [],
-          isActive: pref.is_active,
+          isActive: pref.is_active ?? false,
         })) || [];
 
       setLayouts(formattedLayouts);

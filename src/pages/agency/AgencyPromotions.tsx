@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Percent, Search } from "lucide-react";
 import { format } from "date-fns";
@@ -17,19 +18,7 @@ import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "@/lib/errorMessage";
 
-interface Promotion {
-  id: string;
-  name: string;
-  description: string | null;
-  location: string;
-  original_price: number;
-  discount: number;
-  currency: string;
-  is_active: boolean;
-  expires_at: string | null;
-  image_url: string | null;
-  created_at: string;
-}
+type Promotion = Tables<"promotions">;
 
 export default function AgencyPromotions() {
   const { t } = useTranslation();
@@ -132,7 +121,7 @@ export default function AgencyPromotions() {
       original_price: promotion.original_price.toString(),
       discount: promotion.discount.toString(),
       currency: promotion.currency || "XOF",
-      is_active: promotion.is_active,
+      is_active: promotion.is_active ?? false,
       expires_at: promotion.expires_at ? promotion.expires_at.split("T")[0] : "",
       image_url: promotion.image_url || "",
     });

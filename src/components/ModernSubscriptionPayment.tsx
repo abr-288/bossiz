@@ -13,31 +13,24 @@ import {
   Crown,
   Shield,
   CheckCircle,
-  Star,
-  Zap,
   Globe,
   Clock,
-  Users,
-  Headphones,
   Gift,
   Calendar,
   Wallet,
-  ChevronRight,
   ArrowRight,
   CheckCircle2,
   FileText,
   Receipt,
   Calculator,
   TrendingUp,
-  Smartphone,
   CreditCard,
   Database,
   Percent,
-  Lock,
   Loader2,
   ExternalLink,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { autoConvertAndFormat } from "@/utils/currencyConverter";
 import { useTranslation } from "react-i18next";
 import { currentLocaleTag } from "@/lib/dateLocale";
@@ -240,15 +233,12 @@ const ModernSubscriptionPayment = () => {
             setPlanData({
               plan: toPlan(plan),
               pricing: {
-                plan_id: planId,
-                billing_cycle: "monthly" as "monthly" | "yearly",
+                billing_cycle: "monthly",
                 price: monthlyPricing.price,
                 currency: monthlyPricing.currency,
                 discount_percentage: monthlyPricing.discount_percentage,
                 trial_days: monthlyPricing.trial_days,
                 setup_fee: monthlyPricing.setup_fee,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
               },
               billingCycle: "monthly",
             });
@@ -307,59 +297,6 @@ const ModernSubscriptionPayment = () => {
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [checkout, activated]);
-
-  const handleBillingCycleChange = async (cycle: "monthly" | "yearly") => {
-    if (!planData) return;
-
-    try {
-      const { data: pricing, error } = await supabase
-        .from("subscription_pricing")
-        .select("*")
-        .eq("plan_id", planId)
-        .eq("billing_cycle", cycle)
-        .single();
-
-      if (error || !pricing) {
-        // Si aucun tarif n'existe, calculer le tarif annuel automatiquement
-        const yearlyPrice =
-          cycle === "yearly"
-            ? getDefaultPrice(planId) * 12 * 0.83 // 17% de réduction annuelle
-            : getDefaultPrice(planId);
-
-        const defaultPricing = {
-          id: `default-${cycle}`,
-          plan_id: planId,
-          billing_cycle: cycle,
-          price: yearlyPrice,
-          currency: "XOF",
-          discount_percentage: cycle === "yearly" ? 17 : 0,
-          trial_days: getDefaultTrialDays(planId, cycle),
-          setup_fee: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-
-        setBillingCycle(cycle);
-        setPlanData({
-          ...planData,
-          pricing: defaultPricing,
-        });
-      } else {
-        setBillingCycle(cycle);
-        setPlanData({
-          ...planData,
-          pricing: toPricing(pricing),
-        });
-      }
-    } catch (error) {
-      console.error("Error changing billing cycle:", error);
-      toast({
-        title: "Erreur",
-        description: getErrorMessage(error),
-        variant: "destructive",
-      });
-    }
-  };
 
   const handlePayment = async () => {
     if (!planData) return;
@@ -770,7 +707,7 @@ const ModernSubscriptionPayment = () => {
                           </div>
                         </div>
 
-                        {planData.pricing.discount_percentage > 0 && (
+                        {(planData.pricing.discount_percentage ?? 0) > 0 && (
                           <div className="mt-4 p-3 bg-warning border border-warning-foreground/20 rounded-lg">
                             <p className="text-warning-foreground font-medium">
                               Réduction spéciale de {planData.pricing.discount_percentage}% pour l'abonnement annuel

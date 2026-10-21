@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Train, AlertCircle, ArrowRightLeft } from "lucide-react";
+import { AlertCircle, ArrowRightLeft } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
-import {
-  UnifiedForm,
-  UnifiedAutocomplete,
-  UnifiedDatePicker,
-  UnifiedFormField,
-  UnifiedSubmitButton,
-} from "@/components/forms";
+import { UnifiedForm, UnifiedAutocomplete, UnifiedDatePicker, UnifiedSubmitButton } from "@/components/forms";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trainSearchSchema, type TrainSearchInput } from "@/lib/validationSchemas";
 import { safeValidate } from "@/lib/formHelpers";

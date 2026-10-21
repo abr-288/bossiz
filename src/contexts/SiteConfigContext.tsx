@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, ReactNode } from "react";
+import { useContext, useEffect, ReactNode } from "react";
 import { useSiteConfig, SiteConfig } from "@/hooks/useSiteConfig";
 import { applyDefaultLanguage } from "@/i18n/config";
 import { singletonContext } from "@/lib/singletonContext";

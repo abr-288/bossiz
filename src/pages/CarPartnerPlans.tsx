@@ -90,6 +90,8 @@ const CarPartnerPlans = () => {
         .insert({
           agency_id: agencyId,
           plan_id: plan.plan_id,
+          // Recalculé par la base (trigger) à partir du prix de la formule.
+          amount_due: 0,
           billing_cycle: yearly ? "yearly" : "monthly",
         })
         .select("id")

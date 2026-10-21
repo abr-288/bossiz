@@ -60,7 +60,7 @@ export const useExport = () => {
     }
   };
 
-  const exportToPDF = async (data: object[], filename: string) => {
+  const exportToPDF = async (_data: object[], _filename: string) => {
     toast({
       title: "Export PDF",
       description: "Fonctionnalité à venir - utilisez CSV pour l'instant",

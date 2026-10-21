@@ -174,7 +174,6 @@ export const HotelPriceCalendar = ({
             const price = pricesWithDefaults[dateStr];
             const colorClass = getPriceColor(price);
             const isPast = date < new Date();
-            const dayOfWeek = getDay(date);
             const isWeekendDay = isWeekend(date);
 
             return (

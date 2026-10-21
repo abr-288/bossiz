@@ -32,7 +32,7 @@ vi.mock("@/lib/formHelpers", () => ({
   getUserFriendlyErrorMessage: vi.fn((error) => error?.message || "Une erreur est survenue"),
 }));
 
-import { validateWithSchema, getUserFriendlyErrorMessage } from "@/lib/formHelpers";
+import { validateWithSchema } from "@/lib/formHelpers";
 
 // Accès typé aux fonctions simulées ci-dessus.
 const fromMock = supabase.from as unknown as Mock;

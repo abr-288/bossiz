@@ -1,4 +1,4 @@
-import React, { useContext, ReactNode } from "react";
+import { useContext, ReactNode } from "react";
 import { useBossizConfig, BossizSiteConfig, BossizGlobalConfig } from "@/hooks/useBossizConfig";
 import { singletonContext } from "@/lib/singletonContext";
 

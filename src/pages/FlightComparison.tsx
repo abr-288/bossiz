@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { format, addDays, eachDayOfInterval } from "date-fns";
+import { format, eachDayOfInterval } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import {
@@ -581,7 +581,7 @@ const FlightComparison = () => {
                             outerRadius={120}
                             label={(entry) => `${entry.airline} (${entry.count})`}
                           >
-                            {airlineStats.map((entry, index) => (
+                            {airlineStats.map((_entry, index) => (
                               <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                             ))}
                           </Pie>

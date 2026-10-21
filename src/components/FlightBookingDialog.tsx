@@ -40,7 +40,7 @@ interface FlightBookingDialogProps {
   };
 }
 
-export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams = null }: FlightBookingDialogProps) => {
+export const FlightBookingDialog = ({ open, onOpenChange, flight, searchParams }: FlightBookingDialogProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 

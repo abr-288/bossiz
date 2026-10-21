@@ -8,7 +8,6 @@ import { Price } from "@/components/ui/price";
 import {
   Users,
   Briefcase,
-  Fuel,
   Settings,
   Snowflake,
   Check,

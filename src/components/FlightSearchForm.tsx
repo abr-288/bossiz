@@ -325,7 +325,9 @@ export const FlightSearchForm = () => {
         />
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">{t("search.class.title")}</label>
+          <label htmlFor="flight-travel-class" className="text-sm font-medium text-foreground">
+            {t("search.class.title")}
+          </label>
           <Select
             value={travelClass}
             onValueChange={(value) => {
@@ -334,6 +336,7 @@ export const FlightSearchForm = () => {
             }}
           >
             <SelectTrigger
+              id="flight-travel-class"
               className={cn("h-11 bg-background", errors.travelClass && touched.travelClass && "border-destructive")}
             >
               <SelectValue />

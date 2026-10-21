@@ -14,7 +14,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { BookingDialog } from "@/components/BookingDialog";
-import { toast } from "sonner";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Price } from "@/components/ui/price";
 import bannerTrains from "@/assets/banner-trains.webp";

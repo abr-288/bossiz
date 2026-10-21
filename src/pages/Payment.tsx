@@ -75,6 +75,7 @@ export default function Payment() {
   }, [bookingId]);
 
   const loadBooking = async () => {
+    if (!bookingId) return;
     try {
       const {
         data: { user },
@@ -157,7 +158,7 @@ export default function Payment() {
   };
 
   const processPayment = async () => {
-    if (!booking) return;
+    if (!booking || !bookingId) return;
 
     // Prevent double processing
     if (processing) return;
@@ -446,7 +447,7 @@ export default function Payment() {
                     <div className="mt-4 flex justify-between border-t pt-3 text-sm">
                       <span className="text-muted-foreground">{t("ux.payment.balanceDue")}</span>
                       <span className="font-medium">
-                        <Price amount={booking.balance_due} fromCurrency={booking.currency} />
+                        <Price amount={booking.balance_due ?? 0} fromCurrency={booking.currency} />
                       </span>
                     </div>
                   )}

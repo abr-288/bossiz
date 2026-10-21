@@ -6,7 +6,7 @@ import { useDashboardPreferences } from "@/hooks/useDashboardPreferences";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw, Layers } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const AdminOverview = () => {

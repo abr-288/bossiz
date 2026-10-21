@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Download,
-  Smartphone,
   Check,
   Wifi,
   Zap,
@@ -12,7 +11,6 @@ import {
   Share2,
   MoreVertical,
   Plus,
-  ArrowDown,
   Shield,
   Clock,
   Globe,
@@ -31,20 +29,12 @@ import { MOTION } from "@/lib/motion";
 
 const Install = () => {
   const { t } = useTranslation();
-  const { isInstallable, isInstalled, install } = usePWA();
+  const { isInstallable, isInstalled } = usePWA();
   const { isSupported, permission, requestPermission, subscribe, sendNotification } = usePushNotifications();
 
   // Detect device type
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isAndroid = /Android/.test(navigator.userAgent);
-  const isMobile = isIOS || isAndroid;
-
-  const handleInstallClick = async () => {
-    const success = await install();
-    if (success) {
-      console.log("App installed successfully");
-    }
-  };
 
   const handleEnableNotifications = async () => {
     const granted = await requestPermission();

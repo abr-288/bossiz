@@ -21,12 +21,6 @@ const pageVariants: Variants = {
   },
 };
 
-const pageTransition: Transition = {
-  type: "tween",
-  ease: [0.4, 0, 0.2, 1],
-  duration: 0.15,
-};
-
 /**
  * PageTransition - Wrapper pour des transitions de page fluides avec Framer Motion
  * Utilise translate3d pour des animations GPU-accélérées

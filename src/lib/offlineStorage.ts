@@ -68,7 +68,7 @@ export const initOfflineDB = async () => {
 };
 
 // Bookings operations
-export const saveBookingsOffline = async (bookings: BookingData[], userId: string) => {
+export const saveBookingsOffline = async (bookings: BookingData[], _userId: string) => {
   const db = await initOfflineDB();
   const tx = db.transaction("bookings", "readwrite");
 

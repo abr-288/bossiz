@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Car as CarIcon, SlidersHorizontal, Grid3X3, List } from "lucide-react";
+import { Car as CarIcon, SlidersHorizontal } from "lucide-react";
 import { CarBookingDialog } from "@/components/CarBookingDialog";
 import { CarSearchForm } from "@/components/CarSearchForm";
 import { Pagination } from "@/components/Pagination";
@@ -56,7 +56,7 @@ const Cars = () => {
   const [freeCancellationOnly, setFreeCancellationOnly] = useState(false);
   const [sortBy, setSortBy] = useState("price-asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [, setHasSearched] = useState(false);
   const itemsPerPage = 12;
 
   // Load default cars on mount

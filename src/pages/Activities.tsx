@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Star, Tag, Activity } from "lucide-react";
+import { MapPin, Clock, Star, Tag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { BookingDialog, type BookableService } from "@/components/BookingDialog";
 import { ActivitySearchForm } from "@/components/ActivitySearchForm";

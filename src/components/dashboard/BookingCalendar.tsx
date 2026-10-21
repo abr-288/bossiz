@@ -76,7 +76,6 @@ export const BookingCalendar = ({ bookings }: BookingCalendarProps) => {
     return filteredBookings.reduce(
       (acc, booking) => {
         const startDate = parseISO(booking.start_date);
-        const endDate = booking.end_date ? parseISO(booking.end_date) : startDate;
 
         if (startDate >= monthStart && startDate <= monthEnd) {
           const dateKey = format(startDate, "yyyy-MM-dd");

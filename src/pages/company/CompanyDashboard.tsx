@@ -192,17 +192,15 @@ const CompanyDashboard = () => {
       toast.error(t("ux.bo.capMustGreaterThan0"));
       return;
     }
-    const { error } = await supabase
-      .from("travel_policies")
-      .upsert(
-        {
-          company_id: company.id,
-          service_type: newPolicyType,
-          max_amount: parseFloat(newPolicyAmount),
-          currency: "XOF",
-        },
-        { onConflict: "company_id,service_type" },
-      );
+    const { error } = await supabase.from("travel_policies").upsert(
+      {
+        company_id: company.id,
+        service_type: newPolicyType,
+        max_amount: parseFloat(newPolicyAmount),
+        currency: "XOF",
+      },
+      { onConflict: "company_id,service_type" },
+    );
     if (error) {
       toast.error(t("ux.bo.unableSavePolicy"));
     } else {

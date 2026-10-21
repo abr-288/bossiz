@@ -169,7 +169,7 @@ const TestimonialsSection = () => {
           {/* Embla Carousel */}
           <div className="overflow-hidden px-2 md:px-0" ref={emblaRef}>
             <div className="flex gap-4 md:gap-6 lg:gap-8">
-              {testimonials.map((testimonial, index) => (
+              {testimonials.map((testimonial) => (
                 <div
                   key={testimonial.id}
                   className="flex-[0_0_85%] sm:flex-[0_0_70%] md:flex-[0_0_calc(50%-1rem)] lg:flex-[0_0_calc(33.333%-1.5rem)] min-w-0"

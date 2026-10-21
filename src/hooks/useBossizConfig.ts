@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getErrorMessage } from "@/lib/errorMessage";
+import type { Tables, TablesUpdate } from "@/integrations/supabase/types";
 
 export interface BossizSiteConfig {
   id: string;
@@ -240,6 +241,35 @@ const DEFAULT_GLOBAL_CONFIG: BossizGlobalConfig = {
   ],
 };
 
+// Les lignes de bossiz_sites_config sont en snake_case (bg_color...), la
+// configuration utilisée par les pages en camelCase (bgColor...).
+const toSiteConfig = (row: Tables<"bossiz_sites_config">): BossizSiteConfig => ({
+  id: row.id,
+  title: row.title,
+  subtitle: row.subtitle,
+  tagline: row.tagline,
+  description: row.description,
+  location: row.location,
+  image: row.image,
+  features: row.features ?? [],
+  color: row.color,
+  bgColor: row.bg_color,
+  borderColor: row.border_color,
+  stats: (row.stats ?? []) as unknown as BossizSiteConfig["stats"],
+  contact: (row.contact ?? { phone: "", email: "", address: "" }) as unknown as BossizSiteConfig["contact"],
+  highlights: row.highlights ?? [],
+  route: row.route,
+});
+
+const toSiteUpdate = (updates: Partial<BossizSiteConfig>): TablesUpdate<"bossiz_sites_config"> => {
+  const { bgColor, borderColor, ...rest } = updates;
+  return {
+    ...rest,
+    ...(bgColor !== undefined && { bg_color: bgColor }),
+    ...(borderColor !== undefined && { border_color: borderColor }),
+  };
+};
+
 export const useBossizConfig = () => {
   const [sites, setSites] = useState<BossizSiteConfig[]>(DEFAULT_BOSSIZ_SITES);
   const [globalConfig, setGlobalConfig] = useState<BossizGlobalConfig>(DEFAULT_GLOBAL_CONFIG);
@@ -262,11 +292,11 @@ export const useBossizConfig = () => {
       if (globalError && globalError.code !== "PGRST116") throw globalError;
 
       if (sitesData && sitesData.length > 0) {
-        setSites(sitesData);
+        setSites(sitesData.map(toSiteConfig));
       }
 
       if (globalData) {
-        setGlobalConfig(globalData.config);
+        setGlobalConfig(globalData.config as unknown as BossizGlobalConfig);
       }
     } catch (error) {
       console.error("Error fetching Bossiz config:", error);
@@ -278,7 +308,7 @@ export const useBossizConfig = () => {
   const updateSiteConfig = useCallback(
     async (siteId: string, updates: Partial<BossizSiteConfig>) => {
       try {
-        const { error } = await supabase.from("bossiz_sites_config").update(updates).eq("id", siteId);
+        const { error } = await supabase.from("bossiz_sites_config").update(toSiteUpdate(updates)).eq("id", siteId);
 
         if (error) throw error;
 

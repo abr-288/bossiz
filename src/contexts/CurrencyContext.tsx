@@ -20,7 +20,7 @@ export const currencies = [FIXED_CURRENCY];
 export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const selectedCurrency = FIXED_CURRENCY.code;
 
-  const formatPrice = (amount: number, currency?: string): string => {
+  const formatPrice = (amount: number, _currency?: string): string => {
     // Always format as XOF
     return `${Math.round(amount).toLocaleString("fr-FR")} FCFA`;
   };

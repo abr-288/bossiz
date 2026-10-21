@@ -74,7 +74,7 @@ const FeaturesSection = () => {
     <section className="py-10 md:py-14 bg-background w-full">
       <div className="site-container">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
-          {features.map((feature, index) => {
+          {features.map((feature) => {
             const IconComponent = getIconComponent(feature.icon);
             // Français : texte saisi dans l'admin ; autres langues : traduction intégrée
             // Autres langues : traduction automatique du texte saisi, sinon traduction intégrée
@@ -94,7 +94,7 @@ const FeaturesSection = () => {
                   <IconComponent className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground mb-1">{title}</h3>
+                  <h2 className="text-sm font-bold text-foreground mb-1">{title}</h2>
                   <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
                 </div>
               </div>

@@ -7,7 +7,6 @@ import { z } from "zod";
 import { NationalitySelect } from "@/components/NationalitySelect";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -73,7 +72,6 @@ const createPassengersFormSchema = (t: TFunction) => {
       .refine((date) => {
         if (!date) return true;
         const expiryDate = new Date(date);
-        const today = new Date();
         // Le document doit être valide au moins 6 mois après la date du voyage
         const sixMonthsFromNow = new Date();
         sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
@@ -247,7 +245,7 @@ export const PassengerStep = ({
               <FormField
                 control={form.control}
                 name="passengers.0.firstName"
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <User className="w-4 h-4 text-primary" />

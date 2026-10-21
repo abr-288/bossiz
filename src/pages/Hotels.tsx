@@ -2,23 +2,12 @@ import { useState, useEffect, useMemo, type ComponentProps } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import {
-  Star,
-  MapPin,
-  Users,
-  Wifi,
-  UtensilsCrossed,
-  Car,
-  Globe,
-  GitCompare,
-  SlidersHorizontal,
-  Hotel,
-} from "lucide-react";
+import { Star, MapPin, Wifi, UtensilsCrossed, Car, Globe, GitCompare, SlidersHorizontal, Hotel } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";

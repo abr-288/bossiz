@@ -22,7 +22,6 @@ const Events = () => {
   const { t } = useTranslation();
   const categories = CATEGORY_ICONS.map((c) => ({ ...c, name: t(`events.categoryNames.${c.id}`) }));
   const [searchResults, setSearchResults] = useState<EventSearchResponse | null>(null);
-  const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<BookableService | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);

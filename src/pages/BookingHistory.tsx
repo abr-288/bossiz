@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import {
   Calendar,
@@ -39,7 +40,7 @@ interface Booking {
   payment_plan?: string;
   amount_due_now?: number;
   balance_due?: number;
-  booking_details: Record<string, unknown> | null;
+  booking_details: Json;
   created_at: string;
   customer_name: string;
   customer_email: string;
@@ -50,7 +51,7 @@ interface Booking {
     name: string;
     type: string;
     location: string;
-  };
+  } | null;
 }
 
 // Mirrors RLS: payment (full or deposit) is verified server-side and the
@@ -138,7 +139,9 @@ const BookingHistory = () => {
           .from("reviews")
           .select("booking_id")
           .in("booking_id", eligibleIds);
-        setReviewedBookingIds(new Set((existingReviews || []).map((r) => r.booking_id).filter(Boolean)));
+        setReviewedBookingIds(
+          new Set((existingReviews || []).map((r) => r.booking_id).filter((id): id is string => Boolean(id))),
+        );
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -161,7 +164,7 @@ const BookingHistory = () => {
 
   const filterBookings = (filter: string) => {
     if (filter === "all") return bookings;
-    return bookings.filter((b) => b.services.type === filter);
+    return bookings.filter((b) => b.services?.type === filter);
   };
 
   const handleDownloadTicket = async (bookingId: string) => {
@@ -262,13 +265,13 @@ const BookingHistory = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                            {getServiceIcon(booking.services.type)}
+                            {getServiceIcon(booking.services?.type ?? "")}
                           </div>
                           <div>
-                            <CardTitle className="text-xl mb-1">{booking.services.name}</CardTitle>
+                            <CardTitle className="text-xl mb-1">{booking.services?.name}</CardTitle>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <MapPin className="w-4 h-4" />
-                              {booking.services.location}
+                              {booking.services?.location}
                             </div>
                           </div>
                         </div>
@@ -412,7 +415,7 @@ const BookingHistory = () => {
           }}
           bookingId={reviewBooking.id}
           serviceId={reviewBooking.service_id}
-          serviceName={reviewBooking.services.name}
+          serviceName={reviewBooking.services?.name ?? ""}
           onSubmitted={() => {
             setReviewedBookingIds((prev) => new Set(prev).add(reviewBooking.id));
             setReviewBooking(null);

@@ -37,8 +37,6 @@ const Auth = () => {
   const [showMFAVerification, setShowMFAVerification] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
   const [rememberMe, setRememberMe] = useState(false);
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   // Form states
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
@@ -49,7 +47,7 @@ const Auth = () => {
   // Error states
   const [signInErrors, setSignInErrors] = useState<Record<string, string>>({});
   const [signUpErrors, setSignUpErrors] = useState<Record<string, string>>({});
-  const [updateErrors, setUpdateErrors] = useState<Record<string, string>>({});
+  const [, setUpdateErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const {

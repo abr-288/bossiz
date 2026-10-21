@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { MOTION } from "@/lib/motion";
 
 export interface UnifiedFormProps {
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   children: ReactNode;
   className?: string;
   loading?: boolean;

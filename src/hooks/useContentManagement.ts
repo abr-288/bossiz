@@ -1,64 +1,17 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getErrorMessage } from "@/lib/errorMessage";
+import type { Tables } from "@/integrations/supabase/types";
 
-export interface PageSection {
-  id: string;
-  page_key: string;
-  section_key: string;
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  background_color: string;
-  text_color: string;
-  button_text?: string;
-  button_color: string;
-  button_hover_color: string;
-  is_visible: boolean;
-  sort_order: number;
-}
+export type PageSection = Tables<"page_sections">;
 
-export interface CustomizablePlan {
-  id: string;
-  plan_id: string;
-  name: string;
-  description?: string;
-  price: string;
-  price_note?: string;
-  features: string[];
-  color_scheme: string;
-  is_popular: boolean;
-  is_visible: boolean;
-  sort_order: number;
-}
+export type CustomizablePlan = Tables<"customizable_plans">;
 
-export interface Testimonial {
-  id: string;
-  name: string;
-  role?: string;
-  content: string;
-  rating: number;
-  is_visible: boolean;
-  sort_order: number;
-}
+export type Testimonial = Tables<"testimonials">;
 
-export interface ValueProposition {
-  id: string;
-  icon_name: string;
-  title: string;
-  description: string;
-  color_scheme: string;
-  is_visible: boolean;
-  sort_order: number;
-}
+export type ValueProposition = Tables<"value_propositions">;
 
-export interface GlobalSetting {
-  id: string;
-  setting_key: string;
-  setting_value: string;
-  setting_type: "text" | "color" | "boolean" | "number";
-  description?: string;
-}
+export type GlobalSetting = Tables<"global_settings">;
 
 export const useContentManagement = () => {
   const [loading, setLoading] = useState(false);

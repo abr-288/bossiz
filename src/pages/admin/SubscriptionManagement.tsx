@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import {
   Plus,
@@ -28,7 +26,6 @@ import {
   Calendar,
   Settings,
   Eye,
-  Copy,
   CheckCircle2,
   XCircle,
 } from "lucide-react";
@@ -498,7 +495,7 @@ export default function SubscriptionManagement() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {features.map((feature, index) => (
+                      {features.map((feature) => (
                         <div key={feature.id} className="flex items-center justify-between p-3 border rounded-lg">
                           <div>
                             <h4 className="font-semibold">{feature.feature_name}</h4>
@@ -530,7 +527,7 @@ export default function SubscriptionManagement() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {testimonials.map((testimonial, index) => (
+                      {testimonials.map((testimonial) => (
                         <div key={testimonial.id} className="flex items-center justify-between p-3 border rounded-lg">
                           <div>
                             <h4 className="font-semibold">{testimonial.customer_name}</h4>
@@ -572,7 +569,7 @@ export default function SubscriptionManagement() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {faqs.map((faq, index) => (
+                      {faqs.map((faq) => (
                         <div key={faq.id} className="p-3 border rounded-lg">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-semibold">{faq.question}</h4>

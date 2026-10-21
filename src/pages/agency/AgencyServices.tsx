@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database, Json } from "@/integrations/supabase/types";
+import type { Database, Json, Tables } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { LocationPicker, type PartnerLocation } from "@/components/agency/LocationPicker";
@@ -24,25 +24,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
 
-interface Service {
-  id: string;
-  name: string;
-  type: string;
-  description: string | null;
-  location: string;
-  maps_url: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  available_dates: string[];
-  price_per_unit: number;
-  currency: string;
-  available: boolean;
-  image_url: string | null;
-  images: string[] | null;
-  amenities: Json | null;
-  specifications: Json | null;
-  created_at: string;
-}
+type Service = Tables<"services">;
 
 const serviceTypes = [
   {
@@ -385,7 +367,7 @@ export default function AgencyServices() {
       longitude: service.longitude,
       price_per_unit: service.price_per_unit.toString(),
       currency: service.currency,
-      available: service.available,
+      available: service.available ?? false,
       image_url: service.image_url || "",
       carSpecs:
         service.type === "car"

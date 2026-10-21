@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,22 +17,7 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 
-interface Advertisement {
-  id: string;
-  title: string;
-  description: string | null;
-  image_url: string | null;
-  link_url: string | null;
-  link_text: string | null;
-  background_color: string | null;
-  text_color: string | null;
-  is_active: boolean;
-  position: string;
-  sort_order: number;
-  starts_at: string | null;
-  expires_at: string | null;
-  created_at: string;
-}
+type Advertisement = Tables<"advertisements">;
 
 const defaultAd = {
   title: "",
@@ -83,9 +69,9 @@ export default function AdminAdvertisements() {
         link_text: ad.link_text || t("ux.bo.learnMore"),
         background_color: ad.background_color || "#1e3a5f",
         text_color: ad.text_color || "#ffffff",
-        is_active: ad.is_active,
-        position: ad.position,
-        sort_order: ad.sort_order,
+        is_active: ad.is_active ?? false,
+        position: ad.position ?? defaultAd.position,
+        sort_order: ad.sort_order ?? 0,
         starts_at: ad.starts_at,
         expires_at: ad.expires_at,
       });

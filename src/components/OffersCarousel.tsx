@@ -244,7 +244,7 @@ const OffersCarousel = () => {
               <li className={cn(SLIDE_CLASS, "border-0 bg-secondary text-secondary-foreground")}>
                 <Link to="/entreprises" className="group flex flex-1 flex-col justify-end p-6">
                   <Briefcase className="mb-auto h-8 w-8 opacity-80" aria-hidden="true" />
-                  <span className="mt-8 text-xs font-semibold uppercase tracking-wide opacity-80">
+                  <span className="mt-8 text-xs font-semibold uppercase tracking-wide">
                     {t("ux.editorial.businessEyebrow")}
                   </span>
                   <h3 className="mt-1 text-xl font-bold">{t("ux.editorial.businessTitle")}</h3>

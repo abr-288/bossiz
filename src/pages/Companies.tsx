@@ -68,9 +68,9 @@ const Companies = () => {
     setCreating(true);
     const { error } = await supabase.rpc("create_company", {
       p_name: companyName,
-      p_description: companyDescription || null,
+      p_description: companyDescription || undefined,
       p_billing_email: billingEmail || user.email,
-      p_billing_phone: billingPhone || null,
+      p_billing_phone: billingPhone || undefined,
     });
     setCreating(false);
 

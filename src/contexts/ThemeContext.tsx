@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, ReactNode } from "react";
+import { useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { singletonContext } from "@/lib/singletonContext";
 

@@ -39,6 +39,14 @@ export interface HomepageSection {
   order: number;
 }
 
+/** Champs modifiables d'une fonctionnalité (colonnes de homepage_features). */
+export type HomepageFeatureUpdate = Partial<Pick<HomepageFeature, "title" | "description" | "icon" | "color">> & {
+  order_num?: number;
+};
+
+/** Champs modifiables d'une section ; `order` correspond à la colonne order_num. */
+export type HomepageSectionUpdate = Partial<Pick<HomepageSection, "title" | "subtitle" | "visible" | "order">>;
+
 export interface HomepageConfig {
   features: HomepageFeature[];
   destinations: HomepageDestination[];
@@ -188,8 +196,8 @@ export const useHomepageConfig = () => {
               id: section.id,
               title: section.title,
               subtitle: section.subtitle || "",
-              visible: section.visible,
-              order: section.order_num,
+              visible: section.visible ?? false,
+              order: section.order_num ?? 0,
             };
           }
         });
@@ -204,7 +212,7 @@ export const useHomepageConfig = () => {
   }, []);
 
   const updateFeature = useCallback(
-    async (featureId: string, updates: Partial<HomepageFeature>) => {
+    async (featureId: string, updates: HomepageFeatureUpdate) => {
       try {
         const { error } = await supabase.from("homepage_features").update(updates).eq("id", featureId);
 
@@ -232,9 +240,13 @@ export const useHomepageConfig = () => {
   );
 
   const updateSection = useCallback(
-    async (sectionId: string, updates: Partial<HomepageSection>) => {
+    async (sectionId: string, updates: HomepageSectionUpdate) => {
       try {
-        const { error } = await supabase.from("homepage_sections").update(updates).eq("id", sectionId);
+        const { order, ...fields } = updates;
+        const { error } = await supabase
+          .from("homepage_sections")
+          .update({ ...fields, ...(order !== undefined && { order_num: order }) })
+          .eq("id", sectionId);
 
         if (error) throw error;
 
