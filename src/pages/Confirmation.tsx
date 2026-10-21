@@ -37,6 +37,8 @@ import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
 import { HotelBookingCancelCard } from "@/components/hotels/HotelBookingCancelCard";
+import { EventOrderStatusCard } from "@/components/events/EventOrderStatusCard";
+import type { EventOrderDetails } from "@/lib/events";
 import { MOTION } from "@/lib/motion";
 import { getErrorMessage } from "@/lib/errorMessage";
 
@@ -584,6 +586,17 @@ const Confirmation = () => {
               />
             </div>
           )}
+
+          {/* Billets achetés par la conciergerie : suivi de la commande */}
+          {booking?.booking_details?.kind === "event_concierge" && (
+            <div className="mb-6">
+              <EventOrderStatusCard
+                details={booking.booking_details as unknown as EventOrderDetails}
+                paid={booking.payment_status === "paid"}
+              />
+            </div>
+          )}
+
           {/* Important Info */}
           <Card className="border-warning-foreground/20 bg-warning">
             <CardContent className="py-4">

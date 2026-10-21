@@ -23,6 +23,8 @@ const HotelsPartners = lazy(() => import("@/pages/HotelsPartners"));
 const HotelDetail = lazy(() => import("@/pages/HotelDetail"));
 const Culture = lazy(() => import("@/pages/Culture"));
 const CultureArticle = lazy(() => import("@/pages/CultureArticle"));
+const EventDetail = lazy(() => import("@/pages/EventDetail"));
+const AdminEvents = lazy(() => import("@/pages/admin/AdminEvents"));
 const AdminCulture = lazy(() => import("@/pages/admin/AdminCulture"));
 const AdminHotelCommissions = lazy(() => import("@/pages/admin/AdminHotelCommissions"));
 const Cars = lazy(() => import("@/pages/Cars"));
@@ -371,6 +373,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/events/:slug"
+            element={
+              <PageTransition>
+                <EventDetail />
+              </PageTransition>
+            }
+          />
+          <Route
             path="/trains"
             element={
               <PageTransition>
@@ -687,6 +697,14 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <AdminCulture />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/events"
+            element={
+              <PageTransition>
+                <AdminEvents />
               </PageTransition>
             }
           />

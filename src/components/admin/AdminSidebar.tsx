@@ -25,6 +25,7 @@ import {
   Smile,
   Landmark,
   Receipt,
+  Ticket,
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import {
@@ -140,6 +141,7 @@ const menuItems = [
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
   { title: "Culture", url: "/admin/culture", icon: Landmark },
+  { title: "Événements", url: "/admin/events", icon: Ticket },
   {
     get title() {
       return i18n.t("ux.bo.bossizContent");

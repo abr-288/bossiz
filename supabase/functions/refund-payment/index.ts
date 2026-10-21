@@ -101,6 +101,12 @@ serve(async (req) => {
     // la réservation émise chez le fournisseur (billet / PNR, external_ref)
     // ou la date de prestation arrivée, le fournisseur est déjà payé. Le
     // client garderait le billet ET l'argent : ces cas passent par un admin.
+    // Billets déjà achetés par la conciergerie : plus d'annulation en libre-service.
+    const details = booking.booking_details as { kind?: string; conciergeStatus?: string } | null;
+    if (!isAdmin && details?.kind === 'event_concierge' && details.conciergeStatus === 'purchased') {
+      return errorResponse('Vos billets ont déjà été achetés : contactez la conciergerie pour toute demande.', 409);
+    }
+
     if (!isAdmin && (booking.booking_details as { kind?: string } | null)?.kind === 'partner_hotel') {
       return errorResponse(
         'Pour cette réservation d’hôtel, utilisez « Annuler ma réservation » depuis sa page : les conditions d’annulation du tarif s’appliquent.',

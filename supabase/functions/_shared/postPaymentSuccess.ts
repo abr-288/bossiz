@@ -289,6 +289,11 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       .single();
 
     const isFlight = bookingRow?.services?.type === 'flight';
+    // Billets achetés par la conciergerie (create-event-order) : payée, la
+    // commande reste « en attente » jusqu'à l'achat réel des billets par
+    // l'équipe (manage-event-order).
+    const bookingDetails = (bookingRow?.booking_details ?? null) as Record<string, unknown> | null;
+    const isEventConcierge = bookingDetails?.kind === 'event_concierge';
 
     const isDeposit = bookingRow?.payment_plan === 'deposit' && Number(bookingRow?.balance_due || 0) > 0;
     const amountPaid = Number(bookingRow?.amount_due_now || bookingRow?.total_price || 0);
@@ -298,7 +303,8 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
         payment_status: isDeposit ? 'partially_paid' : 'paid',
         amount_paid: amountPaid,
         balance_due: Math.max(0, Number(bookingRow?.total_price || 0) - amountPaid),
-        status: isFlight ? 'pending' : 'confirmed',
+        status: isFlight || isEventConcierge ? 'pending' : 'confirmed',
+        ...(isEventConcierge ? { booking_details: { ...bookingDetails, conciergeStatus: 'to_purchase', paidAt: new Date().toISOString() } } : {}),
         updated_at: new Date().toISOString(),
       })
       .eq('id', bookingId);
@@ -346,7 +352,23 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     // Hôtel partenaire (create-hotel-booking) : email détaillé au client et
     // à l'hôtel au lieu de la confirmation générique.
     const isPartnerHotel = (bookingRow?.booking_details as { kind?: string } | null)?.kind === 'partner_hotel';
-    if (isPartnerHotel) {
+    if (isEventConcierge) {
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-event-order-emails`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({ bookingId, event: 'paid' }),
+        });
+      } catch (e) {
+        console.warn('⚠️ Emails commande billets non envoyés:', e instanceof Error ? e.message : e);
+      }
+      supabase.functions.invoke('generate-invoice', {
+        body: { bookingId },
+      }).catch(() => console.warn('⚠️ Facture non générée'));
+    } else if (isPartnerHotel) {
       try {
         await fetch(`${supabaseUrl}/functions/v1/send-hotel-booking-emails`, {
           method: 'POST',
