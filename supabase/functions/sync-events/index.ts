@@ -95,6 +95,18 @@ function category(event: TmEvent): string {
   return "other";
 }
 
+// Suffixe d'URL court et stable, dérivé de l'identifiant Ticketmaster complet
+// (FNV-1a). Les identifiants mélangent majuscules et minuscules : leurs
+// derniers caractères en minuscules pouvaient coïncider entre deux événements.
+function idSuffix(id: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < id.length; i++) {
+    hash ^= id.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(36).padStart(7, "0");
+}
+
 function bestImage(images: TmImage[] | undefined): string | null {
   if (!Array.isArray(images) || images.length === 0) return null;
   const sorted = [...images]
@@ -184,11 +196,10 @@ serve(async (req) => {
           const info = [event.info, event.pleaseNote].filter(Boolean).join("\n\n").slice(0, 4000) || null;
           const lat = Number(venue.location?.latitude);
           const lon = Number(venue.location?.longitude);
-          const idSuffix = String(event.id).toLowerCase().replace(/[^a-z0-9]/g, "").slice(-6) || "tm";
           return {
             source: "ticketmaster",
             external_id: String(event.id),
-            slug: `${slugify(event.name) || "evenement"}-${localDate}-${idSuffix}`,
+            slug: `${slugify(event.name) || "evenement"}-${localDate}-${idSuffix(String(event.id))}`,
             name: String(event.name).slice(0, 300),
             info,
             category: category(event),
@@ -219,8 +230,8 @@ serve(async (req) => {
           };
         })
         .filter((row): row is NonNullable<typeof row> => row !== null)
-        // Un même événement deux fois dans un lot ferait échouer l'upsert.
-        .filter((row, index, all) => all.findIndex((r) => r.external_id === row.external_id) === index);
+        // Un même événement (ou une même adresse) deux fois dans un lot ferait échouer l'upsert.
+        .filter((row, index, all) => all.findIndex((r) => r.external_id === row.external_id || r.slug === row.slug) === index);
 
       if (rows.length > 0) {
         const { error } = await supabase.from("events").upsert(rows, { onConflict: "source,external_id" });
