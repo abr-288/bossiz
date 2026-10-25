@@ -409,7 +409,11 @@ serve(async (req) => {
         customer_email: requestData.customer_email,
         customer_phone: requestData.customer_phone,
         notes: requestData.notes,
-        booking_details: requestData.booking_details,
+        // Activité / séjour du catalogue : on garde la fiche réservée, pour que
+        // l'avis du client s'y rattache (reviewable_items, 20261026000000).
+        booking_details: catalogTable && requestData.service_id
+          ? { ...(requestData.booking_details ?? {}), catalogRef: { type: requestData.service_type, id: requestData.service_id } }
+          : requestData.booking_details,
         company_id: requestData.company_id || null,
         // A company-billed booking always starts as pending approval - an
         // approver/admin for that company must sign off before the DAF can

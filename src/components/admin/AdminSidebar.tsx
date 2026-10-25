@@ -47,7 +47,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import i18n from "@/i18n/config";
+import { supabase } from "@/integrations/supabase/client";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
@@ -193,6 +195,19 @@ export function AdminSidebar() {
   const { state, setOpenMobile } = useSidebar();
   const location = useLocation();
   const collapsed = state === "collapsed";
+  // Avis en attente de modération : ils ne sont visibles qu'une fois validés.
+  const { data: pendingReviews = 0 } = useQuery({
+    queryKey: ["admin-pending-reviews"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("reviews")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending");
+      return count ?? 0;
+    },
+    refetchInterval: 5 * 60_000,
+  });
+  const badges: Record<string, number> = { "/admin/reviews": pendingReviews };
 
   const isActive = (path: string) => {
     if (path === "/admin") {
@@ -221,6 +236,14 @@ export function AdminSidebar() {
                     >
                       <item.icon className={sidebarIconClass} />
                       {!collapsed && <span className="truncate">{item.title}</span>}
+                      {!collapsed && (badges[item.url] ?? 0) > 0 && (
+                        <span
+                          className="ml-auto rounded-full bg-destructive px-2 text-xs font-semibold text-destructive-foreground"
+                          aria-label={t("ux.reviews.pendingBadge", { count: badges[item.url] })}
+                        >
+                          {badges[item.url]}
+                        </span>
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

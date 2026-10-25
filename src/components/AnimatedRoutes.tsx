@@ -42,6 +42,7 @@ const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const Dashboard = lazy(() => import("@/pages/UserDashboard"));
 const BookingHistory = lazy(() => import("@/pages/BookingHistory"));
+const MyReviews = lazy(() => import("@/pages/MyReviews"));
 const Account = lazy(() => import("@/pages/Account"));
 const MyMemberCard = lazy(() => import("@/pages/MyMemberCard"));
 const Rewards = lazy(() => import("@/pages/Rewards"));
@@ -448,6 +449,14 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <BookingHistory />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/mes-avis"
+            element={
+              <PageTransition>
+                <MyReviews />
               </PageTransition>
             }
           />

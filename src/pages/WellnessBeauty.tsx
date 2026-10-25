@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, Sparkles, Phone } from "lucide-react";
+import { MapPin, Sparkles, Phone } from "lucide-react";
 import { useWellnessServices, type WellnessService } from "@/hooks/useWellnessServices";
 import { WellnessBookingDialog } from "@/components/wellness/WellnessBookingDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerWellness from "@/assets/banner-wellness.webp";
 import { useTranslation } from "react-i18next";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "react-router-dom";
@@ -126,14 +127,14 @@ const WellnessBeauty = () => {
                     <span className="text-sm truncate">{service.address || service.location}</span>
                   </div>
 
-                  {service.total_reviews > 0 && (
-                    <div className="flex items-center gap-1 mb-3">
-                      <Star className="w-4 h-4 fill-accent text-accent" />
-                      <span className="text-sm text-muted-foreground">
-                        {service.rating} ({service.total_reviews} avis)
-                      </span>
-                    </div>
-                  )}
+                  <RatingBadge
+                    targetType="wellness"
+                    targetId={service.id}
+                    rating={service.rating}
+                    count={service.total_reviews}
+                    name={service.name}
+                    className="mb-3"
+                  />
 
                   {service.description && (
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{service.description}</p>

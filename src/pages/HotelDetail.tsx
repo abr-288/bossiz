@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { HotelAvailabilityTable, type RoomSelection } from "@/components/hotels/HotelAvailabilityTable";
 import { HotelCheckoutDialog, type CheckoutContact } from "@/components/hotels/HotelCheckoutDialog";
+import { ServiceReviews } from "@/components/reviews/ServiceReviews";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import {
   addDays,
@@ -355,7 +356,7 @@ export default function HotelDetail() {
           </div>
           <div className="flex items-center gap-3">
             {(hotel.total_reviews ?? 0) > 0 && hotel.rating && (
-              <div className="flex items-center gap-2">
+              <a href="#avis" className="flex items-center gap-2 rounded-md hover:opacity-80">
                 <div className="text-right text-sm">
                   <p className="font-semibold">Note des clients</p>
                   <p className="text-xs text-muted-foreground">{hotel.total_reviews} avis</p>
@@ -363,7 +364,7 @@ export default function HotelDetail() {
                 <span className="rounded-md rounded-bl-none bg-primary px-2 py-1.5 text-lg font-bold text-primary-foreground">
                   {(Number(hotel.rating) * 2).toFixed(1)}
                 </span>
-              </div>
+              </a>
             )}
             <Button size="lg" onClick={scrollToAvailability}>
               Réserver
@@ -557,6 +558,12 @@ export default function HotelDetail() {
               </div>
             )}
           </div>
+        </section>
+
+        {/* Avis des clients ayant séjourné, avec la réponse de l'hôtel */}
+        <section id="avis" className="scroll-mt-24 space-y-3">
+          <h2 className="text-xl font-bold">Avis des clients</h2>
+          <ServiceReviews targetType="service" targetId={hotel.id} />
         </section>
       </main>
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Star, MapPin, Clock, Users, Map, ExternalLink, CalendarDays } from "lucide-react";
+import { MapPin, Clock, Users, Map, ExternalLink, CalendarDays } from "lucide-react";
 import { BookingDialog, type BookableService } from "@/components/BookingDialog";
 import { TourSearchForm } from "@/components/TourSearchForm";
 import { Pagination } from "@/components/Pagination";
@@ -15,6 +15,7 @@ import { Price } from "@/components/ui/price";
 import { useTourServices } from "@/hooks/useTourServices";
 import bannerTours from "@/assets/banner-tours.webp";
 import { useTranslation } from "react-i18next";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -293,21 +294,14 @@ const Tours = () => {
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < Math.floor(tour.rating) ? "fill-accent text-accent" : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-sm text-muted-foreground">
-                            {tour.rating} ({tour.reviews} avis)
-                          </span>
-                        </div>
+                        <RatingBadge
+                          targetType="service"
+                          targetId={tour.id}
+                          rating={tour.rating}
+                          count={tour.reviews}
+                          name={tour.name}
+                          className="mb-3"
+                        />
 
                         <div className="flex gap-4 mb-4 text-sm text-muted-foreground">
                           {tour.duration && (

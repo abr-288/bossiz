@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -10,26 +11,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { submitReview, useRefreshReviewableItems } from "@/hooks/useReviews";
 
 interface WriteReviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  bookingId: string;
-  serviceId: string;
-  serviceName: string;
-  onSubmitted: () => void;
+  // Prestation notée (voir my_reviewable_items) : le serveur vérifie qu'elle
+  // a bien eu lieu et qu'elle appartient au client.
+  sourceType: string;
+  sourceId: string;
+  title: string;
+  onSubmitted?: () => void;
 }
 
 export const WriteReviewDialog = ({
   open,
   onOpenChange,
-  bookingId,
-  serviceId,
-  serviceName,
+  sourceType,
+  sourceId,
+  title,
   onSubmitted,
 }: WriteReviewDialogProps) => {
+  const { t } = useTranslation();
+  const refreshReviewable = useRefreshReviewableItems();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -43,43 +48,30 @@ export const WriteReviewDialog = ({
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      toast.error("Choisissez une note de 1 à 5 étoiles");
+      toast.error(t("ux.reviews.pickRating"));
       return;
     }
 
     setSubmitting(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Vous devez être connecté");
-      setSubmitting(false);
-      return;
-    }
-
-    const { error } = await supabase.from("reviews").insert({
-      user_id: user.id,
-      service_id: serviceId,
-      booking_id: bookingId,
-      rating,
-      comment: comment.trim() || null,
-    });
-
+    const { error } = await submitReview(sourceType, sourceId, rating, comment);
     setSubmitting(false);
 
     if (error) {
-      if (error.code === "23505") {
-        toast.error("Vous avez déjà laissé un avis pour cette réservation");
-      } else {
-        toast.error("Impossible d'envoyer votre avis, réessayez plus tard");
-      }
+      toast.error(
+        error.code === "23505"
+          ? t("ux.reviews.alreadyReviewed")
+          : error.code === "42501"
+            ? t("ux.reviews.notYet")
+            : t("ux.reviews.sendError"),
+      );
       return;
     }
 
-    toast.success("Merci ! Votre avis sera visible après vérification.");
+    toast.success(t("ux.reviews.thanks"));
     reset();
     onOpenChange(false);
-    onSubmitted();
+    refreshReviewable();
+    onSubmitted?.();
   };
 
   return (
@@ -92,21 +84,23 @@ export const WriteReviewDialog = ({
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Laisser un avis</DialogTitle>
-          <DialogDescription>{serviceName}</DialogDescription>
+          <DialogTitle>{t("ux.reviews.write")}</DialogTitle>
+          <DialogDescription>{title}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex justify-center gap-1">
+          <div className="flex justify-center gap-1" role="radiogroup" aria-label={t("ux.reviews.yourRating")}>
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
                 type="button"
+                role="radio"
+                aria-checked={rating === star}
                 className="p-1"
                 onClick={() => setRating(star)}
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
-                aria-label={`${star} étoile${star > 1 ? "s" : ""}`}
+                aria-label={t("ux.reviews.stars", { count: star })}
               >
                 <Star
                   className={`w-8 h-8 transition-colors ${
@@ -118,20 +112,22 @@ export const WriteReviewDialog = ({
           </div>
 
           <Textarea
-            placeholder="Partagez votre expérience (facultatif)"
+            placeholder={t("ux.reviews.commentPlaceholder")}
+            aria-label={t("ux.reviews.commentPlaceholder")}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
             maxLength={1000}
           />
+          <p className="text-xs text-muted-foreground">{t("ux.reviews.moderationNotice")}</p>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
-            Annuler
+            {t("ux.reviews.cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={submitting} className="gradient-primary">
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Envoyer mon avis"}
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : t("ux.reviews.send")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
+import { useMyReviewableItems } from "@/hooks/useReviews";
 import { HotelBookingCancelCard } from "@/components/hotels/HotelBookingCancelCard";
 import { EventOrderStatusCard } from "@/components/events/EventOrderStatusCard";
 import type { EventOrderDetails } from "@/lib/events";
@@ -64,8 +65,9 @@ const Confirmation = () => {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
-  const [hasReview, setHasReview] = useState(false);
-  const [reviewPromptEnabled, setReviewPromptEnabled] = useState(true);
+  // Notable seulement une fois la prestation effectuée (my_reviewable_items).
+  const { data: reviewable = [] } = useMyReviewableItems(!!bookingId);
+  const reviewItem = reviewable.find((i) => i.source_type === "booking" && i.source_id === bookingId);
 
   const getLocale = () => {
     switch (i18n.language) {
@@ -156,14 +158,6 @@ const Confirmation = () => {
 
       if (error) throw error;
       setBooking(data as unknown as ConfirmationBooking);
-      const [{ data: existingReview }, { data: reviewConfig }] = await Promise.all([
-        supabase.from("reviews").select("id").eq("booking_id", bookingId).maybeSingle(),
-        supabase.from("site_config").select("config_value").eq("config_key", "booking_payment_policy").maybeSingle(),
-      ]);
-      setHasReview(!!existingReview);
-      setReviewPromptEnabled(
-        (reviewConfig?.config_value as { reviewPromptEnabled?: boolean } | null)?.reviewPromptEnabled !== false,
-      );
     } catch (err) {
       console.error("Error loading booking:", err);
       setError(getErrorMessage(err) ?? null);
@@ -524,20 +518,17 @@ const Confirmation = () => {
                   >
                     {booking.payment_status === "paid" ? "✓ " + t("confirmation.paid") : t("confirmation.pending")}
                   </Badge>
-                  {reviewPromptEnabled &&
-                    booking.status === "confirmed" &&
-                    ["paid", "partially_paid"].includes(booking.payment_status) &&
-                    booking.service_id && (
-                      <div className="mt-4 border-t pt-4">
-                        {hasReview ? (
-                          <p className="text-sm text-muted-foreground">Merci, votre avis a bien été envoyé.</p>
-                        ) : (
-                          <Button variant="outline" className="gap-2" onClick={() => setReviewOpen(true)}>
-                            <Star className="h-4 w-4" /> Noter ce service
-                          </Button>
-                        )}
-                      </div>
-                    )}
+                  {reviewItem && (
+                    <div className="mt-4 border-t pt-4">
+                      {reviewItem.reviewed ? (
+                        <p className="text-sm text-muted-foreground">{t("ux.reviews.thanksShort")}</p>
+                      ) : (
+                        <Button variant="outline" className="gap-2" onClick={() => setReviewOpen(true)}>
+                          <Star className="h-4 w-4" /> {t("ux.reviews.rate")}
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -615,14 +606,13 @@ const Confirmation = () => {
           </Card>
         </motion.div>
       </main>
-      {booking?.service_id && (
+      {reviewItem && (
         <WriteReviewDialog
           open={reviewOpen}
           onOpenChange={setReviewOpen}
-          bookingId={booking.id}
-          serviceId={booking.service_id}
-          serviceName={booking.services?.name || "Service réservé"}
-          onSubmitted={() => setHasReview(true)}
+          sourceType="booking"
+          sourceId={reviewItem.source_id}
+          title={reviewItem.title}
         />
       )}
       <Footer />

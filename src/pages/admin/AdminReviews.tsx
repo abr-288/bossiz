@@ -1,5 +1,6 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -34,6 +35,7 @@ const AdminReviews = () => {
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const fetchReviews = async () => {
     const { data, error } = await supabase
@@ -44,7 +46,8 @@ const AdminReviews = () => {
     if (error) {
       toast.error(t("ux.bo.errorWhileLoadingReviews"));
     } else {
-      setReviews(data || []);
+      // Avis à modérer en premier.
+      setReviews([...(data || [])].sort((a, b) => Number(b.status === "pending") - Number(a.status === "pending")));
     }
     setLoading(false);
   };
@@ -60,6 +63,7 @@ const AdminReviews = () => {
       toast.error(t("ux.bo.unableUpdateReview"));
     } else {
       setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-reviews"] });
       toast.success(status === "approved" ? t("ux.bo.reviewApprovedPublishedSite") : t("ux.bo.reviewRejected"));
     }
     setUpdatingId(null);
@@ -169,9 +173,13 @@ const AdminReviews = () => {
                 ) : (
                   reviews.map((r) => (
                     <TableRow key={r.id}>
-                      <TableCell className="font-medium">{r.services?.name || "—"}</TableCell>
+                      <TableCell className="font-medium">{r.target_name || r.services?.name || "—"}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{r.services?.type || "—"}</Badge>
+                        <Badge variant="outline">
+                          {t(`ux.reviews.targets.${r.target_type}`, {
+                            defaultValue: r.services?.type || r.target_type,
+                          })}
+                        </Badge>
                       </TableCell>
                       <TableCell>{renderStars(r.rating)}</TableCell>
                       <TableCell className="max-w-xs truncate">{r.comment || "—"}</TableCell>

@@ -3732,6 +3732,30 @@ export type Database = {
           },
         ];
       };
+      review_invitations: {
+        Row: {
+          email: string | null;
+          sent_at: string;
+          source_id: string;
+          source_type: string;
+          user_id: string;
+        };
+        Insert: {
+          email?: string | null;
+          sent_at?: string;
+          source_id: string;
+          source_type: string;
+          user_id: string;
+        };
+        Update: {
+          email?: string | null;
+          sent_at?: string;
+          source_id?: string;
+          source_type?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       reviews: {
         Row: {
           booking_id: string | null;
@@ -3742,9 +3766,14 @@ export type Database = {
           partner_replied_at: string | null;
           rating: number;
           reviewer_name: string | null;
-          service_id: string;
+          service_id: string | null;
+          source_id: string | null;
+          source_type: string | null;
           source: string;
           status: string;
+          target_id: string;
+          target_name: string | null;
+          target_type: string;
           updated_at: string;
           user_id: string | null;
         };
@@ -3757,9 +3786,14 @@ export type Database = {
           partner_replied_at?: string | null;
           rating: number;
           reviewer_name?: string | null;
-          service_id: string;
+          service_id?: string | null;
+          source_id?: string | null;
+          source_type?: string | null;
           source?: string;
           status?: string;
+          target_id: string;
+          target_name?: string | null;
+          target_type?: string;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -3772,9 +3806,14 @@ export type Database = {
           partner_replied_at?: string | null;
           rating?: number;
           reviewer_name?: string | null;
-          service_id?: string;
+          service_id?: string | null;
+          source_id?: string | null;
+          source_type?: string | null;
           source?: string;
           status?: string;
+          target_id?: string;
+          target_name?: string | null;
+          target_type?: string;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -4962,6 +5001,17 @@ export type Database = {
           spots_booked: number;
         }[];
       };
+      claim_review_invitations: {
+        Args: { p_limit?: number };
+        Returns: {
+          customer_name: string | null;
+          email: string | null;
+          source_id: string;
+          source_type: string;
+          title: string;
+          user_id: string;
+        }[];
+      };
       current_partner_agency_id: {
         Args: never;
         Returns: string;
@@ -5087,17 +5137,53 @@ export type Database = {
         Args: { _require_enabled: boolean; _service_id: string };
         Returns: boolean;
       };
+      my_reviewable_items: {
+        Args: never;
+        Returns: {
+          reviewed: boolean;
+          service_at: string;
+          source_id: string;
+          source_type: string;
+          target_id: string;
+          target_type: string;
+          title: string;
+        }[];
+      };
       partner_contact_always_visible: {
         Args: never;
         Returns: boolean;
+      };
+      public_review_summary: {
+        Args: { p_target_id: string; p_target_type: string };
+        Returns: Json;
+      };
+      public_reviews: {
+        Args: { p_limit?: number; p_offset?: number; p_target_id: string; p_target_type: string };
+        Returns: {
+          comment: string | null;
+          created_at: string;
+          partner_replied_at: string | null;
+          partner_reply: string | null;
+          rating: number;
+          review_id: string;
+          reviewer_name: string;
+        }[];
       };
       refresh_hotel_starting_price: {
         Args: { _service_id: string };
         Returns: undefined;
       };
+      review_prompt_enabled: {
+        Args: never;
+        Returns: boolean;
+      };
       renew_subscription: {
         Args: { p_user_subscription_id: string };
         Returns: boolean;
+      };
+      submit_review: {
+        Args: { p_comment: string | null; p_rating: number; p_source_id: string; p_source_type: string };
+        Returns: string;
       };
       verify_member_card: {
         Args: { p_code: string };

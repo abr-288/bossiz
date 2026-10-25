@@ -26,6 +26,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Price } from "@/components/ui/price";
 import { useStaySearch } from "@/hooks/useStaySearch";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -315,10 +316,13 @@ const Stays = () => {
                               <Calendar className="w-4 h-4 text-primary" />
                               {stay.duration}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-gold text-gold" />
-                              {stay.rating} ({stay.reviews})
-                            </span>
+                            <RatingBadge
+                              targetType="stay"
+                              targetId={stay.id}
+                              rating={stay.rating}
+                              count={stay.reviews}
+                              name={stay.name}
+                            />
                           </div>
                         </div>
 

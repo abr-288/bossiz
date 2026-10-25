@@ -18,6 +18,7 @@ interface PartnerHotelResult {
   price?: number | { grandTotal?: number };
   currency?: string;
   rating?: number;
+  reviews?: number;
   image: string;
 }
 
@@ -27,7 +28,9 @@ interface PartnerHotel {
   location: string;
   price: number;
   currency: string;
+  // Note sur 10 (search-hotels), affichée seulement avec au moins un avis.
   rating: number;
+  reviews: number;
   image: string;
 }
 
@@ -65,6 +68,7 @@ const HotelsPartners = () => {
               price: Math.round((typeof hotel.price === "object" ? hotel.price.grandTotal : hotel.price) ?? 0),
               currency: hotel.currency || "FCFA",
               rating: hotel.rating ?? 0,
+              reviews: hotel.reviews ?? 0,
               image: hotel.image,
             })),
           );
@@ -140,10 +144,12 @@ const HotelsPartners = () => {
                   <Card className="h-full overflow-hidden border border-border/50 shadow-md hover:shadow-xl transition-all duration-slow ease-standard rounded-2xl hover-lift">
                     <div className="relative h-48">
                       <LazyImage src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
-                      <Badge className="absolute top-3 right-3 bg-background/90 text-foreground border">
-                        <Star className="w-3 h-3 mr-1 fill-gold text-gold" />
-                        {hotel.rating}
-                      </Badge>
+                      {hotel.reviews > 0 && (
+                        <Badge className="absolute top-3 right-3 bg-background/90 text-foreground border">
+                          <Star className="w-3 h-3 mr-1 fill-gold text-gold" />
+                          {hotel.rating.toFixed(1)}
+                        </Badge>
+                      )}
                     </div>
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-lg mb-1">{hotel.name}</h3>

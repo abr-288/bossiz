@@ -13,6 +13,7 @@ import { ArtisanOrderDialog, type ArtisanProduct } from "@/components/artisans/A
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerArtisans from "@/assets/banner-artisans.webp";
 import { useTranslation } from "react-i18next";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "react-router-dom";
@@ -131,6 +132,14 @@ const Artisans = () => {
                     <MapPin className="w-4 h-4 flex-shrink-0" />
                     <span className="text-sm truncate">{artisan.location}</span>
                   </div>
+                  <RatingBadge
+                    targetType="artisan"
+                    targetId={artisan.id}
+                    rating={artisan.rating}
+                    count={artisan.total_reviews}
+                    name={artisan.name}
+                    className="mb-3 self-start"
+                  />
                   {artisan.bio && <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{artisan.bio}</p>}
                   {artisan.products.length > 0 && (
                     <p className="text-xs text-muted-foreground mb-3">

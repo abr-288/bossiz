@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Star, Tag } from "lucide-react";
+import { MapPin, Clock, Tag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { BookingDialog, type BookableService } from "@/components/BookingDialog";
 import { ActivitySearchForm } from "@/components/ActivitySearchForm";
@@ -11,6 +11,7 @@ import { useActivitySearch } from "@/hooks/useActivitySearch";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerActivities from "@/assets/banner-activities.webp";
 import { useTranslation } from "react-i18next";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
@@ -74,10 +75,17 @@ const Activities = () => {
                     <Tag className="w-3 h-3" />
                     {activity.category}
                   </div>
-                  <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-gold text-gold" />
-                    <span className="text-sm font-semibold">{activity.rating}</span>
-                  </div>
+                  {(activity.reviews ?? 0) > 0 && (
+                    <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg">
+                      <RatingBadge
+                        targetType="activity"
+                        targetId={activity.id}
+                        rating={activity.rating}
+                        count={activity.reviews}
+                        name={activity.name}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <CardContent className="p-6">

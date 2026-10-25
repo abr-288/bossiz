@@ -5,12 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, UtensilsCrossed, Phone } from "lucide-react";
+import { MapPin, UtensilsCrossed, Phone } from "lucide-react";
 import { useRestaurants, type Restaurant } from "@/hooks/useRestaurants";
 import { RestaurantReservationDialog } from "@/components/restaurants/RestaurantReservationDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
 import bannerRestaurants from "@/assets/banner-restaurants.webp";
 import { useTranslation } from "react-i18next";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Link } from "react-router-dom";
@@ -122,14 +123,14 @@ const Restaurants = () => {
                     <span className="text-sm truncate">{restaurant.address || restaurant.location}</span>
                   </div>
 
-                  {restaurant.total_reviews > 0 && (
-                    <div className="flex items-center gap-1 mb-3">
-                      <Star className="w-4 h-4 fill-accent text-accent" />
-                      <span className="text-sm text-muted-foreground">
-                        {restaurant.rating} ({restaurant.total_reviews} avis)
-                      </span>
-                    </div>
-                  )}
+                  <RatingBadge
+                    targetType="restaurant"
+                    targetId={restaurant.id}
+                    rating={restaurant.rating}
+                    count={restaurant.total_reviews}
+                    name={restaurant.name}
+                    className="mb-3"
+                  />
 
                   {restaurant.description && (
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{restaurant.description}</p>

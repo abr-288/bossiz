@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { Price } from "@/components/ui/price";
 import { BookingStatusBadge, PaymentStatusBadge } from "@/components/dashboard/BookingStatusBadge";
 import { WriteReviewDialog } from "@/components/reviews/WriteReviewDialog";
+import { useMyReviewableItems } from "@/hooks/useReviews";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 
 interface Booking {
@@ -54,22 +55,18 @@ interface Booking {
   } | null;
 }
 
-// Mirrors RLS: payment (full or deposit) is verified server-side and the
-// booking is confirmed before the rating form is offered.
-const isReviewEligible = (booking: Booking) => {
-  return (
-    ["paid", "partially_paid"].includes(booking.payment_status) && ["confirmed", "completed"].includes(booking.status)
-  );
-};
-
 const BookingHistory = () => {
   const { t, i18n } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-  const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(new Set());
   const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
-  const [reviewPromptEnabled, setReviewPromptEnabled] = useState(true);
+  // Réservations notables (prestation effectuée) et déjà notées, d'après le
+  // serveur (my_reviewable_items) ; vide si les invitations sont désactivées.
+  const { data: reviewable = [] } = useMyReviewableItems();
+  const reviewState = new Map(
+    reviewable.filter((i) => i.source_type === "booking").map((i) => [i.source_id, i.reviewed] as const),
+  );
   const navigate = useNavigate();
 
   const getLocale = () => {
@@ -86,17 +83,6 @@ const BookingHistory = () => {
   useEffect(() => {
     checkAuth();
     fetchBookings();
-    supabase
-      .from("site_config")
-      .select("config_value")
-      .eq("config_key", "booking_payment_policy")
-      .maybeSingle()
-      .then(({ data }) => {
-        const rawPolicy = data?.config_value;
-        const policy =
-          rawPolicy && typeof rawPolicy === "object" ? (rawPolicy as { reviewPromptEnabled?: boolean }) : undefined;
-        setReviewPromptEnabled(policy?.reviewPromptEnabled !== false);
-      });
   }, []);
 
   const checkAuth = async () => {
@@ -132,17 +118,6 @@ const BookingHistory = () => {
 
       if (error) throw error;
       setBookings(data || []);
-
-      const eligibleIds = (data || []).filter(isReviewEligible).map((b) => b.id);
-      if (eligibleIds.length > 0) {
-        const { data: existingReviews } = await supabase
-          .from("reviews")
-          .select("booking_id")
-          .in("booking_id", eligibleIds);
-        setReviewedBookingIds(
-          new Set((existingReviews || []).map((r) => r.booking_id).filter((id): id is string => Boolean(id))),
-        );
-      }
     } catch (error) {
       console.error("Error fetching bookings:", error);
       toast.error(t("bookingHistory.loadingError"));
@@ -377,17 +352,16 @@ const BookingHistory = () => {
                             {t("bookingHistory.finalizePayment")}
                           </Button>
                         )}
-                        {reviewPromptEnabled &&
-                          isReviewEligible(booking) &&
-                          (reviewedBookingIds.has(booking.id) ? (
+                        {reviewState.has(booking.id) &&
+                          (reviewState.get(booking.id) ? (
                             <Button variant="ghost" disabled className="gap-2 text-muted-foreground">
                               <Star className="w-4 h-4 fill-gold text-gold" />
-                              Avis envoyé
+                              {t("ux.reviews.sent")}
                             </Button>
                           ) : (
                             <Button variant="outline" className="gap-2" onClick={() => setReviewBooking(booking)}>
                               <Star className="w-4 h-4" />
-                              Laisser un avis
+                              {t("ux.reviews.write")}
                             </Button>
                           ))}
                       </div>
@@ -413,13 +387,10 @@ const BookingHistory = () => {
           onOpenChange={(open) => {
             if (!open) setReviewBooking(null);
           }}
-          bookingId={reviewBooking.id}
-          serviceId={reviewBooking.service_id}
-          serviceName={reviewBooking.services?.name ?? ""}
-          onSubmitted={() => {
-            setReviewedBookingIds((prev) => new Set(prev).add(reviewBooking.id));
-            setReviewBooking(null);
-          }}
+          sourceType="booking"
+          sourceId={reviewBooking.id}
+          title={reviewBooking.services?.name ?? ""}
+          onSubmitted={() => setReviewBooking(null)}
         />
       )}
     </UserDashboardLayout>

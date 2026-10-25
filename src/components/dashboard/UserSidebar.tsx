@@ -12,6 +12,7 @@ import {
   LogOut,
   Building2,
   Smile,
+  Star,
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -79,6 +80,11 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       title: t("dashboardPage.sidebar.bookings", "Mes réservations"),
       url: "/booking-history",
       icon: Calendar,
+    },
+    {
+      title: t("ux.reviews.myTitle"),
+      url: "/mes-avis",
+      icon: Star,
     },
     {
       title: t("ux.smiles.navLabel", "Mes Smiles"),

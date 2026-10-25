@@ -21,6 +21,7 @@ import {
 import { motion } from "framer-motion";
 import { carLabel } from "@/lib/carLabels";
 import { MOTION } from "@/lib/motion";
+import { RatingBadge } from "@/components/reviews/ServiceReviews";
 
 export interface CarData {
   id: string;
@@ -63,6 +64,7 @@ interface CarCardProps {
 export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
+  const isPartner = car.source === "partner";
 
   const placeholderImage = "https://images.unsplash.com/photo-1494905998402-395d579af36f?w=600&h=400&fit=crop";
 
@@ -141,15 +143,27 @@ export const CarCard = ({ car, onBook, onViewDetails }: CarCardProps) => {
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-lg ml-2">
-              <Star className="w-4 h-4 fill-primary text-primary" />
-              <span className="font-semibold text-primary">{car.rating.toFixed(1)}</span>
-            </div>
+            {/* Véhicule partenaire : note des avis Bossiz ; sinon note du loueur. */}
+            {isPartner ? (
+              <RatingBadge
+                targetType="service"
+                targetId={car.id}
+                rating={car.rating}
+                count={car.reviews}
+                name={car.name}
+                className="ml-2"
+              />
+            ) : (
+              <div className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-lg ml-2">
+                <Star className="w-4 h-4 fill-primary text-primary" />
+                <span className="font-semibold text-primary">{car.rating.toFixed(1)}</span>
+              </div>
+            )}
           </div>
 
           {/* Reviews & Location */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-            <span>{car.reviews.toLocaleString()} avis</span>
+            {!isPartner && <span>{car.reviews.toLocaleString()} avis</span>}
             {car.pickupLocation && (
               <span className="flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
