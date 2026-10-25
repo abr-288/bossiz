@@ -180,6 +180,7 @@ export type Database = {
         Row: {
           car_plan_id: string | null;
           car_plan_started_at: string | null;
+          category: string | null;
           commission_rate: number | null;
           contact_email: string | null;
           contact_phone: string | null;
@@ -197,6 +198,7 @@ export type Database = {
         Insert: {
           car_plan_id?: string | null;
           car_plan_started_at?: string | null;
+          category?: string | null;
           commission_rate?: number | null;
           contact_email?: string | null;
           contact_phone?: string | null;
@@ -214,6 +216,7 @@ export type Database = {
         Update: {
           car_plan_id?: string | null;
           car_plan_started_at?: string | null;
+          category?: string | null;
           commission_rate?: number | null;
           contact_email?: string | null;
           contact_phone?: string | null;
@@ -281,6 +284,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "agency_branding_subscriptions_agency_id_fkey";
+            columns: ["agency_id"];
+            isOneToOne: false;
+            referencedRelation: "agencies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      agency_commission_rates: {
+        Row: {
+          agency_id: string;
+          created_at: string;
+          effective_from: string;
+          id: string;
+          platform_rate: number;
+          set_by: string | null;
+        };
+        Insert: {
+          agency_id: string;
+          created_at?: string;
+          effective_from: string;
+          id?: string;
+          platform_rate: number;
+          set_by?: string | null;
+        };
+        Update: {
+          agency_id?: string;
+          created_at?: string;
+          effective_from?: string;
+          id?: string;
+          platform_rate?: number;
+          set_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "agency_commission_rates_agency_id_fkey";
             columns: ["agency_id"];
             isOneToOne: false;
             referencedRelation: "agencies";
@@ -2925,6 +2963,7 @@ export type Database = {
           auto_approval_attempted_at: string | null;
           auto_approval_error: string | null;
           auto_approved_at: string | null;
+          category: string | null;
           contact_email: string;
           contact_phone: string | null;
           created_at: string;
@@ -2941,6 +2980,7 @@ export type Database = {
           auto_approval_attempted_at?: string | null;
           auto_approval_error?: string | null;
           auto_approved_at?: string | null;
+          category?: string | null;
           contact_email: string;
           contact_phone?: string | null;
           created_at?: string;
@@ -2957,6 +2997,7 @@ export type Database = {
           auto_approval_attempted_at?: string | null;
           auto_approval_error?: string | null;
           auto_approved_at?: string | null;
+          category?: string | null;
           contact_email?: string;
           contact_phone?: string | null;
           created_at?: string;
@@ -2976,6 +3017,140 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "car_partner_plans";
             referencedColumns: ["plan_id"];
+          },
+        ];
+      };
+      partner_categories: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          is_active: boolean;
+          key: string;
+          label: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          is_active?: boolean;
+          key: string;
+          label: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          is_active?: boolean;
+          key?: string;
+          label?: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      partner_category_modules: {
+        Row: {
+          category_key: string;
+          module_key: string;
+        };
+        Insert: {
+          category_key: string;
+          module_key: string;
+        };
+        Update: {
+          category_key?: string;
+          module_key?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_category_modules_category_key_fkey";
+            columns: ["category_key"];
+            isOneToOne: false;
+            referencedRelation: "partner_categories";
+            referencedColumns: ["key"];
+          },
+          {
+            foreignKeyName: "partner_category_modules_module_key_fkey";
+            columns: ["module_key"];
+            isOneToOne: false;
+            referencedRelation: "partner_modules";
+            referencedColumns: ["key"];
+          },
+        ];
+      };
+      partner_modules: {
+        Row: {
+          feature_key: string | null;
+          is_core: boolean;
+          key: string;
+          label: string;
+          menu_group: string;
+          service_type: string | null;
+          sort_order: number;
+        };
+        Insert: {
+          feature_key?: string | null;
+          is_core?: boolean;
+          key: string;
+          label: string;
+          menu_group: string;
+          service_type?: string | null;
+          sort_order?: number;
+        };
+        Update: {
+          feature_key?: string | null;
+          is_core?: boolean;
+          key?: string;
+          label?: string;
+          menu_group?: string;
+          service_type?: string | null;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+      partner_support_tickets: {
+        Row: {
+          agency_id: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          message: string;
+          status: string;
+          subject: string;
+          topic: string;
+          updated_at: string;
+        };
+        Insert: {
+          agency_id: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          message: string;
+          status?: string;
+          subject: string;
+          topic?: string;
+          updated_at?: string;
+        };
+        Update: {
+          agency_id?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          message?: string;
+          status?: string;
+          subject?: string;
+          topic?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_support_tickets_agency_id_fkey";
+            columns: ["agency_id"];
+            isOneToOne: false;
+            referencedRelation: "agencies";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -3563,6 +3738,8 @@ export type Database = {
           comment: string | null;
           created_at: string;
           id: string;
+          partner_reply: string | null;
+          partner_replied_at: string | null;
           rating: number;
           reviewer_name: string | null;
           service_id: string;
@@ -3576,6 +3753,8 @@ export type Database = {
           comment?: string | null;
           created_at?: string;
           id?: string;
+          partner_reply?: string | null;
+          partner_replied_at?: string | null;
           rating: number;
           reviewer_name?: string | null;
           service_id: string;
@@ -3589,6 +3768,8 @@ export type Database = {
           comment?: string | null;
           created_at?: string;
           id?: string;
+          partner_reply?: string | null;
+          partner_replied_at?: string | null;
           rating?: number;
           reviewer_name?: string | null;
           service_id?: string;
@@ -4584,9 +4765,53 @@ export type Database = {
         Args: { p_invoice_id: string; p_status: string };
         Returns: undefined;
       };
+      agency_commission_rate_history: {
+        Args: never;
+        Returns: {
+          effective_from: string;
+          platform_rate: number;
+        }[];
+      };
+      agency_customers: {
+        Args: never;
+        Returns: {
+          customer_email: string | null;
+          customer_name: string;
+          customer_phone: string | null;
+          first_order_at: string;
+          last_order_at: string;
+          next_service_date: string | null;
+          orders_count: number;
+        }[];
+      };
       agency_feature_enabled: {
         Args: { _agency_id: string; _feature: string };
         Returns: boolean;
+      };
+      agency_finance_summary: {
+        Args: { p_from?: string | null; p_to?: string | null };
+        Returns: Json;
+      };
+      agency_finance_transactions: {
+        Args: { p_from?: string | null; p_to?: string | null };
+        Returns: {
+          collection: string;
+          commission_amount: number;
+          commission_rate: number;
+          gross_amount: number;
+          label: string;
+          net_amount: number;
+          paid_at: string | null;
+          payout_due_at: string | null;
+          payout_reference: string | null;
+          payout_status: string | null;
+          rate_effective_from: string | null;
+          reference: string;
+          source_type: string;
+          status: string;
+          transaction_date: string;
+          transaction_id: string;
+        }[];
       };
       agency_hotel_bookings: {
         Args: never;
@@ -4613,6 +4838,60 @@ export type Database = {
       agency_mark_hotel_no_show: {
         Args: { p_booking_id: string };
         Returns: undefined;
+      };
+      agency_module_in_scope: {
+        Args: { _agency_id: string; _module: string };
+        Returns: boolean;
+      };
+      agency_orders: {
+        Args: never;
+        Returns: {
+          amount: number | null;
+          bucket: string;
+          created_at: string;
+          customer_email: string | null;
+          customer_name: string | null;
+          customer_phone: string | null;
+          module: string;
+          notes: string | null;
+          order_id: string;
+          order_kind: string;
+          quantity: number | null;
+          service_date: string | null;
+          service_time: string | null;
+          status: string;
+          title: string;
+        }[];
+      };
+      agency_platform_rate_at: {
+        Args: { _agency_id: string; _at: string };
+        Returns: number;
+      };
+      agency_portal_context: {
+        Args: { p_module?: string | null };
+        Returns: Json;
+      };
+      agency_reply_review: {
+        Args: { p_reply: string; p_review_id: string };
+        Returns: undefined;
+      };
+      agency_reviews: {
+        Args: never;
+        Returns: {
+          comment: string | null;
+          created_at: string;
+          partner_replied_at: string | null;
+          partner_reply: string | null;
+          rating: number;
+          review_id: string;
+          reviewer_name: string;
+          service_name: string;
+          status: string;
+        }[];
+      };
+      agency_service_type_allowed: {
+        Args: { _agency_id: string; _type: string };
+        Returns: boolean;
       };
       calculate_next_billing_date: {
         Args: { billing_cycle: string; p_current_date: string };
@@ -4682,6 +4961,10 @@ export type Database = {
           booking_time: string;
           spots_booked: number;
         }[];
+      };
+      current_partner_agency_id: {
+        Args: never;
+        Returns: string;
       };
       has_role: {
         Args: {
@@ -4802,6 +5085,10 @@ export type Database = {
       };
       owns_hotel_service: {
         Args: { _require_enabled: boolean; _service_id: string };
+        Returns: boolean;
+      };
+      partner_contact_always_visible: {
+        Args: never;
         Returns: boolean;
       };
       refresh_hotel_starting_price: {

@@ -2075,6 +2075,281 @@
     }
   },
   "ux": {
+    "partner": {
+      "retry": "Try again",
+      "loading": "Loading…",
+      "loadError": "This information could not be loaded. Please try again shortly.",
+      "noCategory": "Category not set",
+      "groups": {
+        "services": "My services",
+        "orders": "Bookings / Orders",
+        "finances": "Finances",
+        "clients": "Customers & reviews",
+        "profile": "Profile & settings",
+        "support": "Support"
+      },
+      "menu": {
+        "dashboard": "Dashboard",
+        "catalog_hotels": "Hotels",
+        "catalog_cars": "Vehicles",
+        "catalog_tours": "Tours",
+        "catalog_activities": "Activities",
+        "catalog_stays": "Stays",
+        "catalog_restaurants": "Restaurants",
+        "catalog_artisans": "Crafts",
+        "catalog_wellness": "Wellness & beauty",
+        "hotel_rates": "Rates & availability",
+        "promotions": "Promotions",
+        "orders_new": "New requests",
+        "orders_in_progress": "In progress",
+        "orders_history": "History",
+        "hotel_bookings": "Hotel stays",
+        "finances_revenue": "Revenue",
+        "finances_commissions": "Commissions",
+        "finances_payouts": "Payouts",
+        "finances_statements": "Invoices & statements",
+        "reviews": "Reviews & ratings",
+        "customers": "Customers",
+        "settings": "Profile & settings",
+        "support": "Support"
+      },
+      "forbidden": {
+        "title": "Section not available for your business",
+        "body": "This section is not one of the modules of your partner category. If your business has changed, contact the Bossiz team.",
+        "back": "Back to dashboard"
+      },
+      "bell": {
+        "label_one": "Notifications: {{count}} new request",
+        "label_other": "Notifications: {{count}} new requests",
+        "title": "New requests",
+        "empty": "No new requests.",
+        "seeAll": "See all requests"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "no_show": "No-show"
+      },
+      "dashboard": {
+        "kpi": {
+          "today": "Today's bookings",
+          "new": "New requests",
+          "monthNet": "Net revenue this month",
+          "rating": "Average rating"
+        },
+        "monthRevenue": "Revenue for {{month}}",
+        "monthRevenueHelp": "Same amounts as in Finances for this month: gross, Bossiz commission and your net share.",
+        "seeFinances": "See details",
+        "todayTitle": "Today's services",
+        "todayEmpty": "Nothing scheduled today.",
+        "stats": "Statistics",
+        "monthTransactions": "Transactions this month",
+        "checklist": "{{started}} of {{total}} section(s) started. Add an offer, then complete its details before it goes live.",
+        "added_one": "{{count}} added",
+        "added_other": "{{count}} added",
+        "toStart": "To start"
+      },
+      "orders": {
+        "title": "Bookings / Orders",
+        "subtitle": "All requests received for your services.",
+        "tabs": {
+          "new": "New requests",
+          "in_progress": "In progress",
+          "history": "History"
+        },
+        "help": {
+          "new": "Requests awaiting action or received in the last 48 hours.",
+          "in_progress": "Confirmed requests with an upcoming service date.",
+          "history": "Past, completed or cancelled services."
+        },
+        "empty": {
+          "new": "No new requests.",
+          "in_progress": "No requests in progress.",
+          "history": "No requests in your history."
+        },
+        "search": "Search a customer or service",
+        "service": "Service",
+        "date": "Scheduled date",
+        "customer": "Customer",
+        "amount": "Amount",
+        "status": "Status",
+        "manage": "Manage",
+        "quantity_one": "{{count}} guest/item",
+        "quantity_other": "{{count}} guests/items",
+        "received": "Received {{date}}"
+      },
+      "finances": {
+        "title": "Finances",
+        "subtitle": "Your revenue, Bossiz commissions and payouts, transaction by transaction.",
+        "period": "Period",
+        "periods": {
+          "this_month": "This month",
+          "last_month": "Last month",
+          "this_year": "This year",
+          "all": "All time"
+        },
+        "totals": {
+          "gross": "Gross amount",
+          "commission": "Bossiz commissions",
+          "net": "Partner net",
+          "paid_out": "Paid out",
+          "pending_payout": "Awaiting payout",
+          "due_to_bossiz": "Commissions to settle"
+        },
+        "empty": "No transactions for this period.",
+        "date": "Date",
+        "reference": "Reference",
+        "service": "Service",
+        "collection": "Collected by",
+        "collections": {
+          "online": "Online (Bossiz)",
+          "on_site": "On site (you)"
+        },
+        "gross": "Gross",
+        "rate": "Rate",
+        "commission": "Commission",
+        "net": "Net",
+        "statusLabel": "Status",
+        "status": {
+          "pending": "To be paid out",
+          "paid": "Settled",
+          "cancelled": "Cancelled",
+          "to_invoice": "To be invoiced",
+          "issued": "Invoiced"
+        },
+        "payoutStatus": {
+          "not_scheduled": "Outside automatic payouts",
+          "awaiting_details": "Payout details missing",
+          "ready": "Scheduled",
+          "processing": "Transfer in progress",
+          "paid": "Paid out",
+          "failed": "Failed - contact Bossiz",
+          "needs_review": "Under review"
+        },
+        "revenueHelp": "Gross amount paid by the customer for each service.",
+        "commissionsHelp": "For each transaction: gross amount, commission rate, commission charged and the net amount due to you.",
+        "detailButton": "Details",
+        "detail": {
+          "commission": "Commission: {{gross}} × {{rate}} = {{commission}}",
+          "net": "Partner net: {{gross}} − {{commission}} = {{net}}",
+          "rateSince": "Your contract rate in force on the transaction date (since {{date}}).",
+          "rateDefault": "Standard 10% rate (no rate change recorded).",
+          "collection_online": "Paid online: Bossiz collects the amount and pays you the net.",
+          "collection_on_site": "Paid on site: you collect the amount and Bossiz invoices you the commission."
+        },
+        "rateHistory": "Your commission rate history",
+        "rateHistoryHelp": "Each contract change is dated; a transaction uses the rate in force on its date.",
+        "rateFrom": "Since {{date}}",
+        "current": "Current",
+        "missingPayoutDetails": "Some payouts are waiting for your payout details (Mobile Money or bank account).",
+        "payouts": {
+          "pending": "Pending payouts",
+          "pendingHelp": "Net amounts collected online by Bossiz, with their payout due date.",
+          "done": "Completed payouts",
+          "dueAt": "Due date",
+          "paidAt": "Paid on",
+          "notScheduled": "To be scheduled",
+          "dueToBossiz": "Commissions owed to Bossiz",
+          "dueToBossizHelp": "Stays paid on site: the commission is invoiced monthly."
+        },
+        "statements": {
+          "help": "Detailed monthly statement (gross, rate, commission, net, status) to save as PDF from the print window.",
+          "download": "Download statement (PDF)",
+          "popupBlocked": "Allow pop-ups for this site to open the statement."
+        }
+      },
+      "reviews": {
+        "title": "Reviews & ratings",
+        "subtitle": "Reviews left by your customers after their service. Your reply is saved with the review.",
+        "average": "Average rating",
+        "published": "Published reviews",
+        "unanswered": "Unanswered",
+        "empty": "No reviews yet.",
+        "moderation": "Under moderation",
+        "reply": "Reply",
+        "yourReply": "Your reply",
+        "replyPlaceholder": "Thank the customer or add a clarification…",
+        "publishReply": "Publish reply",
+        "editReply": "Edit reply",
+        "saved": "Reply saved."
+      },
+      "customers": {
+        "title": "Customers",
+        "subtitle": "Customers who booked with you.",
+        "privacy": "In line with Côte d'Ivoire personal data rules (ARTCI), only the information needed for the service is shown: a customer's contact details stay visible while they have an ongoing or upcoming request.",
+        "search": "Search a customer",
+        "name": "Customer",
+        "orders": "Requests",
+        "last": "Last request",
+        "next": "Next service",
+        "contact": "Contact details",
+        "contactHidden": "Hidden (no ongoing service)",
+        "empty": "No customers yet."
+      },
+      "support": {
+        "title": "Support",
+        "subtitle": "FAQ, tickets and contact with the Bossiz team.",
+        "newTicket": "Open a ticket",
+        "newTicketHelp": "Our team replies by email; you can follow up here.",
+        "topic": "Topic",
+        "topics": {
+          "finances": "Finances & payouts",
+          "bookings": "Bookings",
+          "catalog": "My services",
+          "account": "Account & profile",
+          "technical": "Technical issue",
+          "other": "Other"
+        },
+        "subject": "Subject",
+        "message": "Message",
+        "send": "Send",
+        "sent": "Ticket {{reference}} sent. We will get back to you shortly.",
+        "sendError": "The ticket could not be sent. Please try again.",
+        "myTickets": "My tickets",
+        "noTickets": "No open tickets.",
+        "status": {
+          "open": "Open",
+          "in_progress": "In progress",
+          "resolved": "Resolved",
+          "closed": "Closed"
+        },
+        "contact": "Contact",
+        "faq": "Frequently asked questions"
+      },
+      "rates": {
+        "title": "Rates & availability",
+        "subtitle": "Room types, nightly rates and available rooms for your hotels.",
+        "empty": "Add a hotel to your catalogue first.",
+        "addHotel": "Add a hotel",
+        "manage": "Rooms & rates",
+        "unavailable": "Offline"
+      },
+      "admin": {
+        "menu": "Partner categories",
+        "title": "Partner categories",
+        "subtitle": "Each category defines the modules shown in the partner space. Access is also enforced server-side.",
+        "newCategory": "New category",
+        "label": "Category name",
+        "labelPlaceholder": "E.g. Boat rental",
+        "key": "Identifier",
+        "create": "Create",
+        "created": "Category created. Tick its modules below.",
+        "matrix": "Modules by category",
+        "matrixHelp": "Modules shared by all categories: {{core}}.",
+        "offered": "Offered",
+        "hidden": "Hidden",
+        "partners_one": "{{count}} partner",
+        "partners_other": "{{count}} partners",
+        "category": "Category",
+        "chooseCategory": "Choose the category",
+        "categoryHelp": "Sets the partner space menu and access.",
+        "noCategory": "Not set",
+        "commissionRate": "Bossiz commission (%)",
+        "commissionRateHelp": "The partner receives {{share}}%. A change applies to transactions from the date it is saved; the partner can see the history."
+      }
+    },
     "dash": {
       "hello": "Hello {{name}}",
       "traveller": "traveller",

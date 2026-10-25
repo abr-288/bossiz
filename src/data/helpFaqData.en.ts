@@ -1397,12 +1397,12 @@ export const HELP_FAQ_EN: [domain: string, question: string, answer: string][] =
   [
     "agency",
     "How are agency commissions calculated?",
-    "The commission rate is set when your partnership starts and is shown in your agency space settings.",
+    "The commission rate is set by your contract. In Finances > Commissions, each transaction shows the gross amount, the rate applied (the contract rate in force on the transaction date), the commission and the net amount due to you.",
   ],
   [
     "agency",
     "Can I track my bookings as an agency?",
-    "Yes, your agency dashboard shows all bookings received with their status in real time.",
+    "Yes, the Bookings / Orders section lists new requests, ongoing ones and your history; the bell at the top of the screen flags new requests.",
   ],
   [
     "agency",

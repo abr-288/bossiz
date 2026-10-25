@@ -225,6 +225,8 @@ const BecomePartner = () => {
       contact_email: formData.contactEmail,
       contact_phone: formData.contactPhone || null,
       description: finalDescription || null,
+      // Mêmes clés que public.partner_categories : fixe le menu de l'espace partenaire.
+      category: partnerType,
       logo_url: logoUrl || null,
       requested_car_plan_id: carPlanPaymentsEnabled && partnerType === "cars" ? carPlan : null,
       preferred_payout_method: preferredPayoutMethod,

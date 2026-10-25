@@ -315,13 +315,19 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       console.log(isFlight ? '✅ Paiement confirmé - PNR en attente' : '✅ Réservation confirmée');
     }
 
-    // La part agence est 90% du prix en ligne ; les 10% restants reviennent à Bossiz.
+    // La part agence est le prix en ligne moins la commission Bossiz du contrat
+    // en vigueur (agency_commission_rates, 10 % par défaut).
     // Les transferts automatiques sont déclenchés uniquement pour l'argent encaissé
     // dans le portefeuille Jèko, pas pour CinetPay ni les paiements en personne.
     const agencyId = bookingRow?.services?.agency_id;
     if (agencyId && bookingRow?.total_price != null) {
       console.log('   - Calcul de la part agence...');
-      const commissionRate = 90;
+      const { data: platformRate, error: rateError } = await supabase.rpc('agency_platform_rate_at', {
+        _agency_id: agencyId,
+        _at: new Date().toISOString(),
+      });
+      if (rateError) console.error('❌ Taux de commission introuvable, 10 % appliqués:', rateError.message);
+      const commissionRate = 100 - (rateError || platformRate == null ? 10 : Number(platformRate));
       const bookingAmount = Number(bookingRow.total_price);
       const commissionAmount = Math.round(bookingAmount * (commissionRate / 100));
 

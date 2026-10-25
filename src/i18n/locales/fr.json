@@ -2084,6 +2084,281 @@
     }
   },
   "ux": {
+    "partner": {
+      "retry": "Réessayer",
+      "loading": "Chargement…",
+      "loadError": "Impossible de charger ces informations. Réessayez dans un instant.",
+      "noCategory": "Catégorie à définir",
+      "groups": {
+        "services": "Mes services",
+        "orders": "Réservations / Commandes",
+        "finances": "Finances",
+        "clients": "Clients & avis",
+        "profile": "Profil & paramètres",
+        "support": "Assistance"
+      },
+      "menu": {
+        "dashboard": "Tableau de bord",
+        "catalog_hotels": "Hôtels",
+        "catalog_cars": "Véhicules",
+        "catalog_tours": "Circuits",
+        "catalog_activities": "Activités",
+        "catalog_stays": "Séjours",
+        "catalog_restaurants": "Restaurants",
+        "catalog_artisans": "Artisanat",
+        "catalog_wellness": "Bien-être & beauté",
+        "hotel_rates": "Tarifs et disponibilités",
+        "promotions": "Promotions",
+        "orders_new": "Nouvelles demandes",
+        "orders_in_progress": "En cours",
+        "orders_history": "Historique",
+        "hotel_bookings": "Séjours hôtel",
+        "finances_revenue": "Revenus",
+        "finances_commissions": "Commissions",
+        "finances_payouts": "Versements",
+        "finances_statements": "Factures et relevés",
+        "reviews": "Avis et évaluations",
+        "customers": "Clients",
+        "settings": "Profil & paramètres",
+        "support": "Assistance"
+      },
+      "forbidden": {
+        "title": "Rubrique non disponible pour votre activité",
+        "body": "Cette rubrique ne fait pas partie des modules de votre catégorie de partenaire. Si votre activité a changé, contactez l'équipe Bossiz.",
+        "back": "Retour au tableau de bord"
+      },
+      "bell": {
+        "label_one": "Notifications : {{count}} nouvelle demande",
+        "label_other": "Notifications : {{count}} nouvelles demandes",
+        "title": "Nouvelles demandes",
+        "empty": "Aucune nouvelle demande.",
+        "seeAll": "Voir toutes les demandes"
+      },
+      "status": {
+        "pending": "En attente",
+        "confirmed": "Confirmée",
+        "completed": "Terminée",
+        "cancelled": "Annulée",
+        "no_show": "Non présenté"
+      },
+      "dashboard": {
+        "kpi": {
+          "today": "Réservations du jour",
+          "new": "Nouvelles demandes",
+          "monthNet": "Revenus nets du mois",
+          "rating": "Note moyenne"
+        },
+        "monthRevenue": "Revenus de {{month}}",
+        "monthRevenueHelp": "Mêmes montants que dans Finances pour ce mois : brut, commission Bossiz et net qui vous revient.",
+        "seeFinances": "Voir le détail",
+        "todayTitle": "Prestations du jour",
+        "todayEmpty": "Aucune prestation prévue aujourd'hui.",
+        "stats": "Statistiques",
+        "monthTransactions": "Transactions du mois",
+        "checklist": "{{started}} rubrique(s) commencée(s) sur {{total}}. Ajoutez une offre puis complétez ses informations avant sa mise en ligne.",
+        "added_one": "{{count}} ajoutée",
+        "added_other": "{{count}} ajoutées",
+        "toStart": "À démarrer"
+      },
+      "orders": {
+        "title": "Réservations / Commandes",
+        "subtitle": "Toutes les demandes reçues pour vos services.",
+        "tabs": {
+          "new": "Nouvelles demandes",
+          "in_progress": "En cours",
+          "history": "Historique"
+        },
+        "help": {
+          "new": "Demandes en attente de traitement ou reçues depuis moins de 48 h.",
+          "in_progress": "Demandes confirmées dont la prestation est à venir.",
+          "history": "Prestations passées, terminées ou annulées."
+        },
+        "empty": {
+          "new": "Aucune nouvelle demande.",
+          "in_progress": "Aucune demande en cours.",
+          "history": "Aucune demande dans l'historique."
+        },
+        "search": "Rechercher un client ou un service",
+        "service": "Prestation",
+        "date": "Date prévue",
+        "customer": "Client",
+        "amount": "Montant",
+        "status": "Statut",
+        "manage": "Gérer",
+        "quantity_one": "{{count}} pers./article",
+        "quantity_other": "{{count}} pers./articles",
+        "received": "Reçue le {{date}}"
+      },
+      "finances": {
+        "title": "Finances",
+        "subtitle": "Vos revenus, les commissions Bossiz et vos versements, transaction par transaction.",
+        "period": "Période",
+        "periods": {
+          "this_month": "Ce mois-ci",
+          "last_month": "Mois dernier",
+          "this_year": "Cette année",
+          "all": "Depuis le début"
+        },
+        "totals": {
+          "gross": "Montant brut",
+          "commission": "Commissions Bossiz",
+          "net": "Net partenaire",
+          "paid_out": "Déjà versé",
+          "pending_payout": "En attente de versement",
+          "due_to_bossiz": "Commissions à régler"
+        },
+        "empty": "Aucune transaction sur cette période.",
+        "date": "Date",
+        "reference": "Référence",
+        "service": "Prestation",
+        "collection": "Encaissement",
+        "collections": {
+          "online": "En ligne (Bossiz)",
+          "on_site": "Sur place (vous)"
+        },
+        "gross": "Brut",
+        "rate": "Taux",
+        "commission": "Commission",
+        "net": "Net",
+        "statusLabel": "Statut",
+        "status": {
+          "pending": "À verser",
+          "paid": "Réglé",
+          "cancelled": "Annulé",
+          "to_invoice": "À facturer",
+          "issued": "Facturé"
+        },
+        "payoutStatus": {
+          "not_scheduled": "Hors versement automatique",
+          "awaiting_details": "Coordonnées de versement à compléter",
+          "ready": "Programmé",
+          "processing": "Virement en cours",
+          "paid": "Versé",
+          "failed": "Échec - contactez Bossiz",
+          "needs_review": "Vérification en cours"
+        },
+        "revenueHelp": "Montant brut payé par le client pour chaque prestation.",
+        "commissionsHelp": "Pour chaque transaction : montant brut, taux de commission, commission prélevée et montant net qui vous revient.",
+        "detailButton": "Détail",
+        "detail": {
+          "commission": "Commission : {{gross}} × {{rate}} = {{commission}}",
+          "net": "Net partenaire : {{gross}} − {{commission}} = {{net}}",
+          "rateSince": "Taux de votre contrat en vigueur à la date de la transaction (depuis le {{date}}).",
+          "rateDefault": "Taux standard de 10 % (aucun changement de taux enregistré).",
+          "collection_online": "Payé en ligne : Bossiz encaisse le montant et vous reverse le net.",
+          "collection_on_site": "Payé sur place : vous encaissez le montant, Bossiz vous facture la commission."
+        },
+        "rateHistory": "Historique de votre taux de commission",
+        "rateHistoryHelp": "Chaque changement de contrat est daté ; une transaction utilise le taux en vigueur à sa date.",
+        "rateFrom": "Depuis le {{date}}",
+        "current": "Actuel",
+        "missingPayoutDetails": "Des versements attendent vos coordonnées de versement (Mobile Money ou compte bancaire).",
+        "payouts": {
+          "pending": "Versements en attente",
+          "pendingHelp": "Montants nets encaissés en ligne par Bossiz, avec leur échéance de versement.",
+          "done": "Versements effectués",
+          "dueAt": "Échéance",
+          "paidAt": "Versé le",
+          "notScheduled": "À programmer",
+          "dueToBossiz": "Commissions à régler à Bossiz",
+          "dueToBossizHelp": "Séjours payés sur place : la commission est facturée chaque mois."
+        },
+        "statements": {
+          "help": "Relevé mensuel détaillé (brut, taux, commission, net, statut) à enregistrer en PDF depuis la fenêtre d'impression.",
+          "download": "Télécharger le relevé (PDF)",
+          "popupBlocked": "Autorisez les fenêtres pop-up pour ce site afin d'ouvrir le relevé."
+        }
+      },
+      "reviews": {
+        "title": "Avis et évaluations",
+        "subtitle": "Avis laissés par vos clients après leur prestation. Votre réponse est enregistrée avec l'avis.",
+        "average": "Note moyenne",
+        "published": "Avis publiés",
+        "unanswered": "Sans réponse",
+        "empty": "Aucun avis pour le moment.",
+        "moderation": "En modération",
+        "reply": "Répondre",
+        "yourReply": "Votre réponse",
+        "replyPlaceholder": "Remerciez le client ou apportez une précision…",
+        "publishReply": "Publier la réponse",
+        "editReply": "Modifier la réponse",
+        "saved": "Réponse enregistrée."
+      },
+      "customers": {
+        "title": "Clients",
+        "subtitle": "Les clients ayant réservé chez vous.",
+        "privacy": "Conformément à la réglementation ivoirienne sur les données personnelles (ARTCI), seules les informations nécessaires à la prestation sont affichées : les coordonnées d'un client restent visibles tant qu'il a une demande en cours ou à venir.",
+        "search": "Rechercher un client",
+        "name": "Client",
+        "orders": "Demandes",
+        "last": "Dernière demande",
+        "next": "Prochaine prestation",
+        "contact": "Coordonnées",
+        "contactHidden": "Masquées (aucune prestation en cours)",
+        "empty": "Aucun client pour le moment."
+      },
+      "support": {
+        "title": "Assistance",
+        "subtitle": "Questions fréquentes, tickets et contact de l'équipe Bossiz.",
+        "newTicket": "Ouvrir un ticket",
+        "newTicketHelp": "Notre équipe vous répond par e-mail ; le suivi reste disponible ici.",
+        "topic": "Sujet",
+        "topics": {
+          "finances": "Finances et versements",
+          "bookings": "Réservations",
+          "catalog": "Mes services",
+          "account": "Compte et profil",
+          "technical": "Problème technique",
+          "other": "Autre"
+        },
+        "subject": "Objet",
+        "message": "Message",
+        "send": "Envoyer",
+        "sent": "Ticket {{reference}} envoyé. Nous revenons vers vous rapidement.",
+        "sendError": "Le ticket n'a pas pu être envoyé. Réessayez.",
+        "myTickets": "Mes tickets",
+        "noTickets": "Aucun ticket ouvert.",
+        "status": {
+          "open": "Ouvert",
+          "in_progress": "En cours",
+          "resolved": "Résolu",
+          "closed": "Fermé"
+        },
+        "contact": "Contact",
+        "faq": "Questions fréquentes"
+      },
+      "rates": {
+        "title": "Tarifs et disponibilités",
+        "subtitle": "Types de chambres, tarifs par nuit et nombre de chambres disponibles de vos hôtels.",
+        "empty": "Ajoutez d'abord un hôtel à votre catalogue.",
+        "addHotel": "Ajouter un hôtel",
+        "manage": "Chambres & tarifs",
+        "unavailable": "Hors ligne"
+      },
+      "admin": {
+        "menu": "Catégories partenaires",
+        "title": "Catégories partenaires",
+        "subtitle": "Chaque catégorie définit les modules visibles dans l'espace partenaire. Les accès sont aussi contrôlés côté serveur.",
+        "newCategory": "Nouvelle catégorie",
+        "label": "Nom de la catégorie",
+        "labelPlaceholder": "Ex. Location de bateaux",
+        "key": "Identifiant",
+        "create": "Créer",
+        "created": "Catégorie créée. Cochez ses modules ci-dessous.",
+        "matrix": "Modules par catégorie",
+        "matrixHelp": "Modules communs à toutes les catégories : {{core}}.",
+        "offered": "Proposée",
+        "hidden": "Masquée",
+        "partners_one": "{{count}} partenaire",
+        "partners_other": "{{count}} partenaires",
+        "category": "Catégorie",
+        "chooseCategory": "Choisir la catégorie",
+        "categoryHelp": "Détermine le menu et les accès de l'espace partenaire.",
+        "noCategory": "À définir",
+        "commissionRate": "Commission Bossiz (%)",
+        "commissionRateHelp": "Le partenaire perçoit {{share}} %. Un changement s'applique aux transactions à partir de sa date d'enregistrement ; l'historique reste visible par le partenaire."
+      }
+    },
     "dash": {
       "hello": "Bonjour {{name}}",
       "traveller": "voyageur",

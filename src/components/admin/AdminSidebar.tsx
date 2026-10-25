@@ -26,6 +26,7 @@ import {
   Landmark,
   Receipt,
   Ticket,
+  LayoutList,
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import {
@@ -85,6 +86,13 @@ const menuItems = [
     },
     url: "/admin/partner-applications",
     icon: FileText,
+  },
+  {
+    get title() {
+      return i18n.t("ux.partner.admin.menu");
+    },
+    url: "/admin/partner-categories",
+    icon: LayoutList,
   },
   { title: "Commissions", url: "/admin/commissions", icon: DollarSign },
   { title: "Commissions hôtels sur place", url: "/admin/hotel-commissions", icon: Receipt },

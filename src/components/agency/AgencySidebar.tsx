@@ -11,8 +11,23 @@ import {
   Sparkles,
   Map,
   CalendarCheck,
+  Hotel,
+  Car,
+  Tags,
+  Inbox,
+  Clock,
+  History,
+  Wallet,
+  Receipt,
+  Banknote,
+  FileText,
+  Star,
+  Users,
+  LifeBuoy,
+  type LucideIcon,
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Sidebar,
   SidebarContent,
@@ -35,105 +50,57 @@ import {
   sidebarWidthClass,
 } from "@/components/dashboard/SidebarShell";
 import i18n from "@/i18n/config";
+import { isMenuLinkActive, type PartnerMenuSection } from "@/lib/partnerPortal";
 
-const menuItems = [
-  {
-    get title() {
-      return i18n.t("ux.bo.dashboard");
-    },
-    url: "/agency",
-    icon: LayoutDashboard,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.myServices");
-    },
-    url: "/agency/services",
-    icon: Package,
-  },
-  { title: "Réservations hôtel", url: "/agency/hotel-bookings", icon: CalendarCheck },
-  {
-    get title() {
-      return i18n.t("ux.bo.myTours");
-    },
-    url: "/agency/services?type=tour",
-    icon: Map,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.myRestaurants");
-    },
-    url: "/agency/restaurants",
-    icon: UtensilsCrossed,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.myArtisans");
-    },
-    url: "/agency/artisans",
-    icon: Hammer,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.wellnessBeauty");
-    },
-    url: "/agency/wellness",
-    icon: Sparkles,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.myActivities");
-    },
-    url: "/agency/activities",
-    icon: Activity,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.myStays");
-    },
-    url: "/agency/stays",
-    icon: Home,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.myPromotions");
-    },
-    url: "/agency/promotions",
-    icon: Percent,
-  },
-  {
-    get title() {
-      return i18n.t("ux.bo.settings");
-    },
-    url: "/agency/settings",
-    icon: Settings,
-  },
-];
+const LINK_ICONS: Record<string, LucideIcon> = {
+  dashboard: LayoutDashboard,
+  catalog_hotels: Hotel,
+  catalog_cars: Car,
+  catalog_tours: Map,
+  catalog_activities: Activity,
+  catalog_stays: Home,
+  catalog_restaurants: UtensilsCrossed,
+  catalog_artisans: Hammer,
+  catalog_wellness: Sparkles,
+  hotel_rates: Tags,
+  promotions: Percent,
+  "orders.new": Inbox,
+  "orders.in_progress": Clock,
+  "orders.history": History,
+  hotel_bookings: CalendarCheck,
+  "finances.revenue": Wallet,
+  "finances.commissions": Receipt,
+  "finances.payouts": Banknote,
+  "finances.statements": FileText,
+  reviews: Star,
+  customers: Users,
+  settings: Settings,
+  support: LifeBuoy,
+};
+
+// Libellé traduit si la clé existe, sinon celui de partner_modules.
+const linkLabel = (labelKey: string | undefined, fallback: string) =>
+  labelKey && i18n.exists(labelKey) ? i18n.t(labelKey) : fallback;
 
 export function AgencySidebar({
-  enabledFeatures = {},
+  sections,
   profileName = "Partenaire",
   profilePhoto,
 }: {
-  enabledFeatures?: Record<string, boolean>;
+  sections: PartnerMenuSection[];
   profileName?: string;
   profilePhoto?: string;
 }) {
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const collapsed = state === "collapsed";
 
-  const isActive = (path: string) => {
-    if (path === "/agency") {
-      return location.pathname === path;
-    }
-    return location.pathname.startsWith(path);
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    queryClient.removeQueries({ queryKey: ["partner-portal"] });
     toast({
       get title() {
         return i18n.t("ux.bo.loggedOut");
@@ -163,51 +130,48 @@ export function AgencySidebar({
           </Link>
         </SidebarBrandHeader>
 
-        <SidebarGroup className="flex-1 overflow-y-auto">
-          <SidebarGroupLabel className="text-xs px-3">{i18n.t("ux.bo.mainMenu")}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => {
-                const feature = item.url.startsWith("/agency/services")
-                  ? "services"
-                  : item.url.startsWith("/agency/activities")
-                    ? "activities"
-                    : item.url.startsWith("/agency/stays")
-                      ? "stays"
-                      : item.url.startsWith("/agency/restaurants")
-                        ? "restaurants"
-                        : item.url.startsWith("/agency/artisans")
-                          ? "artisans"
-                          : item.url.startsWith("/agency/wellness")
-                            ? "wellness"
-                            : item.url.startsWith("/agency/promotions")
-                              ? "promotions"
-                              : null;
-                const disabled = !!feature && enabledFeatures[feature] === false;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        to={item.url}
-                        aria-label={item.title}
-                        aria-disabled={disabled}
-                        tabIndex={disabled ? -1 : undefined}
-                        title={disabled ? i18n.t("ux.bo.disabledAdministrator") : undefined}
-                        onClick={(event) => {
-                          if (disabled) event.preventDefault();
-                        }}
-                        className={sidebarLinkClass(isActive(item.url), disabled)}
-                      >
-                        <item.icon className={sidebarIconClass} />
-                        {!collapsed && <span className="truncate">{item.title}</span>}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <nav className="flex-1 overflow-y-auto" aria-label={i18n.t("ux.bo.mainMenu")}>
+          {sections.map((section) => (
+            <SidebarGroup key={section.group} className="py-1">
+              {section.group !== "dashboard" && (
+                <SidebarGroupLabel className="text-xs px-3">
+                  {i18n.t(`ux.partner.groups.${section.group}`)}
+                </SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {section.links.map((link) => {
+                    const Icon = LINK_ICONS[link.id] ?? LINK_ICONS[link.module] ?? Package;
+                    const label = linkLabel(link.labelKey, link.label);
+                    return (
+                      <SidebarMenuItem key={link.id}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to={link.to}
+                            aria-label={label}
+                            aria-disabled={link.disabled}
+                            tabIndex={link.disabled ? -1 : undefined}
+                            title={link.disabled ? i18n.t("ux.bo.disabledAdministrator") : undefined}
+                            onClick={(event) => {
+                              if (link.disabled) event.preventDefault();
+                            }}
+                            className={sidebarLinkClass(
+                              isMenuLinkActive(link, location.pathname, location.search),
+                              link.disabled,
+                            )}
+                          >
+                            <Icon className={sidebarIconClass} />
+                            {!collapsed && <span className="truncate">{label}</span>}
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+        </nav>
 
         <div className="mt-auto p-3 md:p-4 border-t flex-shrink-0">
           <Button

@@ -27,6 +27,7 @@ const EventDetail = lazy(() => import("@/pages/EventDetail"));
 const AdminEvents = lazy(() => import("@/pages/admin/AdminEvents"));
 const AdminCulture = lazy(() => import("@/pages/admin/AdminCulture"));
 const AdminHotelCommissions = lazy(() => import("@/pages/admin/AdminHotelCommissions"));
+const AdminPartnerCategories = lazy(() => import("@/pages/admin/AdminPartnerCategories"));
 const Cars = lazy(() => import("@/pages/Cars"));
 const Tours = lazy(() => import("@/pages/Tours"));
 const Destinations = lazy(() => import("@/pages/Destinations"));
@@ -92,6 +93,12 @@ const AgencyActivities = lazy(() => import("@/pages/agency/AgencyActivities"));
 const AgencyStays = lazy(() => import("@/pages/agency/AgencyStays"));
 const AgencyPromotions = lazy(() => import("@/pages/agency/AgencyPromotions"));
 const AgencySettings = lazy(() => import("@/pages/agency/AgencySettings"));
+const AgencyOrders = lazy(() => import("@/pages/agency/AgencyOrders"));
+const AgencyFinances = lazy(() => import("@/pages/agency/AgencyFinances"));
+const AgencyReviews = lazy(() => import("@/pages/agency/AgencyReviews"));
+const AgencyCustomers = lazy(() => import("@/pages/agency/AgencyCustomers"));
+const AgencySupport = lazy(() => import("@/pages/agency/AgencySupport"));
+const AgencyRates = lazy(() => import("@/pages/agency/AgencyRates"));
 const Help = lazy(() => import("@/pages/Help"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const BecomePartner = lazy(() => import("@/pages/BecomePartner"));
@@ -717,6 +724,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/admin/partner-categories"
+            element={
+              <PageTransition>
+                <AdminPartnerCategories />
+              </PageTransition>
+            }
+          />
+          <Route
             path="/admin/destinations"
             element={
               <PageTransition>
@@ -834,6 +849,54 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <AgencySettings />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/orders"
+            element={
+              <PageTransition>
+                <AgencyOrders />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/finances"
+            element={
+              <PageTransition>
+                <AgencyFinances />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/reviews"
+            element={
+              <PageTransition>
+                <AgencyReviews />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/customers"
+            element={
+              <PageTransition>
+                <AgencyCustomers />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/support"
+            element={
+              <PageTransition>
+                <AgencySupport />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/agency/rates"
+            element={
+              <PageTransition>
+                <AgencyRates />
               </PageTransition>
             }
           />

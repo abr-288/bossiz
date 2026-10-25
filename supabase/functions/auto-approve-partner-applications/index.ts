@@ -30,6 +30,7 @@ interface PartnerApplication {
   id: string;
   name: string;
   description: string | null;
+  category: string | null;
   contact_email: string;
   contact_phone: string | null;
   logo_url: string | null;
@@ -76,7 +77,9 @@ serve(async (req) => {
   // pendant la validation manuelle restent à l'admin.
   const { data: due, error } = await supabase
     .from("partner_applications")
-    .select("id, name, description, contact_email, contact_phone, logo_url, requested_car_plan_id, preferred_payout_method")
+    .select(
+      "id, name, description, category, contact_email, contact_phone, logo_url, requested_car_plan_id, preferred_payout_method",
+    )
     .eq("status", "pending")
     .is("auto_approval_attempted_at", null)
     .gte("created_at", enabledSince.toISOString())
@@ -156,6 +159,8 @@ async function approve(supabase: SupabaseClient, application: PartnerApplication
       is_visible: false,
       is_active: true,
       commission_rate: 10,
+      // Fixe le menu et les accès de l'espace partenaire (partner_categories).
+      category: application.category ?? (application.requested_car_plan_id ? "cars" : null),
       car_plan_id: application.requested_car_plan_id,
       car_plan_started_at: application.requested_car_plan_id ? new Date().toISOString() : null,
     })

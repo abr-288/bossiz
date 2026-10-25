@@ -23,6 +23,8 @@ import { Plus, Pencil, Trash2, Package, Search, BedDouble } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
+import { usePartnerPortal } from "@/hooks/usePartnerPortal";
+import { allowedServiceTypes } from "@/lib/partnerPortal";
 
 type Service = Tables<"services">;
 
@@ -105,6 +107,11 @@ export default function AgencyServices() {
   const { paymentsEnabled: carPlanPaymentsEnabled } = useCarPlanPayments();
   const [searchParams] = useSearchParams();
   const typeFilter = searchParams.get("type");
+  // Types de services de la catégorie du partenaire (un garage : voitures
+  // seulement). Les policies de public.services appliquent la même règle.
+  const { data: portal } = usePartnerPortal();
+  const allowedTypes: string[] = allowedServiceTypes(portal);
+  const defaultType = typeFilter && allowedTypes.includes(typeFilter) ? typeFilter : allowedTypes[0] || "hotel";
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [agencyId, setAgencyId] = useState<string | null>(null);
@@ -116,7 +123,7 @@ export default function AgencyServices() {
   const [roomsHotel, setRoomsHotel] = useState<{ id: string; name: string } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    type: "hotel",
+    type: defaultType,
     description: "",
     location: "",
     maps_url: "",
@@ -434,7 +441,7 @@ export default function AgencyServices() {
     setEditingService(null);
     setFormData({
       name: "",
-      type: "hotel",
+      type: defaultType,
       description: "",
       location: "",
       maps_url: "",
@@ -462,7 +469,15 @@ export default function AgencyServices() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">{typeFilter === "tour" ? t("ux.bo.myTours") : "Mes Services"}</h1>
+            <h1 className="text-2xl font-bold">
+              {typeFilter === "tour"
+                ? t("ux.bo.myTours")
+                : typeFilter === "hotel"
+                  ? t("ux.partner.menu.catalog_hotels")
+                  : typeFilter === "car"
+                    ? t("ux.partner.menu.catalog_cars")
+                    : "Mes Services"}
+            </h1>
             <p className="text-muted-foreground">
               {typeFilter === "tour" ? t("ux.bo.manageTours") : t("ux.bo.manageTravelServices")}
             </p>
@@ -489,6 +504,7 @@ export default function AgencyServices() {
             onOpenChange={(open) => {
               setIsDialogOpen(open);
               if (!open) resetForm();
+              else if (!editingService) setFormData((current) => ({ ...current, type: defaultType }));
             }}
           >
             <DialogTrigger asChild>
@@ -518,11 +534,13 @@ export default function AgencyServices() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {serviceTypes.map((t) => (
-                          <SelectItem key={t.value} value={t.value}>
-                            {t.label}
-                          </SelectItem>
-                        ))}
+                        {serviceTypes
+                          .filter((t) => allowedTypes.includes(t.value) || t.value === formData.type)
+                          .map((t) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              {t.label}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>

@@ -2062,6 +2062,277 @@
     }
   },
   "ux": {
+    "partner": {
+      "retry": "重试",
+      "loading": "加载中…",
+      "loadError": "无法加载这些信息，请稍后重试。",
+      "noCategory": "类别待定",
+      "groups": {
+        "services": "我的服务",
+        "orders": "预订 / 订单",
+        "finances": "财务",
+        "clients": "客户与评价",
+        "profile": "资料与设置",
+        "support": "帮助"
+      },
+      "menu": {
+        "dashboard": "控制面板",
+        "catalog_hotels": "酒店",
+        "catalog_cars": "车辆",
+        "catalog_tours": "线路",
+        "catalog_activities": "活动",
+        "catalog_stays": "度假套餐",
+        "catalog_restaurants": "餐厅",
+        "catalog_artisans": "手工艺",
+        "catalog_wellness": "健康与美容",
+        "hotel_rates": "价格与可订情况",
+        "promotions": "促销",
+        "orders_new": "新请求",
+        "orders_in_progress": "进行中",
+        "orders_history": "历史记录",
+        "hotel_bookings": "酒店入住",
+        "finances_revenue": "收入",
+        "finances_commissions": "佣金",
+        "finances_payouts": "结算付款",
+        "finances_statements": "发票与对账单",
+        "reviews": "评价与评分",
+        "customers": "客户",
+        "settings": "资料与设置",
+        "support": "帮助"
+      },
+      "forbidden": {
+        "title": "该栏目不适用于您的业务",
+        "body": "该栏目不属于您的合作伙伴类别的模块。如果您的业务有变化，请联系 Bossiz 团队。",
+        "back": "返回控制面板"
+      },
+      "bell": {
+        "label_other": "通知：{{count}} 个新请求",
+        "title": "新请求",
+        "empty": "没有新请求。",
+        "seeAll": "查看所有请求"
+      },
+      "status": {
+        "pending": "待处理",
+        "confirmed": "已确认",
+        "completed": "已完成",
+        "cancelled": "已取消",
+        "no_show": "未到店"
+      },
+      "dashboard": {
+        "kpi": {
+          "today": "今日预订",
+          "new": "新请求",
+          "monthNet": "本月净收入",
+          "rating": "平均评分"
+        },
+        "monthRevenue": "{{month}} 收入",
+        "monthRevenueHelp": "与“财务”中本月的金额一致：总额、Bossiz 佣金以及您应得的净额。",
+        "seeFinances": "查看详情",
+        "todayTitle": "今日服务",
+        "todayEmpty": "今天没有安排的服务。",
+        "stats": "统计",
+        "monthTransactions": "本月交易",
+        "checklist": "已开始 {{started}} / {{total}} 个栏目。先添加一项服务，然后在上线前补全信息。",
+        "added_other": "已添加 {{count}} 项",
+        "toStart": "待开始"
+      },
+      "orders": {
+        "title": "预订 / 订单",
+        "subtitle": "您的服务收到的所有请求。",
+        "tabs": {
+          "new": "新请求",
+          "in_progress": "进行中",
+          "history": "历史记录"
+        },
+        "help": {
+          "new": "待处理或 48 小时内收到的请求。",
+          "in_progress": "已确认且服务尚未进行的请求。",
+          "history": "已过去、已完成或已取消的服务。"
+        },
+        "empty": {
+          "new": "没有新请求。",
+          "in_progress": "没有进行中的请求。",
+          "history": "历史记录中没有请求。"
+        },
+        "search": "搜索客户或服务",
+        "service": "服务",
+        "date": "预定日期",
+        "customer": "客户",
+        "amount": "金额",
+        "status": "状态",
+        "manage": "管理",
+        "quantity_other": "{{count}} 人/件",
+        "received": "收到于 {{date}}"
+      },
+      "finances": {
+        "title": "财务",
+        "subtitle": "逐笔查看您的收入、Bossiz 佣金和结算付款。",
+        "period": "期间",
+        "periods": {
+          "this_month": "本月",
+          "last_month": "上月",
+          "this_year": "今年",
+          "all": "全部"
+        },
+        "totals": {
+          "gross": "总金额",
+          "commission": "Bossiz 佣金",
+          "net": "合作伙伴净额",
+          "paid_out": "已付款",
+          "pending_payout": "待付款",
+          "due_to_bossiz": "待结清佣金"
+        },
+        "empty": "该期间没有交易。",
+        "date": "日期",
+        "reference": "编号",
+        "service": "服务",
+        "collection": "收款方",
+        "collections": {
+          "online": "在线（Bossiz）",
+          "on_site": "现场（您）"
+        },
+        "gross": "总额",
+        "rate": "比例",
+        "commission": "佣金",
+        "net": "净额",
+        "statusLabel": "状态",
+        "status": {
+          "pending": "待付款",
+          "paid": "已结清",
+          "cancelled": "已取消",
+          "to_invoice": "待开票",
+          "issued": "已开票"
+        },
+        "payoutStatus": {
+          "not_scheduled": "不在自动付款范围内",
+          "awaiting_details": "缺少收款信息",
+          "ready": "已安排",
+          "processing": "转账中",
+          "paid": "已付款",
+          "failed": "失败 - 请联系 Bossiz",
+          "needs_review": "审核中"
+        },
+        "revenueHelp": "客户为每项服务支付的总金额。",
+        "commissionsHelp": "每笔交易：总金额、佣金比例、扣除的佣金以及您应得的净额。",
+        "detailButton": "详情",
+        "detail": {
+          "commission": "佣金：{{gross}} × {{rate}} = {{commission}}",
+          "net": "合作伙伴净额：{{gross}} − {{commission}} = {{net}}",
+          "rateSince": "交易日生效的合同比例（自 {{date}} 起）。",
+          "rateDefault": "标准比例 10%（无比例变更记录）。",
+          "collection_online": "在线支付：Bossiz 收款后向您支付净额。",
+          "collection_on_site": "现场支付：由您收款，Bossiz 向您开具佣金发票。"
+        },
+        "rateHistory": "您的佣金比例历史",
+        "rateHistoryHelp": "每次合同变更都有日期；交易使用其日期生效的比例。",
+        "rateFrom": "自 {{date}} 起",
+        "current": "当前",
+        "missingPayoutDetails": "部分付款正在等待您的收款信息（移动支付或银行账户）。",
+        "payouts": {
+          "pending": "待付款",
+          "pendingHelp": "Bossiz 在线收取的净额及其付款期限。",
+          "done": "已完成付款",
+          "dueAt": "期限",
+          "paidAt": "付款日期",
+          "notScheduled": "待安排",
+          "dueToBossiz": "应付 Bossiz 的佣金",
+          "dueToBossizHelp": "现场支付的入住：佣金按月开票。"
+        },
+        "statements": {
+          "help": "月度明细对账单（总额、比例、佣金、净额、状态），可在打印窗口中保存为 PDF。",
+          "download": "下载对账单（PDF）",
+          "popupBlocked": "请允许本网站的弹出窗口以打开对账单。"
+        }
+      },
+      "reviews": {
+        "title": "评价与评分",
+        "subtitle": "客户在服务后留下的评价。您的回复会与评价一同保存。",
+        "average": "平均评分",
+        "published": "已发布评价",
+        "unanswered": "未回复",
+        "empty": "暂无评价。",
+        "moderation": "审核中",
+        "reply": "回复",
+        "yourReply": "您的回复",
+        "replyPlaceholder": "感谢客户或补充说明…",
+        "publishReply": "发布回复",
+        "editReply": "修改回复",
+        "saved": "回复已保存。"
+      },
+      "customers": {
+        "title": "客户",
+        "subtitle": "在您这里预订过的客户。",
+        "privacy": "根据科特迪瓦个人数据法规（ARTCI），仅显示提供服务所需的信息：客户有进行中或即将进行的请求时，其联系方式可见。",
+        "search": "搜索客户",
+        "name": "客户",
+        "orders": "请求数",
+        "last": "最近请求",
+        "next": "下次服务",
+        "contact": "联系方式",
+        "contactHidden": "已隐藏（无进行中的服务）",
+        "empty": "暂无客户。"
+      },
+      "support": {
+        "title": "帮助",
+        "subtitle": "常见问题、工单以及 Bossiz 团队联系方式。",
+        "newTicket": "提交工单",
+        "newTicketHelp": "我们的团队会通过电子邮件回复；您可以在这里跟进。",
+        "topic": "主题",
+        "topics": {
+          "finances": "财务与付款",
+          "bookings": "预订",
+          "catalog": "我的服务",
+          "account": "账户与资料",
+          "technical": "技术问题",
+          "other": "其他"
+        },
+        "subject": "标题",
+        "message": "内容",
+        "send": "发送",
+        "sent": "工单 {{reference}} 已发送，我们会尽快回复。",
+        "sendError": "工单发送失败，请重试。",
+        "myTickets": "我的工单",
+        "noTickets": "没有未处理的工单。",
+        "status": {
+          "open": "待处理",
+          "in_progress": "处理中",
+          "resolved": "已解决",
+          "closed": "已关闭"
+        },
+        "contact": "联系方式",
+        "faq": "常见问题"
+      },
+      "rates": {
+        "title": "价格与可订情况",
+        "subtitle": "您酒店的房型、每晚价格和可订房间数量。",
+        "empty": "请先在目录中添加一家酒店。",
+        "addHotel": "添加酒店",
+        "manage": "房间与价格",
+        "unavailable": "已下线"
+      },
+      "admin": {
+        "menu": "合作伙伴类别",
+        "title": "合作伙伴类别",
+        "subtitle": "每个类别决定合作伙伴空间中显示的模块，服务器端也会进行访问控制。",
+        "newCategory": "新类别",
+        "label": "类别名称",
+        "labelPlaceholder": "例如：游船租赁",
+        "key": "标识",
+        "create": "创建",
+        "created": "类别已创建，请在下方勾选其模块。",
+        "matrix": "各类别的模块",
+        "matrixHelp": "所有类别共有的模块：{{core}}。",
+        "offered": "开放",
+        "hidden": "隐藏",
+        "partners_other": "{{count}} 个合作伙伴",
+        "category": "类别",
+        "chooseCategory": "选择类别",
+        "categoryHelp": "决定合作伙伴空间的菜单和访问权限。",
+        "noCategory": "待定",
+        "commissionRate": "Bossiz 佣金（%）",
+        "commissionRateHelp": "合作伙伴获得 {{share}}%。变更自保存之日起适用于交易；合作伙伴可以查看历史记录。"
+      }
+    },
     "dash": {
       "hello": "{{name}}，您好",
       "traveller": "旅行者",

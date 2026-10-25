@@ -33,6 +33,12 @@ interface CarPartnerPlan {
   commission_rate: number;
 }
 
+interface PartnerCategoryOption {
+  key: string;
+  label: string;
+  is_active: boolean;
+}
+
 const NO_CAR_PLAN = "none";
 const AGENCY_FEATURES = [
   {
@@ -95,11 +101,13 @@ export default function AdminAgencies() {
         logo_url: string | null;
         requested_car_plan_id?: string | null;
         preferred_payout_method?: JekoPayoutMethod | null;
+        category?: string | null;
       }
     | undefined;
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [carPlans, setCarPlans] = useState<CarPartnerPlan[]>([]);
+  const [categories, setCategories] = useState<PartnerCategoryOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -116,6 +124,7 @@ export default function AdminAgencies() {
     is_visible: false,
     is_active: true,
     commission_rate: 10,
+    category: "",
     car_plan_id: NO_CAR_PLAN,
     enabled_features: { ...DEFAULT_AGENCY_FEATURES } as Record<string, boolean>,
   });
@@ -124,6 +133,7 @@ export default function AdminAgencies() {
     fetchAgencies();
     fetchUsers();
     fetchCarPlans();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -136,6 +146,7 @@ export default function AdminAgencies() {
         contact_phone: prefillApplication.contact_phone || "",
         logo_url: prefillApplication.logo_url || "",
         car_plan_id: prefillApplication.requested_car_plan_id || NO_CAR_PLAN,
+        category: prefillApplication.category || (prefillApplication.requested_car_plan_id ? "cars" : ""),
       }));
       setIsDialogOpen(true);
     }
@@ -168,6 +179,15 @@ export default function AdminAgencies() {
       .order("sort_order", { ascending: true });
 
     if (!error && data) setCarPlans(data as CarPartnerPlan[]);
+  };
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from("partner_categories")
+      .select("key, label, is_active")
+      .order("sort_order", { ascending: true });
+
+    if (!error && data) setCategories(data);
   };
 
   const fetchAgencies = async () => {
@@ -281,6 +301,7 @@ export default function AdminAgencies() {
             is_visible: formData.is_visible,
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
+            category: formData.category || null,
             car_plan_id: carPlanId,
             enabled_features: formData.enabled_features,
             ...(carPlanChanged ? { car_plan_started_at: carPlanId ? new Date().toISOString() : null } : {}),
@@ -321,6 +342,7 @@ export default function AdminAgencies() {
             is_visible: formData.is_visible,
             is_active: formData.is_active,
             commission_rate: formData.commission_rate,
+            category: formData.category || null,
             car_plan_id: carPlanId,
             enabled_features: formData.enabled_features,
             car_plan_started_at: carPlanId ? new Date().toISOString() : null,
@@ -398,6 +420,7 @@ export default function AdminAgencies() {
       is_visible: agency.is_visible ?? false,
       is_active: agency.is_active ?? false,
       commission_rate: agency.commission_rate ?? 10,
+      category: agency.category || "",
       car_plan_id: agency.car_plan_id || NO_CAR_PLAN,
       enabled_features: {
         ...DEFAULT_AGENCY_FEATURES,
@@ -462,6 +485,7 @@ export default function AdminAgencies() {
       is_visible: false,
       is_active: true,
       commission_rate: 10,
+      category: "",
       car_plan_id: NO_CAR_PLAN,
       enabled_features: { ...DEFAULT_AGENCY_FEATURES },
     });
@@ -587,8 +611,40 @@ export default function AdminAgencies() {
                       rows={3}
                     />
                     <div className="space-y-2">
-                      <Label>{t("ux.bo.onlineSalesSplit")}</Label>
-                      <p className="text-sm text-muted-foreground">{t("ux.bo.n10Bossiz90AgencyRate")}</p>
+                      <Label htmlFor="category">{t("ux.partner.admin.category")}</Label>
+                      <Select
+                        value={formData.category}
+                        onValueChange={(category) => setFormData({ ...formData, category })}
+                      >
+                        <SelectTrigger id="category">
+                          <SelectValue placeholder={t("ux.partner.admin.chooseCategory")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories
+                            .filter((c) => c.is_active || c.key === formData.category)
+                            .map((c) => (
+                              <SelectItem key={c.key} value={c.key}>
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">{t("ux.partner.admin.categoryHelp")}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="commission_rate">{t("ux.partner.admin.commissionRate")}</Label>
+                      <Input
+                        id="commission_rate"
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.5}
+                        value={formData.commission_rate}
+                        onChange={(e) => setFormData({ ...formData, commission_rate: Number(e.target.value) })}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {t("ux.partner.admin.commissionRateHelp", { share: 100 - formData.commission_rate })}
+                      </p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="car_plan_id">{t("ux.bo.carPlan")}</Label>
@@ -696,6 +752,7 @@ export default function AdminAgencies() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("ux.bo.agency")}</TableHead>
+                <TableHead>{t("ux.partner.admin.category")}</TableHead>
                 <TableHead>{t("ux.bo.contact")}</TableHead>
                 <TableHead>{t("ux.bo.owner2")}</TableHead>
                 <TableHead>{t("ux.bo.agencyShare")}</TableHead>
@@ -709,13 +766,13 @@ export default function AdminAgencies() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={10} className="text-center py-8">
                     {t("ux.bo.loading")}
                   </TableCell>
                 </TableRow>
               ) : filteredAgencies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                     <Building2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     {t("ux.bo.noAgencyFound")}
                   </TableCell>
@@ -746,6 +803,15 @@ export default function AdminAgencies() {
                       </div>
                     </TableCell>
                     <TableCell>
+                      {agency.category ? (
+                        <Badge variant="secondary">
+                          {categories.find((c) => c.key === agency.category)?.label || agency.category}
+                        </Badge>
+                      ) : (
+                        <Badge variant="destructive">{t("ux.partner.admin.noCategory")}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <div className="text-sm">
                         {agency.contact_email && <p>{agency.contact_email}</p>}
                         {agency.contact_phone && <p className="text-muted-foreground">{agency.contact_phone}</p>}
@@ -756,7 +822,7 @@ export default function AdminAgencies() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">
-                        90%
+                        {100 - (agency.commission_rate ?? 10)}%
                       </Badge>
                     </TableCell>
                     <TableCell>

@@ -142,6 +142,7 @@ export default function AdminPartnerApplications() {
           logo_url: application.logo_url,
           requested_car_plan_id: application.requested_car_plan_id,
           preferred_payout_method: application.preferred_payout_method,
+          category: application.category,
         },
       },
     });

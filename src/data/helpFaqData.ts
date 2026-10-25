@@ -1785,13 +1785,13 @@ export const HELP_FAQ: HelpFaqEntry[] = [
     domain: "agency",
     question: "Comment sont calculées les commissions pour les agences ?",
     answer:
-      "Le taux de commission est défini lors de votre partenariat et visible dans les paramètres de votre espace agence.",
+      "Le taux de commission est fixé par votre contrat. Dans Finances > Commissions, chaque transaction affiche le montant brut, le taux appliqué (celui du contrat en vigueur à la date de la transaction), la commission et le montant net qui vous revient.",
   },
   {
     domain: "agency",
     question: "Puis-je suivre mes réservations en tant qu'agence ?",
     answer:
-      "Oui, votre tableau de bord agence affiche l'ensemble de vos réservations reçues avec leur statut en temps réel.",
+      "Oui, la rubrique Réservations / Commandes regroupe les nouvelles demandes, celles en cours et l'historique ; la cloche en haut de l'écran signale les nouvelles demandes.",
   },
   {
     domain: "agency",
