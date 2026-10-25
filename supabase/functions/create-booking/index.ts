@@ -119,6 +119,13 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
+    // Clé service-role : écritures dont toutes les valeurs sont fixées ici
+    // côté serveur (réservation, fiche d'une activité / d'un séjour).
+    const adminSupabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     const requestData: BookingRequest = await req.json();
     
     // Security: Only log non-sensitive metadata
@@ -247,11 +254,14 @@ serve(async (req) => {
     // foreign key to public.services, so a fresh services row still has to
     // be created for them (using this verified price, never the client's).
     const catalogTable = CATALOG_TABLE_BY_SERVICE_TYPE[requestData.service_type];
+    // Fiche du catalogue réservée : sa propre identité (nom, lieu, partenaire)
+    // est reprise, jamais celle envoyée par le client.
+    let catalogEntry: { name: string; location: string | null; agency_id: string | null } | null = null;
 
     if (requestData.service_id && catalogTable) {
       const { data: catalogRow, error: catalogError } = await supabase
         .from(catalogTable)
-        .select('price_per_unit, currency')
+        .select('price_per_unit, currency, name, location, agency_id')
         .eq('id', requestData.service_id)
         .single();
 
@@ -259,6 +269,7 @@ serve(async (req) => {
         console.error(`Referenced ${catalogTable} row not found - Code:`, catalogError?.code);
         throw new Error('Referenced service not found');
       }
+      catalogEntry = { name: catalogRow.name, location: catalogRow.location, agency_id: catalogRow.agency_id };
 
       verifiedTotalPrice = convertToXof(
         catalogRow.price_per_unit,
@@ -313,19 +324,38 @@ serve(async (req) => {
 
     if (!serviceId) {
       console.log('Creating service...');
-      const { data: service, error: serviceError } = await supabase
-        .from('services')
-        .insert({
-          type: requestData.service_type,
-          name: requestData.service_name,
-          description: requestData.service_description || requestData.service_name,
-          location: requestData.location,
-          price_per_unit: verifiedTotalPrice / requestData.guests,
-          currency: requestData.currency,
-          available: true,
-        })
-        .select()
-        .single();
+      // Activité / séjour du catalogue : ligne créée côté serveur et rattachée
+      // au partenaire de la fiche, pour que sa part (postPaymentSuccess) et son
+      // versement suivent. Hors catalogue (offres sans partenaire), inchangé.
+      const { data: service, error: serviceError } = catalogEntry
+        ? await adminSupabase
+            .from('services')
+            .insert({
+              type: requestData.service_type,
+              name: catalogEntry.name,
+              description: catalogEntry.name,
+              location: catalogEntry.location || requestData.location,
+              price_per_unit: verifiedTotalPrice / requestData.guests,
+              currency: 'XOF',
+              agency_id: catalogEntry.agency_id,
+              // Trace de la réservation, pas une offre : jamais listée.
+              available: false,
+            })
+            .select()
+            .single()
+        : await supabase
+            .from('services')
+            .insert({
+              type: requestData.service_type,
+              name: requestData.service_name,
+              description: requestData.service_description || requestData.service_name,
+              location: requestData.location,
+              price_per_unit: verifiedTotalPrice / requestData.guests,
+              currency: requestData.currency,
+              available: true,
+            })
+            .select()
+            .single();
 
       if (serviceError) {
         // Security: Don't log full error details
@@ -367,13 +397,9 @@ serve(async (req) => {
 
     // Les insertions directes dans bookings sont refusées aux utilisateurs
     // (le prix n'y serait pas vérifié) : la réservation est créée ici avec
-    // la clé service-role, après les vérifications ci-dessus. La policy
-    // RLS qui contrôlait l'appartenance à l'entreprise est donc refaite ici.
-    const adminSupabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
+    // la clé service-role (adminSupabase, plus haut), après les vérifications
+    // ci-dessus. La policy RLS qui contrôlait l'appartenance à l'entreprise
+    // est donc refaite ici.
     if (requestData.company_id) {
       const { data: isMember } = await adminSupabase.rpc('is_company_member', {
         _user_id: user.id,
