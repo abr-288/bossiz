@@ -5299,6 +5299,35 @@ export type Database = {
       };
     };
     Functions: {
+      admin_dashboard: {
+        Args: { p_from: string; p_to: string };
+        Returns: Json;
+      };
+      admin_finance_transactions: {
+        Args: { p_from?: string | null; p_to?: string | null };
+        Returns: {
+          agency_id: string | null;
+          agency_name: string | null;
+          booking_id: string | null;
+          collection: string;
+          commission_amount: number;
+          commission_rate: number;
+          gross_amount: number;
+          label: string;
+          net_amount: number;
+          paid_at: string | null;
+          payout_due_at: string | null;
+          payout_error: string | null;
+          payout_reference: string | null;
+          payout_status: string | null;
+          reference: string;
+          source_id: string | null;
+          source_type: string;
+          status: string;
+          transaction_date: string;
+          transaction_id: string;
+        }[];
+      };
       admin_hotel_onsite_commissions: {
         Args: { p_period: string };
         Returns: {

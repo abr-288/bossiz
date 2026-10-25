@@ -28,6 +28,7 @@ import {
   Ticket,
   LayoutList,
   HeartHandshake,
+  LifeBuoy,
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import {
@@ -99,6 +100,7 @@ const menuItems = [
   },
   { title: "Commissions", url: "/admin/commissions", icon: DollarSign },
   { title: "Commissions hôtels sur place", url: "/admin/hotel-commissions", icon: Receipt },
+  { title: "Support partenaires", url: "/admin/support", icon: LifeBuoy },
   {
     get title() {
       return i18n.t("ux.bo.carPlans");

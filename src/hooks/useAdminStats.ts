@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -44,6 +44,8 @@ export const useAdminStats = () => {
     recentBookings: [],
   });
   const [loading, setLoading] = useState(true);
+  // Le bouton Actualiser relance le même chargement que l'abonnement temps réel.
+  const fetchRef = useRef<() => Promise<void>>();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -194,6 +196,7 @@ export const useAdminStats = () => {
       }
     };
 
+    fetchRef.current = fetchStats;
     fetchStats();
 
     // Set up realtime subscription for bookings
@@ -209,10 +212,7 @@ export const useAdminStats = () => {
 
   const refetch = () => {
     setLoading(true);
-    // Trigger re-fetch
-    const channel = supabase.channel("admin-stats-refresh");
-    channel.subscribe();
-    supabase.removeChannel(channel);
+    void fetchRef.current?.();
   };
 
   return { stats, loading, refetch };
