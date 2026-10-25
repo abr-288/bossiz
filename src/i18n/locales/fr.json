@@ -3584,6 +3584,10 @@
       "title": "Devenir partenaire"
     },
     "artisans": {
+      "customRequest": "Faire une demande",
+      "customRequestHelp": "Une pièce sur mesure ou hors catalogue ? Décrivez-la : l'artisan vous répond avec un prix.",
+      "agreedPrice": "Prix convenu (FCFA)",
+      "agreedPriceRequired": "Indiquez le prix convenu avec le client avant de confirmer.",
       "bannerAlt": "Artisans locaux",
       "title": "Artisans Locaux",
       "subtitle": "Découvrez le savoir-faire et les créations d'artisans locaux",

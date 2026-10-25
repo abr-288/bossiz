@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Sparkles, Phone } from "lucide-react";
+import { MapPin, Sparkles } from "lucide-react";
 import { useWellnessServices, type WellnessService } from "@/hooks/useWellnessServices";
 import { WellnessBookingDialog } from "@/components/wellness/WellnessBookingDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
@@ -141,15 +141,6 @@ const WellnessBeauty = () => {
                   )}
 
                   <div className="mt-auto pt-3 flex items-center justify-between gap-3">
-                    {service.phone && (
-                      <a
-                        href={`tel:${service.phone}`}
-                        className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        {service.phone}
-                      </a>
-                    )}
                     <Button
                       className="ml-auto"
                       onClick={() => {

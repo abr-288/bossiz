@@ -68,6 +68,9 @@ export const ArtisanOrderDialog = ({
   }, [open]);
 
   const price = product.price || 0;
+  // Sans prix (création sans tarif ou demande sur mesure) : l'artisan fixe le
+  // prix convenu en confirmant la commande dans son espace.
+  const custom = price === 0;
   const qty = parseInt(quantity) || 0;
   const total = price * qty;
 
@@ -88,6 +91,10 @@ export const ArtisanOrderDialog = ({
     }
     if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
       toast.error("Renseignez vos coordonnées");
+      return;
+    }
+    if (custom && !message.trim()) {
+      toast.error("Décrivez votre demande pour que l'artisan puisse vous faire un prix");
       return;
     }
 
@@ -122,7 +129,7 @@ export const ArtisanOrderDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Demander cette création</DialogTitle>
+          <DialogTitle>{custom ? "Faire une demande" : "Demander cette création"}</DialogTitle>
           <DialogDescription>
             {product.name} — {artisanName}
           </DialogDescription>
@@ -156,13 +163,24 @@ export const ArtisanOrderDialog = ({
             <Input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} required />
           </div>
           <div className="space-y-2">
-            <Label>Message (personnalisation, délai souhaité...)</Label>
-            <Textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={2} />
+            <Label htmlFor="artisan-order-message">
+              {custom
+                ? "Décrivez votre demande * (pièce, dimensions, délai...)"
+                : "Message (personnalisation, délai souhaité...)"}
+            </Label>
+            <Textarea
+              id="artisan-order-message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={custom ? 4 : 2}
+              required={custom}
+            />
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Cette demande est transmise à l'artisan, qui vous recontactera pour confirmer la disponibilité et les
-            modalités de paiement/livraison.
+            {custom
+              ? "Votre demande est transmise à l'artisan via Bossiz. Il vous recontacte avec un prix, puis confirme la commande sur Bossiz."
+              : "Cette demande est transmise à l'artisan, qui vous recontactera pour confirmer la disponibilité et les modalités de paiement/livraison."}
           </p>
         </div>
 
@@ -172,7 +190,13 @@ export const ArtisanOrderDialog = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={submitting || !customerName.trim() || !customerPhone.trim() || !customerEmail.trim()}
+            disabled={
+              submitting ||
+              !customerName.trim() ||
+              !customerPhone.trim() ||
+              !customerEmail.trim() ||
+              (custom && !message.trim())
+            }
             className="gradient-primary"
           >
             {submitting ? (

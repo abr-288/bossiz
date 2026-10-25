@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, UtensilsCrossed, Phone } from "lucide-react";
+import { MapPin, UtensilsCrossed } from "lucide-react";
 import { useRestaurants, type Restaurant } from "@/hooks/useRestaurants";
 import { RestaurantReservationDialog } from "@/components/restaurants/RestaurantReservationDialog";
 import { LazyImage } from "@/components/ui/lazy-image";
@@ -137,15 +137,6 @@ const Restaurants = () => {
                   )}
 
                   <div className="mt-auto pt-3 flex items-center justify-between gap-3">
-                    {restaurant.phone && (
-                      <a
-                        href={`tel:${restaurant.phone}`}
-                        className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        {restaurant.phone}
-                      </a>
-                    )}
                     <Button
                       className="ml-auto"
                       onClick={() => {

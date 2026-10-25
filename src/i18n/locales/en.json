@@ -3575,6 +3575,10 @@
       "title": "Become a partner"
     },
     "artisans": {
+      "customRequest": "Make a request",
+      "customRequestHelp": "A custom or off-catalogue piece? Describe it and the artisan will reply with a price.",
+      "agreedPrice": "Agreed price (FCFA)",
+      "agreedPriceRequired": "Enter the price agreed with the customer before confirming.",
       "bannerAlt": "Local artisans",
       "title": "Local artisans",
       "subtitle": "Discover the skills and creations of local artisans",

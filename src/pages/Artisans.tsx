@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MapPin, Hammer, Phone, MessageCircle, ShoppingBag } from "lucide-react";
+import { MapPin, Hammer, MessageSquarePlus, ShoppingBag } from "lucide-react";
 import { useArtisans, type Artisan } from "@/hooks/useArtisans";
 import { Price } from "@/components/ui/price";
 import { ArtisanOrderDialog, type ArtisanProduct } from "@/components/artisans/ArtisanOrderDialog";
@@ -29,8 +29,9 @@ const CRAFT_TYPES = [
   "Autre",
 ];
 
-const waLink = (whatsapp: string, message: string) =>
-  `https://wa.me/${whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`;
+// Commande sur mesure (pièce hors catalogue, ou artisan sans création en
+// ligne) : sans prix, l'artisan fixe le prix convenu en la confirmant.
+const customRequest: ArtisanProduct = { name: "Demande sur mesure" };
 
 const Artisans = () => {
   const { t } = useTranslation();
@@ -178,28 +179,15 @@ const Artisans = () => {
                 </div>
                 {selectedArtisan.bio && <p className="text-sm text-muted-foreground">{selectedArtisan.bio}</p>}
 
-                <div className="flex flex-wrap gap-3 pt-2">
-                  {selectedArtisan.whatsapp && (
-                    <Button asChild className="gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white">
-                      <a
-                        href={waLink(
-                          selectedArtisan.whatsapp,
-                          `Bonjour, je vous contacte depuis Bossiz+ au sujet de vos créations (${selectedArtisan.name}).`,
-                        )}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <MessageCircle className="w-4 h-4" /> WhatsApp
-                      </a>
-                    </Button>
-                  )}
-                  {selectedArtisan.phone && (
-                    <Button variant="outline" asChild className="gap-2">
-                      <a href={`tel:${selectedArtisan.phone}`}>
-                        <Phone className="w-4 h-4" /> {selectedArtisan.phone}
-                      </a>
-                    </Button>
-                  )}
+                {/* Pas de WhatsApp ni de téléphone : la commande passe par Bossiz,
+                    comme une réservation. L'artisan reçoit les coordonnées du
+                    client avec la demande. */}
+                <div className="pt-2">
+                  <Button className="gap-2" onClick={() => setOrderingProduct(customRequest)}>
+                    <MessageSquarePlus className="w-4 h-4" />
+                    {t("ux.artisans.customRequest")}
+                  </Button>
+                  <p className="mt-2 text-xs text-muted-foreground">{t("ux.artisans.customRequestHelp")}</p>
                 </div>
               </div>
 

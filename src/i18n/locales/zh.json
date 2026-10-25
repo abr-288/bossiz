@@ -3555,6 +3555,10 @@
       "title": "成为合作伙伴"
     },
     "artisans": {
+      "customRequest": "提交需求",
+      "customRequestHelp": "需要定制或目录外的作品？请描述您的需求，工匠会给您报价。",
+      "agreedPrice": "约定价格（FCFA）",
+      "agreedPriceRequired": "确认前请填写与客户约定的价格。",
       "bannerAlt": "本地手工艺人",
       "title": "本地手工艺人",
       "subtitle": "探索本地手工艺人的技艺与作品",

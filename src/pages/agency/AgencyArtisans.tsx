@@ -105,6 +105,8 @@ export default function AgencyArtisans() {
   const [formData, setFormData] = useState(emptyForm);
   const [orders, setOrders] = useState<ArtisanOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  // Prix convenu (total, en FCFA) saisi pour une demande sans prix.
+  const [agreedPrices, setAgreedPrices] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchAgencyAndArtisans();
@@ -162,8 +164,21 @@ export default function AgencyArtisans() {
     setOrdersLoading(false);
   };
 
-  const updateOrderStatus = async (id: string, status: "confirmed" | "cancelled") => {
-    const { error } = await supabase.from("artisan_orders").update({ status }).eq("id", id);
+  const updateOrderStatus = async (order: ArtisanOrder, status: "confirmed" | "cancelled") => {
+    const id = order.id;
+    // Demande sans prix (sur mesure) : le prix convenu avec le client est
+    // enregistré en même temps que la confirmation, il sert de base à la
+    // commission Bossiz.
+    const agreedPrice = Number(agreedPrices[id]);
+    const needsPrice = status === "confirmed" && Number(order.unit_price) === 0;
+    if (needsPrice && !(agreedPrice > 0)) {
+      toast({ title: t("ux.bo.error"), description: t("ux.artisans.agreedPriceRequired"), variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase
+      .from("artisan_orders")
+      .update(needsPrice ? { status, unit_price: agreedPrice / order.quantity } : { status })
+      .eq("id", id);
     if (error) {
       toast({ title: t("ux.bo.error"), description: error.message, variant: "destructive" });
       return;
@@ -571,6 +586,11 @@ export default function AgencyArtisans() {
                       <TableCell className="font-medium">{o.artisan_name}</TableCell>
                       <TableCell>
                         {o.product_name} × {o.quantity}
+                        {o.message && (
+                          <p className="mt-1 max-w-xs whitespace-pre-line text-xs text-muted-foreground">
+                            « {o.message} »
+                          </p>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
@@ -579,7 +599,22 @@ export default function AgencyArtisans() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {o.total_amount.toLocaleString()} {o.currency}
+                        {o.status === "pending" && Number(o.unit_price) === 0 ? (
+                          <Input
+                            type="number"
+                            min={1}
+                            inputMode="numeric"
+                            className="h-8 w-32"
+                            placeholder={t("ux.artisans.agreedPrice")}
+                            aria-label={t("ux.artisans.agreedPrice")}
+                            value={agreedPrices[o.id] ?? ""}
+                            onChange={(e) => setAgreedPrices((prev) => ({ ...prev, [o.id]: e.target.value }))}
+                          />
+                        ) : (
+                          <>
+                            {o.total_amount.toLocaleString()} {o.currency}
+                          </>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -606,11 +641,11 @@ export default function AgencyArtisans() {
                       <TableCell className="text-right">
                         {o.status === "pending" && (
                           <div className="flex justify-end gap-2">
-                            <Button size="sm" variant="outline" onClick={() => updateOrderStatus(o.id, "confirmed")}>
+                            <Button size="sm" variant="outline" onClick={() => updateOrderStatus(o, "confirmed")}>
                               <Check className="h-4 w-4 mr-1" />
                               {t("ux.bo.confirm")}
                             </Button>
-                            <Button size="sm" variant="ghost" onClick={() => updateOrderStatus(o.id, "cancelled")}>
+                            <Button size="sm" variant="ghost" onClick={() => updateOrderStatus(o, "cancelled")}>
                               <X className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
