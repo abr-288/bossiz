@@ -151,6 +151,7 @@ const menuItems = [
   { title: "Newsletter", url: "/admin/newsletter", icon: Newspaper },
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
   { title: "Culture", url: "/admin/culture", icon: Landmark },
+  { title: "Actualités", url: "/admin/actualites", icon: Newspaper },
   { title: "Événements", url: "/admin/events", icon: Ticket },
   {
     get title() {

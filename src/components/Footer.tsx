@@ -179,6 +179,11 @@ const Footer = () => {
             <h3 className="font-bold text-white mb-3 md:mb-4 text-sm md:text-base">{t("footer.support")}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm">
               <li>
+                <Link to="/actualites" className="text-white/80 hover:text-secondary transition-smooth">
+                  {t("nav.news")}
+                </Link>
+              </li>
+              <li>
                 <Link to="/help" className="text-white/80 hover:text-secondary transition-smooth">
                   {t("footer.help")}
                 </Link>

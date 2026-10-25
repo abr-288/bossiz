@@ -43,6 +43,9 @@ const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const Dashboard = lazy(() => import("@/pages/UserDashboard"));
 const BookingHistory = lazy(() => import("@/pages/BookingHistory"));
 const MyReviews = lazy(() => import("@/pages/MyReviews"));
+const News = lazy(() => import("@/pages/News"));
+const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
+const AdminNews = lazy(() => import("@/pages/admin/AdminNews"));
 const Account = lazy(() => import("@/pages/Account"));
 const MyMemberCard = lazy(() => import("@/pages/MyMemberCard"));
 const Rewards = lazy(() => import("@/pages/Rewards"));
@@ -461,6 +464,22 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/actualites"
+            element={
+              <PageTransition>
+                <News />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/actualites/:slug"
+            element={
+              <PageTransition>
+                <NewsArticle />
+              </PageTransition>
+            }
+          />
+          <Route
             path="/account"
             element={
               <PageTransition>
@@ -737,6 +756,14 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <AdminPartnerCategories />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/actualites"
+            element={
+              <PageTransition>
+                <AdminNews />
               </PageTransition>
             }
           />

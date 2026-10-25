@@ -77,6 +77,11 @@ const ROUTES: Record<string, RouteSeo> = {
     title: "Séjours en Côte d'Ivoire | Bossiz+",
     description: "Séjours et hébergements sélectionnés en Côte d'Ivoire, à réserver en ligne.",
   },
+  "/actualites": {
+    title: "Actualités Bossiz+ | Nouveautés, partenaires et offres",
+    description:
+      "Toute l'actualité Bossiz+ : nouveautés du site, nouveaux partenaires, offres et événements en Côte d'Ivoire.",
+  },
   "/events": {
     title: "Événements en Côte d'Ivoire | Bossiz+",
     description: "Concerts, festivals et événements en Côte d'Ivoire : découvrez l'agenda et réservez vos places.",
@@ -193,6 +198,13 @@ const DYNAMIC: Array<{ prefix: string; seo: RouteSeo }> = [
     seo: {
       title: "Destination en Côte d'Ivoire | Bossiz+",
       description: "Découvrez cette destination de Côte d'Ivoire : à voir, à faire, où dormir.",
+    },
+  },
+  {
+    prefix: "/actualites/",
+    seo: {
+      title: "Actualité | Bossiz+",
+      description: "Actualité Bossiz+ : nouveautés, partenaires, offres et événements.",
     },
   },
   {

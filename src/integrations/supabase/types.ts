@@ -2844,6 +2844,60 @@ export type Database = {
           },
         ];
       };
+      news_posts: {
+        Row: {
+          category: string;
+          content: string | null;
+          cover_caption: string | null;
+          cover_image_url: string | null;
+          created_at: string;
+          cta_label: string | null;
+          cta_url: string | null;
+          excerpt: string;
+          id: string;
+          pinned: boolean;
+          published: boolean;
+          published_at: string;
+          slug: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          category?: string;
+          content?: string | null;
+          cover_caption?: string | null;
+          cover_image_url?: string | null;
+          created_at?: string;
+          cta_label?: string | null;
+          cta_url?: string | null;
+          excerpt: string;
+          id?: string;
+          pinned?: boolean;
+          published?: boolean;
+          published_at?: string;
+          slug: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          category?: string;
+          content?: string | null;
+          cover_caption?: string | null;
+          cover_image_url?: string | null;
+          created_at?: string;
+          cta_label?: string | null;
+          cta_url?: string | null;
+          excerpt?: string;
+          id?: string;
+          pinned?: boolean;
+          published?: boolean;
+          published_at?: string;
+          slug?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       newsletter_subscribers: {
         Row: {
           created_at: string;

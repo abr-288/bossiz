@@ -90,6 +90,7 @@ const Navbar = () => {
     { to: "/restaurants", label: t("nav.restaurants") },
     { to: "/artisans", label: t("nav.artisans") },
     { to: "/bien-etre-beaute", label: t("nav.wellness") },
+    { to: "/actualites", label: t("nav.news") },
   ];
 
   // Verticaux principaux affichés directement, le reste regroupé sous "Autres"
