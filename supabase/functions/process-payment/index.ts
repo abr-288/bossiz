@@ -20,6 +20,8 @@ interface PaymentRequestBody {
   subscriptionId?: string;
   carPartnerSubscriptionId?: string;
   agencyBrandingSubscriptionId?: string;
+  // Contribution Bossiz Impact (créée par impact_start_contribution).
+  impactContributionId?: string;
   paymentMethod?: string;
   // Smiles (fidélité) que le client souhaite utiliser sur ce paiement.
   // Seule une demande : le serveur plafonne et vérifie le solde.
@@ -202,6 +204,7 @@ serve(async (req) => {
     console.log('   - subscriptionId:', body.subscriptionId ? '✓' : '✗');
     console.log('   - carPartnerSubscriptionId:', body.carPartnerSubscriptionId ? '✓' : '✗');
     console.log('   - agencyBrandingSubscriptionId:', body.agencyBrandingSubscriptionId ? '✓' : '✗');
+    console.log('   - impactContributionId:', body.impactContributionId ? '✓' : '✗');
     console.log('   - paymentMethod:', body.paymentMethod);
     console.log('   - customerInfo:', body.customerInfo ? '✓' : '✗');
 
@@ -211,8 +214,13 @@ serve(async (req) => {
       typeof body.carPartnerSubscriptionId === 'string' && body.carPartnerSubscriptionId.length > 0;
     const hasAgencyBrandingSubscription =
       typeof body.agencyBrandingSubscriptionId === 'string' && body.agencyBrandingSubscriptionId.length > 0;
+    const hasImpactContribution =
+      typeof body.impactContributionId === 'string' && body.impactContributionId.length > 0;
 
-    if ([hasBooking, hasSubscription, hasCarPartnerSubscription, hasAgencyBrandingSubscription].filter(Boolean).length !== 1) {
+    if (
+      [hasBooking, hasSubscription, hasCarPartnerSubscription, hasAgencyBrandingSubscription, hasImpactContribution]
+        .filter(Boolean).length !== 1
+    ) {
       return errorResponse(
         'Fournir exactement une cible de paiement',
         400,
@@ -246,7 +254,12 @@ serve(async (req) => {
     console.log('\n📋 Étape 2bis: Résolution de la cible de paiement...');
 
     let targetId: string;
-    let targetType: 'booking' | 'subscription' | 'car_partner_subscription' | 'agency_branding_subscription';
+    let targetType:
+      | 'booking'
+      | 'subscription'
+      | 'car_partner_subscription'
+      | 'agency_branding_subscription'
+      | 'impact_contribution';
     let sourceAmount: number;
     let sourceCurrency: string;
     let paymentDescription: string;
@@ -427,6 +440,38 @@ serve(async (req) => {
       sourceAmount = Number(subscription.amount_due);
       sourceCurrency = subscription.currency || 'XOF';
       paymentDescription = `Forfait voiture ${subscription.plan_id}`;
+    } else if (hasImpactContribution) {
+      targetType = 'impact_contribution';
+      targetId = body.impactContributionId!;
+
+      // JWT du client : la RLS ne lui laisse lire que ses propres
+      // contributions. Montant et devise relus ici, jamais pris du body.
+      const { data: contribution, error: contributionError } = await supabase
+        .from('impact_contributions')
+        .select('id, reference, campaign_id, amount_xof, currency, status, user_id')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      if (contributionError || !contribution || contribution.user_id !== user.id) {
+        console.error('❌ Contribution Impact introuvable ou non autorisée:', contributionError?.message);
+        return errorResponse('Contribution introuvable', 404);
+      }
+      if (!['pending', 'processing'].includes(contribution.status) || contribution.currency !== 'XOF') {
+        return errorResponse('Cette contribution n’est plus payable. Recommencez depuis la page Bossiz Impact.', 409);
+      }
+
+      const { data: campaign } = await supabase
+        .from('impact_campaigns')
+        .select('status, ends_at')
+        .eq('id', contribution.campaign_id)
+        .maybeSingle();
+      if (!campaign || campaign.status !== 'active' || (campaign.ends_at && new Date(campaign.ends_at) <= new Date())) {
+        return errorResponse('La campagne Bossiz Impact n’accepte pas de contribution pour le moment.', 409);
+      }
+
+      sourceAmount = Number(contribution.amount_xof);
+      sourceCurrency = 'XOF';
+      paymentDescription = `Bossiz Impact - contribution ${contribution.reference}`;
     } else {
       targetType = 'agency_branding_subscription';
       targetId = body.agencyBrandingSubscriptionId!;
@@ -581,6 +626,34 @@ serve(async (req) => {
       if (claimError || !activeClaim) {
         return errorResponse('Un paiement branding est déjà en cours. Veuillez patienter avant de réessayer.', 409);
       }
+    } else if (targetType === 'impact_contribution') {
+      // Une seule session de paiement à la fois par contribution ; une
+      // tentative abandonnée depuis plus de 5 minutes peut être reprise.
+      const { data: claim, error: claimError } = await adminSupabase!
+        .from('impact_contributions')
+        .update({ status: 'processing', updated_at: new Date().toISOString() })
+        .eq('id', targetId)
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .select('id')
+        .maybeSingle();
+
+      let activeClaim = claim;
+      if (!activeClaim && !claimError) {
+        activeClaim = (await adminSupabase!
+          .from('impact_contributions')
+          .update({ status: 'processing', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('user_id', user.id)
+          .eq('status', 'processing')
+          .lt('updated_at', new Date(Date.now() - 5 * 60 * 1000).toISOString())
+          .select('id')
+          .maybeSingle()).data;
+      }
+
+      if (claimError || !activeClaim) {
+        return errorResponse('Un paiement est déjà en cours pour cette contribution. Veuillez patienter avant de réessayer.', 409);
+      }
     }
 
     // Si l'appel au prestataire échoue après la réclamation ci-dessus, il faut
@@ -602,6 +675,12 @@ serve(async (req) => {
       } else if (targetType === 'agency_branding_subscription') {
         await adminSupabase!
           .from('agency_branding_subscriptions')
+          .update({ status: 'pending', updated_at: new Date().toISOString() })
+          .eq('id', targetId)
+          .eq('status', 'processing');
+      } else if (targetType === 'impact_contribution') {
+        await adminSupabase!
+          .from('impact_contributions')
           .update({ status: 'pending', updated_at: new Date().toISOString() })
           .eq('id', targetId)
           .eq('status', 'processing');
@@ -692,6 +771,7 @@ serve(async (req) => {
           subscription_id: targetType === 'subscription' ? targetId : null,
           car_partner_subscription_id: targetType === 'car_partner_subscription' ? targetId : null,
           agency_branding_subscription_id: targetType === 'agency_branding_subscription' ? targetId : null,
+          impact_contribution_id: targetType === 'impact_contribution' ? targetId : null,
           user_id: user.id,
           ip_address: clientIP,
           amount: chargeXof,

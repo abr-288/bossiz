@@ -13,6 +13,7 @@ import {
   Building2,
   Smile,
   Star,
+  HeartHandshake,
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -85,6 +86,11 @@ export function UserSidebar({ userProfile }: UserSidebarProps) {
       title: t("ux.reviews.myTitle"),
       url: "/mes-avis",
       icon: Star,
+    },
+    {
+      title: "Mon espace Impact",
+      url: "/mon-impact",
+      icon: HeartHandshake,
     },
     {
       title: t("ux.smiles.navLabel", "Mes Smiles"),

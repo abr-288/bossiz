@@ -8,6 +8,7 @@
 // fonction (vérification de statut CinetPay, ou signature webhook Jèko).
 
 import { scheduleAgencyPayout } from "./agencyPayouts.ts";
+import { sendEmail } from "./integrations.ts";
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -20,6 +21,7 @@ export interface HandlePaymentSuccessParams {
   subscriptionId: string | null;
   carPartnerSubscriptionId?: string | null;
   agencyBrandingSubscriptionId?: string | null;
+  impactContributionId?: string | null;
   paymentMethod: string;
   paymentProvider?: "jeko" | "cinetpay";
   legacySubscriptionRequestId?: string | null;
@@ -37,12 +39,18 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
     subscriptionId,
     carPartnerSubscriptionId,
     agencyBrandingSubscriptionId,
+    impactContributionId,
     paymentMethod,
     paymentProvider,
     legacySubscriptionRequestId,
     legacyPlanId,
     legacyPlanName,
   } = params;
+
+  if (impactContributionId) {
+    await confirmImpactContribution(supabase, impactContributionId, transactionId);
+    return;
+  }
 
   if (carPartnerSubscriptionId) {
     const now = new Date();
@@ -432,4 +440,73 @@ export async function handlePaymentSuccess(params: HandlePaymentSuccessParams): 
       console.warn('⚠️ Erreur création PNR');
     }
   }
+}
+
+const fcfa = (amount: number) => `${Math.round(amount).toLocaleString("fr-FR")} FCFA`;
+const escapeHtml = (value: unknown) =>
+  String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+// Bossiz Impact : paiement vérifié par l'appelant (webhook signé, montant
+// et devise contrôlés). La fonction SQL est atomique et idempotente : elle
+// marque la contribution payée et attribue avantages et Smiles une seule
+// fois. L'e-mail de confirmation ne part qu'à la première confirmation.
+async function confirmImpactContribution(
+  supabase: SupabaseClient,
+  contributionId: string,
+  transactionId: string,
+): Promise<void> {
+  const { data, error } = await supabase.rpc("impact_confirm_contribution", {
+    p_contribution_id: contributionId,
+    p_transaction_id: transactionId,
+  });
+  if (error) {
+    console.error("Confirmation Bossiz Impact impossible:", error.message);
+    throw new Error("Impact contribution confirmation failed");
+  }
+  const result = (data ?? {}) as { already?: boolean; member_reference?: string; smiles?: number };
+  if (result.already) return;
+
+  const { data: contribution } = await supabase
+    .from("impact_contributions")
+    .select("reference, amount_xof, contributor_name, contributor_email, offer_snapshot")
+    .eq("id", contributionId)
+    .maybeSingle();
+  if (!contribution?.contributor_email) return;
+
+  const siteUrl = (Deno.env.get("SITE_URL") || "https://app.bossiz.com").replace(/\/+$/, "");
+  const offerName = (contribution.offer_snapshot as { offer?: { name?: string } } | null)?.offer?.name;
+  const smiles = Number(result.smiles || 0);
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; padding: 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
+        <div style="background: #1B2A4A; color: #fff; padding: 20px; text-align: center;">
+          <h1 style="margin: 0; font-size: 22px;">Merci pour votre soutien !</h1>
+          <p style="margin: 6px 0 0;">Ensemble, faisons grandir Bossiz.</p>
+        </div>
+        <div style="padding: 24px;">
+          <p>Bonjour ${escapeHtml(contribution.contributor_name)},</p>
+          <p>Votre contribution <strong>${escapeHtml(contribution.reference)}</strong> de <strong>${fcfa(Number(contribution.amount_xof))}</strong>
+             à la campagne Bossiz Impact est confirmée.</p>
+          <p>Votre référence de Membre Impact : <strong>${escapeHtml(result.member_reference)}</strong>.</p>
+          ${offerName ? `<p>Offre : <strong>${escapeHtml(offerName)}</strong>.</p>` : ""}
+          ${smiles > 0 ? `<p>${smiles} Smiles ont été ajoutés à votre compte Bossiz Smiles.</p>` : ""}
+          <p>Retrouvez vos avantages, leurs conditions et leurs dates de validité dans votre espace :</p>
+          <p style="text-align: center; margin: 28px 0;">
+            <a href="${siteUrl}/mon-impact" style="background: #0F7B5F; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Mon espace Impact</a>
+          </p>
+          <p style="font-size: 13px; color: #666;">Votre contribution soutient le développement de Bossiz. Elle n'est ni un placement ni une prise de participation et ne donne droit à aucun rendement.</p>
+          <p>Merci de votre confiance,<br>L'équipe Bossiz</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  const sent = await sendEmail(supabase, {
+    to: [contribution.contributor_email],
+    subject: `Bossiz Impact : contribution ${contribution.reference} confirmée`,
+    html,
+  });
+  if (!sent.ok) console.error("E-mail de confirmation Impact non envoyé:", sent.error);
 }

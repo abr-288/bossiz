@@ -183,7 +183,7 @@ serve(async (req) => {
 
     const { data: existingPayment, error: fetchError } = await supabase
       .from('payments')
-      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, payment_method, payment_data, amount')
+      .select('id, status, transaction_id, booking_id, subscription_id, car_partner_subscription_id, agency_branding_subscription_id, impact_contribution_id, payment_method, payment_data, amount')
       .eq('transaction_id', paymentLinkId)
       .eq('payment_provider', 'jeko')
       .maybeSingle();
@@ -217,6 +217,21 @@ serve(async (req) => {
           bookingId: null,
           subscriptionId: null,
           agencyBrandingSubscriptionId: existingPayment.agency_branding_subscription_id,
+          paymentMethod: existingPayment.payment_method || 'jeko',
+          paymentProvider: 'jeko',
+        });
+      }
+      // Webhook rejoué : la confirmation Impact est idempotente (rien
+      // n'est attribué deux fois), on la relance au cas où elle aurait échoué.
+      if (existingPayment.impact_contribution_id) {
+        await handlePaymentSuccess({
+          supabase,
+          supabaseUrl,
+          supabaseServiceKey,
+          transactionId: paymentLinkId,
+          bookingId: null,
+          subscriptionId: null,
+          impactContributionId: existingPayment.impact_contribution_id,
           paymentMethod: existingPayment.payment_method || 'jeko',
           paymentProvider: 'jeko',
         });
@@ -284,6 +299,7 @@ serve(async (req) => {
         subscriptionId: existingPayment.subscription_id,
         carPartnerSubscriptionId: existingPayment.car_partner_subscription_id,
         agencyBrandingSubscriptionId: existingPayment.agency_branding_subscription_id,
+        impactContributionId: existingPayment.impact_contribution_id,
         paymentMethod: jekoTransaction.paymentMethod || existingPayment.payment_method || 'jeko',
         paymentProvider: 'jeko',
       });

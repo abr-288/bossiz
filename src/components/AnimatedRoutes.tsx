@@ -46,6 +46,9 @@ const MyReviews = lazy(() => import("@/pages/MyReviews"));
 const News = lazy(() => import("@/pages/News"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
 const AdminNews = lazy(() => import("@/pages/admin/AdminNews"));
+const ImpactCampaign = lazy(() => import("@/pages/ImpactCampaign"));
+const MyImpact = lazy(() => import("@/pages/MyImpact"));
+const AdminImpact = lazy(() => import("@/pages/admin/AdminImpact"));
 const Account = lazy(() => import("@/pages/Account"));
 const MyMemberCard = lazy(() => import("@/pages/MyMemberCard"));
 const Rewards = lazy(() => import("@/pages/Rewards"));
@@ -480,6 +483,30 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/bossiz-impact"
+            element={
+              <PageTransition>
+                <ImpactCampaign />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/bossiz-impact/:slug"
+            element={
+              <PageTransition>
+                <ImpactCampaign />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/mon-impact"
+            element={
+              <PageTransition>
+                <MyImpact />
+              </PageTransition>
+            }
+          />
+          <Route
             path="/account"
             element={
               <PageTransition>
@@ -764,6 +791,14 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <AdminNews />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/impact"
+            element={
+              <PageTransition>
+                <AdminImpact />
               </PageTransition>
             }
           />

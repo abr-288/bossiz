@@ -2017,6 +2017,468 @@ export type Database = {
           },
         ];
       };
+      impact_audit_log: {
+        Row: {
+          action: string;
+          actor: string | null;
+          created_at: string;
+          details: Json;
+          entity: string;
+          entity_id: string | null;
+          id: number;
+        };
+        Insert: {
+          action: string;
+          actor?: string | null;
+          created_at?: string;
+          details?: Json;
+          entity: string;
+          entity_id?: string | null;
+          id?: number;
+        };
+        Update: {
+          action?: string;
+          actor?: string | null;
+          created_at?: string;
+          details?: Json;
+          entity?: string;
+          entity_id?: string | null;
+          id?: number;
+        };
+        Relationships: [];
+      };
+      impact_benefit_uses: {
+        Row: {
+          cancel_reason: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          discount_xof: number;
+          id: string;
+          member_benefit_id: string;
+          note: string | null;
+          order_reference: string;
+          recorded_by: string;
+          service_key: string;
+          used_at: string;
+        };
+        Insert: {
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          discount_xof?: number;
+          id?: string;
+          member_benefit_id: string;
+          note?: string | null;
+          order_reference: string;
+          recorded_by: string;
+          service_key: string;
+          used_at?: string;
+        };
+        Update: {
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          discount_xof?: number;
+          id?: string;
+          member_benefit_id?: string;
+          note?: string | null;
+          order_reference?: string;
+          recorded_by?: string;
+          service_key?: string;
+          used_at?: string;
+        };
+        Relationships: [];
+      };
+      impact_benefits: {
+        Row: {
+          benefit_type: string;
+          conditions: string | null;
+          created_at: string;
+          cumulable: boolean;
+          description: string | null;
+          eligible_services: string[];
+          exclusions: string | null;
+          id: string;
+          is_active: boolean;
+          max_discount_xof: number | null;
+          offer_id: string;
+          sort_order: number;
+          title: string;
+          updated_at: string;
+          uses_per_member: number;
+          value: number | null;
+        };
+        Insert: {
+          benefit_type?: string;
+          conditions?: string | null;
+          created_at?: string;
+          cumulable?: boolean;
+          description?: string | null;
+          eligible_services?: string[];
+          exclusions?: string | null;
+          id?: string;
+          is_active?: boolean;
+          max_discount_xof?: number | null;
+          offer_id: string;
+          sort_order?: number;
+          title: string;
+          updated_at?: string;
+          uses_per_member?: number;
+          value?: number | null;
+        };
+        Update: {
+          benefit_type?: string;
+          conditions?: string | null;
+          created_at?: string;
+          cumulable?: boolean;
+          description?: string | null;
+          eligible_services?: string[];
+          exclusions?: string | null;
+          id?: string;
+          is_active?: boolean;
+          max_discount_xof?: number | null;
+          offer_id?: string;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+          uses_per_member?: number;
+          value?: number | null;
+        };
+        Relationships: [];
+      };
+      impact_campaigns: {
+        Row: {
+          accepted_methods: string[];
+          allow_free_amount: boolean;
+          benefits_valid_from: string | null;
+          benefits_validity_months: number;
+          contact_email: string | null;
+          contact_phone: string | null;
+          created_at: string;
+          currency: string;
+          description: string | null;
+          ends_at: string | null;
+          faq: Json;
+          funding_uses: Json;
+          goal_xof: number;
+          id: string;
+          legal_entity: string | null;
+          max_contribution_xof: number | null;
+          milestones: Json;
+          min_contribution_xof: number;
+          name: string;
+          secondary_tagline: string | null;
+          slug: string;
+          starts_at: string | null;
+          status: string;
+          summary: string | null;
+          tagline: string | null;
+          target_members: number | null;
+          terms: string | null;
+          terms_version: string;
+          updated_at: string;
+        };
+        Insert: {
+          accepted_methods?: string[];
+          allow_free_amount?: boolean;
+          benefits_valid_from?: string | null;
+          benefits_validity_months?: number;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          created_at?: string;
+          currency?: string;
+          description?: string | null;
+          ends_at?: string | null;
+          faq?: Json;
+          funding_uses?: Json;
+          goal_xof: number;
+          id?: string;
+          legal_entity?: string | null;
+          max_contribution_xof?: number | null;
+          milestones?: Json;
+          min_contribution_xof?: number;
+          name: string;
+          secondary_tagline?: string | null;
+          slug: string;
+          starts_at?: string | null;
+          status?: string;
+          summary?: string | null;
+          tagline?: string | null;
+          target_members?: number | null;
+          terms?: string | null;
+          terms_version?: string;
+          updated_at?: string;
+        };
+        Update: {
+          accepted_methods?: string[];
+          allow_free_amount?: boolean;
+          benefits_valid_from?: string | null;
+          benefits_validity_months?: number;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          created_at?: string;
+          currency?: string;
+          description?: string | null;
+          ends_at?: string | null;
+          faq?: Json;
+          funding_uses?: Json;
+          goal_xof?: number;
+          id?: string;
+          legal_entity?: string | null;
+          max_contribution_xof?: number | null;
+          milestones?: Json;
+          min_contribution_xof?: number;
+          name?: string;
+          secondary_tagline?: string | null;
+          slug?: string;
+          starts_at?: string | null;
+          status?: string;
+          summary?: string | null;
+          tagline?: string | null;
+          target_members?: number | null;
+          terms?: string | null;
+          terms_version?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      impact_contributions: {
+        Row: {
+          amount_xof: number;
+          campaign_id: string;
+          contributor_email: string | null;
+          contributor_name: string;
+          contributor_phone: string | null;
+          created_at: string;
+          currency: string;
+          id: string;
+          member_id: string | null;
+          offer_id: string | null;
+          offer_snapshot: Json;
+          paid_at: string | null;
+          provider_transaction_id: string | null;
+          reference: string;
+          refund_reason: string | null;
+          refund_reference: string | null;
+          refunded_at: string | null;
+          refunded_by: string | null;
+          status: string;
+          terms_accepted_at: string;
+          terms_version: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          amount_xof: number;
+          campaign_id: string;
+          contributor_email?: string | null;
+          contributor_name: string;
+          contributor_phone?: string | null;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          member_id?: string | null;
+          offer_id?: string | null;
+          offer_snapshot?: Json;
+          paid_at?: string | null;
+          provider_transaction_id?: string | null;
+          reference?: string;
+          refund_reason?: string | null;
+          refund_reference?: string | null;
+          refunded_at?: string | null;
+          refunded_by?: string | null;
+          status?: string;
+          terms_accepted_at: string;
+          terms_version: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          amount_xof?: number;
+          campaign_id?: string;
+          contributor_email?: string | null;
+          contributor_name?: string;
+          contributor_phone?: string | null;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          member_id?: string | null;
+          offer_id?: string | null;
+          offer_snapshot?: Json;
+          paid_at?: string | null;
+          provider_transaction_id?: string | null;
+          reference?: string;
+          refund_reason?: string | null;
+          refund_reference?: string | null;
+          refunded_at?: string | null;
+          refunded_by?: string | null;
+          status?: string;
+          terms_accepted_at?: string;
+          terms_version?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      impact_eligible_services: {
+        Row: {
+          description: string | null;
+          is_enabled: boolean;
+          key: string;
+          label: string;
+          sort_order: number;
+        };
+        Insert: {
+          description?: string | null;
+          is_enabled?: boolean;
+          key: string;
+          label: string;
+          sort_order?: number;
+        };
+        Update: {
+          description?: string | null;
+          is_enabled?: boolean;
+          key?: string;
+          label?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+      impact_member_benefits: {
+        Row: {
+          benefit_id: string;
+          contribution_id: string;
+          created_at: string;
+          details: Json;
+          expires_at: string;
+          id: string;
+          member_id: string;
+          revoked_at: string | null;
+          revoked_by: string | null;
+          revoked_reason: string | null;
+          title: string;
+          user_id: string | null;
+          uses_allowed: number;
+          valid_from: string;
+        };
+        Insert: {
+          benefit_id: string;
+          contribution_id: string;
+          created_at?: string;
+          details: Json;
+          expires_at: string;
+          id?: string;
+          member_id: string;
+          revoked_at?: string | null;
+          revoked_by?: string | null;
+          revoked_reason?: string | null;
+          title: string;
+          user_id?: string | null;
+          uses_allowed: number;
+          valid_from: string;
+        };
+        Update: {
+          benefit_id?: string;
+          contribution_id?: string;
+          created_at?: string;
+          details?: Json;
+          expires_at?: string;
+          id?: string;
+          member_id?: string;
+          revoked_at?: string | null;
+          revoked_by?: string | null;
+          revoked_reason?: string | null;
+          title?: string;
+          user_id?: string | null;
+          uses_allowed?: number;
+          valid_from?: string;
+        };
+        Relationships: [];
+      };
+      impact_members: {
+        Row: {
+          created_at: string;
+          display_name: string | null;
+          first_contribution_at: string | null;
+          id: string;
+          member_reference: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          display_name?: string | null;
+          first_contribution_at?: string | null;
+          id?: string;
+          member_reference?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string | null;
+          first_contribution_at?: string | null;
+          id?: string;
+          member_reference?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      impact_offers: {
+        Row: {
+          available_from: string | null;
+          available_until: string | null;
+          campaign_id: string;
+          created_at: string;
+          description: string | null;
+          id: string;
+          is_active: boolean;
+          max_amount_xof: number | null;
+          max_members: number | null;
+          min_amount_xof: number;
+          name: string;
+          smiles_awarded: number;
+          sort_order: number;
+          terms: string | null;
+          updated_at: string;
+          validity_months: number | null;
+        };
+        Insert: {
+          available_from?: string | null;
+          available_until?: string | null;
+          campaign_id: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_active?: boolean;
+          max_amount_xof?: number | null;
+          max_members?: number | null;
+          min_amount_xof: number;
+          name: string;
+          smiles_awarded?: number;
+          sort_order?: number;
+          terms?: string | null;
+          updated_at?: string;
+          validity_months?: number | null;
+        };
+        Update: {
+          available_from?: string | null;
+          available_until?: string | null;
+          campaign_id?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_active?: boolean;
+          max_amount_xof?: number | null;
+          max_members?: number | null;
+          min_amount_xof?: number;
+          name?: string;
+          smiles_awarded?: number;
+          sort_order?: number;
+          terms?: string | null;
+          updated_at?: string;
+          validity_months?: number | null;
+        };
+        Relationships: [];
+      };
       integration_credentials: {
         Row: {
           category: string;
@@ -2223,6 +2685,7 @@ export type Database = {
           created_at: string;
           created_by: string | null;
           description: string | null;
+          expires_at: string | null;
           id: string;
           kind: string;
           points: number;
@@ -2234,6 +2697,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           description?: string | null;
+          expires_at?: string | null;
           id?: string;
           kind: string;
           points: number;
@@ -2245,6 +2709,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           description?: string | null;
+          expires_at?: string | null;
           id?: string;
           kind?: string;
           points?: number;
@@ -3363,6 +3828,7 @@ export type Database = {
           created_at: string | null;
           currency: string;
           id: string;
+          impact_contribution_id: string | null;
           ip_address: string | null;
           loyalty_discount_xof: number;
           loyalty_points_used: number;
@@ -3386,6 +3852,7 @@ export type Database = {
           created_at?: string | null;
           currency?: string;
           id?: string;
+          impact_contribution_id?: string | null;
           ip_address?: string | null;
           loyalty_discount_xof?: number;
           loyalty_points_used?: number;
@@ -3409,6 +3876,7 @@ export type Database = {
           created_at?: string | null;
           currency?: string;
           id?: string;
+          impact_contribution_id?: string | null;
           ip_address?: string | null;
           loyalty_discount_xof?: number;
           loyalty_points_used?: number;
@@ -5095,6 +5563,102 @@ export type Database = {
           available_units: number;
           room_type_id: string;
         }[];
+      };
+      impact_admin_cancel_benefit_use: {
+        Args: { p_reason: string; p_use_id: string };
+        Returns: undefined;
+      };
+      impact_admin_member_benefits: {
+        Args: { p_member_reference: string };
+        Returns: Json;
+      };
+      impact_admin_members: {
+        Args: { p_campaign_id: string; p_search?: string | null };
+        Returns: {
+          contributions: number;
+          display_name: string | null;
+          email: string | null;
+          first_contribution_at: string | null;
+          member_id: string;
+          member_reference: string;
+          open_benefits: number;
+          paid_xof: number;
+          smiles_balance: number;
+          user_id: string | null;
+        }[];
+      };
+      impact_admin_overview: {
+        Args: { p_campaign_id: string };
+        Returns: Json;
+      };
+      impact_admin_refund: {
+        Args: { p_contribution_id: string; p_provider_reference: string; p_reason: string };
+        Returns: Json;
+      };
+      impact_admin_revoke_benefit: {
+        Args: { p_member_benefit_id: string; p_reason: string };
+        Returns: undefined;
+      };
+      impact_admin_transactions: {
+        Args: {
+          p_campaign_id: string;
+          p_from?: string | null;
+          p_search?: string | null;
+          p_status?: string | null;
+          p_to?: string | null;
+        };
+        Returns: {
+          amount_xof: number;
+          contribution_id: string;
+          contributor_email: string | null;
+          contributor_name: string;
+          created_at: string;
+          member_reference: string | null;
+          offer_name: string;
+          paid_at: string | null;
+          payment_method: string | null;
+          payment_status: string | null;
+          provider_status: string | null;
+          provider_transaction_id: string | null;
+          reference: string;
+          refund_reason: string | null;
+          refund_reference: string | null;
+          refunded_at: string | null;
+          status: string;
+        }[];
+      };
+      impact_admin_use_benefit: {
+        Args: {
+          p_discount_xof: number;
+          p_member_benefit_id: string;
+          p_note: string | null;
+          p_order_reference: string;
+          p_service_key: string;
+        };
+        Returns: string;
+      };
+      impact_my_overview: {
+        Args: never;
+        Returns: Json;
+      };
+      impact_public_campaign: {
+        Args: { p_slug: string };
+        Returns: Json;
+      };
+      impact_require_admin: {
+        Args: never;
+        Returns: undefined;
+      };
+      impact_start_contribution: {
+        Args: {
+          p_accept_terms: boolean;
+          p_amount_xof: number;
+          p_campaign_id: string;
+          p_name: string;
+          p_offer_id: string | null;
+          p_phone: string;
+        };
+        Returns: Json;
       };
       is_agency_owner: {
         Args: { _agency_id: string; _user_id: string };

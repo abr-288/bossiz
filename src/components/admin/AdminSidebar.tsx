@@ -27,6 +27,7 @@ import {
   Receipt,
   Ticket,
   LayoutList,
+  HeartHandshake,
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import {
@@ -152,6 +153,7 @@ const menuItems = [
   { title: "Destinations", url: "/admin/destinations", icon: MapPin },
   { title: "Culture", url: "/admin/culture", icon: Landmark },
   { title: "Actualités", url: "/admin/actualites", icon: Newspaper },
+  { title: "Bossiz Impact", url: "/admin/impact", icon: HeartHandshake },
   { title: "Événements", url: "/admin/events", icon: Ticket },
   {
     get title() {
