@@ -22,6 +22,7 @@ import {
   getPasswordStrength,
 } from "@/lib/authValidation";
 import { passwordErrorMessage } from "@/lib/passwordErrors";
+import { clearPostAuthRedirect, rememberPostAuthRedirect, safeInternalPath } from "@/lib/postAuthRedirect";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -29,13 +30,14 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   // Retour à la page d'origine après connexion (ex. fiche hôtel en cours de
   // réservation). Chemin interne uniquement, jamais une URL externe.
-  const redirectParam = searchParams.get("redirect");
-  const afterLogin =
-    redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//") ? redirectParam : "/";
+  const afterLogin = safeInternalPath(searchParams.get("redirect")) ?? "/";
+  // Venu de Bossiz Impact : la plupart des contributeurs n'ont pas encore de
+  // compte, l'inscription est donc proposée d'abord.
+  const forImpact = afterLogin.startsWith("/bossiz-impact");
   const [loading, setLoading] = useState(false);
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const [showMFAVerification, setShowMFAVerification] = useState(false);
-  const [activeTab, setActiveTab] = useState("signin");
+  const [activeTab, setActiveTab] = useState(forImpact ? "signup" : "signin");
   const [rememberMe, setRememberMe] = useState(false);
 
   // Form states
@@ -87,6 +89,8 @@ const Auth = () => {
     if (!validation.valid || !acceptTerms) return;
 
     setLoading(true);
+    // Après le lien de confirmation (qui ramène à l'accueil), retour ici.
+    rememberPostAuthRedirect(afterLogin);
 
     const { error } = await supabase.auth.signUp({
       email: signUpForm.email.trim(),
@@ -154,12 +158,14 @@ const Auth = () => {
         title: t("auth.success.login"),
         description: t("auth.success.loginDesc"),
       });
+      clearPostAuthRedirect();
       navigate(afterLogin);
     }
   };
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    rememberPostAuthRedirect(afterLogin);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -291,6 +297,11 @@ const Auth = () => {
                     </div>
                   ) : (
                     <div key="main-form">
+                      {forImpact && (
+                        <p className="mb-4 rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm" role="note">
+                          {t("ux.auth.impactNotice")}
+                        </p>
+                      )}
                       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-6 h-11 bg-muted p-1 rounded-xl">
                           <TabsTrigger

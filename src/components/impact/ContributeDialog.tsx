@@ -21,11 +21,14 @@ export function ContributeDialog({
   open,
   onOpenChange,
   initialOfferId,
+  initialAmount = null,
 }: {
   data: ImpactPublicData;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialOfferId: string | null;
+  // Montant saisi avant un passage par la connexion.
+  initialAmount?: number | null;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,10 +47,21 @@ export function ContributeDialog({
 
   useEffect(() => {
     if (!open) return;
+    const byAmount =
+      initialAmount != null
+        ? offers.find(
+            (o) =>
+              initialAmount >= Number(o.min_amount_xof) &&
+              (o.max_amount_xof == null || initialAmount <= o.max_amount_xof),
+          )
+        : undefined;
     const start =
-      offers.find((o) => o.id === initialOfferId) ?? (campaign.allow_free_amount ? null : offers[0]) ?? null;
+      byAmount ??
+      offers.find((o) => o.id === initialOfferId) ??
+      (campaign.allow_free_amount ? null : offers[0]) ??
+      null;
     setOfferId(start?.id ?? FREE);
-    setAmount(String(start?.min_amount_xof ?? campaign.min_contribution_xof));
+    setAmount(String(initialAmount ?? start?.min_amount_xof ?? campaign.min_contribution_xof));
     setAccepted(false);
     setError(null);
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -61,7 +75,7 @@ export function ContributeDialog({
       if (profile?.full_name) setName(profile.full_name);
       if (profile?.phone) setPhone(profile.phone);
     });
-  }, [open, initialOfferId, offers, campaign.allow_free_amount, campaign.min_contribution_xof]);
+  }, [open, initialOfferId, initialAmount, offers, campaign.allow_free_amount, campaign.min_contribution_xof]);
 
   const min = offer ? Number(offer.min_amount_xof) : Number(campaign.min_contribution_xof);
   const max = offer?.max_amount_xof ?? campaign.max_contribution_xof;
@@ -77,7 +91,9 @@ export function ContributeDialog({
       data: { session },
     } = await supabase.auth.getSession();
     if (!session) {
-      navigate(`/auth?redirect=${encodeURIComponent(location.pathname)}`);
+      // Session expirée : retour au formulaire, avec la formule et le montant.
+      const back = `${location.pathname}?contribuer=${offer?.id ?? "1"}&montant=${Number(amount) || ""}`;
+      navigate(`/auth?redirect=${encodeURIComponent(back)}`);
       return;
     }
     setSubmitting(true);

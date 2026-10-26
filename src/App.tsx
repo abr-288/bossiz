@@ -17,6 +17,7 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
 import RouteSeo from "@/components/RouteSeo";
 import BottomNav from "@/components/BottomNav";
+import { PostAuthRedirect } from "@/components/PostAuthRedirect";
 
 // Le chat n'apparaît qu'après la réponse au bandeau cookies : son code est
 // chargé à part pour alléger le bundle du premier affichage.
@@ -41,6 +42,7 @@ const App = () => (
                   <MotionConfig reducedMotion="user">
                     <BrowserRouter>
                       <RouteSeo />
+                      <PostAuthRedirect />
                       <AnimatedRoutes />
                       <BottomNav />
                       {/* Ordre d'apparition : cookies d'abord ; le chat et la demande de

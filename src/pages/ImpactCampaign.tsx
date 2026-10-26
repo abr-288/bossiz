@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ContributeDialog } from "@/components/impact/ContributeDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
 import { parseArticle } from "@/lib/culture";
 import {
   IMPACT_DEFAULT_SLUG,
@@ -64,17 +65,51 @@ const RichText = ({ text }: { text: string | null }) => (
 export default function ImpactCampaign() {
   const { slug = IMPACT_DEFAULT_SLUG } = useParams<{ slug: string }>();
   const { data, isLoading, isError } = useImpactCampaign(slug);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [params, setParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [offerId, setOfferId] = useState<string | null>(null);
+  const [initialAmount, setInitialAmount] = useState<number | null>(null);
 
   useEffect(() => {
     document.title = "Bossiz Impact - Ensemble, faisons grandir Bossiz | Bossiz+";
   }, []);
 
-  const open = (id: string | null) => {
+  // Un compte est nécessaire (Smiles et référence de membre y sont
+  // rattachés) : il est demandé avant le formulaire, puis on revient ici avec
+  // ?contribuer=<formule> pour rouvrir le formulaire.
+  const open = async (id: string | null) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      const back = `${location.pathname}?contribuer=${id ?? "1"}`;
+      navigate(`/auth?redirect=${encodeURIComponent(back)}`);
+      return;
+    }
     setOfferId(id);
+    setInitialAmount(null);
     setDialogOpen(true);
   };
+
+  // Retour de connexion ou d'inscription : formulaire rouvert avec la
+  // formule (et le montant) choisis avant.
+  useEffect(() => {
+    const wanted = params.get("contribuer");
+    if (!wanted || !data) return;
+    const amount = Number(params.get("montant")) || null;
+    const next = new URLSearchParams(params);
+    next.delete("contribuer");
+    next.delete("montant");
+    setParams(next, { replace: true });
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      setOfferId(wanted === "1" ? null : wanted);
+      setInitialAmount(amount);
+      setDialogOpen(true);
+    });
+  }, [params, data, setParams]);
 
   if (isLoading) {
     return (
@@ -397,7 +432,13 @@ export default function ImpactCampaign() {
         )}
       </main>
 
-      <ContributeDialog data={data} open={dialogOpen} onOpenChange={setDialogOpen} initialOfferId={offerId} />
+      <ContributeDialog
+        data={data}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        initialOfferId={offerId}
+        initialAmount={initialAmount}
+      />
     </div>
   );
 }

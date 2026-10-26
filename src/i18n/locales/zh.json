@@ -3868,6 +3868,7 @@
       "newPassword": "新密码",
       "confirmPassword": "确认密码",
       "signIn": "登录",
+      "impactNotice": "如需参与 Bossiz Impact，请创建账户或登录：您的积分将存入该账户。完成后将直接返回活动页面。",
       "signUp": "注册",
       "forgot": "忘记密码？",
       "orContinue": "或使用以下方式继续",
