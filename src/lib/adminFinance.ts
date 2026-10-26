@@ -286,7 +286,7 @@ export const TASKS: Record<string, { label: (n: number) => string; href: string 
     href: "/admin/reviews",
   },
   support_tickets: {
-    label: (n) => (n > 1 ? `${n} demandes de support partenaire ouvertes` : "1 demande de support partenaire ouverte"),
+    label: (n) => (n > 1 ? `${n} tickets support partenaires` : "1 ticket support partenaire"),
     href: "/admin/support",
   },
   payout_issues: {
@@ -298,8 +298,7 @@ export const TASKS: Record<string, { label: (n: number) => string; href: string 
     href: "/admin/hotel-commissions",
   },
   artisan_requests_waiting: {
-    label: (n) =>
-      n > 1 ? `${n} demandes artisan sans réponse depuis 48 h` : "1 demande artisan sans réponse depuis 48 h",
+    label: (n) => (n > 1 ? `${n} demandes artisan sans réponse (48 h)` : "1 demande artisan sans réponse (48 h)"),
     href: "/admin/agencies",
   },
 };

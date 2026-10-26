@@ -163,11 +163,13 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      {/* Hauteur d'écran fixe : seul le contenu défile, dans son panneau, et
+          ne dépasse jamais la barre latérale. */}
+      <div className="flex h-screen w-full overflow-hidden bg-background supports-[height:100svh]:h-svh">
         <div className="fixed top-0 left-0 right-0 h-1 z-banner bg-brand" />
         <AgencySidebar sections={sections} profileName={profileName} profilePhoto={profilePhoto} />
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 md:h-16 border-b flex items-center justify-between px-3 md:px-4 bg-background sticky top-0 z-50">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <header className="h-14 md:h-16 shrink-0 border-b flex items-center justify-between px-3 md:px-4 bg-background z-50">
             <div className="flex items-center gap-2 md:gap-4 min-w-0">
               <SidebarTrigger className="touch-target flex-shrink-0" />
               <Link to="/">
@@ -197,7 +199,7 @@ export function AgencyLayout({ children }: AgencyLayoutProps) {
               <DarkModeToggle />
             </div>
           </header>
-          <main className="flex-1 p-3 md:p-6 overflow-auto">{content}</main>
+          <main className="min-h-0 min-w-0 flex-1 overflow-auto p-3 md:p-6">{content}</main>
         </div>
       </div>
     </SidebarProvider>

@@ -103,11 +103,13 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-muted/30">
+      {/* Hauteur d'écran fixe : seul le contenu défile, dans son panneau, et
+          ne dépasse jamais la barre latérale. */}
+      <div className="flex h-screen w-full overflow-hidden bg-muted/30 supports-[height:100svh]:h-svh">
         <UserSidebar userProfile={userProfile} />
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 sticky top-0 z-50">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <header className="h-14 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-4 z-50">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
               <Link to="/">
@@ -122,7 +124,9 @@ export function UserDashboardLayout({ children, fullBleed }: UserDashboardLayout
             </div>
           </header>
 
-          <main className={cn("flex-1 overflow-auto", fullBleed ? "p-0" : "p-4 md:p-6")}>{children}</main>
+          <main className={cn("min-h-0 min-w-0 flex-1 overflow-auto", fullBleed ? "p-0" : "p-4 md:p-6")}>
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>

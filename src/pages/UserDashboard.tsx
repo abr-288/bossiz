@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,8 @@ import { getErrorMessage } from "@/lib/errorMessage";
 const UserDashboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const section = params.get("tab") === "bookings" ? "bookings" : "overview";
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [userProfile, setUserProfile] = useState<{ full_name: string; email: string; id: string } | null>(null);
@@ -277,13 +279,28 @@ const UserDashboard = () => {
           onSync={syncPendingChanges}
         />
 
-        {userProfile && <DashboardOverview userId={userProfile.id} bookings={bookings} />}
+        {/* Vue d'ensemble et gestion des réservations (annulation, paiement,
+            calendrier) dans deux onglets, pour que chacun tienne dans
+            l'écran. Sans réservation, pas d'onglet : la vue d'ensemble invite
+            déjà à réserver. */}
+        <Tabs
+          value={bookings.length > 0 ? section : "overview"}
+          onValueChange={(v) => setParams(v === "bookings" ? { tab: v } : {}, { replace: true })}
+        >
+          {bookings.length > 0 && (
+            <TabsList className="h-auto flex-wrap justify-start">
+              <TabsTrigger value="overview">{t("ux.dash.overviewTab")}</TabsTrigger>
+              <TabsTrigger value="bookings">
+                {t("ux.dash.manageBookings")} ({stats.total})
+              </TabsTrigger>
+            </TabsList>
+          )}
 
-        {/* Gestion des réservations (annulation, paiement, calendrier) :
-            masquée tant qu'il n'y en a aucune (la vue d'ensemble invite déjà à réserver) */}
-        {bookings.length > 0 && (
-          <>
-            <h2 className="pt-2 text-lg font-semibold">{t("ux.dash.manageBookings")}</h2>
+          <TabsContent value="overview" className="mt-4">
+            {userProfile && <DashboardOverview userId={userProfile.id} bookings={bookings} />}
+          </TabsContent>
+
+          <TabsContent value="bookings" className="mt-4">
             <Tabs defaultValue="all" className="w-full">
               <TabsList className="mb-4 flex-wrap h-auto gap-1">
                 <TabsTrigger value="all" className="text-xs md:text-sm">
@@ -384,8 +401,8 @@ const UserDashboard = () => {
                 <BookingCalendar bookings={bookings} />
               </TabsContent>
             </Tabs>
-          </>
-        )}
+          </TabsContent>
+        </Tabs>
       </div>
     </UserDashboardLayout>
   );
