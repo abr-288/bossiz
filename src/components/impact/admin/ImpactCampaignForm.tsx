@@ -327,6 +327,19 @@ export function ImpactCampaignForm({ campaign }: { campaign: Campaign }) {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="c-flights">Smiles sur les billets d'avion à partir de (FCFA)</Label>
+              <Input
+                id="c-flights"
+                type="number"
+                min={1}
+                value={form.smiles_flights_min_xof ?? ""}
+                onChange={(e) => set("smiles_flights_min_xof", e.target.value ? Number(e.target.value) : null)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Contribution minimale pour utiliser ses Smiles Impact sur un billet d'avion. Vide : jamais.
+              </p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="c-from">Point de départ de la validité (facultatif)</Label>
               <Input
                 id="c-from"

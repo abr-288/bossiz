@@ -705,32 +705,51 @@ serve(async (req) => {
       if (requestedPoints > 0 && (targetType === 'booking' || targetType === 'subscription')) {
         const { data: settings } = await adminSupabase!
           .from('loyalty_settings')
-          .select('point_value_xof, min_redeem_points, max_redeem_ratio')
+          .select('point_value_xof, min_redeem_points, max_redeem_ratio, impact_max_redeem_ratio')
           .maybeSingle();
         const pointValue = Number(settings?.point_value_xof) || 0;
         const minPoints = Number(settings?.min_redeem_points ?? 0);
         const maxRatio = Number(settings?.max_redeem_ratio ?? 0);
-        // Plafond : une part du montant, et au moins 100 XOF restant à payer (minimum Jèko)
-        const maxByRatio = pointValue > 0 ? Math.floor((chargeXof * maxRatio) / pointValue) : 0;
-        const maxByMinimum = pointValue > 0 ? Math.floor((chargeXof - 100) / pointValue) : 0;
-        const points = Math.min(requestedPoints, maxByRatio, maxByMinimum);
+        const impactRatio = Number(settings?.impact_max_redeem_ratio ?? 0);
+        // Plafond calculé en base (même règle que l'écran de paiement) : part
+        // générale, relevée pour les Smiles Bossiz Impact, et au moins 100 XOF
+        // restant à payer (minimum Jèko).
+        const { data: maxPoints, error: maxError } = await adminSupabase!.rpc('loyalty_max_redeemable', {
+          p_user: user.id,
+          p_amount_xof: chargeXof,
+          p_booking_id: targetType === 'booking' ? targetId : null,
+        });
+        // Repli sur la règle générale si la fonction n'est pas encore en base.
+        const fallbackMax = pointValue > 0
+          ? Math.min(Math.floor((chargeXof * maxRatio) / pointValue), Math.floor((chargeXof - 100) / pointValue))
+          : 0;
+        if (maxError) console.error('❌ loyalty_max_redeemable indisponible, plafond général appliqué:', maxError.message);
+        const points = Math.min(requestedPoints, maxError ? fallbackMax : Number(maxPoints) || 0);
 
         if (points <= 0 || points < minPoints) {
           await revertClaim();
           return errorResponse(
-            `Smiles non utilisables sur ce paiement : minimum ${minPoints} Smiles, dans la limite de ${Math.round(maxRatio * 100)} % du montant.`,
+            `Smiles non utilisables sur ce paiement : minimum ${minPoints} Smiles, dans la limite de ${Math.round(maxRatio * 100)} % du montant (${Math.round(impactRatio * 100)} % avec des Smiles Bossiz Impact).`,
             400,
           );
         }
 
-        const { data: reserved, error: reserveError } = await adminSupabase!.rpc('loyalty_reserve_redemption', {
+        // Vérifie aussi la règle Bossiz Impact : les Smiles Impact ne paient
+        // pas un billet d'avion, sauf contribution au-dessus du seuil.
+        const { data: reserved, error: reserveError } = await adminSupabase!.rpc('loyalty_reserve_redemption_checked', {
           p_user: user.id,
           p_points: points,
           p_reference: loyaltyRef,
+          p_booking_id: targetType === 'booking' ? targetId : null,
         });
-        if (reserveError || reserved !== true) {
+        if (reserveError || reserved !== 'ok') {
           await revertClaim();
-          return errorResponse('Solde de Smiles insuffisant', 409);
+          return errorResponse(
+            reserved === 'impact_flight'
+              ? "Vos Smiles Bossiz Impact ne sont pas utilisables sur les billets d'avion, sauf pour les contributions qui y donnent droit. Réduisez le nombre de Smiles ou payez sans Smiles."
+              : 'Solde de Smiles insuffisant',
+            409,
+          );
         }
 
         loyaltyPoints = points;

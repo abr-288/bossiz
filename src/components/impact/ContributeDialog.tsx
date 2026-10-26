@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
-import { formatXof, impactMethodLabel, type ImpactPublicData } from "@/lib/impact";
+import { formatXof, impactMethodLabel, offerSmiles, type ImpactPublicData } from "@/lib/impact";
 
 const FREE = "free";
 
@@ -65,6 +65,9 @@ export function ContributeDialog({
 
   const min = offer ? Number(offer.min_amount_xof) : Number(campaign.min_contribution_xof);
   const max = offer?.max_amount_xof ?? campaign.max_contribution_xof;
+  // Aperçu seulement : le nombre de Smiles est recalculé et figé par le serveur.
+  const smiles = offer ? offerSmiles(offer, Number(amount)) : 0;
+  const flights = campaign.smiles_flights_min_xof != null && Number(amount) >= campaign.smiles_flights_min_xof;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,13 +158,28 @@ export function ContributeDialog({
               max={max ?? undefined}
               step={1}
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => {
+                setAmount(e.target.value);
+                // La formule suit le montant saisi quand une formule couvre ce montant.
+                const value = Number(e.target.value);
+                const match = offers.find(
+                  (o) => value >= Number(o.min_amount_xof) && (o.max_amount_xof == null || value <= o.max_amount_xof),
+                );
+                if (match) setOfferId(match.id);
+              }}
               required
             />
             <p className="text-xs text-muted-foreground">
               Minimum {formatXof(min)}
               {max != null ? `, maximum ${formatXof(max)}` : ""}. Aucun frais supplémentaire n'est ajouté par Bossiz.
             </p>
+            {smiles > 0 && (
+              <p className="flex items-center gap-1.5 rounded-md bg-primary/5 p-2 text-sm font-medium">
+                <Smile className="h-4 w-4 shrink-0 text-primary" />
+                Vous recevrez {smiles.toLocaleString("fr-FR")} Smiles, valables {offer?.validity_months} mois
+                {flights ? ", utilisables aussi sur les billets d'avion" : ""}.
+              </p>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

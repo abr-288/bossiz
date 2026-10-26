@@ -4,11 +4,15 @@ import { Smile } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Switch } from "@/components/ui/switch";
 import { currentLocaleTag } from "@/lib/dateLocale";
+import { supabase } from "@/integrations/supabase/client";
 import { fetchLoyaltySummary, maxRedeemablePoints, type LoyaltySummary } from "@/hooks/useLoyalty";
 
 interface RedeemSmilesProps {
   // Montant à payer avant Smiles, en XOF
   amountXof: number;
+  // Réservation payée (règles Bossiz Impact : billets d'avion) ; absente pour
+  // un abonnement.
+  bookingId?: string;
   // Smiles à utiliser (0 = aucun) et réduction correspondante en XOF ;
   // le serveur revérifie tout
   onChange: (points: number, discountXof: number) => void;
@@ -16,16 +20,36 @@ interface RedeemSmilesProps {
 
 // Bloc « Utiliser mes Smiles » des pages de paiement, avec l'estimation des
 // Smiles que rapportera l'achat.
-export function RedeemSmiles({ amountXof, onChange }: RedeemSmilesProps) {
+export function RedeemSmiles({ amountXof, bookingId, onChange }: RedeemSmilesProps) {
   const { t } = useTranslation();
   const [summary, setSummary] = useState<LoyaltySummary | null>(null);
   const [enabled, setEnabled] = useState(false);
+
+  // Maximum calculé en base (loyalty_redeem_quote), comme dans
+  // process-payment : 10 % du montant, jusqu'à 50 % avec des Smiles Bossiz
+  // Impact. En cas d'échec, la règle générale sert d'estimation.
+  const [serverMax, setServerMax] = useState<number | null>(null);
 
   useEffect(() => {
     void fetchLoyaltySummary().then(setSummary);
   }, []);
 
-  const max = summary ? maxRedeemablePoints(summary, amountXof) : 0;
+  useEffect(() => {
+    let cancelled = false;
+    setServerMax(null);
+    if (amountXof <= 0) return;
+    void supabase
+      .rpc("loyalty_redeem_quote", { p_amount_xof: amountXof, p_booking_id: bookingId ?? null })
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        setServerMax(Number((data as { max_points?: number }).max_points ?? 0));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [amountXof, bookingId]);
+
+  const max = summary ? (serverMax ?? maxRedeemablePoints(summary, amountXof)) : 0;
   const points = enabled ? max : 0;
   const pointValue = summary?.settings.point_value_xof ?? 0;
 

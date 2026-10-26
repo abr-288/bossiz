@@ -2502,6 +2502,8 @@
       "help_point_value_xof": "Réduction accordée pour 1 Smile utilisé.",
       "field_max_redeem_ratio": "Part maximale d'un paiement en Smiles",
       "help_max_redeem_ratio": "Au-delà de 10 %, Bossiz peut verser à une agence plus qu'il n'encaisse.",
+      "field_impact_max_redeem_ratio": "Part maximale d'un paiement avec des Smiles Bossiz Impact",
+      "help_impact_max_redeem_ratio": "Plafond relevé pour les membres Bossiz Impact. Bossiz absorbe la réduction : le partenaire reste payé sur le prix total.",
       "field_min_redeem_points": "Minimum de Smiles pour en utiliser",
       "help_min_redeem_points": "En dessous, l'option n'apparaît pas au paiement.",
       "field_points_validity_months": "Validité d'un Smile (mois)",

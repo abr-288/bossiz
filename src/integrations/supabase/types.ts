@@ -2169,6 +2169,7 @@ export type Database = {
           name: string;
           secondary_tagline: string | null;
           slug: string;
+          smiles_flights_min_xof: number | null;
           starts_at: string | null;
           status: string;
           summary: string | null;
@@ -2200,6 +2201,7 @@ export type Database = {
           name: string;
           secondary_tagline?: string | null;
           slug: string;
+          smiles_flights_min_xof?: number | null;
           starts_at?: string | null;
           status?: string;
           summary?: string | null;
@@ -2231,6 +2233,7 @@ export type Database = {
           name?: string;
           secondary_tagline?: string | null;
           slug?: string;
+          smiles_flights_min_xof?: number | null;
           starts_at?: string | null;
           status?: string;
           summary?: string | null;
@@ -2436,6 +2439,7 @@ export type Database = {
           min_amount_xof: number;
           name: string;
           smiles_awarded: number;
+          smiles_percent: number | null;
           sort_order: number;
           terms: string | null;
           updated_at: string;
@@ -2454,6 +2458,7 @@ export type Database = {
           min_amount_xof: number;
           name: string;
           smiles_awarded?: number;
+          smiles_percent?: number | null;
           sort_order?: number;
           terms?: string | null;
           updated_at?: string;
@@ -2472,6 +2477,7 @@ export type Database = {
           min_amount_xof?: number;
           name?: string;
           smiles_awarded?: number;
+          smiles_percent?: number | null;
           sort_order?: number;
           terms?: string | null;
           updated_at?: string;
@@ -2618,6 +2624,7 @@ export type Database = {
         Row: {
           daily_checkin_points: number;
           id: boolean;
+          impact_max_redeem_ratio: number;
           max_redeem_ratio: number;
           min_redeem_points: number;
           point_value_xof: number;
@@ -2632,6 +2639,7 @@ export type Database = {
         Insert: {
           daily_checkin_points?: number;
           id?: boolean;
+          impact_max_redeem_ratio?: number;
           max_redeem_ratio?: number;
           min_redeem_points?: number;
           point_value_xof?: number;
@@ -2646,6 +2654,7 @@ export type Database = {
         Update: {
           daily_checkin_points?: number;
           id?: boolean;
+          impact_max_redeem_ratio?: number;
           max_redeem_ratio?: number;
           min_redeem_points?: number;
           point_value_xof?: number;
@@ -5779,6 +5788,26 @@ export type Database = {
       loyalty_reserve_redemption: {
         Args: { p_points: number; p_reference: string; p_user: string };
         Returns: boolean;
+      };
+      loyalty_reserve_redemption_checked: {
+        Args: { p_booking_id: string | null; p_points: number; p_reference: string; p_user: string };
+        Returns: string;
+      };
+      loyalty_impact_flight_locked: {
+        Args: { p_user: string };
+        Returns: number;
+      };
+      loyalty_impact_available: {
+        Args: { p_flight: boolean; p_user: string };
+        Returns: number;
+      };
+      loyalty_max_redeemable: {
+        Args: { p_amount_xof: number; p_booking_id: string | null; p_user: string };
+        Returns: number;
+      };
+      loyalty_redeem_quote: {
+        Args: { p_amount_xof: number; p_booking_id?: string | null };
+        Returns: Json;
       };
       owns_hotel_service: {
         Args: { _require_enabled: boolean; _service_id: string };

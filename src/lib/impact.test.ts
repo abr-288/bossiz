@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { describeBenefit, parseImpactPublic, toCsv } from "./impact";
+import { describeBenefit, offerSmiles, parseImpactPublic, toCsv } from "./impact";
+
+describe("offerSmiles", () => {
+  it("applique le pourcentage de la formule, arrondi inférieur, comme le serveur", () => {
+    expect(offerSmiles({ smiles_awarded: 0, smiles_percent: 50 }, 10000)).toBe(5000);
+    expect(offerSmiles({ smiles_awarded: 0, smiles_percent: 65 }, 50001)).toBe(32500);
+    expect(offerSmiles({ smiles_awarded: 1000, smiles_percent: 80 }, 100000)).toBe(81000);
+  });
+
+  it("ignore un montant invalide", () => {
+    expect(offerSmiles({ smiles_awarded: 0, smiles_percent: 100 }, Number.NaN)).toBe(0);
+  });
+});
 
 describe("toCsv", () => {
   it("neutralise les formules et échappe les séparateurs", () => {

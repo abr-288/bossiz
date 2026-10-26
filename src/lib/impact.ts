@@ -97,6 +97,8 @@ export interface ImpactOffer {
   min_amount_xof: number;
   max_amount_xof: number | null;
   smiles_awarded: number;
+  // Part du montant versé convertie en Smiles (1 Smile par FCFA).
+  smiles_percent: number | null;
   validity_months: number;
   terms: string | null;
   available: boolean;
@@ -138,6 +140,8 @@ export interface ImpactCampaign {
   contact_email: string | null;
   contact_phone: string | null;
   accepted_methods: string[];
+  // Contribution minimale pour utiliser ses Smiles sur les billets d'avion.
+  smiles_flights_min_xof: number | null;
 }
 
 export interface ImpactPublicData {
@@ -168,8 +172,20 @@ export function parseImpactPublic(value: unknown): ImpactPublicData | null {
     members: Number(v.members ?? 0),
     percent: Number(v.percent ?? 0),
     is_open: v.is_open === true,
-    offers: asArray<ImpactOffer>(v.offers).map((o) => ({ ...o, benefits: asArray(o.benefits) })),
+    offers: asArray<ImpactOffer>(v.offers).map((o) => ({
+      ...o,
+      smiles_awarded: Number(o.smiles_awarded ?? 0),
+      smiles_percent: o.smiles_percent == null ? null : Number(o.smiles_percent),
+      benefits: asArray(o.benefits),
+    })),
   };
+}
+
+// Smiles reçus pour un montant donné : même calcul que
+// impact_start_contribution (montant fixe + pourcentage, arrondi inférieur).
+export function offerSmiles(offer: Pick<ImpactOffer, "smiles_awarded" | "smiles_percent">, amountXof: number) {
+  const amount = Number.isFinite(amountXof) && amountXof > 0 ? amountXof : 0;
+  return Number(offer.smiles_awarded ?? 0) + Math.floor((amount * Number(offer.smiles_percent ?? 0)) / 100);
 }
 
 export function useImpactCampaign(slug: string) {

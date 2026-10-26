@@ -2473,6 +2473,8 @@
       "help_point_value_xof": "每使用 1 Smile 抵扣的金额。",
       "field_max_redeem_ratio": "单笔付款可用 Smiles 抵扣的上限",
       "help_max_redeem_ratio": "超过 10% 时，Bossiz 支付给代理商的金额可能超过实收金额。",
+      "field_impact_max_redeem_ratio": "使用 Bossiz Impact 积分时的最高支付比例",
+      "help_impact_max_redeem_ratio": "Bossiz Impact 会员的更高上限。折扣由 Bossiz 承担：合作伙伴仍按全价结算。",
       "field_min_redeem_points": "最低可用 Smiles",
       "help_min_redeem_points": "低于此数量时，付款页不显示该选项。",
       "field_points_validity_months": "Smile 有效期（月）",

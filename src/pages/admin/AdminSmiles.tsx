@@ -58,6 +58,7 @@ const SETTING_FIELDS: { key: string; percent?: boolean; step?: string }[] = [
   { key: "points_per_100_xof", step: "0.1" },
   { key: "point_value_xof", step: "0.1" },
   { key: "max_redeem_ratio", percent: true },
+  { key: "impact_max_redeem_ratio", percent: true },
   { key: "min_redeem_points" },
   { key: "points_validity_months" },
   { key: "daily_checkin_points" },

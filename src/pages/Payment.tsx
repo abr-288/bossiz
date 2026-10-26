@@ -454,7 +454,11 @@ export default function Payment() {
                 </div>
 
                 {(booking.currency || "XOF") === "XOF" && (
-                  <RedeemSmiles amountXof={amountToPay} onChange={handleSmilesChange} />
+                  <RedeemSmiles
+                    amountXof={amountToPay}
+                    bookingId={bookingId ?? undefined}
+                    onChange={handleSmilesChange}
+                  />
                 )}
 
                 {booking.notes && (

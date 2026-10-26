@@ -59,6 +59,7 @@ export function ImpactOffersManager({ campaignId }: { campaignId: string }) {
       min_amount_xof: Number(offer.min_amount_xof),
       max_amount_xof: offer.max_amount_xof ?? null,
       smiles_awarded: Number(offer.smiles_awarded ?? 0),
+      smiles_percent: offer.smiles_percent ?? null,
       validity_months: offer.validity_months ?? null,
       available_from: offer.available_from ?? null,
       available_until: offer.available_until ?? null,
@@ -140,7 +141,9 @@ export function ImpactOffersManager({ campaignId }: { campaignId: string }) {
                 <CardDescription>
                   {formatXof(o.min_amount_xof)}
                   {o.max_amount_xof != null ? ` à ${formatXof(o.max_amount_xof)}` : " et plus"} ·{" "}
-                  {o.smiles_awarded.toLocaleString("fr-FR")} Smiles
+                  {o.smiles_percent ? `${o.smiles_percent} % en Smiles` : ""}
+                  {o.smiles_percent && o.smiles_awarded ? " + " : ""}
+                  {o.smiles_awarded || !o.smiles_percent ? `${o.smiles_awarded.toLocaleString("fr-FR")} Smiles` : ""}
                   {o.max_members ? ` · ${o.max_members} membres max.` : ""}
                 </CardDescription>
               </div>
@@ -256,7 +259,22 @@ export function ImpactOffersManager({ campaignId }: { campaignId: string }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="o-smiles">Smiles attribués</Label>
+                <Label htmlFor="o-percent">% du montant en Smiles</Label>
+                <Input
+                  id="o-percent"
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.01"
+                  value={offer.smiles_percent ?? ""}
+                  onChange={(e) => setOffer({ ...offer, smiles_percent: num(e.target.value) || null })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  1 Smile par FCFA. Ex. : 50 % de 10 000 FCFA = 5 000 Smiles.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="o-smiles">Smiles fixes en plus</Label>
                 <Input
                   id="o-smiles"
                   type="number"

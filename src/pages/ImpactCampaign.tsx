@@ -15,6 +15,7 @@ import {
   formatImpactDate,
   formatXof,
   impactMethodLabel,
+  offerSmiles,
   useImpactCampaign,
 } from "@/lib/impact";
 import { CheckCircle2, Circle, HeartHandshake, Mail, Phone, ShieldCheck, Smile, Users } from "lucide-react";
@@ -239,13 +240,26 @@ export default function ImpactCampaign() {
                   <p className="text-2xl font-bold text-primary">dès {formatXof(offer.min_amount_xof)}</p>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col gap-3 text-sm">
-                  {offer.description && <p className="text-muted-foreground">{offer.description}</p>}
+                  {offer.smiles_percent ? (
+                    <p className="flex items-center gap-1.5 font-medium">
+                      <Smile className="h-4 w-4 text-primary" />
+                      {offer.smiles_percent.toLocaleString("fr-FR")} % de votre contribution en Smiles
+                    </p>
+                  ) : null}
                   {offer.smiles_awarded > 0 && (
                     <p className="flex items-center gap-1.5 font-medium">
                       <Smile className="h-4 w-4 text-primary" />
-                      {offer.smiles_awarded.toLocaleString("fr-FR")} Smiles Bossiz Smiles
+                      {offer.smiles_percent ? "+ " : ""}
+                      {offer.smiles_awarded.toLocaleString("fr-FR")} Smiles offerts
                     </p>
                   )}
+                  {(offer.smiles_percent || offer.smiles_awarded > 0) && (
+                    <p className="text-xs text-muted-foreground">
+                      Exemple : {formatXof(offer.min_amount_xof)} ={" "}
+                      {offerSmiles(offer, offer.min_amount_xof).toLocaleString("fr-FR")} Smiles.
+                    </p>
+                  )}
+                  {offer.description && <p className="text-muted-foreground">{offer.description}</p>}
                   {offer.benefits.length > 0 && (
                     <ul className="space-y-2">
                       {offer.benefits.map((b, i) => (
@@ -260,7 +274,10 @@ export default function ImpactCampaign() {
                       ))}
                     </ul>
                   )}
-                  <p className="text-xs text-muted-foreground">Avantages valables {offer.validity_months} mois.</p>
+                  <p className="text-xs text-muted-foreground">
+                    {offer.benefits.length > 0 ? "Smiles et avantages valables" : "Smiles valables"}{" "}
+                    {offer.validity_months} mois.
+                  </p>
                   {offer.terms && <p className="text-xs text-muted-foreground">{offer.terms}</p>}
                   <Button
                     className="mt-auto"
@@ -291,10 +308,15 @@ export default function ImpactCampaign() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               <p>
-                En remerciement, les Membres Impact reçoivent des avantages commerciaux gérés par le programme de
-                fidélité Bossiz Smiles : points, réductions ou prestations sur les services Bossiz indiqués dans chaque
-                formule.
+                En remerciement, les Membres Impact reçoivent des Smiles Bossiz (1 Smile = 1 FCFA de réduction) et,
+                selon la formule, des avantages commerciaux, utilisables sur la conciergerie et les services Bossiz.
               </p>
+              {campaign.smiles_flights_min_xof ? (
+                <p>
+                  Les billets d'avion sont réservés aux contributions de {formatXof(campaign.smiles_flights_min_xof)} et
+                  plus.
+                </p>
+              ) : null}
               <p>
                 Ils sont valables {campaign.benefits_validity_months} mois
                 {campaign.benefits_valid_from

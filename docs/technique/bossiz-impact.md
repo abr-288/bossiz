@@ -42,6 +42,27 @@ totaux ne comptent que les contributions `paid` (non remboursées).
 
 Aucune action admin ne permet de marquer une contribution payée : seule la confirmation vérifiée du prestataire le fait.
 
+## Règles des Smiles (migration `20261031000000_impact_smiles_rules.sql`)
+
+- **Smiles en pourcentage** : `impact_offers.smiles_percent` convertit une part du montant versé en Smiles (1 Smile
+  par FCFA, arrondi inférieur), en plus de `smiles_awarded` (fixe). Le nombre de Smiles est calculé et figé dans
+  `offer_snapshot` par `impact_start_contribution`, puis attribué tel quel à la confirmation.
+- **Billets d'avion** : les Smiles Impact ne paient pas une réservation de service `flight` ou `flight_hotel`, sauf pour
+  une contribution d'au moins `impact_campaigns.smiles_flights_min_xof` (`smiles_on_flights` dans le snapshot).
+  `process-payment` réserve les Smiles avec `loyalty_reserve_redemption_checked` (réponse `ok`, `insufficient` ou
+  `impact_flight`). Les achats hors billets d'avion consomment d'abord les Smiles Impact
+  (`loyalty_impact_flight_locked`).
+- **Plafond** (migration `20261101000000_impact_smiles_cap.sql`) : sur un paiement, tous les Smiles partagent la part
+  générale (`loyalty_settings.max_redeem_ratio`, 10 %) ; au-delà et jusqu'à `impact_max_redeem_ratio` (50 %), seuls
+  des Smiles Impact disponibles pour ce paiement servent. `loyalty_max_redeemable` (serveur, utilisé par
+  `process-payment`) et `loyalty_redeem_quote` (écran de paiement) font le même calcul. Le partenaire reste payé sur
+  le prix total : Bossiz absorbe la réduction.
+- **Campagne « Ensemble pour la croissance de Bossiz »** : objectif 10 000 000 FCFA, minimum 10 000 FCFA, sans montant
+  libre, tous les moyens de paiement Jèko. Formules Découverte (10 000 à 49 999 FCFA, 50 %), Soutien (50 000 à 99 999,
+  65 %), Partenaire Smile (100 000 à 299 999, 80 %), Grand soutien (300 000 et plus, 100 %, billets d'avion compris).
+  Utilisation des fonds, étapes, FAQ et conditions (version 1, à valider) renseignées. Cette configuration n'est
+  appliquée que si la campagne n'a encore aucune contribution ; ensuite, tout se règle dans `/admin/impact`.
+
 ## Remboursement
 
 Le remboursement n'est **pas** déclenché depuis Bossiz : il est effectué chez le prestataire (tableau de bord Jèko), puis
