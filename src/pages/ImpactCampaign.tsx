@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { ContributeDialog } from "@/components/impact/ContributeDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -80,21 +78,18 @@ export default function ImpactCampaign() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col pt-16">
-        <Navbar />
+      <div className="min-h-screen bg-background flex flex-col">
         <main className="flex-1 container mx-auto px-4 py-16 space-y-4">
           <div className="h-10 w-2/3 rounded bg-muted animate-pulse" />
           <div className="h-40 rounded-2xl bg-muted animate-pulse" />
         </main>
-        <Footer />
       </div>
     );
   }
 
   if (isError || !data) {
     return (
-      <div className="min-h-screen bg-background flex flex-col pt-16">
-        <Navbar />
+      <div className="min-h-screen bg-background flex flex-col">
         <main className="flex-1 container mx-auto px-4 py-16 text-center">
           <HeartHandshake className="mx-auto mb-3 h-10 w-10 text-primary" />
           <h1 className="text-2xl font-bold mb-2">Bossiz Impact arrive bientôt</h1>
@@ -103,7 +98,6 @@ export default function ImpactCampaign() {
             <Link to="/">Retour à l'accueil</Link>
           </Button>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -123,19 +117,25 @@ export default function ImpactCampaign() {
   const canContribute = data.is_open && !!campaign.terms;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pt-16">
-      <Navbar />
-
+    <div className="min-h-screen bg-background flex flex-col">
       {campaign.status === "draft" && (
         <div className="bg-warning px-4 py-2 text-center text-sm text-warning-foreground" role="status">
           Aperçu administrateur : cette campagne est en brouillon et n'est pas visible du public.
         </div>
       )}
 
-      <header className="bg-brand text-brand-foreground">
+      <header className="relative isolate overflow-hidden bg-brand text-brand-foreground">
+        {/* Bannière : logo Bossiz en grand, recouvert d'un dégradé aux
+            couleurs de la marque pour garder le texte lisible. */}
+        <img
+          src="/logo-bossiz.png"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -z-20 h-[120%] max-w-none -translate-x-1/2 -translate-y-1/2 select-none md:h-[190%]"
+        />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-brand/80" />
         <div className="container mx-auto grid gap-8 px-4 py-12 md:grid-cols-[1.2fr_1fr] md:py-16">
           <div className="space-y-4">
-            <Badge className="bg-white/15 text-white border-white/30">Bossiz Impact</Badge>
             <h1 className="text-3xl md:text-5xl font-bold leading-tight">{campaign.tagline || campaign.name}</h1>
             {campaign.secondary_tagline && (
               <p className="text-lg md:text-xl text-white/90">{campaign.secondary_tagline}</p>
@@ -398,7 +398,6 @@ export default function ImpactCampaign() {
       </main>
 
       <ContributeDialog data={data} open={dialogOpen} onOpenChange={setDialogOpen} initialOfferId={offerId} />
-      <Footer />
     </div>
   );
 }
