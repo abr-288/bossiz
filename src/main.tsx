@@ -7,6 +7,7 @@ import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
 import { i18nReady } from "./i18n/config";
+import { bootIntroPlayed, markBootScreenHandedOver } from "./lib/bootScreen";
 
 // Une île de code (route lazy-loaded) référencée par un onglet resté ouvert
 // depuis avant un déploiement n'existe plus une fois le build suivant publié
@@ -55,10 +56,13 @@ if ("serviceWorker" in navigator) {
 // React.StrictMode active des vérifications supplémentaires en développement
 // On attend que la langue initiale soit chargée (immédiat en français) ; en
 // cas d'échec, i18next retombe sur le français et le rendu a lieu quand même.
-const renderApp = () =>
+// On attend aussi la fin de l'animation d'entrée du logo (src/lib/bootScreen).
+const renderApp = () => {
+  markBootScreenHandedOver();
   createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <App />
     </React.StrictMode>,
   );
-i18nReady.then(renderApp, renderApp);
+};
+Promise.all([i18nReady.catch(() => undefined), bootIntroPlayed()]).then(renderApp, renderApp);

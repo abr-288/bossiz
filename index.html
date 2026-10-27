@@ -193,6 +193,11 @@
         from { transform: scaleX(0); }
         to { transform: scaleX(1); }
       }
+      /* Relais de l'écran de démarrage (BrandLoader) : logo déjà en place, il ondule. */
+      @media (prefers-reduced-motion: no-preference) {
+        .bz-still .bz-cube { animation: bz-hop 2.4s ease-in-out infinite; }
+        .bz-still .bz-sub, .bz-still .bz-sub::before, .bz-still .bz-sub::after { animation: none; }
+      }
       @media (prefers-reduced-motion: reduce) {
         .bz-cube, .bz-sub, .bz-sub::before, .bz-sub::after { animation: none; }
       }
