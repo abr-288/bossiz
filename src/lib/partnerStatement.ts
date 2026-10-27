@@ -92,7 +92,7 @@ export function buildStatementHtml({
   </div>
   <div class="totals">
     <div>Montant brut<strong>${fcfa(summary.gross)}</strong></div>
-    <div>Commissions Bossiz<strong>${fcfa(summary.commission)}</strong></div>
+    <div>Commissions Conciergerie Bossiz<strong>${fcfa(summary.commission)}</strong></div>
     <div>Net partenaire<strong>${fcfa(summary.net)}</strong></div>
     <div>Déjà versé<strong>${fcfa(summary.paid_out)}</strong></div>
     <div>En attente de versement<strong>${fcfa(summary.pending_payout)}</strong></div>
@@ -109,7 +109,7 @@ export function buildStatementHtml({
   </table>
   <p class="note">
     Commission = montant brut × taux du contrat en vigueur à la date de la transaction. Net partenaire = montant brut − commission.
-    Paiement en ligne : Bossiz encaisse et reverse le net. Paiement sur place : le partenaire encaisse et Bossiz facture la commission.
+    Paiement en ligne : Conciergerie Bossiz encaisse et reverse le net. Paiement sur place : le partenaire encaisse et Conciergerie Bossiz facture la commission.
     Les transactions annulées ne sont pas comptées dans les totaux.
   </p>
 </body>

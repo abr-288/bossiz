@@ -62,7 +62,7 @@ export interface BossizGlobalConfig {
 const DEFAULT_BOSSIZ_SITES: BossizSiteConfig[] = [
   {
     id: "cote-d-ivoire",
-    title: "Bossiz Côte d'Ivoire",
+    title: "Conciergerie Bossiz Côte d'Ivoire",
     subtitle: "Excellence en Conciergerie",
     tagline: "L'élégance ivoirienne au service de l'excellence",
     description:
@@ -103,7 +103,7 @@ const DEFAULT_BOSSIZ_SITES: BossizSiteConfig[] = [
   },
   {
     id: "senegal",
-    title: "Bossiz Sénégal",
+    title: "Conciergerie Bossiz Sénégal",
     subtitle: "Conciergerie d'Exception",
     tagline: "La tradition sénégalaise au service du luxe",
     description:
@@ -299,7 +299,7 @@ export const useBossizConfig = () => {
         setGlobalConfig(globalData.config as unknown as BossizGlobalConfig);
       }
     } catch (error) {
-      console.error("Error fetching Bossiz config:", error);
+      console.error("Error fetching Conciergerie Bossiz config:", error);
     } finally {
       setLoading(false);
     }

@@ -103,7 +103,7 @@ serve(async (req) => {
     if (jekoEvent === 'TRANSACTION_COMPLETED' && jekoTransaction.transactionType === 'transfer') {
       const reference = jekoTransaction.transactionDetails?.reference;
       if (!reference || !String(reference).startsWith('bossiz-')) {
-        console.log('   - Transfert Jèko sans référence de reversement Bossiz, ignoré');
+        console.log('   - Transfert Jèko sans référence de reversement Conciergerie Bossiz, ignoré');
         return jsonResponse({ success: true, ignored: true });
       }
       if (jekoTransaction.storeId !== jekoRow.credentials?.store_id) {

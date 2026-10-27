@@ -179,7 +179,7 @@ export const ArtisanOrderDialog = ({
 
           <p className="text-xs text-muted-foreground">
             {custom
-              ? "Votre demande est transmise à l'artisan via Bossiz. Il vous recontacte avec un prix, puis confirme la commande sur Bossiz."
+              ? "Votre demande est transmise à l'artisan via Conciergerie Bossiz. Il vous recontacte avec un prix, puis confirme la commande sur Conciergerie Bossiz."
               : "Cette demande est transmise à l'artisan, qui vous recontactera pour confirmer la disponibilité et les modalités de paiement/livraison."}
           </p>
         </div>

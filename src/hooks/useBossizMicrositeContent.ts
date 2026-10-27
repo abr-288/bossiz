@@ -101,7 +101,7 @@ export const useBossizMicrositeContent = (country: BossizCountry) => {
       if (error) throw error;
       setContent((data?.config_value as unknown as BossizMicrositeContent) ?? null);
     } catch (error) {
-      console.error("Error fetching Bossiz microsite content:", error);
+      console.error("Error fetching Conciergerie Bossiz microsite content:", error);
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,7 @@ export const useBossizMicrositeContent = (country: BossizCountry) => {
         setContent(updates);
         toast({ title: "Succès", description: "Contenu mis à jour" });
       } catch (error) {
-        console.error("Error updating Bossiz microsite content:", error);
+        console.error("Error updating Conciergerie Bossiz microsite content:", error);
         toast({
           title: "Erreur",
           description: getErrorMessage(error) || "Impossible de mettre à jour le contenu",

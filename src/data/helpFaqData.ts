@@ -114,7 +114,7 @@ export const HELP_DOMAINS: HelpDomain[] = [
   },
   {
     id: "conciergerie",
-    label: "Bossiz Conciergerie",
+    label: "Conciergerie Bossiz",
     description: "Services de conciergerie premium CI et SN",
     icon: Crown,
   },
@@ -1839,33 +1839,33 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   // ───────────────────────── Bossiz Conciergerie ─────────────────────────
   {
     domain: "conciergerie",
-    question: "Qu'est-ce que Bossiz Conciergerie ?",
+    question: "Qu'est-ce que Conciergerie Bossiz ?",
     answer:
-      "Bossiz Conciergerie est notre service premium de conciergerie personnalisée, actuellement disponible en Côte d'Ivoire et au Sénégal.",
+      "Conciergerie Bossiz est notre service premium de conciergerie personnalisée, actuellement disponible en Côte d'Ivoire et au Sénégal.",
   },
   {
     domain: "conciergerie",
-    question: "Quels services propose Bossiz Conciergerie ?",
+    question: "Quels services propose Conciergerie Bossiz ?",
     answer:
       "Des formules mensuelles et des offres court séjour, incluant assistance personnalisée et accompagnement sur mesure selon vos besoins.",
   },
   {
     domain: "conciergerie",
-    question: "Comment souscrire à une formule Bossiz Conciergerie ?",
+    question: "Comment souscrire à une formule Conciergerie Bossiz ?",
     answer:
-      "Consultez la page Bossiz Conciergerie CI ou SN, choisissez votre formule et faites une demande de devis directement en ligne.",
+      "Consultez la page Conciergerie Bossiz CI ou SN, choisissez votre formule et faites une demande de devis directement en ligne.",
   },
   {
     domain: "conciergerie",
-    question: "Bossiz Conciergerie est-il disponible dans d'autres pays ?",
+    question: "Conciergerie Bossiz est-il disponible dans d'autres pays ?",
     answer:
       "Actuellement, le service est disponible en Côte d'Ivoire et au Sénégal ; d'autres marchés pourront être ajoutés à l'avenir.",
   },
   {
     domain: "conciergerie",
-    question: "Comment contacter l'équipe Bossiz Conciergerie ?",
+    question: "Comment contacter l'équipe Conciergerie Bossiz ?",
     answer:
-      "Utilisez le formulaire de contact disponible sur la page Bossiz Conciergerie de votre pays, ou notre support général.",
+      "Utilisez le formulaire de contact disponible sur la page Conciergerie Bossiz de votre pays, ou notre support général.",
   },
   {
     domain: "conciergerie",
@@ -1875,25 +1875,25 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   },
   {
     domain: "conciergerie",
-    question: "Puis-je résilier ma formule Bossiz Conciergerie à tout moment ?",
+    question: "Puis-je résilier ma formule Conciergerie Bossiz à tout moment ?",
     answer:
       "Les conditions de résiliation dépendent de la formule souscrite ; consultez les détails de votre offre ou contactez l'équipe conciergerie.",
   },
   {
     domain: "conciergerie",
-    question: "Bossiz Conciergerie propose-t-il un accompagnement personnalisé ?",
+    question: "Conciergerie Bossiz propose-t-il un accompagnement personnalisé ?",
     answer:
       "Oui, l'accompagnement est adapté à vos besoins spécifiques, discutés avec l'équipe conciergerie lors de la mise en place de votre formule.",
   },
   {
     domain: "conciergerie",
-    question: "Comment obtenir un devis pour un service Bossiz Conciergerie ?",
+    question: "Comment obtenir un devis pour un service Conciergerie Bossiz ?",
     answer:
-      "Remplissez le formulaire de demande de devis sur la page Bossiz Conciergerie CI ou SN correspondant à votre besoin.",
+      "Remplissez le formulaire de demande de devis sur la page Conciergerie Bossiz CI ou SN correspondant à votre besoin.",
   },
   {
     domain: "conciergerie",
-    question: "Les paiements pour Bossiz Conciergerie se font-ils sur la même plateforme ?",
+    question: "Les paiements pour Conciergerie Bossiz se font-ils sur la même plateforme ?",
     answer: "Oui, les paiements sont traités via le même système sécurisé que le reste de la plateforme Bossiz+.",
   },
 
@@ -1969,7 +1969,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
     domain: "general",
     question: "Dans quels pays Bossiz+ opère-t-il ?",
     answer:
-      "Notre plateforme est principalement orientée vers la Côte d'Ivoire et l'Afrique de l'Ouest, avec des services complémentaires comme Bossiz Conciergerie au Sénégal.",
+      "Notre plateforme est principalement orientée vers la Côte d'Ivoire et l'Afrique de l'Ouest, avec des services complémentaires comme Conciergerie Bossiz au Sénégal.",
   },
   {
     domain: "general",
@@ -2033,7 +2033,7 @@ export const HELP_FAQ: HelpFaqEntry[] = [
   },
   {
     domain: "general",
-    question: "Comment fonctionne le service conciergerie en dehors de Bossiz Conciergerie ?",
+    question: "Comment fonctionne le service conciergerie en dehors de Conciergerie Bossiz ?",
     answer:
       "Notre assistant IA disponible via le chat peut répondre à de nombreuses questions générales et vous orienter vers le bon service ou interlocuteur.",
   },

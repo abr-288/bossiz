@@ -24,12 +24,12 @@ const BASE_FAQ = [
   {
     question: "Ma contribution est-elle un placement ?",
     answer:
-      "Non. Votre contribution est volontaire et soutient le développement de Bossiz. Elle ne donne droit à aucun rendement, intérêt, dividende ni part de l'entreprise, et n'est pas remboursable comme un prêt.",
+      "Non. Votre contribution est volontaire et soutient le développement de Conciergerie Bossiz. Elle ne donne droit à aucun rendement, intérêt, dividende ni part de l'entreprise, et n'est pas remboursable comme un prêt.",
   },
   {
     question: "Que sont les Smiles ?",
     answer:
-      "Les Smiles sont les points du programme de fidélité Bossiz Smiles. Ils ne sont pas de l'argent : ils ne se retirent pas et ne se convertissent pas en espèces. Ils s'utilisent sur les services Bossiz selon les conditions du programme.",
+      "Les Smiles sont les points du programme de fidélité Bossiz Smiles. Ils ne sont pas de l'argent : ils ne se retirent pas et ne se convertissent pas en espèces. Ils s'utilisent sur les services Conciergerie Bossiz selon les conditions du programme.",
   },
   {
     question: "Quand ma contribution est-elle confirmée ?",
@@ -73,7 +73,7 @@ export default function ImpactCampaign() {
   const [initialAmount, setInitialAmount] = useState<number | null>(null);
 
   useEffect(() => {
-    document.title = "Bossiz Impact - Ensemble, faisons grandir Bossiz | Bossiz+";
+    document.title = "Bossiz Impact - Ensemble, faisons grandir Conciergerie Bossiz | Bossiz+";
   }, []);
 
   // Un compte est nécessaire (Smiles et référence de membre y sont
@@ -344,7 +344,8 @@ export default function ImpactCampaign() {
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               <p>
                 En remerciement, les Membres Impact reçoivent des Smiles Bossiz (1 Smile = 1 FCFA de réduction) et,
-                selon la formule, des avantages commerciaux, utilisables sur la conciergerie et les services Bossiz.
+                selon la formule, des avantages commerciaux, utilisables sur la conciergerie et les services
+                Conciergerie Bossiz.
               </p>
               {campaign.smiles_flights_min_xof ? (
                 <p>
@@ -370,8 +371,8 @@ export default function ImpactCampaign() {
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Le paiement se fait sur la page sécurisée de notre prestataire Jèko, par Mobile Money. Bossiz ne vous
-                demande jamais votre code secret.
+                Le paiement se fait sur la page sécurisée de notre prestataire Jèko, par Mobile Money. Conciergerie
+                Bossiz ne vous demande jamais votre code secret.
               </p>
               {campaign.accepted_methods.length > 0 ? (
                 <div className="flex flex-wrap gap-2">

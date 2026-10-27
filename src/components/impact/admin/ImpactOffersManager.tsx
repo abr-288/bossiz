@@ -507,8 +507,8 @@ function BenefitForm({
         Actif
       </label>
       <p className="text-xs text-muted-foreground sm:col-span-2">
-        Validation : l'avantage est appliqué par l'équipe Bossiz, qui vérifie l'éligibilité du membre dans l'onglet
-        Membres avant de l'enregistrer sur la commande.
+        Validation : l'avantage est appliqué par l'équipe Conciergerie Bossiz, qui vérifie l'éligibilité du membre dans
+        l'onglet Membres avant de l'enregistrer sur la commande.
       </p>
       <div className="flex justify-end gap-2 sm:col-span-2">
         <Button type="button" variant="outline" onClick={onCancel}>

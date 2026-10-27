@@ -21,7 +21,7 @@ export const HELP_DOMAINS_ZH: Record<string, [label: string, description: string
   subscriptions: ["订阅", "Basic、Premium、Business 和 Corporate 方案"],
   mobileApp: ["移动应用", "安装和使用 Bossiz+ 应用"],
   agency: ["合作代理", "成为合作代理并管理您的产品"],
-  conciergerie: ["Bossiz 礼宾服务", "科特迪瓦和塞内加尔的高端礼宾服务"],
+  conciergerie: ["Conciergerie Bossiz 礼宾服务", "科特迪瓦和塞内加尔的高端礼宾服务"],
   technical: ["技术支持", "技术问题与兼容性"],
   general: ["常规", "关于 Bossiz+ 和平台"],
 };
@@ -450,40 +450,52 @@ export const HELP_FAQ_ZH: [domain: string, question: string, answer: string][] =
   // Bossiz 礼宾服务
   [
     "conciergerie",
-    "什么是 Bossiz 礼宾服务？",
-    "Bossiz 礼宾服务是我们的高端个性化礼宾服务，目前在科特迪瓦和塞内加尔提供。",
+    "什么是 Conciergerie Bossiz 礼宾服务？",
+    "Conciergerie Bossiz 礼宾服务是我们的高端个性化礼宾服务，目前在科特迪瓦和塞内加尔提供。",
   ],
-  ["conciergerie", "Bossiz 礼宾服务提供哪些服务？", "包括月度方案和短期住宿方案，提供个性化协助和量身定制的支持。"],
   [
     "conciergerie",
-    "如何订阅 Bossiz 礼宾服务方案？",
-    "进入 Bossiz 礼宾服务科特迪瓦或塞内加尔页面，选择方案并在线申请报价。",
+    "Conciergerie Bossiz 礼宾服务提供哪些服务？",
+    "包括月度方案和短期住宿方案，提供个性化协助和量身定制的支持。",
   ],
-  ["conciergerie", "Bossiz 礼宾服务在其他国家提供吗？", "目前在科特迪瓦和塞内加尔提供；未来可能扩展到其他市场。"],
   [
     "conciergerie",
-    "如何联系 Bossiz 礼宾服务团队？",
-    "使用您所在国家 Bossiz 礼宾服务页面上的联系表单，或联系我们的通用客服。",
+    "如何订阅 Conciergerie Bossiz 礼宾服务方案？",
+    "进入 Conciergerie Bossiz 礼宾服务科特迪瓦或塞内加尔页面，选择方案并在线申请报价。",
+  ],
+  [
+    "conciergerie",
+    "Conciergerie Bossiz 礼宾服务在其他国家提供吗？",
+    "目前在科特迪瓦和塞内加尔提供；未来可能扩展到其他市场。",
+  ],
+  [
+    "conciergerie",
+    "如何联系 Conciergerie Bossiz 礼宾服务团队？",
+    "使用您所在国家 Conciergerie Bossiz 礼宾服务页面上的联系表单，或联系我们的通用客服。",
   ],
   [
     "conciergerie",
     "月度方案和短期住宿方案有什么区别？",
     "月度方案适合长期持续的协助，短期住宿方案满足出行期间的临时需求。",
   ],
-  ["conciergerie", "可以随时取消 Bossiz 礼宾服务方案吗？", "取消条件取决于所订方案；请查看方案详情或联系礼宾团队。"],
   [
     "conciergerie",
-    "Bossiz 礼宾服务提供个性化协助吗？",
+    "可以随时取消 Conciergerie Bossiz 礼宾服务方案吗？",
+    "取消条件取决于所订方案；请查看方案详情或联系礼宾团队。",
+  ],
+  [
+    "conciergerie",
+    "Conciergerie Bossiz 礼宾服务提供个性化协助吗？",
     "是的，协助内容根据您的具体需求定制，在开通方案时与礼宾团队沟通确定。",
   ],
   [
     "conciergerie",
-    "如何获取 Bossiz 礼宾服务报价？",
-    "在对应需求的 Bossiz 礼宾服务科特迪瓦或塞内加尔页面填写报价申请表。",
+    "如何获取 Conciergerie Bossiz 礼宾服务报价？",
+    "在对应需求的 Conciergerie Bossiz 礼宾服务科特迪瓦或塞内加尔页面填写报价申请表。",
   ],
   [
     "conciergerie",
-    "Bossiz 礼宾服务的付款在同一平台进行吗？",
+    "Conciergerie Bossiz 礼宾服务的付款在同一平台进行吗？",
     "是的，付款通过与 Bossiz+ 平台其他服务相同的安全系统处理。",
   ],
   // 技术支持
@@ -503,7 +515,11 @@ export const HELP_FAQ_ZH: [domain: string, question: string, answer: string][] =
   ["technical", "在线聊天没有回应怎么办？", "请刷新页面或稍后重试；如问题仍存在，请通过电话或邮件联系我们。"],
   // 常规
   ["general", "什么是 Bossiz+？", "Bossiz+ 是面向科特迪瓦和西非的旅行预订平台：机票、酒店、租车、火车、活动和演出。"],
-  ["general", "Bossiz+ 在哪些国家运营？", "平台主要面向科特迪瓦和西非，并在塞内加尔提供 Bossiz 礼宾服务等补充服务。"],
+  [
+    "general",
+    "Bossiz+ 在哪些国家运营？",
+    "平台主要面向科特迪瓦和西非，并在塞内加尔提供 Conciergerie Bossiz 礼宾服务等补充服务。",
+  ],
   ["general", "如何联系客服？", "您可以通过电话、WhatsApp、电子邮件或在线聊天联系我们；所有方式请查看联系页面。"],
   ["general", "Bossiz+ 提供旅行保险吗？", "视所订服务可能提供旅行保险选项；预订时可查看详情。"],
   ["general", "推荐计划如何运作？", "如推荐计划开放，详情和奖励会通过控制面板或邮件告知。"],
@@ -516,7 +532,7 @@ export const HELP_FAQ_ZH: [domain: string, question: string, answer: string][] =
   ["general", "Bossiz+ 与银行合作提供分期付款吗？", "视当前产品可能有合作；预订时请查看支付选项了解现有方案。"],
   [
     "general",
-    "Bossiz 礼宾服务之外的礼宾协助如何获得？",
+    "Conciergerie Bossiz 礼宾服务之外的礼宾协助如何获得？",
     "聊天中的 AI 助手可以回答许多常见问题，并为您指引合适的服务或联系人。",
   ],
   ["general", "可以为网站建议新功能吗？", "可以，欢迎通过联系表单或在线聊天向我们提出建议。"],

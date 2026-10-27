@@ -53,7 +53,7 @@ const defaultConfig: AppConfig = {
     resolveEnvValue("VITE_SUPABASE_PUBLISHABLE_KEY", "REACT_APP_SUPABASE_PUBLISHABLE_KEY") || "your-anon-key",
   supabaseProjectId: resolveEnvValue("VITE_SUPABASE_PROJECT_ID", "REACT_APP_SUPABASE_PROJECT_ID") || "your-project-id",
 
-  appName: resolveEnvValue("VITE_APP_NAME") || "Bossiz Conciergerie",
+  appName: resolveEnvValue("VITE_APP_NAME") || "Conciergerie Bossiz",
   appVersion: resolveEnvValue("VITE_APP_VERSION") || "1.0.0",
   appEnvironment: resolveEnvValue("VITE_APP_ENVIRONMENT") || "development",
 

@@ -483,7 +483,7 @@ async function confirmImpactContribution(
       <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
         <div style="background: #1B2A4A; color: #fff; padding: 20px; text-align: center;">
           <h1 style="margin: 0; font-size: 22px;">Merci pour votre soutien !</h1>
-          <p style="margin: 6px 0 0;">Ensemble, faisons grandir Bossiz.</p>
+          <p style="margin: 6px 0 0;">Ensemble, faisons grandir Conciergerie Bossiz.</p>
         </div>
         <div style="padding: 24px;">
           <p>Bonjour ${escapeHtml(contribution.contributor_name)},</p>
@@ -496,8 +496,8 @@ async function confirmImpactContribution(
           <p style="text-align: center; margin: 28px 0;">
             <a href="${siteUrl}/mon-impact" style="background: #0F7B5F; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Mon espace Impact</a>
           </p>
-          <p style="font-size: 13px; color: #666;">Votre contribution soutient le développement de Bossiz. Elle n'est ni un placement ni une prise de participation et ne donne droit à aucun rendement.</p>
-          <p>Merci de votre confiance,<br>L'équipe Bossiz</p>
+          <p style="font-size: 13px; color: #666;">Votre contribution soutient le développement de Conciergerie Bossiz. Elle n'est ni un placement ni une prise de participation et ne donne droit à aucun rendement.</p>
+          <p>Merci de votre confiance,<br>L'équipe Conciergerie Bossiz</p>
         </div>
       </div>
     </body>

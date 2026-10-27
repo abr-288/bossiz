@@ -204,7 +204,7 @@ const BossizPortal = () => {
               onClick={() => navigate("/bossiz-conciergerie-ci")}
             >
               <MapPin className="w-4 h-4 mr-2" />
-              Bossiz Côte d'Ivoire
+              Conciergerie Bossiz Côte d'Ivoire
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
             <Button
@@ -214,7 +214,7 @@ const BossizPortal = () => {
               onClick={() => navigate("/bossiz-conciergerie-sn")}
             >
               <MapPin className="w-4 h-4 mr-2" />
-              Bossiz Sénégal
+              Conciergerie Bossiz Sénégal
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           </div>

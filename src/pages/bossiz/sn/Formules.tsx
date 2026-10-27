@@ -26,7 +26,11 @@ const BossizSNFormules = () => {
     <BossizSiteLayout country="sn" activePage="formules" tagline={content.tagline}>
       {/* Bannière avec image de fond */}
       <section className="relative h-64 md:h-80 overflow-hidden">
-        <img src={bannerImage} alt="Formules Bossiz Sénégal" className="absolute inset-0 w-full h-full object-cover" />
+        <img
+          src={bannerImage}
+          alt="Formules Conciergerie Bossiz Sénégal"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-bossiz-teal-dark/80" />
         <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
           <h1 className="font-extrabold text-3xl md:text-5xl text-white drop-shadow-lg">{content.plans.title}</h1>

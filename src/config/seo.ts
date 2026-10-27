@@ -108,40 +108,41 @@ const ROUTES: Record<string, RouteSeo> = {
     description: "Loueurs et chauffeurs : découvrez les formules d'abonnement pour proposer vos véhicules sur Bossiz+.",
   },
   "/bossiz-portal": {
-    title: "Bossiz Conciergerie | Portail",
+    title: "Conciergerie Bossiz | Portail",
     description: "Accédez aux services de conciergerie Bossiz pour la Côte d'Ivoire et le Sénégal.",
   },
   "/bossiz-conciergerie-ci": {
-    title: "Bossiz Conciergerie Côte d'Ivoire",
-    description: "Conciergerie de voyage et de vie quotidienne en Côte d'Ivoire : services sur mesure Bossiz.",
+    title: "Conciergerie Bossiz Côte d'Ivoire",
+    description:
+      "Conciergerie de voyage et de vie quotidienne en Côte d'Ivoire : services sur mesure Conciergerie Bossiz.",
   },
   "/bossiz-conciergerie-ci/services": {
-    title: "Services Bossiz Conciergerie Côte d'Ivoire",
+    title: "Services Conciergerie Bossiz Côte d'Ivoire",
     description: "Découvrez les services de conciergerie Bossiz en Côte d'Ivoire.",
   },
   "/bossiz-conciergerie-ci/a-propos": {
-    title: "À propos de Bossiz Conciergerie Côte d'Ivoire",
-    description: "Qui est Bossiz Conciergerie en Côte d'Ivoire : notre équipe et nos engagements.",
+    title: "À propos de Conciergerie Bossiz Côte d'Ivoire",
+    description: "Qui est Conciergerie Bossiz en Côte d'Ivoire : notre équipe et nos engagements.",
   },
   "/bossiz-conciergerie-ci/formules": {
-    title: "Formules Bossiz Conciergerie Côte d'Ivoire",
-    description: "Comparez les formules d'abonnement Bossiz Conciergerie en Côte d'Ivoire.",
+    title: "Formules Conciergerie Bossiz Côte d'Ivoire",
+    description: "Comparez les formules d'abonnement Conciergerie Bossiz en Côte d'Ivoire.",
   },
   "/bossiz-conciergerie-sn": {
-    title: "Bossiz Conciergerie Sénégal",
-    description: "Conciergerie de voyage et de vie quotidienne au Sénégal : services sur mesure Bossiz.",
+    title: "Conciergerie Bossiz Sénégal",
+    description: "Conciergerie de voyage et de vie quotidienne au Sénégal : services sur mesure Conciergerie Bossiz.",
   },
   "/bossiz-conciergerie-sn/services": {
-    title: "Services Bossiz Conciergerie Sénégal",
+    title: "Services Conciergerie Bossiz Sénégal",
     description: "Découvrez les services de conciergerie Bossiz au Sénégal.",
   },
   "/bossiz-conciergerie-sn/a-propos": {
-    title: "À propos de Bossiz Conciergerie Sénégal",
-    description: "Qui est Bossiz Conciergerie au Sénégal : notre équipe et nos engagements.",
+    title: "À propos de Conciergerie Bossiz Sénégal",
+    description: "Qui est Conciergerie Bossiz au Sénégal : notre équipe et nos engagements.",
   },
   "/bossiz-conciergerie-sn/formules": {
-    title: "Formules Bossiz Conciergerie Sénégal",
-    description: "Comparez les formules d'abonnement Bossiz Conciergerie au Sénégal.",
+    title: "Formules Conciergerie Bossiz Sénégal",
+    description: "Comparez les formules d'abonnement Conciergerie Bossiz au Sénégal.",
   },
   "/help": {
     title: "Centre d'aide | Bossiz+",

@@ -30,7 +30,7 @@ const BossizSNAPropos = () => {
       {/* Bannière avec image de fond */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={aboutImage} alt="Bossiz Sénégal" className="w-full h-full object-cover" />
+          <img src={aboutImage} alt="Conciergerie Bossiz Sénégal" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-bossiz-navy-dark/92 via-bossiz-teal-dark/85 to-bossiz-navy-dark/92" />
         </div>
         <div className="relative py-24 min-h-[70vh] flex items-center">

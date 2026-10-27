@@ -164,7 +164,7 @@ function OverviewTab({ data }: { data: DashboardData }) {
           hint="Commandes validées, toutes activités"
         />
         <Kpi
-          title="Gains Bossiz"
+          title="Gains Conciergerie Bossiz"
           value={formatXof(data.totals.gain)}
           current={data.totals.gain}
           previous={data.totals.prev_gain}
@@ -201,7 +201,7 @@ function OverviewTab({ data }: { data: DashboardData }) {
           icon={Hotel}
           title="Hôtels sur place : à encaisser"
           value={formatXof(data.balances.onsite_to_collect)}
-          hint="À date, commissions dues à Bossiz"
+          hint="À date, commissions dues à Conciergerie Bossiz"
           to="/admin/hotel-commissions"
         />
         <BalanceCard
@@ -218,7 +218,7 @@ function OverviewTab({ data }: { data: DashboardData }) {
 
 function EvolutionTab({ data }: { data: DashboardData }) {
   const [metric, setMetric] = useState<"volume" | "gain">("volume");
-  const label = metric === "volume" ? "Ventes" : "Gains Bossiz";
+  const label = metric === "volume" ? "Ventes" : "Gains Conciergerie Bossiz";
   const tick = (period: string) =>
     data.granularity === "month"
       ? formatDay(period, { day: undefined, year: "2-digit" })
@@ -239,7 +239,7 @@ function EvolutionTab({ data }: { data: DashboardData }) {
           onValueChange={(v) => v && setMetric(v as "volume" | "gain")}
         >
           <ToggleGroupItem value="volume">Ventes</ToggleGroupItem>
-          <ToggleGroupItem value="gain">Gains Bossiz</ToggleGroupItem>
+          <ToggleGroupItem value="gain">Gains Conciergerie Bossiz</ToggleGroupItem>
         </ToggleGroup>
       </CardHeader>
       <CardContent className="p-4 pt-0">
@@ -304,7 +304,7 @@ function ActivitiesTab({ data }: { data: DashboardData }) {
                   <TableHead className="text-right">Commandes</TableHead>
                   <TableHead className="text-right">En attente</TableHead>
                   <TableHead className="text-right">Ventes</TableHead>
-                  <TableHead className="text-right">Gains Bossiz</TableHead>
+                  <TableHead className="text-right">Gains Conciergerie Bossiz</TableHead>
                   <TableHead className="text-right">Ventes vs précédente</TableHead>
                 </TableRow>
               </TableHeader>
@@ -461,7 +461,7 @@ const AdminOverview = () => {
             <p className="truncate text-sm text-muted-foreground">
               {data
                 ? `Du ${formatDay(data.from)} au ${formatDay(data.to)}, comparé au ${formatDay(data.prev_from)} – ${formatDay(data.prev_to)}`
-                : "Toutes les activités de Bossiz"}
+                : "Toutes les activités de Conciergerie Bossiz"}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

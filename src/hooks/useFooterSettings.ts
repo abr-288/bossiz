@@ -25,7 +25,7 @@ const defaultSettings: FooterSettings = {
   link_color: "#60a5fa",
   link_hover_color: "#3b82f6",
   border_color: "#374151",
-  company_name: "Bossiz Conciergerie",
+  company_name: "Conciergerie Bossiz",
   description: "Votre partenaire de confiance pour des services de conciergerie premium et exclusifs",
   social_links: {
     facebook: "https://facebook.com/bossiz",
@@ -50,7 +50,7 @@ const defaultSettings: FooterSettings = {
     cookies: "Politique de cookies",
   },
   newsletter_text: "Abonnez-vous à notre newsletter pour recevoir les dernières actualités",
-  copyright_text: "© 2024 Bossiz Conciergerie. Tous droits réservés.",
+  copyright_text: "© 2024 Conciergerie Bossiz. Tous droits réservés.",
   is_active: true,
 };
 

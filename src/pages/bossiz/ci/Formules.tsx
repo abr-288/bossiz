@@ -28,7 +28,7 @@ const BossizCIFormules = () => {
       <section className="relative h-64 md:h-80 overflow-hidden">
         <img
           src={bannerImage}
-          alt="Formules Bossiz Conciergerie"
+          alt="Formules Conciergerie Bossiz"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-bossiz-ci-green/80" />

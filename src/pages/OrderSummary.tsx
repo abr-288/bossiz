@@ -93,7 +93,7 @@ const OrderSummary = () => {
       printWindow.document.write(`
         <html lang="${i18n.language}">
           <head>
-            <title>${p("title")} - Bossiz Conciergerie</title>
+            <title>${p("title")} - Conciergerie Bossiz</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; }
               .header { text-align: center; margin-bottom: 30px; }
@@ -106,7 +106,7 @@ const OrderSummary = () => {
           <body>
             <div class="header">
               <h1>${p("title")}</h1>
-              <h2>Bossiz Conciergerie</h2>
+              <h2>Conciergerie Bossiz</h2>
             </div>
             <div class="order-info">
               <p><strong>${p("orderNumber")}:</strong> ${orderData.orderId}</p>

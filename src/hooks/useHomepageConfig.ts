@@ -143,7 +143,7 @@ const DEFAULT_HOMEPAGE_CONFIG: HomepageConfig = {
     bossizPortal: {
       id: "bossiz-portal",
       title: "Bossiz Portal",
-      subtitle: "Section du portail Bossiz",
+      subtitle: "Section du portail Conciergerie Bossiz",
       visible: true,
       order: 8,
     },

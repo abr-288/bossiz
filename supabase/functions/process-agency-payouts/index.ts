@@ -207,7 +207,7 @@ serve(async (req) => {
             identifier,
             amountCents,
             currency: "XOF",
-            description: `Reversement agence Bossiz - ${commission.id}`,
+            description: `Reversement agence Conciergerie Bossiz - ${commission.id}`,
             reference,
           }),
           signal: AbortSignal.timeout(20_000),

@@ -31,7 +31,7 @@ const IP_LIMIT = { windowMs: 60 * 1000, maxRequests: 20, keyPrefix: "translate-i
 const SYSTEM_PROMPT = `Tu traduis les contenus d'un site de réservation de voyages et de services (Bossiz+), basé en Côte d'Ivoire et au Sénégal, du français vers l'anglais ("en") et le chinois simplifié ("zh").
 
 Règles :
-- Garde tels quels : les noms de marque (Bossiz, Bossiz+), les noms propres de personnes, d'établissements, de villes et de quartiers, les montants, les devises (FCFA, XOF, F CFA), les moyens de paiement (Wave, MTN, Moov, Orange Money, Jèko), les numéros, e-mails et URL.
+- Garde tels quels : les noms de marque (Conciergerie Bossiz, Bossiz+, Bossiz Impact, Bossiz Smiles), les noms propres de personnes, d'établissements, de villes et de quartiers, les montants, les devises (FCFA, XOF, F CFA), les moyens de paiement (Wave, MTN, Moov, Orange Money, Jèko), les numéros, e-mails et URL.
 - Traduis le sens, avec le ton d'un site commercial ; pas de mot à mot.
 - Garde la ponctuation et la mise en forme (retours à la ligne, listes).
 - Une liste se traduit élément par élément, dans le même ordre et avec le même nombre d'éléments.

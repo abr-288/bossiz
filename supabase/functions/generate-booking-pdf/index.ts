@@ -20,8 +20,8 @@ const generateQRCodeSVG = async (data: string): Promise<string> => {
 const getTemplateColors = (serviceType: string) => {
   const templates = {
     flight: {
-      primary: "#192342", // Bleu foncé Bossiz
-      secondary: "#00F59B", // Vert clair Bossiz
+      primary: "#192342", // Bleu foncé Conciergerie Bossiz
+      secondary: "#00F59B", // Vert clair Conciergerie Bossiz
       accent: "#2d3e6f",
       gradient: "linear-gradient(135deg, #192342 0%, #2d3e6f 100%)",
     },

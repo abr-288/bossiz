@@ -236,7 +236,7 @@ export function MemberCard({
               className="absolute flex items-baseline font-display font-bold"
               style={{ left: u(6.5), top: u(5.6), fontSize: u(5.4), letterSpacing: "-0.01em" }}
             >
-              <span>Bossiz</span>
+              <span>Conciergerie Bossiz</span>
               <span style={foilText}>+</span>
             </div>
 
@@ -428,7 +428,7 @@ export function MemberCard({
                 {memberNumber(memberCode)}
               </p>
               <p className="flex items-baseline font-display font-bold" style={{ fontSize: u(3.2) }}>
-                <span>Bossiz</span>
+                <span>Conciergerie Bossiz</span>
                 <span style={foilText}>+</span>
               </p>
             </div>

@@ -222,7 +222,7 @@ const FeaturedSubscriptions = () => {
   const whatsAppFor = (planName: string) =>
     whatsAppLink(
       siteConfig.contact.whatsapp,
-      `Bonjour, je suis intéressé(e) par l'offre "${planName}" de Bossiz Conciergerie. Pouvez-vous me donner plus d'informations ?`,
+      `Bonjour, je suis intéressé(e) par l'offre "${planName}" de Conciergerie Bossiz. Pouvez-vous me donner plus d'informations ?`,
     );
 
   const scrollBy = (direction: 1 | -1) => {

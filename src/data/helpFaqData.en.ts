@@ -21,7 +21,7 @@ export const HELP_DOMAINS_EN: Record<string, [label: string, description: string
   subscriptions: ["Subscriptions", "Basic, Premium, Business and Corporate plans"],
   mobileApp: ["Mobile app", "Installing and using the Bossiz+ app"],
   agency: ["Partner agencies", "Becoming a partner agency and managing your offers"],
-  conciergerie: ["Bossiz Concierge", "Premium concierge services in CI and SN"],
+  conciergerie: ["Conciergerie Bossiz", "Premium concierge services in CI and SN"],
   technical: ["Technical support", "Technical issues and compatibility"],
   general: ["General", "About Bossiz+ and the platform"],
 };
@@ -1442,28 +1442,28 @@ export const HELP_FAQ_EN: [domain: string, question: string, answer: string][] =
   // Bossiz Concierge
   [
     "conciergerie",
-    "What is Bossiz Concierge?",
-    "Bossiz Concierge is our premium personal concierge service, currently available in Côte d'Ivoire and Senegal.",
+    "What is Conciergerie Bossiz?",
+    "Conciergerie Bossiz is our premium personal concierge service, currently available in Côte d'Ivoire and Senegal.",
   ],
   [
     "conciergerie",
-    "Which services does Bossiz Concierge offer?",
+    "Which services does Conciergerie Bossiz offer?",
     "Monthly plans and short-stay offers, including personal assistance and tailored support for your needs.",
   ],
   [
     "conciergerie",
-    "How do I subscribe to a Bossiz Concierge plan?",
-    "Go to the Bossiz Concierge CI or SN page, choose your plan and request a quote online.",
+    "How do I subscribe to a Conciergerie Bossiz plan?",
+    "Go to the Conciergerie Bossiz CI or SN page, choose your plan and request a quote online.",
   ],
   [
     "conciergerie",
-    "Is Bossiz Concierge available in other countries?",
+    "Is Conciergerie Bossiz available in other countries?",
     "The service is currently available in Côte d'Ivoire and Senegal; other markets may be added in the future.",
   ],
   [
     "conciergerie",
-    "How do I contact the Bossiz Concierge team?",
-    "Use the contact form on your country's Bossiz Concierge page, or our general support.",
+    "How do I contact the Conciergerie Bossiz team?",
+    "Use the contact form on your country's Conciergerie Bossiz page, or our general support.",
   ],
   [
     "conciergerie",
@@ -1472,22 +1472,22 @@ export const HELP_FAQ_EN: [domain: string, question: string, answer: string][] =
   ],
   [
     "conciergerie",
-    "Can I cancel my Bossiz Concierge plan at any time?",
+    "Can I cancel my Conciergerie Bossiz plan at any time?",
     "Cancellation conditions depend on the plan; check your offer details or contact the concierge team.",
   ],
   [
     "conciergerie",
-    "Does Bossiz Concierge offer personalised support?",
+    "Does Conciergerie Bossiz offer personalised support?",
     "Yes, support is tailored to your specific needs, discussed with the concierge team when your plan is set up.",
   ],
   [
     "conciergerie",
-    "How do I get a quote for a Bossiz Concierge service?",
-    "Fill in the quote request form on the Bossiz Concierge CI or SN page that matches your need.",
+    "How do I get a quote for a Conciergerie Bossiz service?",
+    "Fill in the quote request form on the Conciergerie Bossiz CI or SN page that matches your need.",
   ],
   [
     "conciergerie",
-    "Are Bossiz Concierge payments made on the same platform?",
+    "Are Conciergerie Bossiz payments made on the same platform?",
     "Yes, payments go through the same secure system as the rest of the Bossiz+ platform.",
   ],
   // Technical support
@@ -1550,7 +1550,7 @@ export const HELP_FAQ_EN: [domain: string, question: string, answer: string][] =
   [
     "general",
     "In which countries does Bossiz+ operate?",
-    "Our platform mainly focuses on Côte d'Ivoire and West Africa, with complementary services such as Bossiz Concierge in Senegal.",
+    "Our platform mainly focuses on Côte d'Ivoire and West Africa, with complementary services such as Conciergerie Bossiz in Senegal.",
   ],
   [
     "general",
@@ -1604,7 +1604,7 @@ export const HELP_FAQ_EN: [domain: string, question: string, answer: string][] =
   ],
   [
     "general",
-    "How does concierge help work outside Bossiz Concierge?",
+    "How does concierge help work outside Conciergerie Bossiz?",
     "Our AI assistant, available in the chat, can answer many general questions and point you to the right service or contact.",
   ],
   [

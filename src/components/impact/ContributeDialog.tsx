@@ -187,7 +187,8 @@ export function ContributeDialog({
             />
             <p className="text-xs text-muted-foreground">
               Minimum {formatXof(min)}
-              {max != null ? `, maximum ${formatXof(max)}` : ""}. Aucun frais supplémentaire n'est ajouté par Bossiz.
+              {max != null ? `, maximum ${formatXof(max)}` : ""}. Aucun frais supplémentaire n'est ajouté par
+              Conciergerie Bossiz.
             </p>
             {smiles > 0 && (
               <p className="flex items-center gap-1.5 rounded-md bg-primary/5 p-2 text-sm font-medium">
@@ -235,8 +236,8 @@ export function ContributeDialog({
               {campaign.accepted_methods.length > 0
                 ? ` (${campaign.accepted_methods.map(impactMethodLabel).join(", ")})`
                 : ""}
-              . Bossiz ne vous demandera jamais votre code secret Mobile Money. Votre contribution est confirmée dès que
-              le prestataire nous la notifie.
+              . Conciergerie Bossiz ne vous demandera jamais votre code secret Mobile Money. Votre contribution est
+              confirmée dès que le prestataire nous la notifie.
             </p>
           </div>
 

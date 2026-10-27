@@ -24,7 +24,7 @@ const BossizSNAccueil = () => {
       {/* Hero avec image de fond */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImage} alt="Bossiz Sénégal" className="w-full h-full object-cover" />
+          <img src={heroImage} alt="Conciergerie Bossiz Sénégal" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-bossiz-teal-dark/90 via-bossiz-teal-dark/75 to-bossiz-teal-dark/90" />
         </div>
         <div className="relative max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">

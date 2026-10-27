@@ -62,12 +62,12 @@ function Explainer() {
       <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
       <div className="space-y-1">
         <p>
-          <strong>Paiement en ligne (Jèko)</strong> : Bossiz encaisse le montant total, garde sa commission (le taux du
-          partenaire, 10 % par défaut) et reverse le reste au partenaire.
+          <strong>Paiement en ligne (Jèko)</strong> : Conciergerie Bossiz encaisse le montant total, garde sa commission
+          (le taux du partenaire, 10 % par défaut) et reverse le reste au partenaire.
         </p>
         <p>
-          <strong>Hôtel payé sur place</strong> : l'hôtel encaisse le client et doit la commission à Bossiz, facturée
-          chaque mois.
+          <strong>Hôtel payé sur place</strong> : l'hôtel encaisse le client et doit la commission à Conciergerie
+          Bossiz, facturée chaque mois.
         </p>
       </div>
     </div>
@@ -135,8 +135,8 @@ function GainsTab() {
           { key: "reference", label: "Référence" },
           { key: "collection", label: "Encaissement" },
           { key: "gross", label: "Vente (FCFA)" },
-          { key: "rate", label: "Taux Bossiz (%)" },
-          { key: "gain", label: "Gain Bossiz (FCFA)" },
+          { key: "rate", label: "Taux Conciergerie Bossiz (%)" },
+          { key: "gain", label: "Gain Conciergerie Bossiz (FCFA)" },
         ],
       ),
     );
@@ -161,7 +161,7 @@ function GainsTab() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Stat
-              title="Gains Bossiz sur les partenaires"
+              title="Gains Conciergerie Bossiz sur les partenaires"
               value={formatXof(sum(rows, "commission_amount"))}
               hint={`${rows.length} vente(s) de partenaires`}
             />
@@ -205,7 +205,7 @@ function GainsTab() {
                           <TableHead>Partenaire</TableHead>
                           <TableHead className="text-right">Nb de ventes</TableHead>
                           <TableHead className="text-right">Montant des ventes</TableHead>
-                          <TableHead className="text-right">Gain Bossiz</TableHead>
+                          <TableHead className="text-right">Gain Conciergerie Bossiz</TableHead>
                           <TableHead className="text-right">Taux moyen</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -267,7 +267,7 @@ function GainsTab() {
               <CardHeader className="flex flex-col gap-2 space-y-0 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle className="text-base">Hôtels payés sur place</CardTitle>
-                  <CardDescription>Commissions dues par les hôtels à Bossiz.</CardDescription>
+                  <CardDescription>Commissions dues par les hôtels à Conciergerie Bossiz.</CardDescription>
                 </div>
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/admin/hotel-commissions">
@@ -402,7 +402,7 @@ function PayoutsTab({ initialStatus }: { initialStatus: string }) {
           { key: "label", label: "Prestation" },
           { key: "reference", label: "Référence" },
           { key: "gross", label: "Vente (FCFA)" },
-          { key: "gain", label: "Part Bossiz (FCFA)" },
+          { key: "gain", label: "Part Conciergerie Bossiz (FCFA)" },
           { key: "net", label: "À verser au partenaire (FCFA)" },
           { key: "status", label: "Statut" },
           { key: "detail", label: "Détail" },
@@ -485,7 +485,7 @@ function PayoutsTab({ initialStatus }: { initialStatus: string }) {
                   <TableHead>Partenaire</TableHead>
                   <TableHead>Prestation</TableHead>
                   <TableHead className="text-right">Vente</TableHead>
-                  <TableHead className="text-right">Part Bossiz</TableHead>
+                  <TableHead className="text-right">Part Conciergerie Bossiz</TableHead>
                   <TableHead className="text-right">À verser au partenaire</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead className="text-right">
@@ -596,7 +596,7 @@ export default function AdminCommissions() {
           <div>
             <h1 className="text-2xl font-bold">Commissions</h1>
             <p className="text-muted-foreground">
-              Ce que Bossiz gagne sur chaque vente et ce qui revient aux partenaires.
+              Ce que Conciergerie Bossiz gagne sur chaque vente et ce qui revient aux partenaires.
             </p>
           </div>
           <div className="flex gap-2">
@@ -622,7 +622,7 @@ export default function AdminCommissions() {
           onValueChange={(v) => setParams(v === "payouts" ? { tab: "payouts" } : {}, { replace: true })}
         >
           <TabsList>
-            <TabsTrigger value="gains">Gains Bossiz</TabsTrigger>
+            <TabsTrigger value="gains">Gains Conciergerie Bossiz</TabsTrigger>
             <TabsTrigger value="payouts">Reversements partenaires</TabsTrigger>
           </TabsList>
           <TabsContent value="gains" className="mt-4">

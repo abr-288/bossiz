@@ -26,7 +26,11 @@ const BossizSNServices = () => {
     <BossizSiteLayout country="sn" activePage="services" tagline={content.tagline}>
       {/* Bannière avec image de fond */}
       <section className="relative h-64 md:h-80 overflow-hidden">
-        <img src={bannerImage} alt="Services Bossiz Sénégal" className="absolute inset-0 w-full h-full object-cover" />
+        <img
+          src={bannerImage}
+          alt="Services Conciergerie Bossiz Sénégal"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-bossiz-teal-dark/80" />
         <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
           <p className="text-bossiz-gold-light text-sm font-semibold uppercase tracking-[0.25em] mb-3">

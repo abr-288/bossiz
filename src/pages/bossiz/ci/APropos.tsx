@@ -30,7 +30,7 @@ const BossizCIAPropos = () => {
       {/* Bannière avec image de fond */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={aboutImage} alt="Bossiz Conciergerie Côte d'Ivoire" className="w-full h-full object-cover" />
+          <img src={aboutImage} alt="Conciergerie Bossiz Côte d'Ivoire" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-bossiz-ci-green/92 via-bossiz-ci-green/85 to-bossiz-ci-green/92" />
         </div>
         <div className="relative py-24 min-h-[70vh] flex items-center">

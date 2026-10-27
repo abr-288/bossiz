@@ -127,8 +127,8 @@ export default function MyImpact() {
               <CardHeader>
                 <CardTitle className="text-base">Mes avantages</CardTitle>
                 <CardDescription>
-                  Présentez votre référence de membre lors de votre commande : l'équipe Bossiz vérifie et applique
-                  l'avantage.
+                  Présentez votre référence de membre lors de votre commande : l'équipe Conciergerie Bossiz vérifie et
+                  applique l'avantage.
                 </CardDescription>
               </CardHeader>
               <CardContent>

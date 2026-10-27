@@ -52,7 +52,7 @@ export default function FooterCustomization() {
     link_color: "#60a5fa",
     link_hover_color: "#3b82f6",
     border_color: "#374151",
-    company_name: "Bossiz Conciergerie",
+    company_name: "Conciergerie Bossiz",
     description: "Votre partenaire de confiance pour des services de conciergerie premium et exclusifs",
     social_links: {
       facebook: "https://facebook.com/bossiz",
@@ -77,7 +77,7 @@ export default function FooterCustomization() {
       cookies: "Politique de cookies",
     },
     newsletter_text: "Abonnez-vous à notre newsletter pour recevoir les dernières actualités",
-    copyright_text: "© 2024 Bossiz Conciergerie. Tous droits réservés.",
+    copyright_text: "© 2024 Conciergerie Bossiz. Tous droits réservés.",
     is_active: true,
   });
 
@@ -173,7 +173,7 @@ export default function FooterCustomization() {
       link_color: "#60a5fa",
       link_hover_color: "#3b82f6",
       border_color: "#374151",
-      company_name: "Bossiz Conciergerie",
+      company_name: "Conciergerie Bossiz",
       description: "Votre partenaire de confiance pour des services de conciergerie premium et exclusifs",
       social_links: {
         facebook: "https://facebook.com/bossiz",
@@ -198,7 +198,7 @@ export default function FooterCustomization() {
         cookies: "Politique de cookies",
       },
       newsletter_text: "Abonnez-vous à notre newsletter pour recevoir les dernières actualités",
-      copyright_text: "© 2024 Bossiz Conciergerie. Tous droits réservés.",
+      copyright_text: "© 2024 Conciergerie Bossiz. Tous droits réservés.",
       is_active: true,
     });
   };
@@ -350,7 +350,7 @@ export default function FooterCustomization() {
                 id="company_name"
                 value={settings.company_name}
                 onChange={(e) => handleColorChange("company_name", e.target.value)}
-                placeholder="Bossiz Conciergerie"
+                placeholder="Conciergerie Bossiz"
               />
             </div>
             <div>
@@ -369,7 +369,7 @@ export default function FooterCustomization() {
                 id="copyright_text"
                 value={settings.copyright_text}
                 onChange={(e) => handleColorChange("copyright_text", e.target.value)}
-                placeholder="© 2024 Bossiz Conciergerie. Tous droits réservés."
+                placeholder="© 2024 Conciergerie Bossiz. Tous droits réservés."
               />
             </div>
             <div>

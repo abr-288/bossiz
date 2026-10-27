@@ -49,7 +49,7 @@ export async function sendJekoRefund(
   const data = (payment.payment_data ?? {}) as Record<string, unknown>;
   const method = MOBILE_MONEY[String(data.payment_method ?? "").toLowerCase()];
   const number = String(data.counterpart_identifier ?? "").replace(/\s/g, "");
-  const name = String(data.counterpart_label ?? "").trim() || "Client Bossiz";
+  const name = String(data.counterpart_label ?? "").trim() || "Client Conciergerie Bossiz";
 
   // Carte, virement bancaire, portefeuille Jèko ou paiement antérieur à
   // l'enregistrement du payeur : remboursement par l'équipe.

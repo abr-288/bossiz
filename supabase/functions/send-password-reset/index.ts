@@ -105,7 +105,7 @@ serve(async (req) => {
     if (error || !actionLink) {
       console.error("Password reset link generation failed");
       return new Response(JSON.stringify({
-        error: "Impossible de préparer le lien. Vérifiez que l'URL de retour Bossiz est autorisée dans la configuration Auth, puis réessayez.",
+        error: "Impossible de préparer le lien. Vérifiez que l'URL de retour Conciergerie Bossiz est autorisée dans la configuration Auth, puis réessayez.",
       }), {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
