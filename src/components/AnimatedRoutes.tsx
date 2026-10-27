@@ -4,7 +4,7 @@ import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
-import Logo from "./Logo";
+import BrandLoader from "./BrandLoader";
 
 // Lazy loading des composants de route pour le code splitting
 const BossizPortal = lazy(() => import("@/pages/BossizPortal"));
@@ -129,20 +129,6 @@ const PlatformPresentation = lazy(() => import("@/pages/PlatformPresentation"));
 const Compatibility = lazy(() => import("@/pages/Compatibility"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-// Composant de chargement affiché pendant le lazy loading
-const PageLoader = () => (
-  <div className="loader-container">
-    <div className="loader-logo-wrapper">
-      <div className="loader-ring"></div>
-      <div className="loader-ring"></div>
-      <Logo variant="light" showWordmark={false} className="loader-logo !w-20 !h-20" />
-    </div>
-    <div className="loader-text">BOSSIZ+</div>
-    <div className="loader-bar-bg">
-      <div className="loader-bar"></div>
-    </div>
-  </div>
-);
 
 /**
  * AnimatedRoutes - Routes avec transitions Framer Motion
@@ -153,7 +139,7 @@ const AnimatedRoutes = () => {
 
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={<BrandLoader />}>
         <Routes location={location} key={location.pathname}>
           <Route
             path="/"
