@@ -129,7 +129,6 @@ const PlatformPresentation = lazy(() => import("@/pages/PlatformPresentation"));
 const Compatibility = lazy(() => import("@/pages/Compatibility"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-
 /**
  * AnimatedRoutes - Routes avec transitions Framer Motion
  * Utilise AnimatePresence pour animer les entrées/sorties de pages
