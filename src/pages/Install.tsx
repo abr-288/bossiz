@@ -26,6 +26,8 @@ import Logo from "@/components/Logo";
 import heroImage from "@/assets/ordinateur.webp";
 import { useTranslation } from "react-i18next";
 import { MOTION } from "@/lib/motion";
+import { getIOSInstallSituation, isIOSDevice } from "@/lib/iosInstall";
+import IOSInstallSteps from "@/components/IOSInstallSteps";
 
 const Install = () => {
   const { t } = useTranslation();
@@ -33,7 +35,9 @@ const Install = () => {
   const { isSupported, permission, requestPermission, subscribe, sendNotification } = usePushNotifications();
 
   // Detect device type
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isIOS = isIOSDevice();
+  // Hors de Safari (Chrome, Facebook, Instagram…), les étapes ci-dessous ne suffisent pas.
+  const iosNeedsHelp = isIOS && getIOSInstallSituation() !== "safari";
   const isAndroid = /Android/.test(navigator.userAgent);
 
   const handleEnableNotifications = async () => {
@@ -174,6 +178,9 @@ const Install = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-6">
+                  {iosNeedsHelp && (
+                    <IOSInstallSteps className="mb-6 rounded-lg border border-primary/30 bg-primary/5 p-4" />
+                  )}
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">

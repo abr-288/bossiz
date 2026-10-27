@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { useSiteConfigContext } from "@/contexts/SiteConfigContext";
 import { whatsAppLink } from "@/lib/contactNumbers";
 import type { BeforeInstallPromptEvent } from "@/hooks/usePWA";
+import { getIOSInstallSituation, isIOSDevice } from "@/lib/iosInstall";
+import IOSInstallSteps from "@/components/IOSInstallSteps";
 
 const InstalliOS = () => {
   const { t } = useTranslation();
@@ -21,15 +23,14 @@ const InstalliOS = () => {
   const [, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    // Détection du navigateur et de l'appareil
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
-    const isSafariBrowser = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+    // Détection du navigateur et de l'appareil (src/lib/iosInstall.ts)
+    const onIOS = isIOSDevice();
+    const situation = onIOS ? getIOSInstallSituation() : null;
 
-    setIsiOS(isIOSDevice);
-    setIsSafari(isSafariBrowser);
+    setIsiOS(onIOS);
+    setIsSafari(situation === "safari");
 
-    if (isIOSDevice && isSafariBrowser) {
+    if (situation === "safari" || situation === "other-browser") {
       setInstallStatus("compatible");
     } else {
       setInstallStatus("incompatible");
@@ -119,8 +120,7 @@ const InstalliOS = () => {
               <Alert className="border-warning-foreground/20 bg-warning">
                 <AlertCircle className="h-4 w-4 text-warning-foreground" />
                 <AlertDescription className="text-warning-foreground">
-                  Ouvrez ce lien dans Safari sur votre iPhone ou iPad pour installer l'application (Chrome et les autres
-                  navigateurs iOS ne permettent pas l'installation).
+                  <IOSInstallSteps />
                 </AlertDescription>
               </Alert>
             )}

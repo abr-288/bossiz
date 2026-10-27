@@ -3,6 +3,11 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
+// Version de l'app mobile (src/lib/appUpdates.ts) : « 1.AAAAMMJJ.HHMMSS » du
+// build en UTC, écrite dans index.html (<meta name="app-version">).
+const buildTime = new Date().toISOString();
+const appVersion = `1.${buildTime.slice(0, 10).replace(/-/g, "")}.${Number(buildTime.slice(11, 19).replace(/:/g, ""))}`;
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -45,7 +50,11 @@ export default defineConfig(({ mode }) => ({
     exclude: ['@supabase/supabase-js']
   },
   plugins: [
-    react(), 
+    react(),
+    {
+      name: "app-version",
+      transformIndexHtml: () => [{ tag: "meta", attrs: { name: "app-version", content: appVersion }, injectTo: "head" }],
+    },
     VitePWA({
       registerType: 'autoUpdate',
       // Les icônes du manifeste sont déjà précachées (includeManifestIcons) ;

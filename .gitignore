@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+# Copie du site pour l'app mobile (scripts/mobile/package-app-update.mjs)
+dist-app
 *.local
 
 # Environment variables

@@ -3,12 +3,14 @@ import { ChevronDown, Download, Smartphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/hooks/usePWA";
+import { isIOSDevice } from "@/lib/iosInstall";
+import IOSInstallSteps from "@/components/IOSInstallSteps";
 
 type OS = "ios" | "android" | "desktop";
 
 const detectOS = (): OS => {
   const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua)) return "ios";
+  if (isIOSDevice()) return "ios";
   if (/Android/.test(ua)) return "android";
   return "desktop";
 };
@@ -34,12 +36,9 @@ const IOSDownloadSection = () => {
     setOpen(true);
   };
 
+  // Étapes iOS : IOSInstallSteps, qui les adapte au navigateur.
   const groups: { key: OS; title: string; steps: string[] }[] = [
-    {
-      key: "ios",
-      title: t("ux.app.iosTitle"),
-      steps: [t("ux.app.iosStep1"), t("ux.app.iosStep2"), t("ux.app.iosStep3")],
-    },
+    { key: "ios", title: t("ux.app.iosTitle"), steps: [] },
     {
       key: "android",
       title: t("ux.app.androidTitle"),
@@ -88,11 +87,15 @@ const IOSDownloadSection = () => {
               {visible.map((group) => (
                 <div key={group.key}>
                   <p className="mb-1.5 text-sm font-semibold text-foreground">{group.title}</p>
-                  <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-                    {group.steps.map((step, i) => (
-                      <li key={i}>{step}</li>
-                    ))}
-                  </ol>
+                  {group.key === "ios" ? (
+                    <IOSInstallSteps />
+                  ) : (
+                    <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
+                      {group.steps.map((step, i) => (
+                        <li key={i}>{step}</li>
+                      ))}
+                    </ol>
+                  )}
                 </div>
               ))}
             </div>

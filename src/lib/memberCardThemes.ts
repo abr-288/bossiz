@@ -10,6 +10,7 @@ import {
   Star,
   type LucideIcon,
 } from "lucide-react";
+import { publicOrigin } from "@/lib/publicOrigin";
 
 // Matière de la carte de membre selon la formule : un support (dégradé en
 // trois tons, du plus clair au plus profond) et une finition « foil »
@@ -88,5 +89,4 @@ export const memberNumber = (memberCode: string): string => {
   return `BZ-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
 };
 
-export const memberVerifyUrl = (memberCode: string): string =>
-  `${window.location.origin}/verifier-membre/${memberCode}`;
+export const memberVerifyUrl = (memberCode: string): string => `${publicOrigin()}/verifier-membre/${memberCode}`;

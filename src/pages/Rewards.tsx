@@ -29,6 +29,7 @@ import { LoadErrorRetry } from "@/components/LoadErrorRetry";
 import { cn } from "@/lib/utils";
 import { currentLocaleTag } from "@/lib/dateLocale";
 import { LOYALTY_TIERS, useLoyalty, type LoyaltyTransaction } from "@/hooks/useLoyalty";
+import { publicOrigin } from "@/lib/publicOrigin";
 
 const TIER_COLORS: Record<string, string> = {
   bronze: "#C07A45",
@@ -90,7 +91,7 @@ const Rewards = () => {
         ),
       )
     : 100;
-  const referralLink = `${window.location.origin}/auth?ref=${summary.referral_code}`;
+  const referralLink = `${publicOrigin()}/auth?ref=${summary.referral_code}`;
   const streakInCycle =
     s.streak_days > 0 ? summary.streak % s.streak_days || (summary.streak > 0 ? s.streak_days : 0) : 0;
 

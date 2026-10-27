@@ -3,11 +3,13 @@
 import "./lib/storagePolyfill";
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { Capacitor } from "@capacitor/core";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
 import "./index.css";
 import { i18nReady } from "./i18n/config";
 import { bootIntroPlayed, markBootScreenHandedOver } from "./lib/bootScreen";
+import { startAppUpdates } from "./lib/appUpdates";
 
 // Une île de code (route lazy-loaded) référencée par un onglet resté ouvert
 // depuis avant un déploiement n'existe plus une fois le build suivant publié
@@ -36,7 +38,10 @@ setTimeout(() => sessionStorage.removeItem("vite-preload-reload-attempted"), 100
 // immediate: false -> l'enregistrement attend l'événement « load » : le
 // précache (tout le code de l'appli) ne concurrence pas le premier affichage
 // sur une connexion lente.
-if ("serviceWorker" in navigator) {
+// Dans l'app Android / iOS, le site est déjà embarqué et mis à jour par
+// src/lib/appUpdates.ts : un service worker n'y servirait que d'anciens fichiers.
+startAppUpdates();
+if ("serviceWorker" in navigator && !Capacitor.isNativePlatform()) {
   registerSW({
     immediate: false,
     onRegisteredSW(_swUrl, registration) {

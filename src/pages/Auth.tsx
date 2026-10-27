@@ -23,6 +23,7 @@ import {
 } from "@/lib/authValidation";
 import { passwordErrorMessage } from "@/lib/passwordErrors";
 import { clearPostAuthRedirect, rememberPostAuthRedirect, safeInternalPath } from "@/lib/postAuthRedirect";
+import { publicOrigin } from "@/lib/publicOrigin";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -97,7 +98,7 @@ const Auth = () => {
       password: signUpForm.password,
       options: {
         data: { full_name: signUpForm.fullName.trim() },
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: `${publicOrigin()}/`,
       },
     });
 
@@ -169,7 +170,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: publicOrigin(),
       },
     });
 
