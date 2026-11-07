@@ -75,6 +75,7 @@ const AdminAgencies = lazy(() => import("@/pages/admin/AdminAgencies"));
 const AdminPartnerApplications = lazy(() => import("@/pages/admin/AdminPartnerApplications"));
 const AdminCommissions = lazy(() => import("@/pages/admin/AdminCommissions"));
 const AdminPartnerSupport = lazy(() => import("@/pages/admin/AdminPartnerSupport"));
+const AdminMonitoring = lazy(() => import("@/pages/admin/AdminMonitoring"));
 const AdminCarPartnerPlans = lazy(() => import("@/pages/admin/AdminCarPartnerPlans"));
 const AdminAdvertisements = lazy(() => import("@/pages/admin/AdminAdvertisements"));
 const AdminPayments = lazy(() => import("@/pages/admin/AdminPayments"));
@@ -697,6 +698,14 @@ const AnimatedRoutes = () => {
             element={
               <PageTransition>
                 <AdminPartnerSupport />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/monitoring"
+            element={
+              <PageTransition>
+                <AdminMonitoring />
               </PageTransition>
             }
           />

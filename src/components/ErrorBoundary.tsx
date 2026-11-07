@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertCircle, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { reportError } from "@/lib/errorReporting";
 
 interface Props {
   children: ReactNode;
@@ -46,8 +47,8 @@ class ErrorBoundary extends Component<Props, State> {
       errorInfo,
     });
 
-    // Vous pouvez envoyer l'erreur à un service de monitoring ici
-    // Example: Sentry.captureException(error, { extra: errorInfo });
+    // Remontée vers /admin/monitoring (table app_errors).
+    reportError(error, "page bloquée (ErrorBoundary)");
   }
 
   handleReset = () => {

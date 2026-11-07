@@ -192,6 +192,7 @@ const menuItems = [
     url: "/admin/translations",
     icon: Languages,
   },
+  { title: "Surveillance", url: "/admin/monitoring", icon: Activity },
   { title: "Configuration", url: "/admin/configuration", icon: Cog },
 ];
 

@@ -10,6 +10,10 @@ import "./index.css";
 import { i18nReady } from "./i18n/config";
 import { bootIntroPlayed, markBootScreenHandedOver } from "./lib/bootScreen";
 import { startAppUpdates } from "./lib/appUpdates";
+import { initErrorReporting } from "./lib/errorReporting";
+
+// Erreurs JavaScript remontées vers /admin/monitoring (voir lib/errorReporting).
+initErrorReporting();
 
 // Une île de code (route lazy-loaded) référencée par un onglet resté ouvert
 // depuis avant un déploiement n'existe plus une fois le build suivant publié
