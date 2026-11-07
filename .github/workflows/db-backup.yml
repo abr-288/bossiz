@@ -1,0 +1,89 @@
+name: Sauvegarde base de données
+
+# Sauvegarde chiffrée de la base Supabase chaque nuit (03:30 UTC), conservée
+# 14 jours dans les artefacts GitHub Actions. Procédure de restauration :
+# docs/technique/12-sauvegardes.md
+#
+# Secrets du dépôt à créer (Settings > Secrets and variables > Actions) :
+#   SUPABASE_DB_URL     URL de connexion « Session pooler » (port 5432) :
+#                       Dashboard Supabase > Connect > Session pooler.
+#                       (La connexion directe db.<ref>.supabase.co est en IPv6
+#                       seulement, injoignable depuis GitHub Actions.)
+#   BACKUP_PASSPHRASE   phrase de passe longue, gardée AUSSI hors de GitHub
+#                       (sans elle, les sauvegardes sont illisibles).
+#
+# Un workflow planifié ne tourne que s'il est sur la branche par défaut (main).
+
+on:
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Vérifier les secrets
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::Secrets SUPABASE_DB_URL et BACKUP_PASSPHRASE requis (voir docs/technique/12-sauvegardes.md)"
+            exit 1
+          fi
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Exporter rôles, schéma et données
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          mkdir -p backup
+          supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f backup/roles.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f backup/data.sql
+          ls -la backup
+
+      - name: Contrôler le contenu
+        run: |
+          set -euo pipefail
+          for t in bookings payments profiles agencies loyalty_transactions; do
+            grep -Eq "CREATE TABLE( IF NOT EXISTS)? \"?public\"?\.\"?$t\"? " backup/schema.sql               || { echo "::error::Table public.$t absente du schéma exporté"; exit 1; }
+            grep -Eq "COPY \"?public\"?\.\"?$t\"? " backup/data.sql               || { echo "::error::Données de public.$t absentes de l'export"; exit 1; }
+          done
+          echo "Taille des exports :"; wc -c backup/*.sql
+
+      - name: Compresser et chiffrer
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          STAMP=$(date -u +%Y-%m-%d_%H%M)
+          tar -czf "bossiz-db-$STAMP.tar.gz" -C backup .
+          gpg --batch --yes --symmetric --cipher-algo AES256 --pinentry-mode loopback \
+              --passphrase "$BACKUP_PASSPHRASE" -o "bossiz-db-$STAMP.tar.gz.gpg" "bossiz-db-$STAMP.tar.gz"
+          rm -rf backup "bossiz-db-$STAMP.tar.gz"
+          sha256sum "bossiz-db-$STAMP.tar.gz.gpg" | tee "bossiz-db-$STAMP.sha256"
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bossiz-db-${{ env.STAMP }}
+          path: |
+            bossiz-db-*.tar.gz.gpg
+            bossiz-db-*.sha256
+          retention-days: 14
+          compression-level: 0
+          if-no-files-found: error
