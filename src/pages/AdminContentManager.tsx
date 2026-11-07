@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -682,4 +683,12 @@ const AdminContentManager = () => {
   );
 };
 
-export default AdminContentManager;
+// Réservée aux admins : AdminLayout vérifie le rôle avant d'afficher la page
+// (les écritures sont de toute façon refusées par RLS aux non-admins).
+const AdminContentManagerPage = () => (
+  <AdminLayout>
+    <AdminContentManager />
+  </AdminLayout>
+);
+
+export default AdminContentManagerPage;

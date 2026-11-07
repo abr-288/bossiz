@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ import {
   Loader2,
   X,
   PartyPopper,
+  Building2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { JEKO_PAYOUT_METHODS, type JekoPayoutMethod } from "@/constants/jekoPayoutMethods";
@@ -46,7 +48,21 @@ const partnerTypeOptions = [
   { value: "cars", label: "ux.partnerForm.typeCars", icon: Car },
 ] as const;
 
-type PartnerTypeValue = (typeof partnerTypeOptions)[number]["value"];
+type BuiltinPartnerType = (typeof partnerTypeOptions)[number]["value"];
+
+// Option affichée dans le formulaire : les 6 types d'origine (libellés
+// traduits, icône, conditions propres) ou une catégorie ajoutée depuis
+// /admin/partner-categories (libellé saisi par l'admin).
+interface PartnerOption {
+  value: string;
+  label: string;
+  translated: boolean;
+  icon: typeof Building2;
+}
+
+const builtinOptions: PartnerOption[] = partnerTypeOptions.map((o) => ({ ...o, translated: true }));
+const isBuiltinType = (value: string): value is BuiltinPartnerType =>
+  partnerTypeOptions.some((option) => option.value === value);
 
 const carPlanOptions = [
   { value: "pro", label: "ux.partnerForm.planPro" },
@@ -60,7 +76,7 @@ const carPlanLabels: Record<string, string> = {
 
 const commonConditions = ["ux.partnerForm.common1", "ux.partnerForm.common2", "ux.partnerForm.common3"];
 
-const conditionsByType: Record<PartnerTypeValue, string[]> = {
+const conditionsByType: Record<BuiltinPartnerType, string[]> = {
   hotel: ["ux.partnerForm.signup", "ux.partnerForm.hotel2", "ux.partnerForm.share24", "ux.partnerForm.hotel4"],
   restaurant: ["ux.partnerForm.signup", "ux.partnerForm.restaurant2", "ux.partnerForm.restaurant3"],
   activity: ["ux.partnerForm.signup", "ux.partnerForm.share24", "ux.partnerForm.activity3"],
@@ -100,8 +116,7 @@ const benefits = [
 const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2 Mo
 const ALLOWED_LOGO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-const isPartnerType = (value: string | null): value is PartnerTypeValue =>
-  !!value && partnerTypeOptions.some((option) => option.value === value);
+const isPartnerType = (value: string | null): value is string => !!value && /^[a-z][a-z0-9_]{1,40}$/.test(value);
 
 const BecomePartner = () => {
   const { t, i18n } = useTranslation();
@@ -112,11 +127,7 @@ const BecomePartner = () => {
   const [searchParams] = useSearchParams();
   const requestedCarPlan = searchParams.get("plan");
   const requestedTypeParam = searchParams.get("type");
-  const initialType: PartnerTypeValue | "" = isPartnerType(requestedTypeParam)
-    ? requestedTypeParam
-    : requestedCarPlan
-      ? "cars"
-      : "";
+  const initialType: string = isPartnerType(requestedTypeParam) ? requestedTypeParam : requestedCarPlan ? "cars" : "";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -124,7 +135,36 @@ const BecomePartner = () => {
     contactPhone: "",
     description: "",
   });
-  const [partnerType, setPartnerType] = useState<PartnerTypeValue | "">(initialType);
+  const [partnerType, setPartnerType] = useState<string>(initialType);
+
+  // Catégories actives définies dans l'admin ; repli sur les 6 types d'origine.
+  const { data: dbCategories } = useQuery({
+    queryKey: ["partner-categories-public"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("partner_categories")
+        .select("key, label, is_active, sort_order")
+        .eq("is_active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+  const typeOptions = useMemo<PartnerOption[]>(() => {
+    if (!dbCategories?.length) return builtinOptions;
+    return dbCategories.map(
+      (c) =>
+        builtinOptions.find((o) => o.value === c.key) ?? {
+          value: c.key,
+          label: c.label,
+          translated: false,
+          icon: Building2,
+        },
+    );
+  }, [dbCategories]);
+  const optionLabel = (o: PartnerOption | undefined, tr: (k: string) => string) =>
+    o ? (o.translated ? tr(o.label) : o.label) : "";
   const [preferredPayoutMethod, setPreferredPayoutMethod] = useState<JekoPayoutMethod | "">("");
   const [carPlan, setCarPlan] = useState(
     requestedCarPlan && carPlanLabels[requestedCarPlan] ? requestedCarPlan : "decouverte",
@@ -137,7 +177,7 @@ const BecomePartner = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleTypeChange = (value: string) => {
-    setPartnerType(value as PartnerTypeValue);
+    setPartnerType(value);
     setAcceptedConditions(false);
   };
 
@@ -200,8 +240,10 @@ const BecomePartner = () => {
       return;
     }
 
-    const typeKey = partnerTypeOptions.find((option) => option.value === partnerType)?.label;
-    const typeLabel = typeKey ? tFr(typeKey) : undefined;
+    const typeLabel = optionLabel(
+      typeOptions.find((option) => option.value === partnerType),
+      tFr,
+    );
     const finalDescription = [
       typeLabel ? `Type de partenariat : ${typeLabel}` : null,
       carPlanPaymentsEnabled && partnerType === "cars"
@@ -261,11 +303,13 @@ const BecomePartner = () => {
   const typeConditions =
     partnerType === "cars" && !carPlanPaymentsEnabled
       ? freeCarConditions
-      : partnerType
+      : partnerType && isBuiltinType(partnerType)
         ? conditionsByType[partnerType]
-        : [];
+        : partnerType
+          ? ["ux.partnerForm.signup"]
+          : [];
   const activeConditions = partnerType ? [...typeConditions, ...commonConditions] : [];
-  const selectedTypeMeta = partnerTypeOptions.find((o) => o.value === partnerType);
+  const selectedTypeMeta = typeOptions.find((o) => o.value === partnerType);
 
   return (
     <div className="min-h-screen bg-background flex flex-col pt-16">
@@ -377,13 +421,13 @@ const BecomePartner = () => {
                               <SelectValue placeholder={t("ux.becomePartner.chooseType")} />
                             </SelectTrigger>
                             <SelectContent>
-                              {partnerTypeOptions.map((option) => {
+                              {typeOptions.map((option) => {
                                 const Icon = option.icon;
                                 return (
                                   <SelectItem key={option.value} value={option.value}>
                                     <span className="flex items-center gap-2">
                                       <Icon className="w-4 h-4 text-primary" />
-                                      {t(option.label)}
+                                      {optionLabel(option, t)}
                                     </span>
                                   </SelectItem>
                                 );
@@ -571,7 +615,7 @@ const BecomePartner = () => {
                             >
                               <p className="text-sm font-semibold">
                                 {t("ux.partnerForm.conditionsFor", {
-                                  type: selectedTypeMeta ? t(selectedTypeMeta.label) : "",
+                                  type: optionLabel(selectedTypeMeta, t),
                                 })}
                               </p>
                               <ul className="space-y-2">

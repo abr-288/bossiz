@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { ArrowLeft, Plane } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -82,6 +82,13 @@ const FlightBookingProcess = () => {
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, number>>({});
   const [selectedPreferences, setSelectedPreferences] = useState<BookingPreferences>({});
+
+  // Ouverte sans vol choisi (lien direct, rechargement) : les valeurs par
+  // défaut ci-dessus afficheraient un faux vol au prix absurde. On renvoie
+  // vers la recherche.
+  if (!searchParams.get("price") && !location.state?.flight) {
+    return <Navigate to="/flights" replace />;
+  }
 
   const steps = [
     { number: 1, title: t("ux.flightBooking.stepPassengers"), completed: currentStep > 1 },

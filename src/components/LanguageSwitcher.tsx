@@ -58,9 +58,9 @@ const LanguageSwitcher = () => {
         onClick={() => setOpen(true)}
       >
         <Globe className="w-4 h-4" />
-        <span className="text-xs">
-          {currentLanguage.flag} {currentLanguage.code.toUpperCase()}
-        </span>
+        {/* Pas de drapeau ici : Windows n'affiche pas les drapeaux emoji
+            (« 🇫🇷 » devient « FR », d'où « FR FR »). */}
+        <span className="text-xs">{currentLanguage.code.toUpperCase()}</span>
       </Button>
 
       <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden">
