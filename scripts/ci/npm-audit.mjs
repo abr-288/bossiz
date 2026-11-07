@@ -9,10 +9,16 @@ const MIN_LEVEL = "moderate";
 // Avis acceptés. À retirer dès qu'une version corrigée existe ou que la
 // dépendance concernée disparaît.
 const ALLOWED = {
-  "GHSA-vfj7-8cjw-p6xm":
-    "braces (via tailwindcss 3 : chokidar, micromatch, fast-glob) - aucune version corrigée publiée. " +
-    "Seule la migration vers Tailwind 4 l'élimine, écartée car Tailwind 4 abandonne iOS < 16.4 et Chrome < 111 " +
-    "(la page /compatibilite promet iOS 12+ et Chrome 90+). Outil de build uniquement, rien n'est livré aux visiteurs.",
+  // Ajoutés le 2026-11-07 (avis publiés début novembre, pas de correctif dans la même version majeure).
+  "GHSA-3g3m-2fjr-6pw4":
+    "glob (via workbox-build, génération du service worker au build) - ne lit que nos propres fichiers, " +
+    "aucune entrée extérieure. Outil de build uniquement.",
+  "GHSA-g3hv-75wg-m249":
+    "minimatch (via typescript-eslint et workbox-build) - motifs écrits par nous, au lint et au build. " +
+    "Disparaîtra avec typescript-eslint 9 / workbox 8.",
+  "GHSA-mrhx-c7xc-m3w5":
+    "zod 3 (validation des formulaires côté navigateur) - corrigé seulement en zod 4 (refonte de l'API). " +
+    "Dans le navigateur, seul le visiteur lui-même pourrait saturer sa propre page. Migration zod 4 à planifier.",
 };
 
 let output;

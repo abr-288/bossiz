@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { formatXof, impactMethodLabel, offerSmiles, type ImpactPublicData } from "@/lib/impact";
+import { openExternalPayment } from "@/lib/nativeLinks";
 
 const FREE = "free";
 
@@ -125,7 +126,7 @@ export function ContributeDialog({
       }
       // Paiement sur la page sécurisée du prestataire ; le statut se suit
       // ensuite dans « Mon espace Impact ».
-      window.location.assign(payment.payment_url);
+      openExternalPayment(payment.payment_url, "/mon-impact");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue. Réessayez.");
       setSubmitting(false);

@@ -24,6 +24,7 @@ import {
 import { passwordErrorMessage } from "@/lib/passwordErrors";
 import { clearPostAuthRedirect, rememberPostAuthRedirect, safeInternalPath } from "@/lib/postAuthRedirect";
 import { publicOrigin } from "@/lib/publicOrigin";
+import { oauthRedirectTo } from "@/lib/nativeLinks";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -170,7 +171,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: publicOrigin(),
+        redirectTo: oauthRedirectTo(),
       },
     });
 

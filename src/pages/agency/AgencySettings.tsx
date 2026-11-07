@@ -15,6 +15,7 @@ import { JEKO_PAYOUT_METHODS, type JekoPayoutMethod } from "@/constants/jekoPayo
 import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+import { openExternalPayment } from "@/lib/nativeLinks";
 
 const bankFields = [
   {
@@ -282,7 +283,7 @@ export default function AgencySettings() {
         throw new Error(data?.error || t("ux.bo.noPaymentLinkWasCreated"));
       }
 
-      window.location.assign(data.payment_url);
+      openExternalPayment(data.payment_url, "/agency/settings");
     } catch (error) {
       toast({
         title: t("ux.bo.paymentNotStarted"),

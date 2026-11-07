@@ -23,6 +23,7 @@ import { getEdgeFunctionErrorMessage } from "@/lib/getEdgeFunctionErrorMessage";
 import { Price } from "@/components/ui/price";
 import { useTranslation } from "react-i18next";
 import { RedeemSmiles } from "@/components/RedeemSmiles";
+import { openExternalPayment } from "@/lib/nativeLinks";
 
 interface PaymentBooking {
   id: string;
@@ -261,7 +262,7 @@ export default function Payment() {
 
       // Petit délai pour permettre l'affichage du toast
       setTimeout(() => {
-        window.location.href = data.payment_url;
+        openExternalPayment(data.payment_url, "/booking-history");
       }, 500);
     } catch (error: unknown) {
       clearTimeout(timeoutId);

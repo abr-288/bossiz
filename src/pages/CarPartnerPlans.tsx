@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { CardGridSkeleton } from "@/components/ui/card-grid-skeleton";
 import { useLocalizedRows } from "@/lib/translatableContent";
 import { useCarPlanPayments } from "@/hooks/useCarPlanPayments";
+import { openExternalPayment } from "@/lib/nativeLinks";
 
 interface CarPartnerPlan {
   plan_id: string;
@@ -124,7 +125,7 @@ const CarPartnerPlans = () => {
         throw new Error(data?.error || t("ux.carPlans.noLink"));
       }
 
-      window.location.assign(data.payment_url);
+      openExternalPayment(data.payment_url, window.location.pathname);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("ux.carPlans.initErrorNoPlan"));
     } finally {

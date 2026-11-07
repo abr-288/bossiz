@@ -38,6 +38,7 @@ import { MOTION } from "@/lib/motion";
 import { RedeemSmiles } from "@/components/RedeemSmiles";
 import { getErrorMessage } from "@/lib/errorMessage";
 import type { Tables } from "@/integrations/supabase/types";
+import { openExternalPayment } from "@/lib/nativeLinks";
 
 // Fonctions utilitaires pour les prix par défaut (en XOF/FCFA pour le marché africain)
 const getDefaultPrice = (planId: string): number => {
@@ -362,7 +363,7 @@ const ModernSubscriptionPayment = () => {
       setCheckout({ subscriptionId: subscription.id, paymentUrl: data.payment_url });
       // Peut être bloqué par le navigateur (appel après une requête réseau) :
       // l'écran d'attente propose aussi un bouton pour ouvrir le paiement.
-      window.open(data.payment_url, "_blank", "noopener");
+      openExternalPayment(data.payment_url, "/dashboard", { newTab: true });
     } catch (error) {
       console.error("Payment error:", error);
       toast({
