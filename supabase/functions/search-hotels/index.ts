@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { amadeusBaseUrl } from "../_shared/amadeus.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { hotelSearchSchema, validateData, createValidationErrorResponse } from "../_shared/zodValidation.ts";
 import { getClientIP, checkRateLimit, createRateLimitResponse, getRateLimitHeaders, RATE_LIMITS } from "../_shared/rate-limiter.ts";
@@ -1141,7 +1142,7 @@ const results: {
         // Step 1: Get Amadeus access token
         console.log('Step 1: Getting Amadeus access token');
         const tokenResponse = await fetch(
-          'https://test.api.amadeus.com/v1/security/oauth2/token',
+          `${amadeusBaseUrl()}/v1/security/oauth2/token`,
           {
             method: 'POST',
             headers: {
@@ -1167,7 +1168,7 @@ const results: {
           const cityCode = location.substring(0, 3).toUpperCase();
           
           const hotelListResponse = await fetch(
-            `https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city?cityCode=${cityCode}&radius=50&radiusUnit=KM&hotelSource=ALL`,
+            `${amadeusBaseUrl()}/v1/reference-data/locations/hotels/by-city?cityCode=${cityCode}&radius=50&radiusUnit=KM&hotelSource=ALL`,
             {
               headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -1198,7 +1199,7 @@ const results: {
               });
 
               const offersResponse = await fetch(
-                `https://test.api.amadeus.com/v2/shopping/hotel-offers?${offersSearchParams}`,
+                `${amadeusBaseUrl()}/v2/shopping/hotel-offers?${offersSearchParams}`,
                 {
                   headers: {
                     'Authorization': `Bearer ${accessToken}`,

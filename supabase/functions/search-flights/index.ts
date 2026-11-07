@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { amadeusBaseUrl } from "../_shared/amadeus.ts";
 import { flightSearchSchema, validateData, createValidationErrorResponse } from "../_shared/zodValidation.ts";
 import { getClientIP, checkRateLimit, createRateLimitResponse, getRateLimitHeaders, RATE_LIMITS } from "../_shared/rate-limiter.ts";
 
@@ -338,7 +339,7 @@ async function searchAmadeus(
 ): Promise<FlightOffer[]> {
   try {
     console.log('Getting Amadeus access token...');
-    const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
+    const tokenResponse = await fetch(`${amadeusBaseUrl()}/v1/security/oauth2/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -374,7 +375,7 @@ async function searchAmadeus(
 
     console.log('Searching flights with Amadeus API...');
     const flightResponse = await fetch(
-      `https://test.api.amadeus.com/v2/shopping/flight-offers?${params}`,
+      `${amadeusBaseUrl()}/v2/shopping/flight-offers?${params}`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,

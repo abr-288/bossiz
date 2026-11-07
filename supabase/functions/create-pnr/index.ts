@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { amadeusBaseUrl } from "../_shared/amadeus.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { refundBookingPayment } from "../_shared/cinetpayRefund.ts";
 import { scheduleAgencyPayout } from "../_shared/agencyPayouts.ts";
@@ -270,7 +271,7 @@ interface PnrPassenger {
 async function createAmadeusPNR(booking: PnrBooking, passengers: PnrPassenger[], amadeusKey: string, amadeusSecret: string): Promise<string | null> {
   try {
     // Get Amadeus access token
-    const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
+    const tokenResponse = await fetch(`${amadeusBaseUrl()}/v1/security/oauth2/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -288,7 +289,7 @@ async function createAmadeusPNR(booking: PnrBooking, passengers: PnrPassenger[],
 
     // Create PNR using Amadeus Order API
     // This is a simplified example - actual implementation would require more detailed flight booking data
-    const orderResponse = await fetch('https://test.api.amadeus.com/v1/booking/flight-orders', {
+    const orderResponse = await fetch(`${amadeusBaseUrl()}/v1/booking/flight-orders`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
