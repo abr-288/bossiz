@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity, CheckCircle2, ChevronDown, ChevronRight, RefreshCw, XCircle } from "lucide-react";
+import {
+  Activity,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  Download,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -195,6 +204,8 @@ export default function AdminMonitoring() {
           </CardContent>
         </Card>
 
+        <BackupsCard />
+
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold">Erreurs remontées par les visiteurs</h2>
           <Button variant="outline" size="sm" onClick={() => setShowResolved((v) => !v)}>
@@ -264,5 +275,104 @@ export default function AdminMonitoring() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+// Sauvegardes nocturnes de la base (fonction backup-database, stockage privé
+// db-backups, 14 jours). Voir docs/technique/12-sauvegardes.md.
+function BackupsCard() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [saving, setSaving] = useState(false);
+
+  const backups = useQuery({
+    queryKey: ["admin-db-backups"],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("db-backups")
+        .list("", { limit: 100, sortBy: { column: "name", order: "desc" } });
+      if (error) throw error;
+      return (data ?? []).filter((f) => f.name.endsWith(".jsonl.gz"));
+    },
+  });
+
+  const backupNow = async () => {
+    setSaving(true);
+    const { data, error } = await supabase.functions.invoke("backup-database", { body: {} });
+    setSaving(false);
+    if (error || !data?.success) {
+      toast({
+        title: "Sauvegarde incomplète",
+        description: error?.message ?? (data?.errors ?? []).join(" ; ") ?? "Erreur inconnue",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Sauvegarde faite",
+        description: `${data.rows} lignes, ${data.tables} tables, ${Math.round(data.sizeBytes / 1024)} Ko`,
+      });
+    }
+    queryClient.invalidateQueries({ queryKey: ["admin-db-backups"] });
+  };
+
+  const download = async (name: string) => {
+    const { data, error } = await supabase.storage.from("db-backups").createSignedUrl(name, 300, { download: true });
+    if (error || !data?.signedUrl) {
+      toast({ title: "Téléchargement impossible", description: error?.message, variant: "destructive" });
+      return;
+    }
+    window.location.assign(data.signedUrl);
+  };
+
+  const files = backups.data ?? [];
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-lg">
+          <span className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Sauvegardes de la base
+          </span>
+          <Button variant="outline" size="sm" onClick={backupNow} disabled={saving}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${saving ? "animate-spin" : ""}`} />
+            Sauvegarder maintenant
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-sm text-muted-foreground">
+          Toutes les tables et les comptes, chaque nuit à 03:30 (heure d'Abidjan), gardées 14 jours. Téléchargez-en une
+          de temps en temps et gardez-la hors de Supabase.
+        </p>
+        {backups.isLoading ? (
+          <p className="text-muted-foreground">Chargement…</p>
+        ) : backups.isError ? (
+          <p className="text-muted-foreground">
+            Impossible de lire les sauvegardes. La migration 20261104000000 a-t-elle été appliquée ?
+          </p>
+        ) : files.length === 0 ? (
+          <p className="text-muted-foreground">Aucune sauvegarde pour l'instant.</p>
+        ) : (
+          <ul className="divide-y">
+            {files.map((f) => {
+              const size = (f.metadata as { size?: number } | null)?.size;
+              return (
+                <li key={f.name} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <span className="min-w-0 break-words text-sm">
+                    {f.name}
+                    {typeof size === "number" ? ` · ${Math.round(size / 1024)} Ko` : ""}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => download(f.name)}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Télécharger
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }

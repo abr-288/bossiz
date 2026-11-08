@@ -128,6 +128,18 @@ serve(async (req) => {
       if (problems.length) throw new Error(problems.join(" ; "));
       return "Aucun échec sur 10 min";
     }),
+    timed("backup", "Sauvegarde de la base", async () => {
+      const { data, error } = await supabase.storage.from("db-backups").list("", {
+        limit: 100,
+        sortBy: { column: "name", order: "desc" },
+      });
+      if (error) throw new Error(error.message);
+      const latest = (data ?? []).find((f) => /^bossiz-\d{4}-\d{2}-\d{2}\.jsonl\.gz$/.test(f.name));
+      if (!latest) return "Première sauvegarde cette nuit (03:30 UTC)";
+      const ageH = (Date.now() - new Date(latest.created_at ?? latest.updated_at ?? 0).getTime()) / 3_600_000;
+      if (ageH > 30) throw new Error(`Dernière sauvegarde il y a ${Math.round(ageH)} h (${latest.name})`);
+      return `${latest.name}, il y a ${Math.round(ageH)} h`;
+    }),
     timed("events_sync", "Synchro des événements (Ticketmaster)", async () => {
       const { data, error } = await supabase
         .from("site_config")
