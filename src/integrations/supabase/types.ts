@@ -5312,6 +5312,10 @@ export type Database = {
         Args: { p_from: string; p_to: string };
         Returns: Json;
       };
+      admin_platform_counts: {
+        Args: { p_from: string; p_to: string };
+        Returns: Json;
+      };
       admin_finance_transactions: {
         Args: { p_from?: string | null; p_to?: string | null };
         Returns: {

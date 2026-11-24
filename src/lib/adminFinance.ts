@@ -328,3 +328,64 @@ export function useAdminFinanceTransactions(period: Period) {
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// Effectifs de la plateforme (utilisateurs, partenaires, abonnés…)
+// ---------------------------------------------------------------------------
+export interface PlatformCounts {
+  users: {
+    total: number;
+    clients: number;
+    partner_accounts: number;
+    admins: number;
+    active_30d: number;
+    new: number;
+    prev_new: number;
+  };
+  partners: {
+    total: number;
+    active: number;
+    visible: number;
+    inactive: number;
+    new: number;
+    prev_new: number;
+    pending_applications: number;
+    by_category: { key: string; label: string; total: number; active: number }[];
+  };
+  subscribers: { active: number; new: number; prev_new: number };
+  impact_members: { total: number; new: number; prev_new: number };
+  catalog: { services_online: number; services_total: number; companies: number; newsletter: number };
+}
+
+export function parsePlatformCounts(raw: unknown): PlatformCounts {
+  const v = (raw ?? {}) as Record<string, unknown>;
+  const partners = (v.partners ?? {}) as Record<string, unknown>;
+  const byCategory = (Array.isArray(partners.by_category) ? partners.by_category : []) as Record<string, unknown>[];
+  return {
+    users: numbers(v.users, ["total", "clients", "partner_accounts", "admins", "active_30d", "new", "prev_new"]),
+    partners: {
+      ...numbers(partners, ["total", "active", "visible", "inactive", "new", "prev_new", "pending_applications"]),
+      by_category: byCategory.map((c) => ({
+        key: String(c.key ?? ""),
+        label: String(c.label ?? ""),
+        total: num(c.total),
+        active: num(c.active),
+      })),
+    },
+    subscribers: numbers(v.subscribers, ["active", "new", "prev_new"]),
+    impact_members: numbers(v.impact_members, ["total", "new", "prev_new"]),
+    catalog: numbers(v.catalog, ["services_online", "services_total", "companies", "newsletter"]),
+  };
+}
+
+export function useAdminPlatformCounts(period: Period) {
+  return useQuery({
+    queryKey: ["admin-platform-counts", period.from, period.to],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_platform_counts", { p_from: period.from, p_to: period.to });
+      if (error) throw error;
+      return parsePlatformCounts(data);
+    },
+    staleTime: 60_000,
+  });
+}
